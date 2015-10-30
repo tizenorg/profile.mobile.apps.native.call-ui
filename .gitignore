@@ -1,0 +1,16 @@
+### SDK IDE generated files and folder ###
+.*project
+##########################################
+
+### Build scripts ###
+build*
+deploy*
+install.sh
+run.sh
+###########################################
+
+### Etc ###
+*~
+.settings
+##############
+

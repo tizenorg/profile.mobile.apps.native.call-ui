@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Додај во Контакти"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Откажи"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Нов запис"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Порака"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "SOS број"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Назад на повикот"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Неуспешно праќање."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Одбивање повик со порака"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Префрли"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Тастатура"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "За да се префрли на користење на Вашиот уред Bluetooth, ќе се вклучи Bluetooth."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "пропуштени повици"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Дополнителната гласност не може да се вклучи додека се поврзани слушалки или слушалка Bluetooth."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Дополнителната гласност не може да се вклучи кога се поврзани слушалки."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Дополнителната гласност не може да се вклучи кога е поврзана слушалка Bluetooth."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Бирање..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Пропуштен повик"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Пренеси"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM услуги"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Продолжи повик"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Заврши конференција"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Заврши повик со %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Заврши ги сите моментални повици"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Конференција"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Допрете ја двапати иконата за заклучување за да го отклучите уредот"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Вклучи Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Одговори на повик"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Види детали за контакт"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Ажур. постојни"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Звучник"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Продолжи"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Отфрли"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Иск.мик"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Уреди"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "На чекање"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Именик"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Состави порака за праќање"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Повик"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Дод. повик"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Прифати"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Со %d луѓе"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Непознато"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "%s се задржува"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "На чекање"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Нема пораки"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Преклопи"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Дојдовен повик"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Задржи акт. повик"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Прекини активни повици (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Се бира преку %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Поврзано преку %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Поврзано"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Повикот заврши"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d на чек."
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Ставете го %s на чекање"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Конференција"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Врати се на екран на повик"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Автом. одбиен повик"
+

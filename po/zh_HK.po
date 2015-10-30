@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "加到聯絡人"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "取消"
+
+msgid "IDS_COM_SK_OK"
+msgstr "確定"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "建立聯絡人"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "訊息"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "緊急號碼"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "返回通話"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "發送失敗。"
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "發訊息以拒絕來電"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "切換"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "鍵盤"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "若要切換至使用您的藍牙裝置，藍牙將被開啟。"
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "未接電話"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "在耳機或藍牙耳機連接時無法開啟額外音量。"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "在耳機連接時無法開啟額外音量。"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "在藍牙耳機連接時無法開啟額外音量。"
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "正在撥號..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "未接電話"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "轉送"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM 卡服務"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "繼續通話"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "結束電話會議"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "結束與 %s 的通話"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "結束目前通話"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "電話會議"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "輕觸兩下鎖定圖示以解鎖您的裝置"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "開啟藍牙"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "接聽電話"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "檢視聯絡人詳細資料"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "更新現有的"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "揚聲器"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "繼續"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "拒絕"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "靜音"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "管理"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "保留"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "聯絡人"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "撰寫訊息以發送"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "通話"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "藍牙"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "加入通話"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "接受"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "與 %d 人"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "未知"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "保留與 %s 的通話"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "保留中"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "無訊息"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "合併"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "來電"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "保留當前通話"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "結束啟動中的通話(%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "正在透過 %s 撥打..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "已透過 %s 連接"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "已連接"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "通話已結束"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d 位已保留"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "保留與 %s 的通話"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "會議"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "返回至通話螢幕"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "自動拒絕來電"
+

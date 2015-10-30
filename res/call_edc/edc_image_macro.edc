@@ -1,0 +1,172 @@
+/*
+ * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+#define RESOURCE_IMAGE( GROUP_NAME, FILE_NAME ) \
+   group { \
+      name: GROUP_NAME; \
+      images.image: FILE_NAME COMP; \
+      parts { \
+         part { name: "image"; \
+            description { \
+               state: "default" 0.0; \
+               image.normal: FILE_NAME; \
+               aspect: 1 1; \
+               aspect_preference: BOTH; \
+            } \
+         } \
+      } \
+   }
+
+#define RESOURCE_IMAGE_LOSSY( FILE_NAME ) \
+   group { \
+      name: FILE_NAME; \
+      images.image: FILE_NAME LOSSY 85; \
+      parts { \
+         part { name: "image"; \
+            description { \
+               state: "default" 0.0; \
+               image.normal: FILE_NAME; \
+               aspect: 1 1; \
+               aspect_preference: BOTH; \
+            } \
+         } \
+      } \
+   }
+
+#define RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE( GROUP_NAME, IMAGE_PATH, BG_IMAGE_PATH, COLOR_CODE, BG_COLOR_CODE ) \
+	group { \
+		name: GROUP_NAME; \
+		images.image: BG_IMAGE_PATH COMP; \
+		images.image: IMAGE_PATH COMP; \
+		parts { \
+			part { \
+				name: "image_bg"; \
+				description { \
+					state: "default" 0.0; \
+					image.normal: BG_IMAGE_PATH; \
+					color_class: BG_COLOR_CODE; \
+					aspect: 1 1; \
+					aspect_preference: SOURCE; \
+				} \
+			} \
+		} \
+		parts { \
+			part { \
+				name: "image"; \
+				description { \
+					state: "default" 0.0; \
+					image.normal: IMAGE_PATH; \
+					color_class: COLOR_CODE; \
+					aspect: 1 1; \
+					aspect_preference: SOURCE; \
+				} \
+			} \
+		} \
+	}
+
+#define RESOURCE_IMAGE_WITH_MASK(GROUP_NAME, MASK_PATH, SWALLOW_PART_NAME) \
+	group { \
+		name: GROUP_NAME; \
+		images.image: MASK_PATH COMP; \
+		parts { \
+			part { name: "mask"; \
+				type: IMAGE; \
+				precise_is_inside: 1; \
+				description { \
+					state: "default" 0.0; \
+					image.normal: MASK_PATH; \
+					aspect: 1.0 1.0; \
+					aspect_preference: SOURCE; \
+				} \
+			} \
+			part { name: SWALLOW_PART_NAME; \
+				type: SWALLOW; \
+				clip_to: "mask"; \
+				description { \
+					state: "default" 0.0; \
+				} \
+			} \
+		} \
+	}
+
+#define REL_PAD_LT(size, bg_size) ((bg_size-size)/2/bg_size)
+#define REL_PAD_RB(size, bg_size) (1 - REL_PAD_LT(size, bg_size))
+
+#define RESOURCE_IMAGE_WITH_BG_AND_TOUCH( GROUP_NAME, IMAGE_PATH, BG_IMAGE_PATH, IMAGE_SIZE, BG_IMAGE_SIZE, COLOR_CODE, BG_COLOR_CODE, BG_COLOR_CODE_P ) \
+	group { \
+	name: GROUP_NAME; \
+	images.image: BG_IMAGE_PATH COMP; \
+	images.image: IMAGE_PATH COMP; \
+	parts { \
+		part { \
+			name: "image_bg"; \
+			type: IMAGE; \
+			description { \
+				state: "default" 0.0; \
+				image.normal: BG_IMAGE_PATH; \
+				color_class: BG_COLOR_CODE; \
+				aspect: 1 1; \
+				aspect_preference: SOURCE; \
+			} \
+			description { \
+				state: "pressed" 0.0; \
+				inherit: "default" 0.0; \
+				color_class: BG_COLOR_CODE_P; \
+			} \
+		} \
+		part { \
+			name: "image"; \
+			type: IMAGE; \
+			description { \
+				state: "default" 0.0; \
+				image.normal: IMAGE_PATH; \
+				color_class: COLOR_CODE; \
+				aspect: 1 1; \
+				aspect_preference: SOURCE; \
+				rel1 { relative: REL_PAD_LT(IMAGE_SIZE, BG_IMAGE_SIZE) REL_PAD_LT(IMAGE_SIZE, BG_IMAGE_SIZE); to: "image_bg";} \
+				rel2 { relative: REL_PAD_RB(IMAGE_SIZE, BG_IMAGE_SIZE) REL_PAD_RB(IMAGE_SIZE, BG_IMAGE_SIZE); to: "image_bg";} \
+			} \
+		} \
+		part { \
+			name: "touch"; \
+			type: RECT; \
+			mouse_events: 1; \
+			repeat_events: 0; \
+			scale: 1; \
+			description { \
+				state: "default" 0.0; \
+				color: 0 0 0 0; \
+			} \
+		} \
+	} \
+	programs { \
+		program { \
+			name: "mouse.down."GROUP_NAME; \
+			source: "touch"; \
+			signal: "mouse,down,*"; \
+			action: STATE_SET "pressed" 0.0; \
+			target: "image_bg"; \
+		} \
+		program { \
+			name: "mouse.up."GROUP_NAME; \
+			source: "touch"; \
+			signal: "mouse,up,*"; \
+			action: STATE_SET "default" 0.0; \
+			target: "image_bg"; \
+		} \
+	} \
+}

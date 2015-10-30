@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Кітапшаға қосыңыз"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Тоқтату"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Байланыс кітапшасын құру"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Хабарлама"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Төтенше қызмет нөмірі"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Қайта қоңырау шалу"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Жіберілген  үзіліп кеті."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Қоңыраудан хабар арқылы бас тарту"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Ауыстыру"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Пернетақ."
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Bluetooth құрылғысын пайдалануды қосу үшін Bluetooth іске қосылады."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Қабылданбаған"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Құлаққап немесе Bluetooth гарнитурасы қосылғанда қосымша дыбыс іске қосылмайды."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Құлаққап қосылғанда қосымша дыбыс іске қосылмайды."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Bluetooth гарнитурасы қосылғанда қосымша дыбыс іске қосылмайды."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Терілуде..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Қабылданбаған қоңырау"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Трансфер"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM- қызметі"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Қоңырауды қалпына келтіру"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Конф.қоң-ң соңы"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Қоңырауды %s арқылы аяқтау"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Барлық ағымдық қоңырауларды аяқтау"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Конференциалық қоңырау"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Құрылғы құлпын алу үшін, құлып белгішесін екі рет түртіңіз"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Bluetooth қосу"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Жауа қоңырауы"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Контакт мәлімет-н көрсету"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Барын жаңарту"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Динамик"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Жалғастыру"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Қабылдамау"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Дыбыссыз"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Басқару"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Ұстау"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Контактілер"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Жіберу үшін хабар жазу"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Қоңырау"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Қоңы. қосу"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Қабылдау"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "%d адаммен"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Белгісіз"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "%s ұстауға қою"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Ұсталуда"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Хабарлама жоқ"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Біріктіру"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Қабылданған қоңырау"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Белс. қоңыр-ды ұстау"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Белсенді қоңырауларды аяқтау (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "%s арқылы теруде..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "%s арқылы қосылған"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Қосылды"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Коңырау аяқталды"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d ұстал."
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "%s ұстап тұрыңыз"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Конференция"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Қоңырау экранына оралу"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Авто қабылданбаған қңру"
+

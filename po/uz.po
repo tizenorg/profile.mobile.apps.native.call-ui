@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Kontaktlarga qo‘shish"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Bekor qilish"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Kontakt yaratish"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Xabar"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Favqulodda raqam"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Qo‘ng‘iroqqa qaytish"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Yuborib bo‘lmadi."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Qo‘ng‘iroqni xabar bilan rad etish"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Almashish"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Klaviatura"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Bluetooth qurilmangizdan foydalanishga o‘tish uchun Bluetooth yoqiladi."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Jav-siz qo‘."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Oddiy quloqlik yoki Bluetooth quloqligi ulanganda ortiqcha ovozni yoqib bo‘lmaydi."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Quloqlik ulanganda ortiqcha ovozni yoqib bo‘lmaydi."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Bluetooth quloqligi ulanganda ortiqcha ovozni yoqib bo‘lmaydi."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Terilmoqda..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Qabul qilinmagan qo‘ng‘iroq"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Uzatish"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM-karta xizmatlari"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Qo‘ng‘iroqni davom ettirish"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Konferens qo‘ng‘iroqni tugatish"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "%s bilan qo‘ng‘iroqni tugatish"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Barcha joriy qo‘ng‘iroqlarni tugatish"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Konferensiya qo'ng'irog'i"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Qurilmangizni blokdan chiqarish uchun bloklash ikonachasiga ikki marta teging"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Bluetoothni yoqish"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Qo‘ng‘iroqqa javob berish"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Kontakt ma’l-ni ko‘rsat"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Mavjudni yangila"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Dinamik"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Davom et"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Rad etish"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Ovozsiz"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Boshqarish"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Kutish"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Kontaktlar"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Yuborish uhcun xabar yaratish"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Qo‘ng‘ir."
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Qo‘n.qo‘sh"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Qabul qil"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "%dta odam bilan"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Noma’lum"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "%sni kutish rejimiga qo‘yish"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Kutish"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Xabarlar yo‘q"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Birlashtirish"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Kiruvchi qo‘ng‘iroq"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Faol qo‘n-ni ush/tur"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Faol qo‘ng‘iroqlarni yakunlash (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "%s orqali raqam terilmoqda..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "%s orqali ulangan"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Ulangan"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Qo‘ng‘. yakunlandi"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d kutish"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "%sni kutish rejimiga qo‘yish"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferensiya"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Qo‘ng‘iroq ekraniga qayt"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Qo‘n-ni avtomatik rad et"
+

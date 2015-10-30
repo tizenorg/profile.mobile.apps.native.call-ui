@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.4" package="org.tizen.call-ui" version="0.0.1" install-location="internal-only">
+	<label>Voice Call</label>
+	<description>Call UI Application</description>
+	<ui-application appid="org.tizen.call-ui" exec="/usr/apps/org.tizen.call-ui/bin/call-ui" nodisplay="true" multiple="false" type="capp" taskmanage="false">
+		<label>Voice Call</label>
+		<label xml:lang="en-gb">Voice Call</label>
+		<application-service>
+			<operation name="http://tizen.org/appcontrol/operation/call"/>
+			<uri name="tel"/>
+		</application-service>
+		<metadata key="http://tizen.org/metadata/background-category/media"/>
+		<metadata key="http://tizen.org/metadata/background-category/background-network"/>
+	</ui-application>
+	<privileges>
+		<privilege>http://tizen.org/privilege/notification</privilege>
+	</privileges>
+</manifest>

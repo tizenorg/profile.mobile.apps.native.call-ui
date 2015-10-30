@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Kapcsolatokhoz ad"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Mégse"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Új névjegy"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Üzenet"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Segélyhívó szám"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Vissza a híváshoz"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "A küldés sikertelen."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Híváselutasítás üzenetben"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Átvált"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Bill.-zet"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Ha átvált a Bluetooth-eszköz használatára, bekapcsol a Bluetooth funkció."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Nem fogadott"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Csatlakoztatott fülhallgató vagy Bluetooth-headset mellett nem kapcsolható be a többlethangerő."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Csatlakoztatott fülhallgató mellett nem kapcsolható be a többlethangerő."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Csatlakoztatott Bluetooth-headset mellett nem kapcsolható be a többlethangerő."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Hívás..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Nem fogadott hívás"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Átad"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM-szolgáltatások"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Hívás folytatása"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Konferenciahívás befejezése"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "%s partnerrel folytatott hívás befejezése"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Minden zajló hívás befejezése"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Konferenciahívás"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Az eszköz feloldásához érintse meg kétszer a Lakat ikont"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Kapcsolja be a Bluetooth-t"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Hívás fogadása"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Névjegyadatok megtekintése"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Megl. frissítése"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Hangsz."
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Folytatás"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Elutasít"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Némít"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Kezelés"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Tart"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Névjegyek"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Elküldendő üzenet írása"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Hívás"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Új hívás"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Fogad"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "%d résztvevő"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Ismeretlen"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "%s tartásba helyezése"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Tartásban"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Nincs üzenet"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Egyesítés"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Bejövő hívás"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Aktív hívás tartása"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Aktív hívások bontása (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Hívás a(z) %s használatával..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "%s használatával kapcsolódott"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Kapcsolódva"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Hívás vége"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d tartva"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "%s tartásba helyezése"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferencia"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Vissza a hívásképernyőhöz"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Aut. elutasított hívás"
+
