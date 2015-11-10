@@ -653,8 +653,7 @@ static int __callui_view_qp_onshow(call_view_data_t *view_data, void *appdata)
 
 	/* Prohibit remove of mini control */
 
-	// TODO MINICONTROL_EVENT_REQUEST_LOCK is not supported
-	//minicontrol_send_event(ad->win_quickpanel, MINICONTROL_EVENT_REQUEST_LOCK, NULL);
+    minicontrol_send_event(ad->win_quickpanel, MINICONTROL_EVENT_REQUEST_LOCK, NULL);
 
 	return 0;
 }
