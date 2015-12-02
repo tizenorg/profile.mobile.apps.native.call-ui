@@ -15,7 +15,7 @@ BuildRequires:  pkgconfig(elementary)
 BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(capi-appfw-application)
 BuildRequires:  pkgconfig(appsvc)
-BuildRequires:	pkgconfig(callmgr_client)
+BuildRequires:  pkgconfig(callmgr_client)
 BuildRequires:  pkgconfig(msg-service)
 BuildRequires:  pkgconfig(efl-extension)
 BuildRequires:  cmake
@@ -27,11 +27,12 @@ BuildRequires:  pkgconfig(capi-system-system-settings)
 BuildRequires:  pkgconfig(minicontrol-provider)
 BuildRequires:  pkgconfig(contacts-service2)
 BuildRequires:  pkgconfig(capi-system-device)
-BuildRequires: 	pkgconfig(notification)
-BuildRequires: 	pkgconfig(capi-system-runtime-info)
+BuildRequires:  pkgconfig(notification)
+BuildRequires:  pkgconfig(capi-system-runtime-info)
 BuildRequires:  pkgconfig(capi-system-info)
-BuildRequires: 	pkgconfig(capi-system-sensor)
-BuildRequires: 	pkgconfig(capi-ui-efl-util)
+BuildRequires:  pkgconfig(capi-system-sensor)
+BuildRequires:  pkgconfig(capi-ui-efl-util)
+BuildRequires:  pkgconfig(libtzplatform-config)
 
 %description
 Call UI application.
@@ -43,13 +44,18 @@ Call UI application.
 export CFLAGS="${CFLAGS} -fvisibility=hidden"
 export CXXFLAGS="${CXXFLAGS} -fvisibility-inlines-hidden -fvisibility=hidden"
 export FFLAGS="${FFLAGS} -fvisibility-inlines-hidden -fvisibility=hidden"
-%define PREFIX	/usr
-%define APPDIR	%{PREFIX}/apps
-%define	PKGDIR	%{APPDIR}/%{name}
-%define BINDIR	%{PKGDIR}/bin
-%define RESDIR	%{PKGDIR}/res
+%define APPDIR      %{TZ_SYS_RO_APP}/%{name}
+%define BINDIR      %{APPDIR}/bin
+%define RESDIR      %{APPDIR}/res
+%define SMACKDIR    %{TZ_SYS_SMACK}/accesses.d
 
-cmake . -DCMAKE_INSTALL_PREFIX=%{PREFIX}
+cmake . -DCMAKE_PKG_NAME=%{name} \
+		-DCMAKE_APP_DIR=%{APPDIR} \
+		-DCMAKE_BIN_DIR=%{BINDIR} \
+		-DCMAKE_RES_DIR=%{RESDIR} \
+		-DCMAKE_SHARE_PACKAGES_DIR=%{TZ_SYS_RO_PACKAGES} \
+		-DCMAKE_SMACK_DIR=%{SMACKDIR}
+
 make %{?jobs:-j%jobs}
 
 %install
@@ -57,8 +63,8 @@ rm -rf %{buildroot}
 %make_install
 
 #install license file
-mkdir -p %{buildroot}/usr/share/license
-cp LICENSE %{buildroot}/usr/share/license/%{name}
+mkdir -p %{buildroot}%{TZ_SYS_SHARE}/license
+cp LICENSE %{buildroot}%{TZ_SYS_SHARE}/license/%{name}
 
 %post
 
@@ -67,7 +73,6 @@ cp LICENSE %{buildroot}/usr/share/license/%{name}
 %defattr(-,root,root,-)
 %{BINDIR}/*
 %{RESDIR}/*
-/usr/share/packages/*
-/usr/share/license/%{name}
-#/etc/smack/accesses2.d/%{name}.rule
-/etc/smack/accesses.d/%{name}.efl
+%{TZ_SYS_RO_PACKAGES}/*
+%{TZ_SYS_SHARE}/license/%{name}
+%{SMACKDIR}/%{name}.efl

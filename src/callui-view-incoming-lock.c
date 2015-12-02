@@ -19,10 +19,10 @@
 #include <msg_transport.h>
 #include <dlfcn.h>
 #include <vconf.h>
-#include "callui.h"
-
-#include "notification.h"
+#include <notification.h>
 #include <Elementary.h>
+#include <tzplatform_config.h>
+
 #include "callui.h"
 #include "callui-view-layout-wvga.h"
 #include "callui-view-elements.h"
@@ -31,7 +31,7 @@
 #include "callui-view-incoming-lock.h"
 #include "callui-common.h"
 #define REJ_MSG_LIST_OPEN_STATUS_KEY "list_open_status_key"
-#define CALLUI_CST_SO_PATH	"/usr/apps/setting-call-efl/lib/ug/libsetting-call-efl.so"
+#define CALLUI_CST_SO_PATH	tzplatform_mkpath(TZ_SYS_RO_APP, "setting-call-efl/lib/ug/libsetting-call-efl.so")
 #define CALLUI_CST_REJECT_MSG_GET	"cst_reject_msg_get"
 #define REJ_MSG_GENLIST_DATA "reject_msg_genlist_data"
 
