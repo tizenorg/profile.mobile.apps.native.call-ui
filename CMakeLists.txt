@@ -106,6 +106,3 @@ INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/images/call_button_icon_04.png DES
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/images/icon/call_button_add.png DESTINATION ${IMGDIR})
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/images/icon/noti_icon_reject_auto.png DESTINATION ${IMGDIR})
 
-#install smack rule
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PKG_NAME}.efl DESTINATION ${CMAKE_SMACK_DIR})
-
