@@ -1,11 +1,5 @@
 <manifest>
-	<define>
-		<domain name="org.tizen.call-ui"/>
-	</define>
-	<assign>
-		<filesystem path="/usr/share/packages/org.tizen.call-ui.xml" label="_"/>
-	</assign>
 	<request>
-		<domain name="org.tizen.call-ui"/>
+		<domain name="_"/>
 	</request>
 </manifest>

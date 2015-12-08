@@ -47,14 +47,12 @@ export FFLAGS="${FFLAGS} -fvisibility-inlines-hidden -fvisibility=hidden"
 %define APPDIR      %{TZ_SYS_RO_APP}/%{name}
 %define BINDIR      %{APPDIR}/bin
 %define RESDIR      %{APPDIR}/res
-%define SMACKDIR    %{TZ_SYS_SMACK}/accesses.d
 
 cmake . -DCMAKE_PKG_NAME=%{name} \
         -DCMAKE_APP_DIR=%{APPDIR} \
         -DCMAKE_BIN_DIR=%{BINDIR} \
         -DCMAKE_RES_DIR=%{RESDIR} \
-        -DCMAKE_SHARE_PACKAGES_DIR=%{TZ_SYS_RO_PACKAGES} \
-        -DCMAKE_SMACK_DIR=%{SMACKDIR}
+        -DCMAKE_SHARE_PACKAGES_DIR=%{TZ_SYS_RO_PACKAGES}
 
 make %{?jobs:-j%jobs}
 
@@ -75,4 +73,3 @@ cp LICENSE %{buildroot}%{TZ_SYS_SHARE}/license/%{name}
 %{RESDIR}/*
 %{TZ_SYS_RO_PACKAGES}/%{name}.xml
 %{TZ_SYS_SHARE}/license/%{name}
-%{SMACKDIR}/%{name}.efl
