@@ -522,15 +522,15 @@ static Evas_Object *__callui_view_qp_create_window(callui_app_data_t *priv)
 	/* TODO uncomment when crash in minicontrol_create_window will be fixed. */
 	/* https://bugs.tizen.org/jira/browse/TM-146 */
 
-	/* win = minicontrol_create_window("org.tizen.call-ui", MINICONTROL_TARGET_VIEWER_QUICK_PANEL, __callui_view_qp_provider_cb);
+	win = minicontrol_create_window("org.tizen.call-ui", MINICONTROL_TARGET_VIEWER_QUICK_PANEL, __callui_view_qp_provider_cb);
 	elm_win_alpha_set(win, EINA_TRUE);
 	evas_object_resize(win, ELM_SCALE_SIZE(MAIN_SCREEN_BIG_W), ELM_SCALE_SIZE(QP_WIN_H));
 
 	if (elm_win_wm_rotation_supported_get(win)) {
 		int rotate_angles[3] = {0, 90, 270};
 		/*Set the required angles wherein the rotation has to be supported*/
-	/*	elm_win_wm_rotation_available_rotations_set(win, rotate_angles, 3);
-	} */
+		elm_win_wm_rotation_available_rotations_set(win, rotate_angles, 3);
+	}
 
 	return win;
 }
