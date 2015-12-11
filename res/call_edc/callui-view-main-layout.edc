@@ -247,7 +247,7 @@ group {
 				align: 1 0;
 				min: 5 30;
 				max: 5 30;
-				fixed: 0 0;
+				fixed: 1 1;
 			}
 		}
 
@@ -262,6 +262,7 @@ group {
 				aspect_preference: SOURCE;
 				min:30 30;
 				align: 1.0 0.5;
+				fixed: 1 1;
 				visible: 0;
 			}
 			description {
