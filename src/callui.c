@@ -386,8 +386,7 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 	Evas_Object *eo = NULL;
 	const char *str = "mobile";
 
-	// TODO No app_get_preinitialized_window function.
-	//eo =  (Evas_Object *)app_get_preinitialized_window(PACKAGE);
+	eo =  (Evas_Object *)app_get_preinitialized_window(PACKAGE);
 
 	eo = ad->win;
 	if (eo == NULL) {
@@ -400,8 +399,6 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 	}
 
 	if (eo) {
-		// TODO Remove
-		//elm_win_profiles_set(eo, &str, 1);	/* Desktop mode only */
 		elm_win_title_set(eo, PACKAGE);
 		evas_object_smart_callback_add(eo, "delete,request", __callui_win_delete_request_cb, NULL);
 		elm_config_engine_set("software_x11");
@@ -416,8 +413,7 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 		elm_win_indicator_opacity_set(eo, ELM_WIN_INDICATOR_TRANSLUCENT);
 		elm_win_conformant_set(eo, EINA_TRUE);
 
-		// TODO No app_get_preinitialized_background function
-		//ad->bg = (Evas_Object *)app_get_preinitialized_background();
+		ad->bg = (Evas_Object *)app_get_preinitialized_background();
 		if (!ad->bg) {
 			ad->bg = elm_bg_add(eo);
 		}
@@ -425,8 +421,7 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 		evas_object_show(ad->bg);
 		elm_object_part_content_set(eo, "elm.swallow.bg", ad->bg);
 
-		//TODO No app_get_preinitialized_conformant function.
-		//conform = (Evas_Object *)app_get_preinitialized_conformant();
+		ad->win_conformant = (Evas_Object *)app_get_preinitialized_conformant();
 		if (ad->win_conformant == NULL) {
 			ad->win_conformant = elm_conformant_add(eo);
 		}
