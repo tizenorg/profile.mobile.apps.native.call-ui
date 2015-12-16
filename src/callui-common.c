@@ -315,9 +315,7 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void)
 	int ret = 0;
 	callui_idle_lock_type_t ret_val = LOCK_TYPE_UNLOCK;
 
-	// TODO The SYSTEM_SETTINGS_KEY_LOCK_STATE is not supported
-
-	/*ret = system_settings_get_value_int(SYSTEM_SETTINGS_KEY_LOCK_STATE, &lock_state);
+	ret = system_settings_get_value_int(SYSTEM_SETTINGS_KEY_LOCK_STATE, &lock_state);
 	if (ret < 0) {
 		err("system_settings_get_value_int failed with code %d", ret);
 	}
@@ -336,7 +334,7 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void)
 		}
 	} else {
 		ret_val = LOCK_TYPE_UNLOCK;
-	}*/
+	}
 
 	info("Lock state : %d", ret_val);
 	return ret_val;
@@ -918,12 +916,10 @@ static void __callui_common_lock_state_cb (system_settings_key_e key, void *user
 
 void _callui_common_set_lock_state_changed_cb()
 {
-	// TODO The  SYSTEM_SETTINGS_KEY_LOCK_STATE is not supported
-	//system_settings_set_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE, __callui_common_lock_state_cb, NULL);
+	system_settings_set_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE, __callui_common_lock_state_cb, NULL);
 }
 
 void _callui_common_unset_lock_state_changed_cb()
 {
-	// TODO The  SYSTEM_SETTINGS_KEY_LOCK_STATE is not supported
-	//system_settings_unset_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE);
+	system_settings_unset_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE);
 }
