@@ -383,12 +383,8 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 	 *   - layout main
 	 *    - naviframe */
 
-	Evas_Object *eo = NULL;
-	const char *str = "mobile";
+	Evas_Object *eo =  (Evas_Object *)app_get_preinitialized_window(PACKAGE);
 
-	eo =  (Evas_Object *)app_get_preinitialized_window(PACKAGE);
-
-	eo = ad->win;
 	if (eo == NULL) {
 		dbg("Create window");
 		eo = elm_win_add(NULL, PACKAGE, ELM_WIN_BASIC);
@@ -403,7 +399,8 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 		evas_object_smart_callback_add(eo, "delete,request", __callui_win_delete_request_cb, NULL);
 		elm_config_engine_set("software_x11");
 
-		evas_object_geometry_get(ad->win, NULL, NULL, &ad->root_w, &ad->root_h);
+		elm_win_screen_size_get(eo, NULL, NULL, &ad->root_w, &ad->root_h);
+
 		dbg("root_w = %d, root_h = %d..", ad->root_w, ad->root_h);
 		evas_object_resize(eo, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_CALL_HEIGHT));
 

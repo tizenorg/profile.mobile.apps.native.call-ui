@@ -31,7 +31,7 @@
 #include "callui-view-incoming-lock.h"
 #include "callui-common.h"
 #define REJ_MSG_LIST_OPEN_STATUS_KEY "list_open_status_key"
-#define CALLUI_CST_SO_PATH	tzplatform_mkpath(TZ_SYS_RO_APP, "setting-call-efl/lib/ug/libsetting-call-efl.so")
+#define CALLUI_CST_SO_PATH	tzplatform_mkpath(TZ_SYS_RO_APP, "org.tizen.call-setting/lib/ug/libcall-setting.so")
 #define CALLUI_CST_REJECT_MSG_GET	"cst_reject_msg_get"
 #define REJ_MSG_GENLIST_DATA "reject_msg_genlist_data"
 
@@ -82,7 +82,7 @@ void _callui_view_incoming_lock_reject_msg_create_call_setting_handle(void *data
 			priv->dl_handle = NULL;
 		}
 	} else {
-		dbg("failed to open libug-setting-call-efl.so");
+		dbg("failed to open libcall-setting.so");
 	}
 }
 
@@ -182,7 +182,11 @@ static int __callui_view_incoming_lock_oncreate(call_view_data_t *view_data, uns
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK && ad->held == NULL
 			&& ad->active == NULL && ad->incom != NULL && ad->active_incoming == false) {
-		_callui_view_active_incoming_call_oncreate(view_data, appdata);
+
+		// TODO commented the active notification, because cannot change window size
+		//_callui_view_active_incoming_call_oncreate(view_data, appdata);
+
+		_callui_view_incoming_call_oncreate(view_data, appdata);
 	} else {
 		_callui_view_incoming_call_oncreate(view_data, appdata);
 	}
@@ -215,8 +219,12 @@ static int __callui_view_incoming_lock_onshow(call_view_data_t *view_data, void 
 	int result = 0;
 	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK && ad->active == NULL
 			&& ad->held == NULL && ad->incom != NULL && ad->active_incoming == false) {
+
+		// TODO commented the active notification, because cannot change window size
 		/* create active incoming call */
-		_callui_view_active_incoming_call_draw_screen(ad, view_data);
+		//_callui_view_active_incoming_call_draw_screen(ad, view_data);
+
+		_callui_view_incoming_call_draw_screen(ad, view_data);
 	} else {
 		/* create incoming call */
 		_callui_view_incoming_call_draw_screen(ad, view_data);

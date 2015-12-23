@@ -422,10 +422,8 @@ static void __reject_msg_list_height_update(void *data)
 		msg_cnt = 1;
 
 	int win_h = 0;
-
-	// TODO ecore_x_window_size_get is not supported. Need to move on system settings.
-	//ecore_x_window_size_get(ecore_x_window_root_first_get(), NULL, &win_h);
-	win_h = 1280;
+	callui_app_data_t *ad = _callui_get_app_data();
+	elm_win_screen_size_get(ad->win, NULL, NULL, NULL, &win_h);
 
 	priv->msg_list_height = SCALE_SIZE((REJ_MSG_LIST_CREATE_MSG_BTN_H + ((ITEM_SIZE_H) * msg_cnt)), win_h);/* bottom btn height + (genlist item height * msg count) */
 	if (priv->msg_list_height > (SCALE_SIZE((MTLOCK_REJECT_MSG_LIST_HEIGHT + REJ_MSG_LIST_CREATE_MSG_BTN_H), win_h))) {
