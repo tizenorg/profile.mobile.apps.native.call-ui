@@ -33,6 +33,7 @@
 #include "callui-view-incoming-lock.h"
 #include "callui-view-quickpanel.h"
 #include "callui-view-caller-info-defines.h"
+#include "callui-proximity-lock-manager.h"
 #include <app_control.h>
 #include <notification.h>
 
@@ -1098,7 +1099,14 @@ void _callui_load_more_option(void *data)
 	callui_app_data_t *ad = _callui_get_app_data();
 	call_view_data_t *vd = (call_view_data_t *)data;
 
-	if (_callui_lock_manager_is_started(ad->lock_handle) == TRUE) {
+	bool is_lcd_locked = FALSE;
+	if(_callui_proximity_lock_manager_is_supported()) {
+		is_lcd_locked = _callui_lock_manager_is_lcd_off(ad->lock_handle);
+	} else {
+		is_lcd_locked = _callui_lock_manager_is_started(ad->lock_handle);
+	}
+
+	if (is_lcd_locked == TRUE) {
 		dbg( "Lock screen active. Do not show popup.");
 		return;
 	}
