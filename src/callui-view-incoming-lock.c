@@ -31,7 +31,7 @@
 #include "callui-view-incoming-lock.h"
 #include "callui-common.h"
 #define REJ_MSG_LIST_OPEN_STATUS_KEY "list_open_status_key"
-#define CALLUI_CST_SO_PATH	tzplatform_mkpath(TZ_SYS_RO_APP, "org.tizen.call-setting/lib/ug/libcall-setting.so")
+#define CALLUI_CST_SO_PATH	tzplatform_mkpath(TZ_SYS_RO_UG, "/lib/libug-call-setting.so")
 #define CALLUI_CST_REJECT_MSG_GET	"cst_reject_msg_get"
 #define REJ_MSG_GENLIST_DATA "reject_msg_genlist_data"
 
@@ -82,7 +82,7 @@ void _callui_view_incoming_lock_reject_msg_create_call_setting_handle(void *data
 			priv->dl_handle = NULL;
 		}
 	} else {
-		dbg("failed to open libcall-setting.so");
+		dbg("failed to open %s", CALLUI_CST_SO_PATH);
 	}
 }
 
