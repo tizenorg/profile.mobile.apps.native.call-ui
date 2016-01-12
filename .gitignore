@@ -46,5 +46,6 @@ debuglinks.list
 debugsources.list
 documentation.list
 install_manifest.txt
+TEMP_BUILD_DIR
 ##############
 
