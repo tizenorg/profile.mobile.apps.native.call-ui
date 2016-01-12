@@ -36,7 +36,7 @@
 #define KEYPAD_EACH_BTN_W					239
 #define KEYPAD_EACH_BTN_H					130
 
-#define ENDCALL_BTN_BG_H					108*1280/800
+#define ENDCALL_BTN_BG_H					152
 
 #define KEYPAD_BTN_OFFSET_X					65
 #define KEYPAD_BTN_OFFSET_Y					12
