@@ -1196,7 +1196,7 @@ static char *__callui_gl_second_call_option_label_get(void *data, Evas_Object *o
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(part, NULL);
 	CALLUI_RETURN_VALUE_IF_FAIL(data, NULL);
-	if (strcmp(part, "elm.text.main.left") == 0) {
+	if (strcmp(part, "elm.text") == 0) {
 		char *markup_txt = NULL;
 		second_call_popup_data_t *item_data = (second_call_popup_data_t *)data;
 		if (strlen(item_data->option_msg) > 0) {
@@ -1306,14 +1306,13 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 
 	genlist = elm_genlist_add(box);
 	CALLUI_RETURN_IF_FAIL(genlist);
-	//elm_genlist_realization_mode_set(genlist, EINA_TRUE);
 	evas_object_size_hint_weight_set(genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
 	itc = elm_genlist_item_class_new();
 	CALLUI_RETURN_IF_FAIL(itc);
 
-	itc->item_style = "1line";
+	itc->item_style = "type1";
 	itc->func.text_get = __callui_gl_second_call_option_label_get;
 	itc->func.content_get = NULL;
 	itc->func.state_get = NULL;
