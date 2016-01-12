@@ -44,32 +44,39 @@ Call UI application.
 export CFLAGS="${CFLAGS} -fvisibility=hidden"
 export CXXFLAGS="${CXXFLAGS} -fvisibility-inlines-hidden -fvisibility=hidden"
 export FFLAGS="${FFLAGS} -fvisibility-inlines-hidden -fvisibility=hidden"
+
 %define APPDIR      %{TZ_SYS_RO_APP}/%{name}
 %define BINDIR      %{APPDIR}/bin
 %define RESDIR      %{APPDIR}/res
+%define LICENSEDIR  %{TZ_SYS_SHARE}/license
+%define PACKAGESDIR %{TZ_SYS_RO_PACKAGES}
 
-cmake . -DCMAKE_PKG_NAME=%{name} \
+%define _tmp_buld_dir TEMP_BUILD_DIR/%{_project}-%{_arch}
+
+mkdir -p %{_tmp_buld_dir}
+cd %{_tmp_buld_dir}
+
+cmake ../../ -DCMAKE_PKG_NAME=%{name} \
         -DCMAKE_APP_DIR=%{APPDIR} \
         -DCMAKE_BIN_DIR=%{BINDIR} \
         -DCMAKE_RES_DIR=%{RESDIR} \
-        -DCMAKE_SHARE_PACKAGES_DIR=%{TZ_SYS_RO_PACKAGES}
-
+        -DCMAKE_LICENSE_DIR=%{LICENSEDIR} \
+        -DCMAKE_SHARE_PACKAGES_DIR=%{PACKAGESDIR}
 make %{?jobs:-j%jobs}
 
 %install
 rm -rf %{buildroot}
+cd %{_tmp_buld_dir}
+
 %make_install
 
-#install license file
-mkdir -p %{buildroot}%{TZ_SYS_SHARE}/license
-cp LICENSE %{buildroot}%{TZ_SYS_SHARE}/license/%{name}
-
-%post
+%clean
+rm -f debugfiles.list debuglinks.list debugsources.list
 
 %files
-%manifest %{name}.manifest
 %defattr(-,root,root,-)
+%manifest %{name}.manifest
+%license LICENSE
 %{BINDIR}/*
 %{RESDIR}/*
-%{TZ_SYS_RO_PACKAGES}/%{name}.xml
-%{TZ_SYS_SHARE}/license/%{name}
+%{PACKAGESDIR}/%{name}.xml
