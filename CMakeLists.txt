@@ -94,25 +94,14 @@ ADD_CUSTOM_TARGET(call.edje ALL DEPENDS ${CMAKE_BINARY_DIR}/call.edj)
 ADD_CUSTOM_COMMAND(
 		OUTPUT ${CMAKE_BINARY_DIR}/call_theme.edj
 		COMMAND edje_cc -no-save -id ${CMAKE_SOURCE_DIR}/res/themes ${EDJE_CC_DEFINITIONS}
-		-sd ${CMAKE_SOURCE_DIR}/res/themes/sounds
 		${CMAKE_SOURCE_DIR}/res/themes/call_theme.edc ${CMAKE_BINARY_DIR}/call_theme.edj
 		DEPENDS ${CMAKE_SOURCE_DIR}/res/themes/call_theme.edc
 )
 ADD_CUSTOM_TARGET(call_theme.edje ALL DEPENDS ${CMAKE_BINARY_DIR}/call_theme.edj)
 
-ADD_CUSTOM_COMMAND(
-		OUTPUT ${CMAKE_BINARY_DIR}/call_genlist_theme.edj
-		COMMAND edje_cc -no-save -id ${CMAKE_SOURCE_DIR}/res/themes
-		-sd ${CMAKE_SOURCE_DIR}/res/themes/sounds
-		${CMAKE_SOURCE_DIR}/res/themes/call_genlist_theme.edc ${CMAKE_BINARY_DIR}/call_genlist_theme.edj
-		DEPENDS ${CMAKE_SOURCE_DIR}/res/themes/call_genlist_theme.edc
-)
-ADD_CUSTOM_TARGET(call_genlist_theme.edje ALL DEPENDS ${CMAKE_BINARY_DIR}/call_genlist_theme.edj)
-
 #install binary & edj files
 INSTALL(FILES ${CMAKE_BINARY_DIR}/call.edj DESTINATION ${EDJDIR})
 INSTALL(FILES ${CMAKE_BINARY_DIR}/call_theme.edj DESTINATION ${EDJDIR})
-INSTALL(FILES ${CMAKE_BINARY_DIR}/call_genlist_theme.edj DESTINATION ${EDJDIR})
 
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${BINDIR})
 INSTALL(DIRECTORY DESTINATION ${DATADIR})
