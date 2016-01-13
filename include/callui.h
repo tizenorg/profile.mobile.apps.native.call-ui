@@ -81,7 +81,6 @@
 
 #define EDJ_NAME EDJDIR"/call.edj"
 #define CALL_THEME EDJDIR"/call_theme.edj"
-#define CALL_GENLIST_THEME EDJDIR"/call_genlist_theme.edj"
 
 #ifndef _EDJ
 #define _EDJ(obj) elm_layout_edje_get(obj)
