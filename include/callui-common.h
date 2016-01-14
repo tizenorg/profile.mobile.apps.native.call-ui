@@ -197,6 +197,7 @@ void _callui_common_launch_msg_composer(void *appdata, char *number);
  */
 void _callui_common_reset_main_ly_text_fields(Evas_Object *contents);
 
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
 /**
  * @brief Set lcd timeout
  *
@@ -204,6 +205,7 @@ void _callui_common_reset_main_ly_text_fields(Evas_Object *contents);
  *
  */
 void _callui_common_dvc_set_lcd_timeout(callui_lcd_timeout_t state);
+#endif
 
 /**
  * @brief state is volume mode on
@@ -244,14 +246,6 @@ void _callui_common_dvc_control_lcd_state(callui_lcd_control_t state);
  *
  */
 callui_lcd_control_t _callui_common_get_lcd_state();
-
-/**
- * @brief Set quick panel scrollable
- *
- * @param[in] benable         State of quick panel
- *
- */
-void _callui_common_set_quickpanel_scrollable(Eina_Bool benable);
 
 /**
  * @brief State of earjack connection

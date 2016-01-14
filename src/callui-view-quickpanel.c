@@ -41,7 +41,9 @@ static int __callui_view_qp_onupdate(call_view_data_t *view_data, void *update_d
 static int __callui_view_qp_onhide(call_view_data_t *view_data);
 static int __callui_view_qp_onshow(call_view_data_t *view_data, void *appdata);
 static int __callui_view_qp_ondestroy(call_view_data_t *view_data);
-static Eina_Bool __callui_qp_client_message_cb(void *data, int type, void *event);
+
+// TODO ecore x atom actions are not supported. Need to move on event from mini controller.
+//static Eina_Bool __callui_qp_client_message_cb(void *data, int type, void *event);
 
 call_view_data_t *_callui_view_qp_new(callui_app_data_t *ad)
 {
@@ -508,13 +510,13 @@ static void __callui_view_qp_provider_cb(minicontrol_viewer_event_e event_type, 
 	callui_app_data_t *ad = _callui_get_app_data();
 	CALLUI_RETURN_IF_FAIL(ad);
 	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)ad->view_data->priv;
-	if (angle && angle[0] != '/0') {
+	if (angle && angle[0] != '\0') {
 		priv->rotate_angle = atoi(angle);
 	}
 	__callui_view_qp_onshow(ad->view_data, NULL);
 }
 
-static Evas_Object *__callui_view_qp_create_window(callui_app_data_t *priv)
+static Evas_Object *__callui_view_qp_create_window()
 {
 	dbg("...");
 	Evas_Object *win = NULL;
@@ -582,7 +584,7 @@ static int __callui_view_qp_oncreate(call_view_data_t *view_data, unsigned int p
 	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)view_data->priv;
 	ad->view_data = view_data;
 	if (!view_data->layout) {
-		ad->win_quickpanel = __callui_view_qp_create_window(priv);
+		ad->win_quickpanel = __callui_view_qp_create_window();
 		if (ad->win_quickpanel == NULL) {
 			dbg("ERROR");
 			return -1;
@@ -656,7 +658,7 @@ static int __callui_view_qp_onshow(call_view_data_t *view_data, void *appdata)
 
 	/* Prohibit remove of mini control */
 
-    minicontrol_send_event(ad->win_quickpanel, MINICONTROL_EVENT_REQUEST_LOCK, NULL);
+	minicontrol_send_event(ad->win_quickpanel, MINICONTROL_EVENT_REQUEST_LOCK, NULL);
 
 	return 0;
 }

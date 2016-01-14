@@ -300,8 +300,6 @@ static int __callui_view_multi_call_list_onshow(call_view_data_t *view_data,  vo
 	callui_app_data_t *ad = _callui_get_app_data();
 	callui_view_multi_call_list_priv_t *priv = (callui_view_multi_call_list_priv_t *)view_data->priv;
 	Evas_Object *back_btn = NULL;
-	char *sim_name = NULL;
-	char status_txt[128 + 1] = {'\0', };
 
 	priv->contents = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
 	if (priv->contents) {
