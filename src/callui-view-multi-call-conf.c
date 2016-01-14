@@ -81,7 +81,6 @@ static void __callui_view_multi_call_conf_draw_screen(Evas_Object *eo, void *dat
 	callui_app_data_t *ad = _callui_get_app_data();
 	char buf[512] = { 0, };
 	call_data_t *call_data = NULL;
-	char *sim_name = NULL;
 	char status_txt[128 + 1] = { '\0', };
 
 	if (ad->active) {

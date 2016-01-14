@@ -40,50 +40,50 @@ typedef struct proximity_lock {
 /**
  * @brief Create proximity lock manager
  *
- * @return The proximity lock handle
+ * @return The proximity lock handle as void pointer
  *
  * @see proximity_lock_t
  */
-static proximity_lock_t *__callui_proximity_lock_manager_create();
+static void *__callui_proximity_lock_manager_create();
 
 /**
  * @brief Starts proximity sensor listener
  *
- * @param[in]   proximity_h The proximity lock handle
+ * @param[in]   lock_h The proximity lock handle
  *
  * @see proximity_lock_t
  */
-static void __callui_proximity_lock_manager_start(proximity_lock_t *proximity_h);
+static void __callui_proximity_lock_manager_start(void *lock_h);
 
 /**
  * @brief Stops proximity sensor listener
  *
- * @param[in]   proximity_h The proximity lock handle
- * @param[in]   force force stops when true, otherwise just stops
+ * @param[in]   lock_h The proximity lock handle
+ * @param[in]   force  force stops when true, otherwise just stops
  *
  * @see proximity_lock_t
  */
-static void __callui_proximity_lock_manager_force_stop(proximity_lock_t *proximity_h, bool force);
+static void __callui_proximity_lock_manager_force_stop(void *lock_h, bool force);
 
 /**
  * @brief Stops proximity sensor listener
  *
- * @param[in]   proximity_h The proximity lock handle
+ * @param[in]   lock_h The proximity lock handle
  *
  * @see proximity_lock_t
  */
-static void __callui_proximity_lock_manager_stop(proximity_lock_t *proximity_h);
+static void __callui_proximity_lock_manager_stop(void *lock_h);
 
 /**
  * @brief Gets proximity lock status
  *
- * @param[in]   proximity_h The proximity lock handle
+ * @param[in]   lock_h The proximity lock handle
  *
  * @return true when proximity lock manager is started, otherwise false
  *
  * @see proximity_lock_t
  */
-static bool __callui_proximity_lock_manager_is_started(proximity_lock_t *proximity_h);
+static bool __callui_proximity_lock_manager_is_started(void *lock_h);
 
 /**
  * @brief Destroy proximity lock manager
@@ -92,9 +92,9 @@ static bool __callui_proximity_lock_manager_is_started(proximity_lock_t *proximi
  *
  * @see proximity_lock_t
  */
-static void __callui_proximity_lock_manager_destroy(proximity_lock_t *proximity_h);
-static bool __callui_proximity_lock_manager_is_lcd_off(proximity_lock_t *proximity_h);
-static void __callui_proximity_lock_manager_set_callback_on_unlock(proximity_lock_t *proximity_h, unlock_cb_t callback, void *data);
+static void __callui_proximity_lock_manager_destroy(void *lock_h);
+static bool __callui_proximity_lock_manager_is_lcd_off(void *lock_h);
+static void __callui_proximity_lock_manager_set_callback_on_unlock(void *lock_h, unlock_cb_t callback, void *data);
 
 static int __callui_proximity_lock_manager_create_listener(proximity_lock_t *proximity_h);
 static void __callui_proximity_lock_manager_cb(sensor_h sensor, sensor_event_s *sensor_data, void *user_data);
@@ -139,16 +139,16 @@ static void __callui_proximity_lock_manager_cb(sensor_h sensor, sensor_event_s *
 	}
 }
 
-static proximity_lock_t *__callui_proximity_lock_manager_create()
+static void *__callui_proximity_lock_manager_create()
 {
 	dbg("..");
-	proximity_lock_t *proximity_h;
-	proximity_h = calloc(1, sizeof(proximity_lock_t));
+	proximity_lock_t *proximity_h = calloc(1, sizeof(proximity_lock_t));
 	CALLUI_RETURN_NULL_IF_FAIL(proximity_h);
 	proximity_h->is_started = false;
 	proximity_h->state = PLM_LCD_NONE;
 	proximity_h->unlock_cb = NULL;
 	proximity_h->cb_data = NULL;
+
 	int ret = SENSOR_ERROR_NONE;
 	ret = sensor_get_default_sensor(SENSOR_PROXIMITY, &proximity_h->sensor);
 	if (ret != SENSOR_ERROR_NONE) {
@@ -165,22 +165,27 @@ static proximity_lock_t *__callui_proximity_lock_manager_create()
 	return proximity_h;
 }
 
-static void __callui_proximity_lock_manager_start(proximity_lock_t *proximity_h)
+static void __callui_proximity_lock_manager_start(void *lock_h)
 {
 	dbg("..");
-	CALLUI_RETURN_IF_FAIL(proximity_h);
+	CALLUI_RETURN_IF_FAIL(lock_h);
+	proximity_lock_t *proximity_h = (proximity_lock_t *)lock_h;
 	int ret = sensor_listener_start(proximity_h->sensor_listener);
 	if (ret != SENSOR_ERROR_NONE) {
 		err("sensor_listener_start() failed(%d)", ret);
 	}
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
 	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
+#endif
+
 	proximity_h->is_started = true;
 }
 
-static void __callui_proximity_lock_manager_force_stop(proximity_lock_t *proximity_h, bool force)
+static void __callui_proximity_lock_manager_force_stop(void *lock_h, bool force)
 {
 	dbg("..");
-	CALLUI_RETURN_IF_FAIL(proximity_h);
+	CALLUI_RETURN_IF_FAIL(lock_h);
+	proximity_lock_t *proximity_h = (proximity_lock_t *)lock_h;
 	if (!force && __callui_proximity_lock_manager_is_lcd_off(proximity_h)) {
 		__callui_proximity_lock_manager_set_callback_on_unlock(proximity_h, __callui_proximity_lock_manager_stop, proximity_h);
 	} else {
@@ -188,10 +193,11 @@ static void __callui_proximity_lock_manager_force_stop(proximity_lock_t *proximi
 	}
 }
 
-static void __callui_proximity_lock_manager_stop(proximity_lock_t *proximity_h)
+static void __callui_proximity_lock_manager_stop(void *lock_h)
 {
 	dbg("..");
-	CALLUI_RETURN_IF_FAIL(proximity_h);
+	CALLUI_RETURN_IF_FAIL(lock_h);
+	proximity_lock_t *proximity_h = (proximity_lock_t *)lock_h;
 	int ret = sensor_listener_stop(proximity_h->sensor_listener);
 	if (ret != SENSOR_ERROR_NONE) {
 		err("sensor_listener_stop() failed(%d)", ret);
@@ -200,33 +206,37 @@ static void __callui_proximity_lock_manager_stop(proximity_lock_t *proximity_h)
 	proximity_h->state = PLM_LCD_NONE;
 }
 
-static bool __callui_proximity_lock_manager_is_started(proximity_lock_t *proximity_h)
+static bool __callui_proximity_lock_manager_is_started(void *lock_h)
 {
 	dbg("..");
-	CALLUI_RETURN_VALUE_IF_FAIL(proximity_h, false);
+	CALLUI_RETURN_VALUE_IF_FAIL(lock_h, false);
+	proximity_lock_t *proximity_h = (proximity_lock_t *)lock_h;
 	return proximity_h->is_started;
 }
 
-static void __callui_proximity_lock_manager_destroy(proximity_lock_t *proximity_h)
+static void __callui_proximity_lock_manager_destroy(void *lock_h)
 {
 	dbg("..");
-	CALLUI_RETURN_IF_FAIL(proximity_h);
+	CALLUI_RETURN_IF_FAIL(lock_h);
+	proximity_lock_t *proximity_h = (proximity_lock_t *)lock_h;
 	sensor_listener_unset_event_cb(proximity_h->sensor_listener);
 	sensor_destroy_listener(proximity_h->sensor_listener);
 	free(proximity_h);
 }
 
-static bool __callui_proximity_lock_manager_is_lcd_off(proximity_lock_t *proximity_h)
+static bool __callui_proximity_lock_manager_is_lcd_off(void *lock_h)
 {
 	dbg("..");
-	CALLUI_RETURN_VALUE_IF_FAIL(proximity_h, false);
+	CALLUI_RETURN_VALUE_IF_FAIL(lock_h, false);
+	proximity_lock_t *proximity_h = (proximity_lock_t *)lock_h;
 	return (proximity_h->state == PLM_LCD_OFF);
 }
 
-static void __callui_proximity_lock_manager_set_callback_on_unlock(proximity_lock_t *proximity_h, unlock_cb_t callback, void *data)
+static void __callui_proximity_lock_manager_set_callback_on_unlock(void *lock_h, unlock_cb_t callback, void *data)
 {
 	dbg("..");
-	CALLUI_RETURN_IF_FAIL(proximity_h || callback || data);
+	CALLUI_RETURN_IF_FAIL(lock_h || callback || data);
+	proximity_lock_t *proximity_h = (proximity_lock_t *)lock_h;
 	proximity_h->unlock_cb = callback;
 	proximity_h->cb_data = data;
 }

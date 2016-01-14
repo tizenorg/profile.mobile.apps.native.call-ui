@@ -340,7 +340,10 @@ void _callui_keypad_show_layout(void *app_data)
 	__callui_keypad_set_show_status(EINA_TRUE);
 	/* change LCD timeout duration */
 	_callui_lock_manager_stop(ad->lock_handle);
+
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
 	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_KEYPAD_SET);
+#endif
 
 	eext_object_event_callback_add(view_ly, EEXT_CALLBACK_BACK, __callui_keypad_back_cb, ad);
 
@@ -366,7 +369,10 @@ void _callui_keypad_hide_layout(void *app_data)
 
 	__callui_keypad_set_show_status(EINA_FALSE);
 	_callui_lock_manager_start(ad->lock_handle);
+
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
 	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
+#endif
 
 	eext_object_event_callback_del(view_ly, EEXT_CALLBACK_BACK,	__callui_keypad_back_cb);
 

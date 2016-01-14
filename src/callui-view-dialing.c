@@ -87,8 +87,6 @@ static void __callui_view_dialing_draw_screen(callui_app_data_t *ad, Evas_Object
 	call_data_t *now_call_data = ad->active;
 	CALLUI_RETURN_IF_FAIL(now_call_data);
 	char *file_path = NULL;
-	char *sim_name = NULL;
-	char status_txt[128 + 1] = { '\0', };
 
 	call_view_data_t *q_vd = _callvm_get_call_view_data(ad, VIEW_QUICKPANEL_VIEW);
 

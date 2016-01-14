@@ -195,9 +195,12 @@ static void __callui_call_event_cb(cm_call_event_e call_event, cm_call_event_dat
 		__callui_update_all_call_data(ad, call_state_data);
 		_callui_common_create_duration_timer();
 		_callvm_view_auto_change(ad);
+
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
 		if (ad->speaker_status == EINA_TRUE) {
 			_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
 		}
+#endif
 		break;
 	case CM_CALL_EVENT_IDLE:
 		{
@@ -383,22 +386,14 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 	 *   - layout main
 	 *    - naviframe */
 
-	Evas_Object *eo =  (Evas_Object *)app_get_preinitialized_window(PACKAGE);
-
-	if (eo == NULL) {
-		dbg("Create window");
-		eo = elm_win_add(NULL, PACKAGE, ELM_WIN_BASIC);
-		elm_win_alpha_set(eo, EINA_TRUE);
-		elm_win_fullscreen_set(eo, EINA_FALSE);
-	} else {
-		dbg("Preinitialized window");
-	}
+	dbg("Create window");
+	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_BASIC);
+	elm_win_alpha_set(eo, EINA_TRUE);
+	elm_win_fullscreen_set(eo, EINA_FALSE);
 
 	if (eo) {
 		elm_win_title_set(eo, PACKAGE);
 		evas_object_smart_callback_add(eo, "delete,request", __callui_win_delete_request_cb, NULL);
-		elm_config_engine_set("software_x11");
-
 		elm_win_screen_size_get(eo, NULL, NULL, &ad->root_w, &ad->root_h);
 
 		dbg("root_w = %d, root_h = %d..", ad->root_w, ad->root_h);
@@ -410,23 +405,16 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 		elm_win_indicator_opacity_set(eo, ELM_WIN_INDICATOR_TRANSLUCENT);
 		elm_win_conformant_set(eo, EINA_TRUE);
 
-		ad->bg = (Evas_Object *)app_get_preinitialized_background();
-		if (!ad->bg) {
-			ad->bg = elm_bg_add(eo);
-		}
+		ad->bg = elm_bg_add(eo);
 		evas_object_size_hint_weight_set(eo, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_show(ad->bg);
 		elm_object_part_content_set(eo, "elm.swallow.bg", ad->bg);
 
-		ad->win_conformant = (Evas_Object *)app_get_preinitialized_conformant();
-		if (ad->win_conformant == NULL) {
-			ad->win_conformant = elm_conformant_add(eo);
-		}
+		ad->win_conformant = elm_conformant_add(eo);
 		elm_object_signal_emit(ad->win_conformant, "elm,state,indicator,overlap", "elm");
 		evas_object_size_hint_weight_set(ad->win_conformant, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		elm_win_resize_object_add(eo, ad->win_conformant);
 		evas_object_show(ad->win_conformant);
-
 	}
 
 	return eo;
@@ -601,7 +589,6 @@ static void _callui_app_resume(void *data)
 		ad->start_lock_manager_on_resume = false;
 		_callui_lock_manager_start(ad->lock_handle);
 	}
-	_callui_common_set_quickpanel_scrollable(EINA_TRUE);
 }
 
 static void _callui_app_service(app_control_h app_control, void *data)
