@@ -494,7 +494,6 @@ static bool _callui_app_create(void *data)
 	ad->lock_handle = _callui_lock_manager_create();
 
 	elm_theme_extension_add(NULL, CALL_THEME);
-	elm_theme_extension_add(NULL, CALL_GENLIST_THEME);
 
 	return true;
 }
