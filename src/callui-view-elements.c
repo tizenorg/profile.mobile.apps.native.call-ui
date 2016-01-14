@@ -1115,8 +1115,7 @@ void _callui_load_more_option(void *data)
 		Evas_Object *ctxpopup = NULL;
 
 		ctxpopup = elm_ctxpopup_add(ad->main_ly);
-		/* TODO: Should be uncommented when "more/default" style will be supported. */
-		/*elm_object_style_set(ctxpopup, "more/default");*/
+		elm_object_style_set(ctxpopup, "more/default");
 		elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
 		evas_object_smart_callback_add(ctxpopup, "dismissed", __callui_more_option_dismissed_cb, ad);
 		evas_object_event_callback_add(ctxpopup, EVAS_CALLBACK_DEL, __callui_more_option_delete_cb, ad);
