@@ -96,7 +96,6 @@ static void __callui_view_single_call_draw_screen(callui_app_data_t *ad, Evas_Ob
 	call_data_t *call_data = NULL;
 	char *file_path = NULL;
 	Eina_Bool is_held = EINA_FALSE;
-	char *sim_name = NULL;
 	char status_txt[128 + 1] = {0, };
 
 	if (ad->active) {

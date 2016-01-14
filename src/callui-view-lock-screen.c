@@ -60,7 +60,7 @@ static void __callui_lock_screen_stop_timer(lock_screen_data_t *lock_screen_priv
  * @param[in] lock_screen_handle      Lock screen
  *
  */
-static void __callui_lock_screen_delete_layout(lock_screen_data_t *lock_screen_handle);
+static void __callui_lock_screen_delete_layout(void *lock_h);
 
 /**
  * @brief Check if lock screen is shown
@@ -70,7 +70,7 @@ static void __callui_lock_screen_delete_layout(lock_screen_data_t *lock_screen_h
  * @return Lock screen state
  *
  */
-static bool __callui_lock_screen_is_lockscreen_shown(lock_screen_data_t *lock_screen_handle);
+static bool __callui_lock_screen_is_lockscreen_shown(void *lock_h);
 
 /**
  * @brief Show lock screen layout
@@ -87,11 +87,11 @@ static void __callui_lock_screen_show_layout(lock_screen_data_t *lock_screen_pri
  *
  */
 static void __callui_lock_screen_hide_layout(lock_screen_data_t *lock_screen_priv);
-static lock_screen_data_t *__callui_lock_screen_create();
-static void __callui_lock_screen_start(lock_screen_data_t *lock_screen_handle);
-static void __callui_lock_screen_stop(lock_screen_data_t *lock_screen_handle, bool force);
-static bool __callui_lock_screen_is_lcd_off(lock_screen_data_t *lock_screen_handle);
-static void __callui_lock_screen_set_callback_on_unlock(lock_screen_data_t *lock_screen_handle, unlock_cb_t callback){};
+static void *__callui_lock_screen_create();
+static void __callui_lock_screen_start(void *lock_h);
+static void __callui_lock_screen_stop(void *lock_h, bool force);
+static bool __callui_lock_screen_is_lcd_off(void *lock_h);
+static void __callui_lock_screen_set_callback_on_unlock(void *lock_h, unlock_cb_t callback, void* data){};
 
 static void __callui_lock_screen_show_layout(lock_screen_data_t *lock_screen_priv)
 {
@@ -110,13 +110,14 @@ static void __callui_lock_screen_show_layout(lock_screen_data_t *lock_screen_pri
 	evas_object_raise(lock_screen_priv->layout);
 	evas_object_show(lock_screen_priv->layout);
 
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
 	if (_callvm_get_top_view_id(ad->view_manager_handle) != VIEW_DIALLING_VIEW) {
 		dbg("lcd show");
 		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_LOCKSCREEN_SET);
 	}
+#endif
 
 	lock_screen_priv->is_locked = true;
-	_callui_common_set_quickpanel_scrollable(EINA_FALSE);
 	return;
 }
 
@@ -129,17 +130,14 @@ static void __callui_lock_screen_hide_layout(lock_screen_data_t *lock_screen_pri
 
 	evas_object_hide(lock_screen_priv->layout);
 	lock_screen_priv->is_locked = false;
+
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
 	if (_callvm_get_top_view_id(ad->view_manager_handle) != VIEW_DIALLING_VIEW) {
 		dbg("lcd hide");
 		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
 	}
+#endif
 
-	if (_callui_common_get_idle_lock_type() != LOCK_TYPE_UNLOCK) {
-		_callui_common_set_quickpanel_scrollable(EINA_FALSE);
-	} else {
-		_callui_common_set_quickpanel_scrollable(EINA_TRUE);
-	}
-	return;
 }
 
 static Evas_Object *__callui_lock_screen_create_contents(Evas_Object *parent, char *grpname)
@@ -258,10 +256,11 @@ static void __callui_lock_screen_stop_timer(lock_screen_data_t *lock_screen_priv
 	return;
 }
 
-static void __callui_lock_screen_delete_layout(lock_screen_data_t *lock_screen_handle)
+static void __callui_lock_screen_delete_layout(void *lock_h)
 {
 	dbg("lock screen delete!!");
-	CALLUI_RETURN_IF_FAIL(lock_screen_handle);
+	CALLUI_RETURN_IF_FAIL(lock_h);
+	lock_screen_data_t *lock_screen_handle = (lock_screen_data_t *)lock_h;
 	evas_object_del(lock_screen_handle->layout);
 	evas_object_del(lock_screen_handle->hit_rect);
 	if (lock_screen_handle->no_lock_timer) {
@@ -273,17 +272,17 @@ static void __callui_lock_screen_delete_layout(lock_screen_data_t *lock_screen_h
 	return;
 }
 
-static bool __callui_lock_screen_is_lockscreen_shown(lock_screen_data_t *lock_screen_handle)
+static bool __callui_lock_screen_is_lockscreen_shown(void *lock_h)
 {
 	dbg("..");
-	CALLUI_RETURN_VALUE_IF_FAIL(lock_screen_handle, false);
+	CALLUI_RETURN_VALUE_IF_FAIL(lock_h, false);
+	lock_screen_data_t *lock_screen_handle = (lock_screen_data_t *)lock_h;
 	return lock_screen_handle->is_locked;
 }
 
-static lock_screen_data_t *__callui_lock_screen_create()
+static void *__callui_lock_screen_create()
 {
-	lock_screen_data_t *lock_screen_handle;
-	lock_screen_handle = calloc(1, sizeof(lock_screen_data_t));
+	lock_screen_data_t *lock_screen_handle = calloc(1, sizeof(lock_screen_data_t));
 	CALLUI_RETURN_NULL_IF_FAIL(lock_screen_handle);
 	bool ret = __callui_lock_screen_create_layout(lock_screen_handle);
 	if (!ret) {
@@ -294,21 +293,23 @@ static lock_screen_data_t *__callui_lock_screen_create()
 	return lock_screen_handle;
 }
 
-static void __callui_lock_screen_start(lock_screen_data_t *lock_screen_handle)
+static void __callui_lock_screen_start(void *lock_h)
 {
-	CALLUI_RETURN_IF_FAIL(lock_screen_handle);
+	CALLUI_RETURN_IF_FAIL(lock_h);
+	lock_screen_data_t *lock_screen_handle = (lock_screen_data_t *)lock_h;
 	__callui_lock_screen_show_layout(lock_screen_handle);
 	__callui_lock_screen_start_timer(lock_screen_handle);
 }
 
-static void __callui_lock_screen_stop(lock_screen_data_t *lock_screen_handle, bool force)
+static void __callui_lock_screen_stop(void *lock_h, bool force)
 {
-	CALLUI_RETURN_IF_FAIL(lock_screen_handle);
+	CALLUI_RETURN_IF_FAIL(lock_h);
+	lock_screen_data_t *lock_screen_handle = (lock_screen_data_t *)lock_h;
 	__callui_lock_screen_hide_layout(lock_screen_handle);
 	__callui_lock_screen_stop_timer(lock_screen_handle);
 }
 
-static bool __callui_lock_screen_is_lcd_off(lock_screen_data_t *lock_screen_handle)
+static bool __callui_lock_screen_is_lcd_off(void *lock_h)
 {
 	return false;
 }

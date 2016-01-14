@@ -138,7 +138,7 @@ static void __vcui_endcall_update_contact_btn_cb(void *data, Evas_Object *obj, v
 	app_control_destroy(request);
 }
 
-static void __vcui_endcall_popup_back_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __vcui_endcall_popup_back_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	dbg("..");
 	callui_app_data_t *ad = (callui_app_data_t *)data;

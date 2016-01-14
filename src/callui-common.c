@@ -150,25 +150,6 @@ Eina_Bool _callui_common_is_earjack_connected(void)
 	return result;
 }
 
-void _callui_common_set_quickpanel_scrollable(Eina_Bool benable)
-{
-	callui_app_data_t *ad = _callui_get_app_data();
-	unsigned int val[3];
-
-	CALLUI_RETURN_IF_FAIL(ad);
-
-	if (benable) {
-		val[0] = 1;
-		val[1] = 1;
-		val[2] = 1;
-	} else {
-		val[0] = 0;
-		val[1] = 0;
-		val[2] = 0;
-	}
-
-}
-
 void _callui_common_create_duration_timer()
 {
 	dbg("_callui_common_create_duration_timer..");
@@ -210,7 +191,6 @@ static Eina_Bool __callui_common_ending_timer_blink_cb(void *data)
 {
 	dbg("__callui_common_ending_timer_blink_cb");
 	callui_app_data_t *ad = _callui_get_app_data();
-	call_view_data_t *vd = data;
 
 	if ((ad->blink_cnt % 2) == 0) {
 		_callui_show_caller_info_status(ad, _("IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"));
@@ -359,11 +339,10 @@ long _callui_common_get_uptime(void)
 void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
 {
 	dbg("_callui_common_win_set_noti_type");
-	Ecore_X_Window xwin;
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 
 	/* Get x-window */
-	xwin = elm_win_xwindow_get(ad->win);
+	//Ecore_X_Window xwin = elm_win_xwindow_get(ad->win);
 
 	if (bwin_noti == EINA_FALSE) {
 		dbg("window type: NORMAL");
@@ -573,7 +552,8 @@ void _callui_common_launch_msg_composer(void *appdata, char *number)
 		}
 
 		if (strlen(number) > 0) {
-			ret = app_control_add_extra_data_array(service, APP_CONTROL_DATA_TO, &number, 1);
+			const char *array[] = { number };
+			ret = app_control_add_extra_data_array(service, APP_CONTROL_DATA_TO, array, 1);
 			if (ret != APP_CONTROL_ERROR_NONE) {
 				warn("app_control_add_extra_data() return error : %d", ret);
 				ret = app_control_destroy(service);
@@ -652,6 +632,8 @@ callui_lcd_control_t _callui_common_get_lcd_state()
 	}
 }
 
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
+
 static int __callui_common_dvc_append_variant(DBusMessageIter *iter, const char *sig, char *param[])
 {
 	char *ch = NULL;
@@ -699,9 +681,9 @@ static int __callui_common_dvc_append_variant(DBusMessageIter *iter, const char 
 
 static void __callui_common_dvc_dbus_reply_cb(DBusPendingCall *call, gpointer user_data)
 {
-	// TODO DBus is not supported. Need to move on kdbus
+	//TODO DBus is not supported. Need to move on kdbus or gdbus
 
-	/*DBusMessage *reply;
+	DBusMessage *reply;
 	DBusError derr;
 
 	reply = dbus_pending_call_steal_reply(call);
@@ -716,7 +698,7 @@ static void __callui_common_dvc_dbus_reply_cb(DBusPendingCall *call, gpointer us
 	dbus_pending_call_unref(call);
 done:
 	dbg("__callui_common_dvc_dbus_reply_cb : -");
-	dbus_message_unref(reply);*/
+	dbus_message_unref(reply);
 }
 
 gboolean __callui_common_dvc_invoke_dbus_method_async(const char *dest,
@@ -724,9 +706,9 @@ gboolean __callui_common_dvc_invoke_dbus_method_async(const char *dest,
 		const char *interface,
 		const char *method, const char *sig, char *param[])
 {
-	// TODO DBus is not supported. Need to move on kdbus
+	// TODO DBus is not supported. Need to move on kdbus or gdbus
 
-	/*DBusConnection *conn = NULL;
+	DBusConnection *conn = NULL;
 	DBusMessage *msg = NULL;
 	DBusMessageIter iter;
 	DBusPendingCall *c = NULL;
@@ -761,8 +743,7 @@ EXIT:
 	dbus_message_unref(msg);
 
 	return ret;
-	return true;*/
-	return false;
+	return true;
 }
 
 void _callui_common_dvc_set_lcd_timeout(callui_lcd_timeout_t state)
@@ -811,6 +792,8 @@ void _callui_common_dvc_set_lcd_timeout(callui_lcd_timeout_t state)
 				DEVICED_INTERFACE_DISPLAY,
 				METHOD_SET_LCDTIMEOUT, "iii", ar);
 }
+
+#endif
 
 void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
 {
