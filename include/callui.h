@@ -87,7 +87,9 @@
 #endif
 
 #define CALLUI_TEXT_DOMAIN "call-ui"
-#define _(s)	dgettext(CALLUI_TEXT_DOMAIN, s)
+
+#undef _
+#define _(s) dgettext(CALLUI_TEXT_DOMAIN, s)
 
 #define GRP_MAIN_LY "main_ly"
 #define GRP_KEYPAD "keypad"

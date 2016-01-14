@@ -120,8 +120,9 @@ static void _fill_conference_layout(Evas_Object *parent, call_data_t *call_data)
 
 	elm_object_part_text_set(parent, PART_TEXT_MAIN, _("IDS_CALL_BODY_CONFERENCE"));
 
-	char buffer[BUF_SIZE] = {0};
-	snprintf(buffer, BUF_SIZE, _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"), call_data->member_count);
+	char buffer[BUF_SIZE] = { 0 };
+	const char *fmt = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
+	snprintf(buffer, BUF_SIZE, fmt, call_data->member_count);
 	elm_object_part_text_set(parent, PART_TEXT_SUB, buffer);
 }
 

@@ -375,11 +375,14 @@ static int __callui_view_incoming_lock_ondestroy(call_view_data_t *vd)
 	callui_app_data_t *ad = _callui_get_app_data();
 	incoming_lock_view_priv_t *priv = (incoming_lock_view_priv_t *)vd->priv;
 
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
 	/* Set LCD timeout for call state */
 	/* LCD is alwasy on during incoming call screen */
 	if (ad->speaker_status == EINA_TRUE) {
 		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
 	}
+#endif
+
 	_callui_common_win_set_noti_type(ad, EINA_FALSE);
 	if (priv != NULL) {
 		if (priv->lock_accept) {
