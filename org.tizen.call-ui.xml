@@ -17,5 +17,7 @@
 		<privilege>http://tizen.org/privilege/contact.read</privilege>
 		<privilege>http://tizen.org/privilege/notification</privilege>
 		<privilege>http://tizen.org/privilege/display</privilege>
+		<privilege>http://tizen.org/privilege/message.read</privilege>
+		<privilege>http://tizen.org/privilege/message.write</privilege>
 	</privileges>
 </manifest>
