@@ -34,15 +34,15 @@
 #define CALLUI_LOG_TAG "CALLUI"
 #endif
 
-#define info(fmt,args...)   { __dlog_print(LOG_ID_MAIN, DLOG_INFO,  CALLUI_LOG_TAG, "<%s:%d> " fmt "\n", __func__, __LINE__, ##args); }
-#define dbg(fmt,args...)    { __dlog_print(LOG_ID_MAIN, DLOG_DEBUG, CALLUI_LOG_TAG, "<%s:%d> " fmt "\n", __func__, __LINE__, ##args); }
-#define warn(fmt,args...)   { __dlog_print(LOG_ID_MAIN, DLOG_WARN,  CALLUI_LOG_TAG, "<%s:%d> " fmt "\n", __func__, __LINE__, ##args); }
-#define err(fmt,args...)    { __dlog_print(LOG_ID_MAIN, DLOG_ERROR, CALLUI_LOG_TAG, "<%s:%d> " fmt "\n", __func__, __LINE__, ##args); }
-#define fatal(fmt,args...)  { __dlog_print(LOG_ID_MAIN, DLOG_FATAL, CALLUI_LOG_TAG, "<%s:%d> " fmt "\n", __func__, __LINE__, ##args); }
+#define info(fmt,args...)   { __dlog_print(LOG_ID_MAIN, DLOG_INFO,  CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
+#define dbg(fmt,args...)    { __dlog_print(LOG_ID_MAIN, DLOG_DEBUG, CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
+#define warn(fmt,args...)   { __dlog_print(LOG_ID_MAIN, DLOG_WARN,  CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
+#define err(fmt,args...)    { __dlog_print(LOG_ID_MAIN, DLOG_ERROR, CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
+#define fatal(fmt,args...)  { __dlog_print(LOG_ID_MAIN, DLOG_FATAL, CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
 
-#define sec_err(fmt, arg...) {SECURE_LOGE(CALLUI_LOG_TAG, "<%s:%d> " fmt"\n", __func__, __LINE__, ##arg); }
-#define sec_warn(fmt, arg...) {SECURE_LOGW(CALLUI_LOG_TAG, "<%s:%d> " fmt"\n", __func__, __LINE__, ##arg); }
-#define sec_dbg(fmt, arg...) {SECURE_LOGD(CALLUI_LOG_TAG, "<%s:%d> " fmt"\n", __func__, __LINE__, ##arg); }
+#define sec_err(fmt, arg...)  {SECURE_LOGE(CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##arg); }
+#define sec_warn(fmt, arg...) {SECURE_LOGW(CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##arg); }
+#define sec_dbg(fmt, arg...)  {SECURE_LOGD(CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##arg); }
 
 #ifndef CALLUI_RETURN_IF_FAIL
 #define CALLUI_RETURN_IF_FAIL(check_condition)	{\

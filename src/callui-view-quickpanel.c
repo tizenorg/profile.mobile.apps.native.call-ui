@@ -176,13 +176,13 @@ static void __callui_qp_spk_btn_cb(void *data, Evas_Object *obj, void *event_inf
 	if (ad->speaker_status == EINA_TRUE) {
 		ret = cm_speaker_off(ad->cm_handle);
 		if (ret != CM_ERROR_NONE) {
-			err("cm_speaker_off() is failed");
+			err("cm_speaker_off() is failed. ret[%d]", ret);
 			return;
 		}
 	} else {
 		ret = cm_speaker_on(ad->cm_handle);
 		if (ret != CM_ERROR_NONE) {
-			err("cm_speaker_off() is failed");
+			err("cm_speaker_on() is failed. ret[%d]", ret);
 			return;
 		}
 	}
