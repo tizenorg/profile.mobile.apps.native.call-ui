@@ -734,11 +734,6 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 		return 0;
 	}
 
-	if (elm_win_xwindow_get(ad->win) != ev->event_window) {
-		err("Event window is not main window. Ignore event");
-		return EINA_FALSE;
-	}
-
 	dbg("Top view(%d)", _callvm_get_top_view_id(ad->view_manager_handle));
 
 	/*power key case */
@@ -749,9 +744,10 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 		if (bpowerkey_enabled == EINA_TRUE && !_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 			if (_callvm_get_top_view_id(ad->view_manager_handle) == VIEW_DIALLING_VIEW) {
 				if (ad->active)
-				cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+					cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
 			} else if (_callvm_get_top_view_id(ad->view_manager_handle) == VIEW_INCOMING_LOCK_VIEW) {
-				/* ToDo: Stop Incoming ringtone alert to be implemented*/
+				if (ad->incom)
+					cm_end_call(ad->cm_handle, ad->incom->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
 			} else if ((_callvm_get_top_view_id(ad->view_manager_handle) == VIEW_INCALL_ONECALL_VIEW)
 						|| (_callvm_get_top_view_id(ad->view_manager_handle) == VIEW_INCALL_MULTICALL_CONF_VIEW)
 						|| (_callvm_get_top_view_id(ad->view_manager_handle) == VIEW_INCALL_MULTICALL_LIST_VIEW)) {
@@ -769,19 +765,6 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 			if (ad->incom && !ad->active && !ad->held) {
 				_callvm_view_change(VIEW_INCOMING_LOCK_VIEW, 0, NULL, ad);
 			}
-			/* ToDo: Stop Incoming ringtone alert to be implemented*/
-			/*
-			if (_callvm_get_top_view_id(ad->view_manager_handle) == VIEW_INCOMING_LOCK_VIEW) {
-				vcall_engine_stop_alert();
-				ad->bmute_ringtone = EINA_TRUE;
-			}
-			if ((TRUE == _vcui_is_security_lock()) || (_vcui_get_idle_lock_type() != CALL_UNLOCK)) {
-				Ecore_X_Window focus_win = ecore_x_window_focus_get();
-				if (ad->win_main!= NULL && focus_win == elm_win_xwindow_get(ad->win_main)) {
-					_vcui_app_win_set_noti_type(EINA_TRUE);
-					_vcui_view_common_set_quickpanel_scrollable(EINA_FALSE);
-				}
-			}*/
 		}
 	} else if (!strcmp(ev->keyname, CALLUI_KEY_MEDIA)) {
 		/* todo*/
@@ -829,14 +812,12 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 
 		} else {
 			// TODO Implement other way to verify focus window == current
+			//Ecore_X_Window focus_win = ecore_x_window_focus_get();
 			//if (ad->win != NULL && focus_win == elm_win_xwindow_get(ad->win)) {
 				/* ToDo: Use lock-screen interface to raise the home screen */
 				_callui_common_win_set_noti_type(ad, EINA_FALSE);
 				_callui_lock_manager_stop(ad->lock_handle);
 				ad->on_background = true;
-		/* todo: once quickpanel is implemented we have to enable this
-				_vcui_view_common_set_quickpanel_scrollable(EINA_TRUE);
-		 */
 			//}
 		}
 	} else if (!strcmp(ev->keyname, CALLUI_KEY_BACK)) {
@@ -876,11 +857,6 @@ static Eina_Bool __callui_app_win_hard_key_down_cb(void *data, int type, void *e
 
 	if (ev == NULL) {
 		err("ERROR!!! ========= Event is NULL!!!");
-		return EINA_FALSE;
-	}
-
-	if (elm_win_xwindow_get(ad->win) != ev->event_window) {
-		err("Event window is not main window. Ignore event");
 		return EINA_FALSE;
 	}
 

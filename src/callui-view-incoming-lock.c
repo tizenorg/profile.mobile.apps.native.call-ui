@@ -35,7 +35,7 @@
 #define CALLUI_CST_REJECT_MSG_GET	"cst_reject_msg_get"
 #define REJ_MSG_GENLIST_DATA "reject_msg_genlist_data"
 
-#define SAVE_C_CAST(type, value) ((type)(ptrdiff_t)value)
+#define SAFE_C_CAST(type, value) ((type)(ptrdiff_t)value)
 
 static int __callui_view_incoming_lock_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *appdata);
 static int __callui_view_incoming_lock_onupdate(call_view_data_t *view_data, void *update_data1);
@@ -263,7 +263,7 @@ static char *__callui_view_incoming_lock_reject_msg_gl_label_get_msg(void *data,
 	call_view_data_t *vd = (call_view_data_t *)evas_object_data_get(obj, REJ_MSG_GENLIST_DATA);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, NULL);
 
-	int index = SAVE_C_CAST(int, data);
+	int index = SAFE_C_CAST(int, data);
 	char *msg_str = NULL;
 
 	if (!strcmp(part, "elm.text")) {
@@ -283,7 +283,7 @@ static char *__callui_view_incoming_lock_reject_msg_gl_label_get_msg(void *data,
 static void __reject_msg_gl_sel_msg(void *data, Evas_Object *obj, void *event_info)
 {
 	dbg("..");
-	int index = SAVE_C_CAST(int, data);
+	int index = SAFE_C_CAST(int, data);
 	int ret = -1;
 	dbg("index: %d", index);
 	callui_app_data_t *ad = _callui_get_app_data();
@@ -325,8 +325,8 @@ Elm_Object_Item *_callui_view_incoming_lock_append_genlist_item(Evas_Object *msg
 {
 	Elm_Object_Item *item = NULL;
 	item = elm_genlist_item_append(msg_glist, itc_reject_msg,
-			SAVE_C_CAST(void *, index), NULL, ELM_GENLIST_ITEM_NONE,
-			__reject_msg_gl_sel_msg, SAVE_C_CAST(void *, index));
+			SAFE_C_CAST(void *, index), NULL, ELM_GENLIST_ITEM_NONE,
+			__reject_msg_gl_sel_msg, SAFE_C_CAST(void *, index));
 	return item;
 }
 
