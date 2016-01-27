@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Lisää yhteystietoihin"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Peruuta"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Luo yhteystieto"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Viesti"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Hätänumero"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Takaisin puheluun"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Lähetys epäonnistui."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Hylkää puhelu viestillä"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Vaihda"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Nronäpp."
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Bluetooth otetaan käyttöön, jotta voit siirtyä käyttämään Bluetooth-laitetta."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Ei vast. puh"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Lisävoimakkuutta ei voi ottaa käyttöön, kun kuulokkeet tai Bluetooth-kuulokemikrofoni on yhdistetty."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Lisävoimakkuutta ei voi ottaa käyttöön, kun kuulokkeet on yhdistetty."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Lisävoimakkuutta ei voi ottaa käyttöön, kun Bluetooth-kuulokemikrofoni on yhdistetty."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Soitetaan..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Vastaamaton puhelu"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Siirrä"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM-palvelut"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Jatka puhelua"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Lopeta neuvottelupuhelu"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Lopeta puhelu henkilön %s kanssa"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Lopeta kaikki käynnissä olevat puhelut"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Neuvottelupuhelu"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Poista laitteen lukitus kaksoisnapauttamalla lukon kuvaketta"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Käynnistä Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Vastaa puheluun"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Näytä yhteystiedot"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Päivitä nykyiset"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Kaiutin"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Jatka"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Hylkää"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Mykistä"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Hallinta"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Pitoon"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Yhteystiedot"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Luo lähetettävä viesti"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Puhelu"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Lisää puh."
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Vastaa"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "%d ihmisen kanssa"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Tuntematon"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "%s on asetettu pitoon"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Pidossa"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Ei viestejä"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Yhdistä"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Saapuva puhelu"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Akt. puhelu pitoon"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Lopeta aktiiviset puhelut (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Soitto kortilta %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Yhdistetty kortilta %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Yhdistetty"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Puhelu päättyi"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d pidossa"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Aseta %s pitoon"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Neuvottelu"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Palaa puhelunäyttöön"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Autom. hylätty puhelu"
+

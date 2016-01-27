@@ -56,7 +56,6 @@ mkdir -p %{_tmp_buld_dir}
 cd %{_tmp_buld_dir}
 
 cmake ../../ -DCMAKE_PKG_NAME=%{name} \
-        -DCMAKE_APP_DIR=%{APPDIR} \
         -DCMAKE_BIN_DIR=%{BINDIR} \
         -DCMAKE_RES_DIR=%{RESDIR} \
         -DCMAKE_SHARE_PACKAGES_DIR=%{PACKAGESDIR}
