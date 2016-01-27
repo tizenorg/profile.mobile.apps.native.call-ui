@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "إضافة إلى جهات الاتصال"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "إلغاء"
+
+msgid "IDS_COM_SK_OK"
+msgstr "موافق"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "إنشاء جهة اتصال"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "رسالة"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "رقم الطوارئ"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "الرجوع إلى المكالمة"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "فشل الإرسال."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "رفض الاتصال مع رسالة"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "انتقال"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "لوحة المفاتيح"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "للتبديل إلى استخدام جهاز البلوتوث، سيتم تشغيل البلوتوث."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "مكالمات فائتة"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "لا يمكن تشغيل الصوت الإضافي أثناء توصيل سماعات الأذن أو سماعة الرأس البلوتوث."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "لا يمكن تشغيل الصوت الإضافي أثناء توصيل سماعات الأذن."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "لا يمكن تشغيل الصوت الإضافي أثناء توصيل سماعة الرأس البلوتوث."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "جاري الاتصال..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "مكالمة فائتة"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "تحويل"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "الخدمات"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "استئناف المكالمة"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "إنهاء المكالمة الجماعية"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "إنهاء المكالمة مع %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "إنهاء كل المكالمات الحالية"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "مكالمة متعددة الأطراف"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "انقر نقراً مزدوجاً فوق رمز القفل لإلغاء قفل الجهاز"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "تشغيل البلوتوث"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "الرد على مكالمة"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "عرض تفاصيل جهة الاتصال"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "تحديث الموجود"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "مكبر الصوت"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "استئناف"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "رفض"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "كتم"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "إدارة"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "تعليق"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "جهات الاتصال"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "إنشاء رسالة لإرسالها"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "اتصال"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "البلوتوث"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "إضافة مكالمة"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "قبول"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "مع %d من الأشخاص"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "غير معروف"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "تعليق الاتصال بـ %s"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "في انتظار"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "لا توجد رسائل"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "دمج"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "مكالمة واردة"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "تعليق مكالمة جارية"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "إنهاء المكالمات النشطة (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "جارٍ الاتصال عبر %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "متصلة عبر %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "تم الاتصال"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "تم إنهاء المكالمة"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d قيد التعليق"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "وضع %s قيد التعليق"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "اجتماع"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "العودة إلى شاشة الاتصال"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "مكالمة مرفوضة تلقائيا"
+

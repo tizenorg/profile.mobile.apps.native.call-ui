@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Lägg till i Kontakter"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Avbryt"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Skapa kontakt"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Meddelande"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Nummer för nödsituationer"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Tillbaka till samtal"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Sändningsfel."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Avvisa samtal med meddelande"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Växla"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Knappsats"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Om du växlar till att använda din Bluetooth-enhet, aktiveras Bluetooth."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Missade samtal"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Det går inte att slå på extra volym när hörlurar eller ett Bluetooth-headset har anslutits."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Det går inte att slå på extra volym när hörlurar är anslutna."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Det går inte att slå på extra volym när ett Bluetooth-headset är anslutet."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Ringer upp..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Missat samtal"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Överför"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM-tjänster"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Återuppta samtalet"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Avsluta konferenssamtal"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Avsluta samtal med %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Avsluta alla aktuella samtal"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Konferenssamtal"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Dubbeltryck på låsikonen om du vill låsa upp enheten"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Slå på Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Svara på samtal"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Visa kontaktinformation"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Uppdat. befintl."
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Högtalare"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Fortsätt"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Avvisa"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Ljud av"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Hantera"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Parkera"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Kontakter"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Skriv medd. som ska skickas"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Samtal"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "L t samtal"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Svara"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Med %d personer"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Okänd"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "Parkerar %s"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Parkerat"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Inga meddelanden"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Sammanfoga"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Inkommande samtal"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Parkera akt. samtal"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Avsluta aktiva samtal (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Ringer via %s ..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Ansluten via %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Ansluten"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Samtalet avslutades"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d park."
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Parkera %s"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferens"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Återgå till samtalsskärm"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Automatavvisat samtal"
+

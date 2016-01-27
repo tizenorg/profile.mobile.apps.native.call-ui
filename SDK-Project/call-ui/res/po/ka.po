@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "კონტაქტებში დამატება"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "გაუქმება"
+
+msgid "IDS_COM_SK_OK"
+msgstr "კი"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "კონტაქტის შექმნა"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "შეტყობინება"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "გადაუდებელი ზარის ნომრები"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "ზარზე დაბრუნება"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "ვერ გაიგზავნა."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "ზარის უარყოფა შეტყობინებით"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "გადართვა"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "კლავიატ."
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Bluetooth აპარატის გამოყენებაზე გადართვისას Bluetooth ჩაირთვება."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "გამორჩენილი ზარები"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "ხმის დამატებითი სიმაღლე ვერ ჩაირთვება, სანამ მიერთებულია Bluetooth გარნიტურა ან ყურსასმენი."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "ხმის დამატებითი სიმაღლე ვერ ჩაირთვება, სანამ მიერთებულია ყურსასმენი."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "ხმის დამატებითი სიმაღლე ვერ ჩაირთვება, სანამ მიერთებულია Bluetooth გარნიტურა."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "იკრიფება..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "გამოტოვებული ზარი"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "გადაცემა"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM მომსახურება"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "ზარის გაგრძელება"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "საკონფერენციო ზარის დასრულება"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "ზარის დასრულება %s-თან"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "ყველა მიმდინარე ზარის დასრულება"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "კონფერენც-ზარი"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "მოწყობილობის განსაბლოკად ორჯერ შეეხეთ დაბლოკვის ნიშანს"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Bluetooth-ის ჩართვა"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "პასუხი ზარზე"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "იხ. საკონტაქტო მონაცემები"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "განახლდეს არსებ."
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "დინამ."
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "გაგრძელება"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "უარყოფა"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "უხმო"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "მართვა"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "დაკავება"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "კონტაქტები"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "შეადგინეთ გასაგზავნი წერილი"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "დარეკვა"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "ზარის დამ."
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "მიღება"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "%d ადამიანით"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "უცნობი"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "%s-ის დაკავება"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "დაკავებული"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "წერილები არ არის"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "გაერთიანება"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "შემოსული ზარი"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "აქტიური ზრ. დაკავება"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "აქტიური ზარების დასრულება (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "ირეკება %s-ით..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "კავშირი %s-ით"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "დაკავშირებული"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "ზარი დასრულდა"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d იცდის"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "გადადეთ %s"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "კონფერენცია"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "ზარის ეკრანზე დაბრუნება"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "ავტოუარყოფილი ზარი"
+

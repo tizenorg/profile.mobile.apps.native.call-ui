@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Toevoegen aan contacten"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Annuleren"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Contact toevoegen"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Bericht"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Alarmnummer"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Terug naar oproep"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Verzenden mislukt."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Oproep met bericht weigeren"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Wisselen"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Toetsenbord"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Als u wilt overschakelen naar uw Bluetooth-apparaat, wordt Bluetooth ingeschakeld."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Gemiste oproepen"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Extra volume kan niet worden ingeschakeld wanneer oortelefoons of Bluetooth-headset zijn aangesloten."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Extra volume kan niet worden ingeschakeld wanneer oortelefoons zijn aangesloten."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Extra volume kan niet worden ingeschakeld wanneer Bluetooth-headset is aangesloten."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Kiezen..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Gemiste oproep"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Doorverbinden"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM-diensten"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Oproep hervatten"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Einde vergaderoproep"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Oproep beëindigen met %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Alle huidige oproepen beëindigen"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Vergaderoproep"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Tik twee keer op het pictogram Vergrendelen om uw apparaat te ontgrendelen"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Bluetooth inschakelen"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Oproep aannemen"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Contactdetails weergeven"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Best. bijwerken"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Luidspreker"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Hervatten"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Weigeren"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Stil"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Beheren"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "In wacht"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Contacten"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Bericht schrijven en verzenden"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Bellen"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Nieuwe opr."
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Aannemen"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Met %d personen"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Onbekend"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "%s in de wacht zetten"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "In wacht"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Geen berichten"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Samenvoegen"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Inkomende oproep"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Huidige opr in wacht"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Actieve oproepen (%d) beëindigen"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Kiezen via %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Verbonden via %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Verbonden"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Oproep beëindigd"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d in wacht"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "%s in de wacht zetten"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Vergaderen"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Terug naar oproepscherm"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Autom geweigerde oproep"
+

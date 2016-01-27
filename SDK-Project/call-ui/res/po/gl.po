@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Engadir a Contactos"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Cancelar"
+
+msgid "IDS_COM_SK_OK"
+msgstr "Aceptar"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Crear contacto"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Mensaxe"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Número de urxencia"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Volver á chamada"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Erro de envío"
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Rexeitar chamada cunha mensaxe"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Cambiar"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Teclado"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Para cambiar a usar o dispositivo Bluetooth, o Bluetooth activarase."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Chamadas perdidas"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Non se pode activar Volume extra cos auriculares ou o auricular Bluetooth conectados."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Non se pode activar Volume extra cos auriculares conectados."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Non se pode activar Volume extra cos auriculares Bluetooth conectados."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Marcando..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Chamada perdida"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Transferir"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "Aplicacións SIM"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Continuar chamada"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Finalizar chamada de conferencia"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Finalizar chamada con %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Finalizar todas as chamadas actuais"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Multiconferencia"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Toca dúas veces na icona de bloqueo para desbloquear o dispositivo"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Activar o Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Responder chamada"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Ver detalles do contacto"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Actualizar exist"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Altof."
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Continuar"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Rexeitar"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Silenc."
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Xestionar"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "En esp."
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Contactos"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Redactar mensaxe para enviar"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Chamar"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Eng cham"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Aceptar"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Con %d persoas"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Descoñecido"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "Colocando a %s en espera"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "En espera"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Non hai mensaxes"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Fusionar"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Chamada entrante"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Manter chamada act."
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Finalizar chamadas activas (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Marcando con %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Conectado por %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Conectado"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Chamada finalizada"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d en esp."
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Poñer %s en espera"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Conferencia"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Volver á pantalla chamada"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Chamada rexeitada autom."
+

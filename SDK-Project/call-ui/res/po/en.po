@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Add to Contacts"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Cancel"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Create contact"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Message"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Emergency number"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Back to call"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Sending failed."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Reject call with message"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Swap"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Keypad"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "To switch to using your Bluetooth device, Bluetooth will be turned on."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Missed calls"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Extra volume cannot be turned on while earphones or Bluetooth headset connected."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Extra volume cannot be turned on while earphones connected."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Extra volume cannot be turned on while Bluetooth headset connected."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Dialling..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Missed call"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Transfer"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM services"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Resume call"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "End conference call"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "End call with %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "End all current calls"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Conference call"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Double tap the lock icon to unlock your device"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Turn on Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Answer call"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "View contact details"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Update existing"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Speaker"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Resume"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Reject"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Mute"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Manage"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Hold"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Contacts"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Compose message to send"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Call"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Add call"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Accept"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "With %d people"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Unknown"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "Putting %s on hold"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "On hold"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "No messages"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Merge"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Incoming call"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Hold active call"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "End active calls (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Dialling via %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Connected via %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Connected"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Call ended"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d on hold"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Put %s on hold"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Conference"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Return to call screen"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Auto rejected call"
+

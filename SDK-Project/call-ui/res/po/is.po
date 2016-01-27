@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Bæta við tengiliði"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Hætta við"
+
+msgid "IDS_COM_SK_OK"
+msgstr "Í lagi"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Nýr tengiliður"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Skilaboð"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Neyðarnúmer"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Aftur í símtal"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Sending mistókst."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Hafna símtali með skilaboðum"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Skipta"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Takkaborð"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Til að hægt sé að nota Bluetooth-tækið þitt verður kveikt á Bluetooth."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Ósvöruð símtöl"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Ekki er hægt að kveikja á auknum hljóðstyrk þegar heyrnartól eða Bluetooth-höfuðtól eru tengd."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Ekki er hægt að kveikja á auknum hljóðstyrk þegar heyrnartól eru tengd."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Ekki er hægt að kveikja á auknum hljóðstyrk þegar Bluetooth-höfuðtól eru tengd."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Verið er að hringja..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Ósvarað"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Flytja"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM-þjónusta"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Halda símtali áfram"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Ljúka símafundi"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Ljúka símtali við %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Ljúka öllum símtölum"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Símafundur"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Pikkaðu tvisvar á lástáknið til að taka tækið úr lás"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Kveikja á Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Svara símtali"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Skoða samskiptaupplýsingar"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Uppfæra"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Hátalari"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Halda áfr."
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Hafna"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Hljóð af"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Umsjón"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Setja í bið"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Símaskrá"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Skrifa skilaboð til að senda"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Símtal"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Símtal"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Samþykkja"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Með %d aðilum"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Óþekkt"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "Setja %s í bið"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Í bið"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Engin boð"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Sameina"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Móttekið símtal"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Virkt símtal í bið"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Ljúka símtali í gangi (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Hringt um %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Tengt gegnum %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Tengt"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Símtali lokið"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d í bið"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Setja %s í bið"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Símafundur"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Fara aftur á símtalsskjá"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Sjálfkrafa hafnað símtal"
+
