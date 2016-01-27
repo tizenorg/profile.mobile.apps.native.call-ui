@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Føj til kontakter"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Annullér"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Opret kontakt"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Besked"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Nødopkaldsnummer"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Tilbage til opkald"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Afsendelse mislykkedes."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Afvis opkald med besked"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Skift"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Tastatur"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Hvis du skifter til at bruge din Bluetooth-enhed, bliver Bluetooth aktiveret."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Ubesvarede opkald"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Ekstra lydstyrke kan ikke aktiveres, mens øretelefoner eller Bluetooth-headset er tilsluttet."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Ekstra lydstyrke kan ikke aktiveres, mens øretelefoner er tilsluttet."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Ekstra lydstyrke kan ikke aktiveres, mens Bluetooth-headset er tilsluttet."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Ringer op..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Ubesvaret opkald"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Overfør"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM-tjenester"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Genoptag samtale"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Afslut konferenceopkald"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Afslut opkald med %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Afslut alle aktuelle opkald"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Konferenceopkald"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Dobbelttryk på låseikonet for låse din enhed op"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Tænd for Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Besvar opkald"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Se kontaktdetaljer"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Opd. eksister."
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Højttaler"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Genoptag"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Afvis"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Lydløs"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Håndter"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Sæt på hold"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Kontakter"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Skriv den besked, du vil sende"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Opkald"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Tilf. opk."
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Besvar"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Med %d personer"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Ukendt"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "Sætter %s på hold"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "På hold"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Ingen meddelelser"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Flet"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Indgående opkald"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Hold aktivt opkald"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Afslut aktive opkald (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Ringer via %s ..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Forbundet via %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Forbundet"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Opkald afsluttet"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d på hold"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Sæt %s på hold"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konference"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Tilbage til opkaldsskærm"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Autoafviste opkald"
+

@@ -1,0 +1,541 @@
+/*
+ * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+images {
+	image: IMG_SRC_DIR/"call_ic_controll_01.png" COMP;
+	image: IMG_SRC_DIR/"call_multi_hold_bg.png" COMP;
+	image: IMG_SRC_DIR/"call_multi_hold_btn_merge_bg.png" COMP;
+	image: IMG_SRC_DIR/"call_multi_hold_btn_swap_bg.png" COMP;
+	image: IMG_SRC_DIR/"background.png" COMP;
+}
+
+styles {
+	style {
+		name: "ATO006";
+		base: "font="VC_FONT_REGULAR" font_size=56 color=#FFFAFAFF ellipsis=1.0";
+	}
+	style {
+		name: "ATO007";
+		base: "font="VC_FONT_REGULAR" font_size=34 color=#FFFAFAFF ellipsis=1.0";
+	}
+	style {
+		name: "ATO008";
+		base: "font="VC_FONT_REGULAR" font_size=27 color=#FFFAFAFF align=center";
+	}
+}
+
+#define MERGE_SWAP_BTN(NAME, BG_IMAGE, ICON, BG_COLOR, PRESSED_COLOR) \
+	group { \
+		name: NAME; \
+		images.image: ICON COMP; \
+		parts { \
+			part { \
+				name: "background"; \
+				type: IMAGE; \
+				scale: 1; \
+				description { \
+					state: "default" 0.0; \
+					image.normal: BG_IMAGE; \
+					color_class: BG_COLOR; \
+				} \
+				description { \
+					state: "pressed" 0.0; \
+					image.normal: BG_IMAGE; \
+					color_class: PRESSED_COLOR; \
+				} \
+			} \
+			part { \
+				name: "icon"; \
+				type: IMAGE; \
+				scale: 1; \
+				description { \
+					state: "default" 0.0; \
+					rel1.relative: MS_BTN_ICON_L MS_BTN_ICON_T; \
+					rel2.relative: MS_BTN_ICON_R MS_BTN_ICON_B; \
+					image.normal: ICON; \
+				} \
+			} \
+			part { \
+				name: PART_TEXT_MERGE_SWAP_BTN; \
+				type: TEXTBLOCK; \
+				scale: 1; \
+				description { \
+					state: "default" 0.0; \
+					rel1 { \
+						relative: 0.0 1.0; \
+						to_y: "icon"; \
+					} \
+					rel2.relative: 1.0 MS_BTN_TEXT_B; \
+					text { \
+						style: "ATO008"; \
+					} \
+				} \
+			} \
+		} \
+		programs { \
+			program { \
+				name: "pressed" ; \
+				signal: "mouse,down,*"; \
+				source: "*"; \
+				action: STATE_SET "pressed" 0.0; \
+				target: "background"; \
+			} \
+			program { \
+				name: "unpressed" ; \
+				signal: "mouse,up,*"; \
+				source: "*"; \
+				action: STATE_SET "default" 0.0; \
+				target: "background"; \
+			} \
+		} \
+	}
+
+group {
+	name: GROUP_ACTIVE_HOLD_INFO;
+	parts {
+		part {
+			name: "background";
+			type: IMAGE;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				image.normal: IMG_SRC_DIR/"call_multi_hold_bg.png";
+				color: 0 0 0 200;
+			}
+			description {
+				state: "transparent" 0.0;
+				image.normal: IMG_SRC_DIR/"call_multi_hold_bg.png";
+				color: 0 0 0 0;
+			}
+		}
+
+		part {
+			name: PART_TEXT_STATUS;
+			type: TEXTBLOCK;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1.relative: CALLER_INF_L CALLER_INF_STATUS_T;
+				rel2.relative: CALLER_INF_STATUS_R CALLER_INF_STATUS_B;
+				text {
+					align: 0.0 0.0;
+					style: "ATO007";
+				}
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_CALLER_ID;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				align: 0.0 0.0;
+				rel1.relative: CALLER_INF_L CALLER_INF_ID_T;
+				rel2.relative: CALLER_INF_ID_R CALLER_INF_ID_B;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part {
+			name: PART_TEXT_MAIN;
+			type: TEXTBLOCK;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1.relative: CALLER_INF_TEXT_L CALLER_INF_ID_T;
+				text {
+					align: 0.0 0.0;
+					style: "ATO006";
+				}
+			}
+		}
+
+		part {
+			name: PART_TEXT_SUB;
+			type: TEXTBLOCK;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1.relative: CALLER_INF_TEXT_L CALLER_INF_SUBTEXT_T;
+				text {
+					align: 0.0 0.0;
+					style: "ATO007";
+				}
+			}
+		}
+
+		part {
+			name: "arrow";
+			type: IMAGE;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				visible: 0;
+				rel1.relative: ARROW_L ARROW_T;
+				rel2.relative: ARROW_R ARROW_B;
+				image.normal: IMG_SRC_DIR/"call_ic_controll_01.png";
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+			}
+			description {
+				state: "pressed" 0.0;
+				inherit: "show" 0.0;
+				color_class: "pressed";
+			}
+		}
+	}
+	programs{
+		program {
+			name: "set_transparent_background";
+			signal: SIGNAL_SET_TRANSPARENT_BACKGROUND;
+			action: STATE_SET "transparent" 0.0;
+			target: "background";
+		}
+		program {
+			name: "set_blurred_background";
+			signal: SIGNAL_SET_BLURRED_BACKGROUND;
+			action: STATE_SET "default" 0.0;
+			target: "background";
+		}
+		program {
+			name: "show_arrow";
+			signal: SIGNAL_SHOW_ARROW;
+			action: STATE_SET "show" 0.0;
+			target: "arrow";
+		}
+		program {
+			name: "hide_arrow";
+			signal: SIGNAL_HIDE_ARROW;
+			action: STATE_SET "hide" 0.0;
+			target: "arrow";
+		}
+		program {
+			name: "arrow_pressed";
+			signal: "mouse,down,*";
+			source: "arrow";
+			action: STATE_SET "pressed" 0.0;
+			target: "arrow";
+		}
+		program {
+			name: "arrow_unpressed";
+			signal: "mouse,up,*";
+			source: "arrow";
+			action: STATE_SET "default" 0.0;
+			target: "arrow";
+		}
+	}
+}
+
+MERGE_SWAP_BTN(GROUP_MERGE_BTN, 
+	IMG_SRC_DIR/"call_multi_hold_btn_merge_bg.png", 
+	IMG_SRC_DIR/"call_extra_merge.png", 
+	IMG_SRC_DIR/"merge_btn_bg", "pressed")
+	
+MERGE_SWAP_BTN(GROUP_SWAP_BTN, 
+	IMG_SRC_DIR/"call_multi_hold_btn_swap_bg.png", 
+	IMG_SRC_DIR/"call_extra_swap.png", 
+	IMG_SRC_DIR/"swap_btn_bg", "pressed")
+
+group {
+	name: GROUP_BTN_REGION;
+	parts {
+		part {
+			name: "background";
+			type: RECT;
+			description {
+				state: "default" 0.0;
+				color: 0 0 0 0;
+			}
+		}
+		part {
+			name: PART_TOP_FIRST_BTN;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.0 0.0;
+				rel2.relative: 0.33 0.5;
+			}
+		}
+		part {
+			name: PART_TOP_SECOND_BTN;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.33 0.0;
+				rel2.relative: 0.66 0.5;
+			}
+		}
+		part {
+			name: PART_TOP_THIRD_BTN;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.66 0.0;
+				rel2.relative: 1.0 0.5;
+			}
+		}
+		part {
+			name: PART_BOTTOM_FIRST_BTN;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.0 0.5;
+				rel2.relative: 0.33 1.0;
+			}
+		}
+		part {
+			name: PART_BOTTOM_SECOND_BTN;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.33 0.5;
+				rel2.relative: 0.66 1.0;
+			}
+		}
+		part {
+			name: PART_BOTTOM_THIRD_BTN;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.66 0.5;
+				rel2.relative: 1.0 1.0;
+			}
+		}
+	}
+}
+
+group {
+	name: GROUP_ACTION_PANEL;
+	parts {
+		part {
+			name: "background";
+			type: RECT;
+			description {
+				state: "default" 0.0;
+				color_class: "AO008";
+			}
+		}
+		part {
+			name: PART_END_BTN;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: END_BUTTON_L END_BUTTON_T;
+				rel2.relative: END_BUTTON_R END_BUTTON_B;
+			}
+		}
+	}
+}
+
+group {
+	name: GROUP_ONE_HOLD_IN_CONFERENCE;
+	parts {
+		part {
+			name: "background";
+			type: IMAGE;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				image.normal: IMG_SRC_DIR/"background.png";
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_HOLD_INFO;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: HOLD_LAYOUT_L HOLD_LAYOUT_T;
+				rel2.relative: HOLD_LAYOUT_R HOLD_LAYOUT_B;
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_MERGE;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: MERGE_BTN_L MERGE_SWAP_BTN_T;
+				rel2.relative: MERGE_BTN_R MERGE_SWAP_BTN_B;
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_SWAP;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: SWAP_BTN_L MERGE_SWAP_BTN_T;
+				rel2.relative: SWAP_BTN_R MERGE_SWAP_BTN_B;
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_ACTIVE_INFO;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: ACTIVE_INFO_L ACTIVE_INFO_T;
+				rel2.relative: ACTIVE_INFO_R ACTIVE_INFO_B;
+			}
+		}
+	}
+}
+
+group {
+	name: GROUP_SPLIT;
+	parts {
+			part {
+			name: "background";
+			type: IMAGE;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				image.normal: IMG_SRC_DIR/"background.png";
+			}
+		}
+		part {
+			name: PART_SWALLOW_BACKGROUND;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_CALL_INFO;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.0 0.0;
+				rel2.relative: 1.0 ONE_HOLD_B;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_BTN_REGION;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.0 SIX_BUTTON_LAYOUT_T;
+				rel2.relative: 1.0 SIX_BUTTON_LAYOUT_B;
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_TEXTBLOCK_AREA;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				visible: 0;
+				align: 0.5 0.0;
+				rel1 {
+					relative: 0.0 0.5;
+					to_y: PART_SWALLOW_CALL_INFO;
+				}
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_KEYPAD;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				visible: 0;
+				rel1.relative: 0.0 1.0;
+				rel2.relative: 1.0 2.0;
+			}
+			description {
+				state: "show" 0.0;
+				visible: 1;
+				rel1.relative: 0.0 0.0;
+				rel2 {
+					relative: 1.0 0.0;
+					to_y: PART_SWALLOW_ACTIONS_PANEL;
+				}
+			}
+		}
+
+		part {
+			name: PART_SWALLOW_ACTIONS_PANEL;
+			type: SWALLOW;
+			description {
+				state: "default" 0.0;
+				rel1 {
+					relative: 0.0 1.0;
+					to_y: PART_SWALLOW_BTN_REGION;
+				}
+				rel2.relative: 1.0 1.0;
+			}
+		}
+	}
+	programs {
+		program {
+			name: "show_keypad";
+			signal: "SHOW";
+			source: "KEYPAD_BTN";
+			action: STATE_SET "hide" 0.0;
+			target: PART_SWALLOW_CALL_INFO;
+			after: "show_entry";
+			after: "show_keypad_animation";
+		}
+
+		program { name: "hide_keypad";
+			signal: "HIDE";
+			source: "KEYPAD_BTN";
+			action: STATE_SET "default" 0.0;
+			transition: LINEAR 0.25;
+			target: PART_SWALLOW_KEYPAD;
+			target: PART_SWALLOW_CALL_INFO;
+			target: PART_SWALLOW_TEXTBLOCK_AREA;
+		}
+
+		program {
+			name: "show_keypad_animation";
+			action: STATE_SET "show" 0.0;
+			transition: LINEAR 0.25;
+			target: PART_SWALLOW_KEYPAD;
+		}
+
+		program {
+			name: "show_entry";
+			action: STATE_SET "show" 0.0;
+			target: PART_SWALLOW_TEXTBLOCK_AREA;
+		}
+	}
+}

@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Προσθήκη στις Επαφές"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Άκυρο"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Δημ/ργία επαφής"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Μήνυμα"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Αριθμός έκτακτης ανάγκης"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Επιστροφή στην κλήση"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Αποτυχία αποστολής."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Απόρριψη κλήσης με μήνυμα"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Εναλλ."
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Πληκτρολ."
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Για να κάνετε εναλλαγή στη χρήση τάση συσκευής Bluetooth, θα ενεργοποιηθεί το Bluetooth."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Αναπάντητες"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Δεν είναι δυνατή η ενεργοποίηση της επιπλέον έντασης όταν είναι συνδεδεμένα τα ακουστικά ή το σετ μικροφώνου-ακουστικών Bluetooth."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Δεν είναι δυνατή η ενεργοποίηση της επιπλέον έντασης όταν είναι συνδεδεμένα τα ακουστικά."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Δεν είναι δυνατή η ενεργοποίηση της επιπλέον έντασης όταν είναι συνδεδεμένο το σετ μικροφώνου-ακουστικών Bluetooth."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Κλήση..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Αναπάντητη κλήση"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Μεταφορά"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "Υπηρεσίες SIM"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Συνέχιση κλήσης"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Τερματισμός κλήσης συνδιάσκεψης"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Τερματισμός κλήσης με %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Τερματισμός όλων των τρεχουσών κλήσεων"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Τηλεφωνική συνδιάσκεψη"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Πατήστε δύο φορές το εικονίδιο κλειδώματος, για να ξεκλειδώσετε τη συσκευή σας"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Ενεργοποίηση Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Απάντηση κλήσης"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Προβολή στοιχείων επαφής"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Ενημ. υπαρχόντων"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Ηχείο"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Συνέχεια"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Απόρριψη"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Σίγαση"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Διαχείριση"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Αναμονή"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Επαφές"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Σύνταξη μηνύματος για αποστολή"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Κλήση"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Πρ. κλήσ."
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Αποδοχή"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Με %d άτομα"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Άγνωστο"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "Θέτοντας %s σε αναμονή"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Αναμονή"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Κανένα μήνυμα"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Συγχώνευση"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Εισερχόμενη κλήση"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Ενερ. κλήση σε κράτ."
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Τερματισμός ενεργών κλήσεων (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Κλήση μέσω %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Συνδέθηκε μέσω %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Συνδέθηκε"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "H κλήση τερματίστ."
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d σε ανα."
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Ενεργοποίηση αναμονής για %s"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Συνδιάσκεψη"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Επιστροφή στην οθ. κλήσης"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Αυτ. απόρριψη κλήσης"
+

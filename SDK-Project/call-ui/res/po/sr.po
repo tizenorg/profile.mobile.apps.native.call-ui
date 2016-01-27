@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Dodaj u kontakte"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Otkaži"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Kreiraj kontakt"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Poruka"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Broj za hitne pozive"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Povratak na poziv"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Slanje neuspešno."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Odbaci poziv uz slanje poruke"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Zameni"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Tastatura"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Za prelazak korišćenja Bluetooth uređaja, Bluetooth će biti uključen."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Propušteni pozivi"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Dodatna jačina zvuka ne može da se uključi dok su povezane slušalice ili Bluetooth slušalice."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Dodatna jačina zvuka ne može da se uključi dok su povezane slušalice."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Dodatna jačina zvuka ne može da se uključi dok su povezane Bluetooth slušalice."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Biranje..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Propušten poziv"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Prebaci"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "Usluge SIM kartice"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Nastavi poziv"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Prekini konferencijski poziv"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Prekini poziv sa osobom %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Prekini sve trenutne pozive"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Konferencijski poziv"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Dvaput kucni ikonu za zaključavanje da bi otključao/la uređaj"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Uključi Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Odgovori na poziv"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Prikaži detalje o kontaktu"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Ažur. postojeći"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Zvučnik"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Nastavi"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Odbaci"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Isklj.ton"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Upravljaj"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Čekanje"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Kontakti"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Sastavi poruku za slanje"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Poziv"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Dodaj poz."
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Prihvati"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Sa %d osobe/a"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Nepoznato"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "Stavljanje %s na čekanje"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Na ček."
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Nema poruka"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Preklopi"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Dolazni poziv"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Akt. poz. na čekanje"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Prekini aktivne pozive (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Biranje putem %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Povezan putem %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Povezano"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Poziv je završen"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "Čeka: %d"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Stavi osobu %s na čekanje"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferencija"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Vrati se na ekran poziva"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Automatski odbijeni poziv"
+

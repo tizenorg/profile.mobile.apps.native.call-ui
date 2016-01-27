@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Afegeix a Contactes"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Cancel"
+
+msgid "IDS_COM_SK_OK"
+msgstr "Acceptar"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Crea contacte"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Missatge"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Número d'emergència"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Torna a la trucada"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Error en enviar"
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Rebutjar trucada amb missatge"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Intercanviar"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Teclat"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Per canviar a utilitzar el seu dispositiu Bluetooth, s'activarà Bluetooth."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Trucades perdudes"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "El volum extra no es pot activar mentre els auriculars o els auriculars Bluetooth estan connectats."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "El volum extra no es pot activar mentre els auriculars estan connectats."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "El volum extra no es pot activar mentre els auriculars Bluetooth estan connectats."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Marcant..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Trucada perduda"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Transferir"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "Serveis SIM"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Reprendre trucada"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Finalitzar multiconferència"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Finalitzar trucada amb %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Finalitzar totes les trucades actuals"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Multiconferència"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Toqui dos cops la icona bloquejar per desbloquejar el dispositiu"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Activar el Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Respondre trucada"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Veure detalls del contacte"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Actual existents"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Altaveu"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Reprendre"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Rebutjar"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Silenci"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Gestionar"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Retenir"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Contactes"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Redactar missatge per enviar"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Trucar"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Af trucada"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Acceptar"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Amb %d persones"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Desconegut"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "Posant %s en espera"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Retinguda"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "No hi ha cap missatge"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Fusionar"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Trucada d'entrada"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Retenir truc activa"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Finalitzar les trucades actives (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Marcant amb %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Connectat amb %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Connectat"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Trucada finalitzada"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d en esp"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Posar %s en espera"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Conferència"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Tornar a pant de trucada"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Trucada rebutjada auto"
+

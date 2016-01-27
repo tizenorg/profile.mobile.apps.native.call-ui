@@ -1,0 +1,618 @@
+/*
+ * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+styles {
+	style {
+		name: "active_call_name";
+		base: "font=Tizen:style=Regular align=left font_size=40 color=#FFFFFF ellipsis=1.0";
+	}
+	style {
+		name: "active_call_number";
+		base: "font=Tizen:style=Regular align=left font_size=32 color=#FFFFFF ellipsis=1.0";
+	}
+}
+
+#define SPACE_NOTIFICATION 50
+#define REC_MAIN_INFO 144
+#define SPACE_ICON 23
+#define ICON_H 98
+#define SPACE_ICON_W 32
+#define REC_BUTTON_H 120
+#define BUTTON_H 78
+#define SWAP_BUTTON_Y 46
+#define MAIN_HEIGHT (SPACE_NOTIFICATION+REC_MAIN_INFO+REC_BUTTON_H+SWAP_BUTTON_Y)
+#define MAIN_HEIGHT_RECT_REJECT (REC_MAIN_INFO+REC_BUTTON_H+SPACE_NOTIFICATION+SPACE_NOTIFICATION)
+#define MAIN_HEIGHT_REJECT 1280
+#define MAIN_WIDTH 720
+#define SPACE_BUTTON 186
+#define SPACE_BETWEEN_BUTTONS 16
+#define SPACE_BUTTON_Y 21
+#define BUTTON_SIZE_X_LITTLE 208
+#define BUTTON_SIZE_X_BIG 320
+#define BUTTON_SIZE_Y 78
+#define NAME_SIZE 56
+#define NUMBER_SIZE 43
+#define BUTTON_RJ_MSG 20
+#define BUTTON_RJ_MSG_OFFSET 22
+#define ACTIVE_NOTIFICATION_SIZE_Y 320
+
+#define CONTACT_IMAGE_X0 (SPACE_ICON_W/MAIN_WIDTH)
+#define CONTACT_IMAGE_Y0 ((SPACE_NOTIFICATION+SPACE_ICON)/MAIN_HEIGHT)
+#define CONTACT_IMAGE_X1 ((SPACE_ICON_W+ICON_H)/MAIN_WIDTH)
+#define CONTACT_IMAGE_Y1 ((SPACE_NOTIFICATION+SPACE_ICON+ICON_H)/MAIN_HEIGHT)
+
+#define CONTACT_INFO_X0 (0.0)
+#define CONTACT_INFO_Y0 (0.0)
+#define CONTACT_INFO_X1 (1.0)
+#define CONTACT_INFO_Y1 ((MAIN_HEIGHT)/MAIN_HEIGHT)
+#define CONTACT_INFO_Y_REJECT ((MAIN_HEIGHT_RECT_REJECT)/MAIN_HEIGHT_REJECT)
+
+#define CONTACT_REJECT_MSG_X0 (0.0)
+#define CONTACT_REJECT_MSG_Y0 ((MAIN_HEIGHT_RECT_REJECT)/MAIN_HEIGHT_REJECT)
+#define CONTACT_REJECT_MSG_X1 (1.0)
+#define CONTACT_REJECT_MSG_Y1 (1.0)
+
+#define CONTACT_REJECT_MSG_BUTTON_X0 ((SPACE_ICON_W)/MAIN_WIDTH)
+#define CONTACT_REJECT_MSG_BUTTON_Y0 ((BUTTON_RJ_MSG)/(MAIN_HEIGHT_REJECT-MAIN_HEIGHT_RECT_REJECT))
+#define CONTACT_REJECT_MSG_BUTTON_X1 ((MAIN_WIDTH-SPACE_ICON_W)/MAIN_WIDTH)
+#define CONTACT_REJECT_MSG_BUTTON_Y1 ((BUTTON_RJ_MSG+BUTTON_H)/(MAIN_HEIGHT_REJECT-MAIN_HEIGHT_RECT_REJECT))
+
+#define CONTACT_REJECT_MSG_GENLIST_Y1 ((BUTTON_RJ_MSG+BUTTON_H+BUTTON_RJ_MSG_OFFSET)/(MAIN_HEIGHT_REJECT-MAIN_HEIGHT_RECT_REJECT))
+
+#define CONTACT_CALL_BTN_X0 ((SPACE_ICON_W)/MAIN_WIDTH)
+#define CONTACT_BTN_Y0 (SPACE_BUTTON/ACTIVE_NOTIFICATION_SIZE_Y)
+#define CONTACT_CALL_BTN_X1 ((SPACE_ICON_W+BUTTON_SIZE_X_LITTLE)/MAIN_WIDTH)
+#define CONTACT_BTN_Y1 ((SPACE_BUTTON+BUTTON_SIZE_Y)/ACTIVE_NOTIFICATION_SIZE_Y)
+
+#define CONTACT_CALL_BTN_BIG_X0 (SPACE_ICON_W/MAIN_WIDTH)
+#define CONTACT_CALL_BTN_BIG_Y0 CONTACT_BTN_Y0
+#define CONTACT_CALL_BTN_BIG_X1 ((SPACE_ICON_W+BUTTON_SIZE_X_BIG)/MAIN_WIDTH)
+#define CONTACT_CALL_BTN_BIG_Y1 CONTACT_BTN_Y1
+
+#define CONTACT_RJ_MSG_BTN_X0 ((SPACE_ICON_W+SPACE_BETWEEN_BUTTONS+BUTTON_SIZE_X_LITTLE)/MAIN_WIDTH)
+#define CONTACT_RJ_MSG_BTN_Y0 CONTACT_BTN_Y0
+#define CONTACT_RJ_MSG_BTN_X1 ((SPACE_ICON_W+SPACE_BETWEEN_BUTTONS+BUTTON_SIZE_X_LITTLE+BUTTON_SIZE_X_LITTLE)/MAIN_WIDTH)
+#define CONTACT_RJ_MSG_BTN_Y1 CONTACT_BTN_Y1
+
+#define CONTACT_END_BTN_X0 ((MAIN_WIDTH-SPACE_ICON_W-BUTTON_SIZE_X_LITTLE)/MAIN_WIDTH)
+#define CONTACT_END_BTN_Y0 CONTACT_BTN_Y0
+#define CONTACT_END_BTN_X1 ((MAIN_WIDTH-SPACE_ICON_W)/MAIN_WIDTH)
+#define CONTACT_END_BTN_Y1 CONTACT_BTN_Y1
+
+#define CONTACT_END_BTN_BIG_X0 ((MAIN_WIDTH-SPACE_ICON_W-BUTTON_SIZE_X_BIG)/MAIN_WIDTH)
+#define CONTACT_END_BTN_BIG_Y0 CONTACT_BTN_Y0
+#define CONTACT_END_BTN_BIG_X1 ((MAIN_WIDTH-SPACE_ICON_W)/MAIN_WIDTH)
+#define CONTACT_END_BTN_BIG_Y1 CONTACT_BTN_Y1
+
+#define SWAP_X0 (((MAIN_WIDTH/2)-SPACE_ICON)/MAIN_WIDTH)
+#define SWAP_Y0 ((MAIN_HEIGHT-SWAP_BUTTON_Y)/MAIN_HEIGHT)
+#define SWAP_X1 (((MAIN_WIDTH/2)+SPACE_ICON)/MAIN_WIDTH)
+#define SWAP_Y1 1.0
+
+#define CONTACT_NAME_X0 ((SPACE_ICON_W+ICON_H+SPACE_BETWEEN_BUTTONS)/MAIN_WIDTH)
+#define CONTACT_NAME_Y0 ((SPACE_NOTIFICATION+SPACE_ICON)/MAIN_HEIGHT)
+#define CONTACT_NAME_X1 (1.0)
+#define CONTACT_NAME_Y1 ((SPACE_NOTIFICATION+SPACE_ICON+NAME_SIZE)/MAIN_HEIGHT)
+
+#define CONTACT_NUMBER_X0 ((SPACE_ICON_W+ICON_H+SPACE_BETWEEN_BUTTONS)/MAIN_WIDTH)
+#define CONTACT_NUMBER_Y0 ((SPACE_NOTIFICATION+SPACE_ICON+NAME_SIZE)/MAIN_HEIGHT)
+#define CONTACT_NUMBER_X1 (1.0)
+#define CONTACT_NUMBER_Y1 ((SPACE_NOTIFICATION+SPACE_ICON+NAME_SIZE+NUMBER_SIZE)/MAIN_HEIGHT)
+
+group {
+	name: "main_button_ly";
+	parts {
+		part { name: "image_bg";
+			type: IMAGE;
+			scale: 1;
+			description {
+				fixed: 1 1;
+				state: "default" 0.0;
+				image {
+				   normal: IMG_SRC_DIR/"button_edit_bg_new.png";
+				}
+				color: 0 0 0 54;
+			}
+			description {
+				state: "clicked" 0.0;
+				inherit: "default" 0.0;
+				color: 0 0 0 77;
+			}
+		}
+
+		part { name: "swallow.icon";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				fixed: 1 1;
+				state: "default" 0.0;
+				align: 0.5 0.5;
+				rel1 { relative: 0.0 0.0; to: "image_bg";}
+				rel2 { relative: 1.0 1.0; to: "image_bg";}
+			}
+		}
+	}
+	programs{
+		program { name: "button_unpress";
+			signal: "mouse,up,*";
+			source: "*";
+			action: STATE_SET "default" 0.0;
+			target: "image_bg";
+		}
+		program { name: "button_press";
+			signal: "mouse,down,*";
+			source: "*";
+			action: STATE_SET "clicked" 0.0;
+			target: "image_bg";
+		}
+	}
+}
+
+group {
+	name: "swipe_call_button_ly";
+	parts {
+		part { name: "swipe_call_button";
+			type: IMAGE;
+			scale: 1;
+			description {
+				fixed: 1 1;
+				state: "default" 0.0;
+				image {
+				   normal: IMG_SRC_DIR/"handler_btn_02.png";
+				}
+			}
+		}
+	}
+}
+
+group {
+	name: "reject_msg_ly";
+	parts {
+		part { name: "bg";
+			type: RECT;
+			scale: 1;
+			description {
+				fixed: 1 1;
+				state: "default" 0.0;
+				color: 255 255 255 255;
+				rel1 { relative: 0.0 0.0;}
+				rel2 { relative: 1.0 CONTACT_REJECT_MSG_GENLIST_Y1;}
+			}
+		}
+
+		part { name: "swallow.button";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				fixed: 1 1;
+				state: "default" 0.0;
+				rel1 { relative: CONTACT_REJECT_MSG_BUTTON_X0 CONTACT_REJECT_MSG_BUTTON_Y0;}
+				rel2 { relative: CONTACT_REJECT_MSG_BUTTON_X1 CONTACT_REJECT_MSG_BUTTON_Y1;}
+			}
+		}
+
+		part { name: "swallow.content";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				fixed: 1 1;
+				align: 0.0 0.0;
+				state: "default" 0.0;
+				rel1 { relative: 0.0 CONTACT_REJECT_MSG_GENLIST_Y1;}
+				rel2 { relative: 1.0 1.0;}
+			}
+		}
+	}
+}
+
+group {
+	name: "main_incoming_active_call";
+	parts {
+		part { name: "screen_bg";
+			type: RECT;
+			description {
+				fixed: 1 1;
+				visible: 1;
+				state: "default" 0.0;
+				color: 0 0 0 77;
+				rel1 { relative: 0.0 0.0;}
+				rel2 { relative: 1.0 CONTACT_INFO_Y1;}
+			}
+		}
+
+		part { name: "bg";
+			type: RECT;
+			description {
+				fixed: 1 1;
+				visible: 1;
+				state: "default" 0.0;
+				color: 61 185 204 255;
+				rel1 { relative: 0.0 0.0; }
+				rel2 { relative: 1.0 CONTACT_INFO_Y1;}
+			}
+			description {
+				state: "small" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: 0.0 0.0;}
+				rel2 { relative: 1.0 CONTACT_INFO_Y1;}
+			}
+			description {
+				state: "big" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: 0.0 0.0;}
+				rel2 { relative: 1.0 CONTACT_INFO_Y_REJECT;}
+			}
+		}
+
+		part { name: "dim_bg";
+			type: RECT;
+			description {
+				fixed: 1 1;
+				visible: 1;
+				state: "default" 0.0;
+				color: 0 0 0 25;
+				rel1 { relative: 0.0 0.0; to: "bg";}
+				rel2 { relative: 1.0 1.0; to: "bg";}
+			}
+		}
+
+		part { name: "caller_id";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				fixed: 1 1;
+				aspect: 1 1;
+				aspect_preference: HORIZONTAL;
+				state: "default" 0.0;
+				color: 255 255 0 255;
+				rel1 { relative: CONTACT_IMAGE_X0 CONTACT_IMAGE_Y0; to: "bg";}
+				rel2 { relative: CONTACT_IMAGE_X1 CONTACT_IMAGE_Y1; to: "bg";}
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part { name: "swallow.reject_msg";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				fixed: 1 1;
+				state: "default" 0.0;
+				visible: 0;
+				rel1 { relative: CONTACT_REJECT_MSG_X0 CONTACT_REJECT_MSG_Y0;}
+				rel2 { relative: CONTACT_REJECT_MSG_X1 CONTACT_REJECT_MSG_Y1;}
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+		}
+
+		part {  name: "swallow.swipe_button";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				visible: 1;
+				fixed: 1 1;
+				rel1 { relative: SWAP_X0 SWAP_Y0; to: "bg";}
+				rel2 { relative: SWAP_X1 SWAP_Y1; to: "bg";}
+				aspect_preference: SOURCE;
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part {  name: "caller_id_mask";
+			type: IMAGE;
+			scale: 1;
+			description {
+				visible: 0;
+				fixed: 1 1;
+				aspect: 1 1;
+				aspect_preference: HORIZONTAL;
+				rel1 { relative: CONTACT_IMAGE_X0 CONTACT_IMAGE_Y0; to: "bg";}
+				rel2 { relative: CONTACT_IMAGE_X1 CONTACT_IMAGE_Y1; to: "bg";}
+				image {
+					normal: IMG_SRC_DIR/"call_photo_id_mask.png";
+				}
+				aspect_preference: SOURCE;
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part {  name: "caller_id_default";
+			type: IMAGE;
+			scale: 1;
+			description {
+				visible: 0;
+				fixed: 1 1;
+				aspect: 1 1;
+				aspect_preference: HORIZONTAL;
+				rel1 { relative: 0.0 0.0; to: "caller_id_mask";}
+				rel2 { relative: 1.0 1.0; to: "caller_id_mask";}
+				image {
+					normal: IMG_SRC_DIR/"call_photo_id.png";
+				}
+				aspect_preference: SOURCE;
+				color_class: "AO001";
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part { name: "text.contact_name";
+			type: TEXTBLOCK;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				fixed: 1 1;
+				rel1 { relative: CONTACT_NAME_X0 CONTACT_NAME_Y0; to: "bg";}
+				rel2 { relative: CONTACT_NAME_X1 CONTACT_NAME_Y1; to: "bg";}
+				align: 0.0 0.5;
+				text {
+					ellipsis: 0.0;
+					fit: 0 1;
+					style:"active_call_name";
+				}
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part { name: "text.contact_number";
+			type: TEXTBLOCK;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				fixed: 1 1;
+				rel1 { relative: CONTACT_NUMBER_X0 CONTACT_NUMBER_Y0; to: "bg";}
+				rel2 { relative: CONTACT_NUMBER_X1 CONTACT_NUMBER_Y1; to: "bg";}
+				align: 0.0 0.5;
+				text {
+					ellipsis: 1.0;
+					style:"active_call_number";
+				}
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part { name: "swallow.call_button";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				fixed: 1 1;
+				rel1 { relative: CONTACT_CALL_BTN_X0 CONTACT_BTN_Y0; to: "bg";}
+				rel2 { relative: CONTACT_CALL_BTN_X1 CONTACT_BTN_Y1; to: "bg";}
+				color: 255 0 0 255;
+			}
+			description {
+				state: "big" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: CONTACT_CALL_BTN_BIG_X0 CONTACT_CALL_BTN_BIG_Y0; to: "bg";}
+				rel2 { relative: CONTACT_CALL_BTN_BIG_X1 CONTACT_CALL_BTN_BIG_Y1; to: "bg";}
+			}
+			description {
+				state: "small" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: CONTACT_CALL_BTN_X0 CONTACT_BTN_Y0; to: "bg";}
+				rel2 { relative: CONTACT_CALL_BTN_X1 CONTACT_BTN_Y1; to: "bg";}
+			}
+		}
+
+		part { name: "swallow.rj_msg_button";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				fixed: 1 1;
+				visible: 0;
+				rel1 { relative: CONTACT_RJ_MSG_BTN_X0 CONTACT_RJ_MSG_BTN_Y0; to: "bg";}
+				rel2 { relative: CONTACT_RJ_MSG_BTN_X1 CONTACT_RJ_MSG_BTN_Y1; to: "bg";}
+				color: 255 0 0 255;
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part { name: "swallow.end_call_button";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				fixed: 1 1;
+				rel1 { relative: CONTACT_END_BTN_X0 CONTACT_BTN_Y0; to: "bg";}
+				rel2 { relative: CONTACT_END_BTN_X1 CONTACT_BTN_Y1; to: "bg";}
+				color: 255 0 0 255;
+			}
+			description {
+				state: "big" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: CONTACT_END_BTN_X0 CONTACT_BTN_Y0; to: "bg";}
+				rel2 { relative: CONTACT_END_BTN_X1 CONTACT_BTN_Y1; to: "bg";}
+			}
+			description {
+				state: "small" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: CONTACT_END_BTN_X0 CONTACT_BTN_Y0; to: "bg";}
+				rel2 { relative: CONTACT_END_BTN_X1 CONTACT_BTN_Y1; to: "bg";}
+			}
+		}
+	}
+
+	programs{
+		program {
+			name: "show_image";
+			signal: "show_image";
+			source: "main_incoming_active_call";
+			action: STATE_SET "show" 0.0;
+			target: "caller_id_mask";
+			target: "caller_id_default";
+		}
+		program {
+			name: "hide_image";
+			signal: "hide_image";
+			source: "main_incoming_active_call";
+			action: STATE_SET "hide" 0.0;
+			target: "caller_id_mask";
+			target: "caller_id_default";
+		}
+		program {
+			name: "small_main_ly";
+			signal: "small_main_ly";
+			source: "main_incoming_active_call";
+			action: STATE_SET "small" 0.0;
+			target: "bg";
+			after: "hide_reject_msg";
+			after: "show_swipe_call";
+		}
+		program {
+			name: "show_reject_msg";
+			signal: "show_reject_msg";
+			source: "main_incoming_active_call";
+			action: STATE_SET "show" 0.0;
+			target: "swallow.reject_msg";
+		}
+		program {
+			name: "hide_reject_msg";
+			signal: "hide_reject_msg";
+			source: "main_incoming_active_call";
+			action: STATE_SET "hide" 0.0;
+			target: "swallow.reject_msg";
+		}
+		program {
+			name: "big_main_ly";
+			signal: "big_main_ly";
+			source: "main_incoming_active_call";
+			action: STATE_SET "big" 0.0;
+			target: "bg";
+			after: "show_reject_msg";
+			after: "hide_swipe_call";
+		}
+		program {
+			name: "show_swipe_call";
+			signal: "show_swipe_call";
+			source: "main_incoming_active_call";
+			action: STATE_SET "show" 0.0;
+			target: "swallow.swipe_button";
+		}
+		program {
+			name: "hide_swipe_call";
+			signal: "hide_swipe_call";
+			source: "main_incoming_active_call";
+			action: STATE_SET "hide" 0.0;
+			target: "swallow.swipe_button";
+			after: "show_reject_msg";
+		}
+		program {
+			name: "big_buttons";
+			signal: "big_buttons";
+			source: "main_incoming_active_call";
+			action: STATE_SET "big" 0.0;
+			target: "swallow.call_button";
+			target: "swallow.end_call_button";
+			after: "hide_swallow.rj_msg_button";
+		}
+		program {
+			name: "hide_swallow.rj_msg_button";
+			signal: "hide_swallow.rj_msg_button";
+			source: "main_incoming_active_call";
+			action: STATE_SET "hide" 0.0;
+			target: "swallow.rj_msg_button";
+		}
+		program {
+			name: "small_buttons";
+			signal: "small_buttons";
+			source: "main_incoming_active_call";
+			action: STATE_SET "small" 0.0;
+			target: "swallow.call_button";
+			target: "swallow.end_call_button";
+			after: "show_swallow.rj_msg_button";
+		}
+		program {
+			name: "show_swallow.rj_msg_button";
+			signal: "show_swallow.rj_msg_button";
+			source: "main_incoming_active_call";
+			action: STATE_SET "show" 0.0;
+			target: "swallow.rj_msg_button";
+		}
+	}
+}
