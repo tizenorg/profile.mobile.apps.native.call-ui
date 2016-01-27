@@ -1,0 +1,29 @@
+/*
+ * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+#include "../../../inc/callui-view-elements-defines.h"
+#include "../callui-color-classes.h" 
+
+RESOURCE_IMAGE_WITH_MASK(GROUP_THUMBNAIL_186, IMG_SRC_DIR/"call_photo_id_bg.png", PART_SWALLOW_IMAGE)
+RESOURCE_IMAGE_WITH_MASK(GROUP_THUMBNAIL_98, IMG_SRC_DIR/"call_btn_circle_02.png", PART_SWALLOW_IMAGE)
+
+RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE(GROUP_DEFAULT_THUMBNAIL_98, IMG_SRC_DIR/"call_photo_id_98.png", IMG_SRC_DIR/"call_photo_id_bg.png", "AO001", "AO002")
+RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE(GROUP_DEFAULT_THUMBNAIL_186, IMG_SRC_DIR/"call_photo_id.png", IMG_SRC_DIR/"call_photo_id_bg.png", "AO001", "AO002")
+RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE(GROUP_DEFAULT_CONFERENCE_THUMBNAIL_186, IMG_SRC_DIR/"call_photo_id_conference.png", IMG_SRC_DIR/"call_photo_id_bg.png", "AO001", "AO002")
+
+RESOURCE_IMAGE_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_SPLIT, IMG_SRC_DIR/"call_btn_ic_split.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_split_bg", "btn_ic_split_bg_pressed")
+RESOURCE_IMAGE_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_END, IMG_SRC_DIR/"call_btn_ic_end.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_end_bg", "btn_ic_end_bg_pressed")

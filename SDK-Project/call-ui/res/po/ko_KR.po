@@ -1,0 +1,179 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "연락처에 추가"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "취소"
+
+msgid "IDS_COM_SK_OK"
+msgstr "확인"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "새 연락처 추가"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "메시지"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "긴급 전화번호"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "통화로 돌아가기"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "보내지 못하였습니다."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "메시지로 전화 거절"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "전환"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "키패드"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "블루투스 디바이스를 사용하려면 블루투스를 실행하세요."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "부재중 전화"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "이어폰 또는 블루투스 헤드셋이 연결된 경우 [추가 음량 높이기]를 실행할 수 없습니다."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "이어폰이 연결된 경우 [추가 음량 높이기]를 실행할 수 없습니다."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "블루투스 헤드셋이 연결된 경우 [추가 음량 높이기]를 실행할 수 없습니다."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "전화 연결 중..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "부재중 전화"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "상대방 전화 연결"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "SIM 서비스"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "다시 통화"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "컨퍼런스 콜 종료"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "%s 님의 통화 종료"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "모든 통화 종료"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "컨퍼런스 콜"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "디바이스 잠금을 해제하려면 잠금 아이콘을 두 번 누르세요"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "블루투스 실행"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "전화받기"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "연락처 상세정보 보기"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "기존 연락처에 추가"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "한뼘통화"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "계속"
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "거절"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "내 소리 차단"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "관리"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "대기"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "연락처"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "보낼 메시지 작성"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "통화"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "블루투스"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "통화 추가"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "통화"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "%d명과 함께 통화 중"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "번호정보 없음"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "%s 님의 통화 대기"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "대기 중"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "메시지가 없습니다"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "통합"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "수신전화"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "현재 통화 보류"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "현재 통화(%d) 종료"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "%s로 전화 연결 중..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "%s로 연결"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "연결됨"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "통화 종료"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "%d명 대기"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "%s 님의 통화 대기"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "컨퍼런스 콜"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "통화 화면으로 돌아가기"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "자동 거절된 전화"

@@ -1,5 +1,4 @@
 ### SDK IDE generated files and folder ###
-.*project
 .buildpath
 .sdb.devicemap
 .package-stamp
@@ -11,33 +10,21 @@ Makefile
 binaries
 build-stamp
 build_log
-##########################################
 
 ### Build scripts ###
 build*
 deploy*
-install.sh
-run.sh
-###########################################
 
 ### Etc ###
 *~
-.settings
 packages
-call-ui
 *.edj
-po/*.mo
-po/CMakeFiles/
-po/Makefile
-po/cmake_install.cmake
-*.exe
 *.log
 *.o
 *.os
 *.pyc
 *~
 CMakeCache.txt
-CMakeFiles/
 cmake_install.cmake
 cmake_tmp/
 configure-stamp
@@ -47,5 +34,5 @@ debugsources.list
 documentation.list
 install_manifest.txt
 TEMP_BUILD_DIR
-##############
+
 

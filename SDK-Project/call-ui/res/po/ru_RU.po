@@ -1,0 +1,180 @@
+msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
+msgstr "Добавить в Контакты"
+
+msgid "IDS_COM_SK_CANCEL"
+msgstr "Отмена"
+
+msgid "IDS_COM_SK_OK"
+msgstr "OK"
+
+msgid "IDS_COM_OPT_CREATE_CONTACT"
+msgstr "Создать контакт"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Сообщение"
+
+msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
+msgstr "Экстренная служба"
+
+msgid "IDS_COM_BODY_BACK_TO_CALL"
+msgstr "Вернуться к вызову"
+
+msgid "IDS_MSGC_POP_SENDINGFAILED"
+msgstr "Сбой при отправке."
+
+msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
+msgstr "Отклонить вызов и отправить SMS"
+
+msgid "IDS_CALL_SK_MULTICALL_SWAP"
+msgstr "Переключить"
+
+msgid "IDS_CALL_SK3_KEYPAD"
+msgstr "Клавиатура"
+
+msgid "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"
+msgstr "Для переключения на использование устройства Bluetooth будет включена функция Bluetooth."
+
+msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
+msgstr "Пропущенные"
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Невозможно использовать дополнительную громкость, если подключена гарнитура Bluetooth или наушники."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
+msgstr "Невозможно использовать дополнительную громкость, если подключены наушники."
+
+msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
+msgstr "Невозможно использовать дополнительную громкость, если подключена гарнитура Bluetooth."
+
+msgid "IDS_CALL_POP_DIALLING"
+msgstr "Вызов..."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Пропущенный вызов"
+
+msgid "IDS_CALL_OPT_TRANSFER"
+msgstr "Перевести"
+
+msgid "IDS_CALL_OPT_SIM_SERVICES"
+msgstr "Услуги SIM-карты"
+
+msgid "IDS_CALL_OPT_RESUME_CALL"
+msgstr "Возобновить вызов"
+
+msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
+msgstr "Завершить конференц-вызов"
+
+msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
+msgstr "Завершить вызов с %s"
+
+msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
+msgstr "Завершить все текущие вызовы"
+
+msgid "IDS_CALL_OPT_CONFERENCE_CALL"
+msgstr "Конференция"
+
+msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
+msgstr "Чтобы разблокировать устройство, дважды нажмите значок блокировки"
+
+msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
+msgstr "Включить Bluetooth"
+
+msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
+msgstr "Ответить на вызов"
+
+msgid "IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"
+msgstr "Просм. сведений о контакте"
+
+msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
+msgstr "Обновить контакт"
+
+msgid "IDS_CALL_BUTTON_SPEAKER"
+msgstr "Динамик"
+
+msgid "IDS_CALL_BUTTON_RESUME_ABB"
+msgstr "Возобнов."
+
+msgid "IDS_CALL_BUTTON_REJECT"
+msgstr "Отказ"
+
+msgid "IDS_CALL_BUTTON_MUTE_ABB"
+msgstr "Звук"
+
+msgid "IDS_CALL_BUTTON_MANAGE"
+msgstr "Функции"
+
+msgid "IDS_CALL_BUTTON_HOLD"
+msgstr "Удержать"
+
+msgid "IDS_CALL_BUTTON_CONTACTS"
+msgstr "Контакты"
+
+msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
+msgstr "Создать сообщение для отправки"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Вызов"
+
+msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
+msgstr "Bluetooth"
+
+msgid "IDS_CALL_BUTTON_ADD_CALL"
+msgstr "Доб. вызов"
+
+msgid "IDS_CALL_BUTTON_ACCEPT"
+msgstr "Принять"
+
+msgid "IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB"
+msgstr "Число участников: %d"
+
+msgid "IDS_CALL_BODY_UNKNOWN"
+msgstr "Неизвестно"
+
+msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
+msgstr "Помещение вызова %s на удержание"
+
+msgid "IDS_CALL_BODY_ON_HOLD_ABB"
+msgstr "Удержание"
+
+msgid "IDS_CALL_BODY_NO_MESSAGES"
+msgstr "Нет сообщений"
+
+msgid "IDS_CALL_BODY_MERGE_T_CALL"
+msgstr "Объединить"
+
+msgid "IDS_CALL_BODY_INCOMING_CALL"
+msgstr "Входящий вызов"
+
+msgid "IDS_CALL_BODY_HOLD_ACTIVE_CALL_ABB"
+msgstr "Удержать акт. вызов"
+
+msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
+msgstr "Завершить активные вызовы (%d)"
+
+msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
+msgstr "Вызов с %s..."
+
+msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
+msgstr "Подключен через %s"
+
+msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
+msgstr "Подключено"
+
+msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
+msgstr "Вызов завершен"
+
+msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
+msgstr "Удерж.: %d"
+
+msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
+msgstr "Поместить %s на удержание"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Конференция"
+
+msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
+msgstr "Возврат на экран вызова"
+
+msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
+msgstr "Автоотклоненный вызов"
+

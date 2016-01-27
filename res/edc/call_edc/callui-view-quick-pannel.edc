@@ -1,0 +1,418 @@
+/*
+ * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+#include "../callui-color-classes.h" 
+
+#define SCREEN_W 720
+#define SCREEN_H 172
+
+#define RECT_QP_W(x) ((x)/SCREEN_W)
+#define RECT_QP_H(y) ((y)/SCREEN_H)
+
+#define BUTTON_OFFSET 40
+#define TEXT_OFFSET 30
+#define BUTTON_OFFSET_LAST_W 32
+#define BUTTON_OFFSET_LAST_H 42
+#define BUTTON_SIZE 90
+#define IMAGE_SIZE 96
+#define TEXT_SIZE 98
+#define TEXT_NAME_SIZE 55
+
+#define RECT_QT_BUTTON_X0(x)(RECT_QP_W(SCREEN_W-((x*BUTTON_SIZE)+BUTTON_OFFSET_LAST_W+((x-1)*BUTTON_OFFSET))))
+#define RECT_QT_BUTTON_X1(x)(RECT_QP_W(SCREEN_W-((x*BUTTON_SIZE)+BUTTON_OFFSET_LAST_W+(x*BUTTON_OFFSET))))
+
+#define CALL_QUICKPANEL_TEXT_RECT_INCO_X0 RECT_QP_W(((2*BUTTON_OFFSET_LAST_W)+IMAGE_SIZE))
+#define CALL_QUICKPANEL_TEXT_RECT_INCO_Y0 RECT_QP_H(TEXT_OFFSET)
+#define CALL_QUICKPANEL_TEXT_RECT_INCO_X1 RECT_QT_BUTTON_X0(2)
+#define CALL_QUICKPANEL_TEXT_RECT_INCO_Y1 RECT_QP_H((SCREEN_H-BUTTON_OFFSET_LAST_H))
+
+#define CALL_QUICKPANEL_TEXT_RECT_DURING_X0 RECT_QP_W(BUTTON_OFFSET_LAST_W)
+#define CALL_QUICKPANEL_TEXT_RECT_DURING_X1 RECT_QT_BUTTON_X0(3)
+
+#define CALL_QUICKPANEL_CONTACT_IMAGE_X0 RECT_QP_W(BUTTON_OFFSET_LAST_W)
+#define CALL_QUICKPANEL_CONTACT_IMAGE_Y0 RECT_QP_H(TEXT_OFFSET)
+#define CALL_QUICKPANEL_CONTACT_IMAGE_X1 RECT_QP_W(BUTTON_OFFSET_LAST_W+IMAGE_SIZE)
+#define CALL_QUICKPANEL_CONTACT_IMAGE_Y1 RECT_QP_H((SCREEN_H-BUTTON_OFFSET_LAST_H))
+
+#define CALL_QUICKPANEL_CONTACT_NAME_X0 (0.0)
+#define CALL_QUICKPANEL_CONTACT_NAME_Y0 (0.0)
+#define CALL_QUICKPANEL_CONTACT_NAME_X1 (1.0)
+#define CALL_QUICKPANEL_CONTACT_NAME_Y1 (TEXT_NAME_SIZE/TEXT_SIZE)
+
+#define CALL_QUICKPANEL_TIMER_X0 (0.0)
+#define CALL_QUICKPANEL_TIMER_Y0 (TEXT_NAME_SIZE/TEXT_SIZE)
+#define CALL_QUICKPANEL_TIMER_X1 (1.0)
+#define CALL_QUICKPANEL_TIMER_Y1 (1.0)
+
+styles {
+	style {
+		name: "style_caller_name";
+		base: "font=Tizen:style=Regular font_size=40 color=#FFFFFF color_class="ATO005QP" align=left ellipsis=1.0 text_class=ATO005QP";
+	}
+	style {
+		name: "style_call_time";
+		base: "font=Tizen:style=Regular font_size=30 color=#FFFFFF color_class="ATO006QP" align=left ellipsis=1.0 text_class=ATO006QP";
+	}
+}
+
+#define SWALLOW_BUTTON(part_name, x0, x1, inco, duri, out, resume) \
+		part { name: part_name; \
+			type: SWALLOW; \
+			scale: 1; \
+			description { \
+				state: "default" 0.0; \
+				rel1 { relative: RECT_QT_BUTTON_X0(x0) RECT_QP_H(BUTTON_OFFSET); to: "background";} \
+				rel2 { relative: RECT_QT_BUTTON_X1(x1) RECT_QP_H((SCREEN_H - BUTTON_OFFSET_LAST_H)); to: "background";} \
+			} \
+			description { \
+				state: "incoming" 0.0; \
+				inherit: "default" 0.0; \
+				visible: inco; \
+			} \
+			description { \
+				state: "during" 0.0; \
+				inherit: "default" 0.0; \
+				visible: duri; \
+			} \
+			description { \
+				state: "outgoing" 0.0; \
+				inherit: "default" 0.0; \
+				visible: out; \
+			} \
+			description { \
+				state: "resume" 0.0; \
+				inherit: "default" 0.0; \
+				visible: resume; \
+			} \
+		} \
+
+group {
+	name: "quickpanel";
+
+	parts {
+		part { name: "background";
+			type: RECT;
+			description {
+				state: "default" 0.0;
+				color: COLOR_BG_ALPHA;
+			}
+		}
+
+		part { name: "txt_area";
+			type: SPACER;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1 { relative: CALL_QUICKPANEL_TEXT_RECT_INCO_X0 CALL_QUICKPANEL_TEXT_RECT_INCO_Y0; to: "background";}
+				rel2 { relative: CALL_QUICKPANEL_TEXT_RECT_INCO_X1 CALL_QUICKPANEL_TEXT_RECT_INCO_Y1;  to: "background";}
+			}
+			description {
+				state: "incoming" 0.0;
+				inherit: "default" 0.0;
+			}
+			description {
+				state: "during" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: CALL_QUICKPANEL_TEXT_RECT_DURING_X0 CALL_QUICKPANEL_TEXT_RECT_INCO_Y0; to: "background";}
+				rel2 { relative: CALL_QUICKPANEL_TEXT_RECT_DURING_X1 CALL_QUICKPANEL_TEXT_RECT_INCO_Y1;  to: "background";}
+			}
+			description {
+				state: "resume" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: CALL_QUICKPANEL_TEXT_RECT_DURING_X0 CALL_QUICKPANEL_TEXT_RECT_INCO_Y0; to: "background";}
+				rel2 { relative: CALL_QUICKPANEL_TEXT_RECT_DURING_X1 CALL_QUICKPANEL_TEXT_RECT_INCO_Y1;  to: "background";}
+			}
+			description {
+				state: "outgoing" 0.0;
+				inherit: "default" 0.0;
+			}
+		}
+
+		part { name: "swallow.speaker_button";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1 { relative: RECT_QT_BUTTON_X0(2) RECT_QP_H(BUTTON_OFFSET); to: "background";}
+				rel2 { relative: RECT_QT_BUTTON_X1(1) RECT_QP_H((SCREEN_H - BUTTON_OFFSET_LAST_H)); to: "background";}
+			}
+			description {
+				state: "incoming" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description {
+				state: "during" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "outgoing" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "resume" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: RECT_QT_BUTTON_X0(3) RECT_QP_H(BUTTON_OFFSET); to: "background";}
+				rel2 { relative: RECT_QT_BUTTON_X1(2) RECT_QP_H((SCREEN_H - BUTTON_OFFSET_LAST_H)); to: "background";}
+				visible: 1;
+			}
+		}
+
+		part { name: "txt_call_name";
+			type: TEXTBLOCK;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1 { relative: CALL_QUICKPANEL_CONTACT_NAME_X0 CALL_QUICKPANEL_CONTACT_NAME_Y0; to: "txt_area";}
+				rel2 { relative: CALL_QUICKPANEL_CONTACT_NAME_X1 CALL_QUICKPANEL_CONTACT_NAME_Y1; to: "txt_area";}
+				align: 0.0 0.5;
+				text {
+					ellipsis: 0.0;
+					fit: 0 1;
+					align: 0.0 0.5;
+					style: "style_caller_name";
+					text_class: ATO005QP;
+				}
+				color_class: "ATO005QP";
+			}
+		}
+
+		part { name: "txt_timer";
+			type: TEXTBLOCK;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1 { relative: CALL_QUICKPANEL_TIMER_X0 CALL_QUICKPANEL_TIMER_Y0; to: "txt_area";}
+				rel2 { relative: CALL_QUICKPANEL_TIMER_X1 CALL_QUICKPANEL_TIMER_Y1; to: "txt_area";}
+				fixed: 1 1;
+				text {
+					align: 0.0 0.5;
+					ellipsis: 1.0;
+					fit: 0 1;
+					style: "style_call_time";
+				}
+				color_class: "ATO006QP";
+			}
+		}
+
+		part { name: "caller_id";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				fixed: 1 1;
+				state: "default" 0.0;
+				rel1 { relative: CALL_QUICKPANEL_CONTACT_IMAGE_X0 CALL_QUICKPANEL_CONTACT_IMAGE_Y0;}
+				rel2 { relative: CALL_QUICKPANEL_CONTACT_IMAGE_X1 CALL_QUICKPANEL_CONTACT_IMAGE_Y1;}
+			}
+			description {
+				state: "incoming" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "during" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description {
+				state: "outgoing" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "resume" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part {  name: "caller_id_mask";
+			type: IMAGE;
+			scale: 1;
+			description {
+				visible: 0;
+				fixed: 1 1;
+				rel1 { relative: CALL_QUICKPANEL_CONTACT_IMAGE_X0 CALL_QUICKPANEL_CONTACT_IMAGE_Y0;}
+				rel2 { relative: CALL_QUICKPANEL_CONTACT_IMAGE_X1 CALL_QUICKPANEL_CONTACT_IMAGE_Y1;}
+				image {
+					normal: IMG_SRC_DIR/"call_photo_id_mask.png";
+				}
+				aspect_preference: SOURCE;
+			}
+			description {
+				state: "incoming" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "during" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description {
+				state: "outgoing" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "resume" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+
+		part {  name: "caller_id_img";
+			type: IMAGE;
+			scale: 1;
+			description {
+				visible: 0;
+				fixed: 1 1;
+				rel1 { relative: CALL_QUICKPANEL_CONTACT_IMAGE_X0 CALL_QUICKPANEL_CONTACT_IMAGE_Y0;}
+				rel2 { relative: CALL_QUICKPANEL_CONTACT_IMAGE_X1 CALL_QUICKPANEL_CONTACT_IMAGE_Y1;}
+				image {
+					normal: IMG_SRC_DIR/"call_photo_id.png";
+				}
+				aspect_preference: SOURCE;
+				color_class: "AO001";
+			}
+			description {
+				state: "incoming" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "during" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description {
+				state: "outgoing" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "resume" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+		SWALLOW_BUTTON("swallow.mute_button", 3, 2, 0, 1, 0, 0);
+		SWALLOW_BUTTON("swallow.resume_button", 2, 1, 0, 0, 0, 1);
+		SWALLOW_BUTTON("swallow.call_button", 2, 1, 1, 0, 0, 0);
+		SWALLOW_BUTTON("swallow.end_button", 1, 0, 1, 1, 1, 0);
+	}
+	programs{
+		program {
+			name: "resume_call";
+			signal: "resume_call";
+			source: "*";
+			action: STATE_SET "resume" 0.0;
+			target: "swallow.mute_button";
+			target: "swallow.speaker_button";
+			target: "swallow.call_button";
+			target: "swallow.resume_button";
+			target: "caller_id_img";
+			target: "caller_id_mask";
+			target: "caller_id";
+			target: "txt_area";
+		}
+		program {
+			name: "outgoing_call";
+			signal: "outgoing_call";
+			source: "*";
+			action: STATE_SET "outgoing" 0.0;
+			target: "swallow.mute_button";
+			target: "swallow.speaker_button";
+			target: "swallow.call_button";
+			target: "swallow.resume_button";
+			target: "txt_area";
+		}
+		program {
+			name: "incoming_call";
+			signal: "incoming_call";
+			source: "*";
+			action: STATE_SET "incoming" 0.0;
+			target: "swallow.mute_button";
+			target: "swallow.speaker_button";
+			target: "swallow.call_button";
+			target: "swallow.resume_button";
+			target: "txt_area";
+		}
+		program {
+			name: "during_call";
+			signal: "during_call";
+			source: "*";
+			action: STATE_SET "during" 0.0;
+			target: "swallow.mute_button";
+			target: "swallow.speaker_button";
+			target: "swallow.call_button";
+			target: "swallow.resume_button";
+			target: "caller_id_img";
+			target: "caller_id_mask";
+			target: "caller_id";
+			target: "txt_area";
+		}
+		program {
+			name: "show_image";
+			signal: "show_image";
+			source: "*";
+			action: STATE_SET "show" 0.0;
+			target: "caller_id_mask";
+			target: "caller_id_img";
+		}
+		program {
+			name: "hide_image";
+			signal: "hide_image";
+			source: "*";
+			action: STATE_SET "hide" 0.0;
+			target: "caller_id_mask";
+			target: "caller_id_img";
+		}
+	}
+}
