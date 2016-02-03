@@ -15,7 +15,7 @@
  *
  */
 
-#include "../../inc/callui-view-layout-wvga.h"
+#include "../../inc/callui-view-layout.h"
 #include "../edje_src/edc/callui-color-classes.edc"
 
 #define IMG_SOURCE_DIR "call_theme"
@@ -87,7 +87,7 @@
 					max: 244 41; \
 					fixed: 1 1; \
 					align: 0 0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			} \
 			part { \
@@ -239,7 +239,7 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			} \
 			part { name: "over3"; \
@@ -247,13 +247,13 @@
 				mouse_events: 1; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			} \
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -344,20 +344,6 @@
 		} \
 	}
 
-#define STYLE_INDICATOR_BG_COLOR(grp_name, r, g, b, op) \
-	group { \
-		name: "elm/bg/base/"grp_name; \
-		parts { \
-			part { name: "base"; \
-				type: RECT; \
-				description { \
-					state: "default" 0.0; \
-					color: r g b op; \
-				} \
-			} \
-		} \
-	}
-
 #define CIRCLE_BUTTON_STYLE(grp_name, bg_img, bg_press, img, img_press, img_w, img_h) \
 		group { name: "elm/button/base/"grp_name; \
 		data { \
@@ -380,7 +366,7 @@
 					min: 40 40; \
 					image { \
 						normal: bg_img; \
-						border: 0 0 0 0; \
+						border: COLOR_BG_ALPHA; \
 						border_scale: 1; \
 					} \
 					color_class: "AO023"; \
@@ -404,7 +390,7 @@
 					rel2.to : "button_image"; \
 					image { \
 						normal: bg_img; \
-						border: 0 0 0 0; \
+						border: COLOR_BG_ALPHA; \
 						border_scale: 1; \
 					} \
 				} \
@@ -466,20 +452,20 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			} \
 			part { name: "over3"; \
 				type: RECT; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			} \
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -620,20 +606,20 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			} \
 			part { name: "over3"; \
 				type: RECT; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			} \
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -726,7 +712,7 @@
 				scale: 1; \
 				description { state: "default" 0.0; \
 					visible: 1; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 				description { state: "clicked" 0.0; \
 					visible: 1; \
@@ -777,13 +763,13 @@
 				description { state: "disabled" 0.0; \
 					inherit: "default" 0.0; \
 					text { \
-						text_class: "ATO006"; \
+						text_class: "ATO005"; \
 					} \
 				} \
 				description { state: "disabled_visible" 0.0; \
 					inherit: "default" 0.0; \
 					text { \
-						text_class: "ATO006"; \
+						text_class: "ATO005"; \
 					} \
 					visible: 1; \
 				} \
@@ -798,7 +784,7 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -808,7 +794,7 @@
 				mouse_events: 1; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -816,7 +802,7 @@
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -954,7 +940,7 @@
 					max: STYLE_TXT_WIDTH STYLE_TXT_HEIGHT; \
 					color: 127 127 127 77; \
 					text { \
-						text_class: "ATO006"; \
+						text_class: "ATO005"; \
 						min: 0 1; \
 						align: 0.5 0.5; \
 					} \
@@ -985,7 +971,7 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -995,7 +981,7 @@
 				mouse_events: 1; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -1003,7 +989,7 @@
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -1115,7 +1101,7 @@
 				scale: 1; \
 				description { state: "default" 0.0; \
 					visible: 1; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 				description { state: "clicked" 0.0; \
 					visible: 1; \
@@ -1166,13 +1152,13 @@
 				description { state: "disabled" 0.0; \
 					inherit: "default" 0.0; \
 					text { \
-						text_class: "ATO006"; \
+						text_class: "ATO005"; \
 					} \
 				} \
 				description { state: "disabled_visible" 0.0; \
 					inherit: "default" 0.0; \
 					text { \
-						text_class: "ATO006"; \
+						text_class: "ATO005"; \
 					} \
 					visible: 1; \
 				} \
@@ -1200,7 +1186,7 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -1210,7 +1196,7 @@
 				mouse_events: 1; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -1218,7 +1204,7 @@
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -1330,7 +1316,7 @@
 				scale: 1; \
 				description { state: "default" 0.0; \
 					visible: 1; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 				description { state: "clicked" 0.0; \
 					visible: 1; \
@@ -1381,13 +1367,13 @@
 				description { state: "disabled" 0.0; \
 					inherit: "default" 0.0; \
 					text { \
-						text_class: "ATO006"; \
+						text_class: "ATO005"; \
 					} \
 				} \
 				description { state: "disabled_visible" 0.0; \
 					inherit: "default" 0.0; \
 					text { \
-						text_class: "ATO006"; \
+						text_class: "ATO005"; \
 					} \
 					visible: 1; \
 				} \
@@ -1415,7 +1401,7 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -1425,7 +1411,7 @@
 				mouse_events: 1; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -1433,7 +1419,7 @@
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -1572,7 +1558,7 @@
 					max: STYLE_TXT_WIDTH STYLE_TXT_HEIGHT; \
 					color_class: "ATO009D"; \
 					text { \
-						text_class: "ATO006"; \
+						text_class: "ATO005"; \
 						min: 0 1; \
 						align: 0.5 0.5; \
 					} \
@@ -1616,7 +1602,7 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -1626,7 +1612,7 @@
 				mouse_events: 1; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0.25 0.1; } \
 					rel2 { relative: 0.75 0.9; } \
 				} \
@@ -1634,7 +1620,7 @@
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -1745,7 +1731,7 @@
 				scale: 1; \
 				description { state: "default" 0.0; \
 					visible: 1; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 				description { state: "clicked" 0.0; \
 					visible: 1; \
@@ -1811,7 +1797,7 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0 0; } \
 					rel2 { relative: 1 1; } \
 				} \
@@ -1821,7 +1807,7 @@
 				mouse_events: 1; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0 0; } \
 					rel2 { relative: 1 1; } \
 				} \
@@ -1829,7 +1815,7 @@
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -1998,7 +1984,7 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0 0; } \
 					rel2 { relative: 1 1; } \
 				} \
@@ -2008,7 +1994,7 @@
 				mouse_events: 1; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					rel1 { relative: 0 0; } \
 					rel2 { relative: 1 1; } \
 				} \
@@ -2016,7 +2002,7 @@
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -2111,7 +2097,7 @@
 					min: min_x min_y; \
 					image { \
 						normal: img1; \
-						border: 0 0 0 0; \
+						border: COLOR_BG_ALPHA; \
 						border_scale: 1; \
 					} \
 				} \
@@ -2126,7 +2112,7 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 				description { state: "disabled" 0.0; \
 					inherit: "default" 0.0; \
@@ -2138,7 +2124,7 @@
 				mouse_events: 1; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 				description { state: "clicked" 0.0; \
 					inherit: "default" 0.0; \
@@ -2270,7 +2256,7 @@
 					rel2.to : "button_image"; \
 					image { \
 						normal: BG_IMG_PATH"/vc_toggle_focus.png"; \
-						border: 0 0 0 0; \
+						border: COLOR_BG_ALPHA; \
 						border_scale: 1; \
 					} \
 				} \
@@ -2304,20 +2290,20 @@
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			} \
 			part { name: "over3"; \
 				type: RECT; \
 				repeat_events: 1; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			} \
 			part { name: "disabler"; \
 				type: RECT; \
 				description { state: "default" 0.0; \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 					visible: 0; \
 				} \
 				description { state: "disabled" 0.0; \
@@ -2485,69 +2471,55 @@ collections {
 	    }
 	}
 
-
 ////////////// elm/button/base/default -disabled  //////////////////////////////////////////////
 //////This is disabled effect for buttons of Six buttons layout and disabled effect is when making MO call////
-	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_add", ICON_IMG_PATH"/call_button_add_call.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_keypad", ICON_IMG_PATH"/call_button_keypad.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_keypad_hide", ICON_IMG_PATH"/call_button_keypad.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_speaker", ICON_IMG_PATH"/call_button_speaker.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_mute", ICON_IMG_PATH"/call_button_mute.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_headset", ICON_IMG_PATH"/call_button_bluetooth.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_contacts", ICON_IMG_PATH"/call_button_contacts.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_extra_vol", ICON_IMG_PATH"/call_button_extra.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_add", ICON_IMG_PATH"/call_btn_addcall.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_keypad", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_keypad_hide", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_speaker", ICON_IMG_PATH"/call_btn_volume.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_mute", ICON_IMG_PATH"/call_btn_mute.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_headset", ICON_IMG_PATH"/call_btn_bluetooth.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_contacts", ICON_IMG_PATH"/call_btn_contacts.png", "AO008", 1, 1)
 
 ////////////// elm/button/base/default  //////////////////////////////////////////////
 //////This effect is for buttons of Six buttons layout when they are enabled//////
-	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_add", ICON_IMG_PATH"/call_button_add_call.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_keypad", ICON_IMG_PATH"/call_button_keypad.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_keypad_hide", ICON_IMG_PATH"/call_button_keypad.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_speaker", ICON_IMG_PATH"/call_button_speaker.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_speaker_on", ICON_IMG_PATH"/call_button_speaker.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_mute", ICON_IMG_PATH"/call_button_mute.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_mute_on", ICON_IMG_PATH"/call_button_mute.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_headset", ICON_IMG_PATH"/call_button_bluetooth.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_headset_on", ICON_IMG_PATH"/call_button_bluetooth.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_contacts", ICON_IMG_PATH"/call_button_contacts.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_extra_vol", ICON_IMG_PATH"/call_button_extra.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_extra_vol_on", ICON_IMG_PATH"/call_button_extra.png", "AO008", 1, 1)
-
-//	STYLE_CALL_SIX_BUTTON_PRESSED("style_call_sixbtn_keypad_pressed", ICON_IMG_PATH"/call_button_keypad.png", 1, 1);
+	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_add", ICON_IMG_PATH"/call_btn_addcall.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_keypad", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_keypad_hide", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_speaker", ICON_IMG_PATH"/call_btn_volume.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_speaker_on", ICON_IMG_PATH"/call_btn_volume.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_mute", ICON_IMG_PATH"/call_btn_mute.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_mute_on", ICON_IMG_PATH"/call_btn_mute.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_headset", ICON_IMG_PATH"/call_btn_bluetooth.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_headset_on", ICON_IMG_PATH"/call_btn_bluetooth.png", "AO008", 1, 1)
+	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_contacts", ICON_IMG_PATH"/call_btn_contacts.png", "AO008", 1, 1)
 
 ////////////// elm/button/base/style_call_icon_only_end  //////////////////////////////////////////////
 /////////////This style is for End button in quickpanel view//////////////////////////////////////////////////////////
 	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_end, "AO013", "AO013P", ICON_IMG_PATH"/icon_end_call.png", "ATO017", "ATO017");
 	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_call, "AO012P1", "AO012P", ICON_IMG_PATH"/icon_call.png", "ATO017", "ATO017");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_end_landscape, "AO013", "AO013P", ICON_IMG_PATH"/icon_end_call.png", "AO017", "ATO017");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_call_landscape, "AO012P1", "AO012P", ICON_IMG_PATH"/icon_call.png", "AO017", "ATO017");
 
 ////////////// elm/button/base/style_call_icon_only_qp_mute //////////////////////////////////////////////
 /////////////This style is for mute/unhold button in quickpanel view//////////////////////////////////////////////////////////
 	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_mute, "AO001", "AO014P", ICON_IMG_PATH"/icon_mic.png", "AO019", "AO019P");
 	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_mute_on, "AO001", "AO014P", ICON_IMG_PATH"/icon_mic.png", "AO018", "AO018P");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_mute_landscape, "AO001", "AO014P", ICON_IMG_PATH"/icon_mic.png", "AO019", "AO019P");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_mute_on_landscape, "AO001", "AO014P", ICON_IMG_PATH"/icon_mic.png", "AO018", "AO018P");
+
 ////////////// elm/button/base/style_call_icon_only_qp_speaker //////////////////////////////////////////////
 /////////////This style is for speaker/unhold button in quickpanel view//////////////////////////////////////////////////////////
 	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_speaker, "AO001", "AO014P", ICON_IMG_PATH"/icon_speaker.png", "AO019", "AO019P");
 	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_speaker_on, "AO001", "AO014P", ICON_IMG_PATH"/icon_speaker.png", "AO018", "AO018P");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_speaker_landscape, "AO001", "AO014P", ICON_IMG_PATH"/icon_speaker.png", "AO019", "AO019P");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_speaker_on_landscape, "AO001", "AO014P", ICON_IMG_PATH"/icon_speaker.png", "AO018", "AO018P");
+
 /////////////This style is for speaker/resume button in quickpanel view//////////////////////////////////////////////////////////
 	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_resume, "AO001", "AO014P", ICON_IMG_PATH"/call_btn_resume.png", "AO019", "AO019P");
 	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_resume_on, "AO001", "AO014P", ICON_IMG_PATH"/call_btn_resume.png", "AO018", "AO018P");
+
 ////////////// elm/button/base/text_only/call_end_grey  //////////////////////////////////////////////
 ///////////// This style is for add to contacts button in end call view//////////////////////////////
 	STYLE_CALL_END_CONTACT_BUTTONS("style_call_end_create_contact_button", "AO026L1", "AO026P", 15, 60, "AO049", 79, 30, "ATO008", 130, ICON_IMG_PATH"/call_btn_end_03.png")
 	STYLE_CALL_END_CONTACT_BUTTONS("style_call_end_update_contact_button", "AO026L2", "AO026P", 15, 60, "AO049", 79, 30, "ATO008", 130, ICON_IMG_PATH"/call_btn_end_02.png")
 	STYLE_CALL_END_CONTACT_BUTTONS("style_call_end_view_contact_button", "AO026L1", "AO026P", 15, 60, "AO049", 79, 30, "ATO008", 130, ICON_IMG_PATH"/call_btn_end_01.png")
-	STYLE_MERGE_SWAP_BUTTONS("style_call_merge_call_button", "AO022", "AO022P", 0, 60, "AO026", 60, 25, "ATO028", 98, ICON_IMG_PATH"/call_extra_merge.png")
-	STYLE_MERGE_SWAP_BUTTONS("style_call_swap_call_button", "AO022", "AO022P", 0, 60, "AO026", 60, 25, "ATO028", 98, ICON_IMG_PATH"/call_extra_swap.png")
 
 	//STYLE_CALL_END_CONTACT_BUTTONS("style_call_end_contact_button_ln", A026L1, ICON_IMG_PATH"/call_btn_end_01.png")
-
-	STYLE_INDICATOR_BG_COLOR("during_indicator", 94, 163, 10, 255);
-	STYLE_INDICATOR_BG_COLOR("ending_indicator", 224, 89, 37, 255);
 
 	group { name: "elm/layout/list/B/popup/sim_select";
 		parts {
@@ -2592,191 +2564,6 @@ collections {
 			}
 		}
 	}
-
-   group { name: "elm/slider/horizontal/indicator/default";
-           alias: "elm/slider/horizontal/indicator/disabled";
-           alias: "elm/slider/horizontal/indicator/tap_to_drag";
-      images {
-         image: BG_IMG_PATH"/vc_volume_slider_handle.png" COMP;
-         image: BG_IMG_PATH"/vc_volume_slider_handle_dim.png" COMP;
-         image: BG_IMG_PATH"/vc_volume_slider_handle_press.png" COMP;
-      }
-      parts {
-         part { name: "access";
-            type: RECT;
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               color: 0 0 0 0;
-            }
-         }
-         part { name: "button_events";
-            type: RECT;
-            mouse_events: 1;
-            scale: 1;
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               min: 2*SLIDER_INDICATOR_WIDTH_INC 1.5*SLIDER_INDICATOR_HEIGHT_INC;
-               aspect: 1.0 1.0;
-               aspect_preference: VERTICAL;
-               color: 0 0 0 0;
-            }
-            description { state: "disabled" 0.0;
-               inherit: "default" 0.0;
-               visible: 0;
-            }
-         }
-         part { name: "image_left_padding";
-            type: SPACER;
-            mouse_events: 0;
-            scale: 1;
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               min: SLIDER_INDICATOR_IMAGE_PADDING_SIZE_INC;
-               max: SLIDER_INDICATOR_IMAGE_PADDING_SIZE_INC;
-               rel1 {
-                  to_x: "elm.indicator";
-                  relative: -1.0 0.0;
-               }
-               rel2 {
-                  to_x: "elm.indicator";
-                  relative: 0.0 1.0;
-               }
-               align: 1.0 0.5;
-            }
-         }
-         part { name: "image_right_padding";
-            type: SPACER;
-            mouse_events: 0;
-            scale: 1;
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               min: SLIDER_INDICATOR_IMAGE_PADDING_SIZE_INC;
-               max: SLIDER_INDICATOR_IMAGE_PADDING_SIZE_INC;
-               rel1 {
-                  to_x: "elm.indicator";
-                  relative: 1.0 0.0;
-               }
-               rel2 {
-                  to_x: "elm.indicator";
-                  relative: 2.0 1.0;
-               }
-               align: 0.0 0.5;
-            }
-         }
-         part { name: "button0";
-            mouse_events: 0;
-            scale: 1;
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               min: SLIDER_INDICATOR_WIDTH_INC SLIDER_INDICATOR_HEIGHT_INC;
-               max: SLIDER_INDICATOR_MAX_WIDTH_INC SLIDER_INDICATOR_HEIGHT_INC;
-               rel1.to: "image_left_padding";
-               rel2.to: "image_right_padding";
-               image {
-                  normal: BG_IMG_PATH"/vc_volume_slider_handle.png";
-                  border: 32 32 32 32;
-                  border_scale: 1;
-               }
-            }
-            description { state: "pressed" 0.0;
-               inherit: "default" 0.0;
-               image {
-                  normal: BG_IMG_PATH"/vc_volume_slider_handle_press.png";
-               }
-            }
-            description { state: "disabled" 0.0;
-               inherit: "default" 0.0;
-               image {
-                  normal: BG_IMG_PATH"/vc_volume_slider_handle_dim.png";
-               }
-            }
-         }
-         part { name: "elm.indicator";
-            type: TEXT;
-            mouse_events: 0;
-            scale: 1;
-            description { state: "default" 0.0;
-               visible: 1;
-               color: SLIDER_INDICATOR_TEXT_COLOR_INC;
-               text {
-                  font: "Tizen:style=Medium";
-                  size: SLIDER_INDICATOR_TEXT_SIZE_INC;
-                  min: 1 1;
-                  align: 0.5 0.5;
-                  text_class: "tizen";
-               }
-            }
-            description { state: "hide" 0.0;
-               inherit: "default" 0.0;
-               visible: 0;
-             }
-            description { state: "pressed" 0.0;
-               inherit: "default" 0.0;
-               color: SLIDER_INDICATOR_TEXT_PRESSED_COLOR_INC;
-            }
-         }
-      }
-      programs {
-         program { name: "set_val_show";
-            signal: "elm,state,val,show";
-            source: "elm";
-            action:  STATE_SET "default" 0.0;
-            target: "elm.indicator";
-         }
-         program { name: "set_val_hide";
-            signal: "elm,state,val,hide";
-            source: "elm";
-            action:  STATE_SET "hide" 0.0;
-            target: "elm.indicator";
-         }
-         program { name: "slider_disable";
-            signal: "elm,state,disabled";
-            source: "elm";
-            action:  STATE_SET "disabled" 0.0;
-            target: "button0";
-            target: "button_events";
-         }
-         program { name: "slider_enable";
-            signal: "elm,state,enabled";
-            source: "elm";
-            action:  STATE_SET "default" 0.0;
-            target: "button0";
-            target: "button_events";
-         }
-         program { name: "mouse_down";
-            signal: "mouse,down,*";
-            source: "button_events";
-            action:  STATE_SET "pressed" 0.0;
-            target: "button0";
-            after: "text_pressed";
-         }
-         program { name: "mouse_up";
-            signal: "mouse,up,*";
-            source: "button_events";
-            action:  STATE_SET "default" 0.0;
-            target: "button0";
-            after: "text_unpressed";
-         }
-         program { name: "text_pressed";
-            script {
-               new st[31];
-               new Float:vl;
-               get_state(PART:"elm.indicator", st, 30, vl);
-               if (!strcmp(st, "default"))
-                 set_state(PART:"elm.indicator", "pressed", 0.0);
-            }
-         }
-         program { name: "text_unpressed";
-            script {
-               new st[31];
-               new Float:vl;
-               get_state(PART:"elm.indicator", st, 30, vl);
-               if (!strcmp(st, "pressed"))
-                 set_state(PART:"elm.indicator", "default", 0.0);
-            }
-         }
-      }
-   }
 
 group { name: "elm/button/base/text_only";
       script {
@@ -2937,7 +2724,7 @@ group { name: "elm/button/base/text_only";
             description { state: "default" 0.0;
               rel1.to: "base";
               rel2.to: "base";
-              color: 0 0 0 0;
+              color: COLOR_BG_ALPHA;
             }
          }
       }
@@ -3217,7 +3004,7 @@ group { name: "elm/button/base/call_icon_only";
             description { state: "default" 0.0;
               rel1.to: "base";
               rel2.to: "base";
-              color: 0 0 0 0;
+              color: COLOR_BG_ALPHA;
             }
          }
       }

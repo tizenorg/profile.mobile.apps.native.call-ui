@@ -26,7 +26,7 @@
 #include "callui-view-callend.h"
 #include "callui-view-incoming-lock.h"
 #include "callui-view-multi-call-split.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-common.h"
 #include "callui-keypad.h"
 #include "callui-view-multi-call-conf.h"
@@ -38,7 +38,7 @@
 #include <notification.h>
 
 #define	POPUP_LIST_W		300
-#define	POPUP_LIST_ITEM_H 	96
+#define	POPUP_LIST_ITEM_H 	120
 #define APP_CONTROL_MIME_CONTACT "application/vnd.tizen.contact"
 #define CONTACT_ID_BUF_LEN 16
 #define CONTACT_NUMBER_BUF_LEN 32
@@ -56,20 +56,20 @@ static void __callui_unload_more_option(callui_app_data_t *ad);
 
 const char *group_thumbnail[] = {
 	GROUP_THUMBNAIL_98,
-	GROUP_THUMBNAIL_186,
+	GROUP_THUMBNAIL_138,
 	"",
 };
 
 const char *group_default_thumbnail[] = {
 	GROUP_DEFAULT_THUMBNAIL_98,
-	GROUP_DEFAULT_THUMBNAIL_186,
-	GROUP_DEFAULT_CONFERENCE_THUMBNAIL_186,
+	GROUP_DEFAULT_THUMBNAIL_138,
+	GROUP_DEFAULT_CONFERENCE_THUMBNAIL_138,
 };
 
 const int thumbnail_size[] = {
 	98,
-	186,
-	186,
+	138,
+	138,
 };
 
 Evas_Object *_callui_load_edj(Evas_Object *parent, const char *file, const char *group)
@@ -1005,7 +1005,7 @@ Evas_Object *_callui_show_caller_info_status(void *data, const char *status)
 Evas_Object *_callui_show_caller_id(Evas_Object *contents, char *path)
 {
 	dbg("..");
-	Evas_Object *layout = _callui_create_thumbnail(contents, path, THUMBNAIL_186);
+	Evas_Object *layout = _callui_create_thumbnail(contents, path, THUMBNAIL_138);
 
 	elm_object_part_content_set(contents, "caller_id", layout);
 

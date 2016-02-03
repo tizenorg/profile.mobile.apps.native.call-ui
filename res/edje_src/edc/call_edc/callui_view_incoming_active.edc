@@ -26,7 +26,7 @@ styles {
 	}
 }
 
-#define SPACE_NOTIFICATION 50
+#define SPACE_NOTIFICATION 40
 #define REC_MAIN_INFO 144
 #define SPACE_ICON 23
 #define ICON_H 98

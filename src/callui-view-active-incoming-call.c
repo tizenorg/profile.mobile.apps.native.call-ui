@@ -18,7 +18,7 @@
 #include "callui-view-incoming-lock.h"
 #include "callui-view-active-incoming-call.h"
 #include "callui-view-manager.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-view-elements.h"
 #include "callui-common.h"
 #include <vconf.h>

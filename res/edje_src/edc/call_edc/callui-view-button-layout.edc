@@ -33,24 +33,9 @@ group{
 			type: RECT;
 			description {
 				state: "default" 0.0;
-				//color: COLOR_BG_ALPHA;
-				color_class: "AO001";
+				color_class: btn_div;
 			}
 		}
-
-		/*part { name: "swl_bg_image";
-			type: IMAGE;
-			mouse_events:1;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0 0; to: "background"; }
-				rel2 { relative: 1 1; to: "background"; }
-				align: 0.5 0.5;
-				color_class: AO015;
-				image { normal: IMG_SRC_DIR/"call_button_div_01.png"; }
-			}
-		}*/
 
 		/*TOP FIRST BUTTON*/
 		SWL_BUTTON(PART_TOP_FIRST_BTN, TOP_FIRST_BUTTON_L, TOP_FIRST_BUTTON_T,

@@ -19,7 +19,7 @@
 #include "callui-view-circle.h"
 #include "callui-view-incoming-call.h"
 #include "callui-view-incoming-lock.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-view-elements.h"
 #include <vconf.h>
 #include "callui-common.h"
@@ -32,7 +32,7 @@
 static Evas_Object *__callui_view_incoming_call_create_reject_msg_layout(void *data);
 static Eina_Bool __callui_view_incoming_lock_reject_msg_available(callui_app_data_t *ad, char *call_num);
 
-#define SCALE_SIZE(x, h) (((x) * (h)) / MAIN_SCREEN_BIG_H)
+#define SCALE_SIZE(x, h) (((x) * (h)) / MAIN_SCREEN_H)
 
 static Evas_Object *__callui_view_incoming_call_create_contents(void *data, char *grpname)
 {

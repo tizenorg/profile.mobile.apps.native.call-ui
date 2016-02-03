@@ -29,7 +29,7 @@
 #include <device/display.h>
 #include <device/callback.h>
 #include "callui-view-quickpanel.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 
 #define EARSET_KEY_LONG_PRESS_TIMEOUT			1.0
 
@@ -445,7 +445,7 @@ static void __callui_app_text_classes_set()
 	edje_text_class_set("ATO002", "R", 64);
 	edje_text_class_set("ATO003", "R", 40);
 	edje_text_class_set("ATO004", "R", 24);
-	edje_text_class_set("ATO005", "R", 24);
+	edje_text_class_set("ATO005", "R", 20);
 	edje_text_class_set("ATO006", "R", 24);
 	edje_text_class_set("ATO007", "R", 24);
 	edje_text_class_set("ATO008", "R", 24);
@@ -454,8 +454,8 @@ static void __callui_app_text_classes_set()
 	edje_text_class_set("ATO012", "R", 30);
 	edje_text_class_set("ATO013", "R", 30);
 	edje_text_class_set("ATO014", "R", 30);
-	edje_text_class_set("ATO016", "R", 24);
-	edje_text_class_set("ATO017", "R", 24);
+	edje_text_class_set("ATO016", "R", 40);
+	edje_text_class_set("ATO017", "R", 40);
 	edje_text_class_set("ATO027", "R", 26);
 	edje_text_class_set("ATO028", "R", 24);
 	edje_text_class_set("ATO030", "R", 42);
