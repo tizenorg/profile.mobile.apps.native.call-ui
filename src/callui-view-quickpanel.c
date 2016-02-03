@@ -20,7 +20,7 @@
 #include "callui-view-quickpanel.h"
 #include <minicontrol-provider.h>
 #include <minicontrol-internal.h>
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-common.h"
 #include <app_control.h>
 #include <bundle.h>
@@ -523,7 +523,7 @@ static Evas_Object *__callui_view_qp_create_window()
 
 	win = minicontrol_create_window("org.tizen.call-ui", MINICONTROL_TARGET_VIEWER_QUICK_PANEL, __callui_view_qp_provider_cb);
 	elm_win_alpha_set(win, EINA_TRUE);
-	evas_object_resize(win, ELM_SCALE_SIZE(MAIN_SCREEN_BIG_W), ELM_SCALE_SIZE(QP_WIN_H));
+	evas_object_resize(win, ELM_SCALE_SIZE(MAIN_SCREEN_W), ELM_SCALE_SIZE(QP_WIN_H));
 
 	if (elm_win_wm_rotation_supported_get(win)) {
 		int rotate_angles[3] = {0, 90, 270};
@@ -637,12 +637,12 @@ static int __callui_view_qp_onshow(call_view_data_t *view_data, void *appdata)
 	if (priv->rotate_angle == 0 || priv->rotate_angle == 180) {
 		dbg("portrait mode layout");
 		ad->landscape = false;
-		evas_object_resize(ad->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_BIG_W), ELM_SCALE_SIZE(QP_WIN_H));
+		evas_object_resize(ad->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_W), ELM_SCALE_SIZE(QP_WIN_H));
 		ad->quickpanel_layout = __callui_view_qp_create_contents(view_data, GRP_QUICKPANEL);
 	} else if (priv->rotate_angle == 90 || priv->rotate_angle == 270) {
 		dbg("landscape mode layout");
 		ad->landscape = true;
-		evas_object_resize(ad->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_BIG_H), ELM_SCALE_SIZE(QP_WIN_H));
+		evas_object_resize(ad->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_H), ELM_SCALE_SIZE(QP_WIN_H));
 		ad->quickpanel_layout = __callui_view_qp_create_contents(view_data, GRP_QUICKPANEL_LS);
 	}
 

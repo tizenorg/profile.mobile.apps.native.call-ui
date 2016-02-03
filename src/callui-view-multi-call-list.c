@@ -19,7 +19,7 @@
 #include "callui.h"
 #include "callui-view-elements.h"
 #include "callui-view-multi-call-list.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 
 static Elm_Genlist_Item_Class *itc_call;
 #define	CALLUI_VIEW_MULTICALL_LIST_LAYOUT_ID "MULTIVIEWLIST"

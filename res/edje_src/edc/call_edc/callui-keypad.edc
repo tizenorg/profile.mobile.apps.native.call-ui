@@ -26,8 +26,8 @@
 				description { \
 					state: "default" 0.0; \
 					visible: 1; \
-					rel1 {relative: (column*(KEYPAD_EACH_BTN_W+KEYPAD_DIVIDER_SIZE)/TOTAL_W) (row*(KEYPAD_EACH_BTN_H+KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns/rect";} \
-					rel2 {relative: (((column+1)*KEYPAD_EACH_BTN_W+column*KEYPAD_DIVIDER_SIZE)/TOTAL_W) (((row+1)*KEYPAD_EACH_BTN_H+row*KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns/rect"; } \
+					rel1 {relative: (column*(KEYPAD_EACH_BTN_W+KEYPAD_DIVIDER_SIZE)/MAIN_SCREEN_W) (row*(KEYPAD_EACH_BTN_H+KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns/rect";} \
+					rel2 {relative: (((column+1)*KEYPAD_EACH_BTN_W+column*KEYPAD_DIVIDER_SIZE)/MAIN_SCREEN_W) (((row+1)*KEYPAD_EACH_BTN_H+row*KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns/rect"; } \
 					fixed: 1 1; \
 					color_class: "AO005_C"; \
 				} \
@@ -75,7 +75,7 @@
 				description { state: "default" 0.0; \
 					rel1 { relative: 0 0; to: txt; } \
 					rel2 { relative: 1 1; to: txt; } \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			}
 
@@ -88,8 +88,8 @@
 				description { \
 					state: "default" 0.0; \
 					visible: 1; \
-					rel1 { relative: (column*(KEYPAD_EACH_BTN_W+KEYPAD_DIVIDER_SIZE)/TOTAL_W) (row*(KEYPAD_EACH_BTN_H+KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns/rect";} \
-					rel2 { relative: (((column+1)*KEYPAD_EACH_BTN_W+column*KEYPAD_DIVIDER_SIZE)/TOTAL_W) (((row+1)*KEYPAD_EACH_BTN_H+row*KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns/rect"; } \
+					rel1 { relative: (column*(KEYPAD_EACH_BTN_W+KEYPAD_DIVIDER_SIZE)/MAIN_SCREEN_W) (row*(KEYPAD_EACH_BTN_H+KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns/rect";} \
+					rel2 { relative: (((column+1)*KEYPAD_EACH_BTN_W+column*KEYPAD_DIVIDER_SIZE)/MAIN_SCREEN_W) (((row+1)*KEYPAD_EACH_BTN_H+row*KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns/rect"; } \
 					fixed: 1 1; \
 					color_class: "AO005_C"; \
 				} \
@@ -160,7 +160,7 @@
 				description { state: "default" 0.0; \
 					rel1 { relative: 0 0; to: txt; } \
 					rel2 { relative: 1 1; to: txt; } \
-					color: 0 0 0 0; \
+					color: COLOR_BG_ALPHA; \
 				} \
 			}
 
@@ -208,7 +208,7 @@ group{
 			type: RECT;
 			description {
 				state: "default" 0.0;
-				color: 0 0 0 0;
+				color: COLOR_BG_ALPHA;
 			}
 		}
 
@@ -218,7 +218,7 @@ group{
 			description {
 				state: "default" 0.0;
 				visible: 1;
-				color: 0 0 0 0;
+				color: COLOR_BG_ALPHA;
 				rel1 { relative: 0.0 ((KEYPAD_AREA_H-KEYPAD_H-KEYPAD_ARROW_BTN_BG_H)/KEYPAD_AREA_H); to: "background";}
 				rel2 { relative: 1.0 ((KEYPAD_AREA_H-KEYPAD_H)/KEYPAD_AREA_H); to: "background";}
 			}
@@ -240,7 +240,7 @@ group{
 			mouse_events: 1;
 			description {
 				state: "default" 0.0;
-				color: 0 0 0 0;
+				color: COLOR_BG_ALPHA;
 				rel1 { relative: 0 0; to: "background";}
 				rel2 { relative: 1 ((KEYPAD_AREA_H-KEYPAD_H)/KEYPAD_AREA_H); to: "background";}
 			}
@@ -254,7 +254,7 @@ group{
 			description {
 				state: "default" 0.0;
 				visible: 1;
-				color: 0 0 0 0;
+				color: COLOR_BG_ALPHA;
 				rel1 { relative: 225/480 6/42; to: "keypad_arrow_bg";}
 				rel2 { relative: 255/480 29/42; to: "keypad_arrow_bg";}
 			}

@@ -70,8 +70,7 @@ ADD_CUSTOM_COMMAND(
 		${EDJE_CC_DEFINITIONS}
 		${EDJE_DIR}/call.edc ${CMAKE_BINARY_DIR}/call.edj
 		DEPENDS ${EDJE_DIR}/call.edc
-			${INC_DIR}/callui-view-layout-wvga.h
-			${INC_DIR}/callui-view-layout-hd.h
+			${INC_DIR}/callui-view-layout.h
 			${INC_DIR}/callui-view-caller-info-defines.h
 			${INC_DIR}/callui-view-elements-defines.h
 			${EDC_SRC_DIR}/callui-color-classes.edc
@@ -98,7 +97,7 @@ ADD_CUSTOM_COMMAND(
 		${EDJE_CC_DEFINITIONS}
 		${EDJE_DIR}/call_theme.edc ${CMAKE_BINARY_DIR}/call_theme.edj
 		DEPENDS ${EDJE_DIR}/call_theme.edc
-			${INC_DIR}/callui-view-layout-wvga.h
+			${INC_DIR}/callui-view-layout.h
 			${EDC_SRC_DIR}/callui-color-classes.edc
 )
 ADD_CUSTOM_TARGET(call_theme.edje ALL DEPENDS ${CMAKE_BINARY_DIR}/call_theme.edj)
@@ -112,13 +111,7 @@ INSTALL(DIRECTORY DESTINATION ${DATADIR})
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/${PKG_NAME}.xml DESTINATION ${CMAKE_SHARE_PACKAGES_DIR})
 
 # install manifest file & icon
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/handler_btn_02.png DESTINATION ${IMG_DIR})
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/call_photo_id_mask.png DESTINATION ${IMG_DIR})
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/call_resume_play_mask.png DESTINATION ${IMG_DIR})
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/call_photo_id.png DESTINATION ${IMG_DIR})
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/button_edit_bg_new.png DESTINATION ${IMG_DIR})
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/call_button_icon_01.png DESTINATION ${IMG_DIR})
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/call_button_icon_03.png DESTINATION ${IMG_DIR})
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/call_button_icon_04.png DESTINATION ${IMG_DIR})
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/call_button_add.png DESTINATION ${IMG_DIR})
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/res/images/noti_icon_reject_auto.png DESTINATION ${IMG_DIR})
+
