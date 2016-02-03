@@ -100,7 +100,7 @@ static void _fill_one_contact_layout(Evas_Object *parent, call_data_t *call_data
 	const char *sub_text = call_data->call_num;
 	Evas_Object *thumbnail = NULL;
 
-	thumbnail = _callui_create_thumbnail(parent, pic_path, THUMBNAIL_186);
+	thumbnail = _callui_create_thumbnail(parent, pic_path, THUMBNAIL_138);
 	elm_object_part_content_set(parent, PART_SWALLOW_CALLER_ID, thumbnail);
 
 	if (main_text && *main_text) {
@@ -115,7 +115,7 @@ static void _fill_conference_layout(Evas_Object *parent, call_data_t *call_data)
 {
 	CALLUI_RETURN_IF_FAIL(call_data);
 
-	Evas_Object *thumbnail = _callui_create_thumbnail(parent, NULL, CONFERENCE_THUMBNAIL_186);
+	Evas_Object *thumbnail = _callui_create_thumbnail(parent, NULL, CONFERENCE_THUMBNAIL_138);
 	elm_object_part_content_set(parent, PART_SWALLOW_CALLER_ID, thumbnail);
 
 	elm_object_part_text_set(parent, PART_TEXT_MAIN, _("IDS_CALL_BODY_CONFERENCE"));
@@ -160,7 +160,7 @@ static void _set_merge_swap(Evas_Object *parent, callui_app_data_t *ad)
 static void _create_btn_region(Evas_Object *parent)
 {
 	Evas_Object *btn_region = elm_layout_add(parent);
-	elm_layout_file_set(btn_region, EDJ_NAME, GROUP_BTN_REGION);
+	elm_layout_file_set(btn_region, EDJ_NAME, GRP_BUTTON_LAYOUT);
 	elm_object_part_content_set(parent, PART_SWALLOW_BTN_REGION, btn_region);
 }
 

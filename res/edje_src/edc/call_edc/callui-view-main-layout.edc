@@ -48,7 +48,7 @@ group {
 				state: "default" 0.0;
 				rel1 { relative: 0 KEYPAD_ENTRY_TEXT_T; to: "background"; }
 				rel2 { relative: 1 KEYPAD_ENTRY_TEXT_B; to: "background"; }
-				color: 0 0 0 0;
+				color: COLOR_BG_ALPHA;
 				//color_class: "AO001";
 				visible: 1;
 			}
@@ -70,10 +70,7 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				fixed: 1 1;
-				align: 0.5 1.0;
-				rel1 { relative: KEYPAD_ENTRY_TEXT_L 0; to: "textblock_bg"; }
-				rel2 { relative: KEYPAD_ENTRY_TEXT_R 1; to: "textblock_bg"; }
+				rel2.relative: 1.0 (1 - REL_H(KEYPAD_H+ENDCALL_BTN_BG_H));
 				visible: 1;
 			}
 			description {
@@ -95,7 +92,7 @@ group {
 				state: "default" 0.0;
 				rel1 { relative: 0 CALLER_INFO_STATUS_T_PAD/MAIN_SCREEN_H; to: "background"; }
 				rel2 { relative: 1 (CALLER_INFO_STATUS_T_PAD+CALLER_INFO_STATUS_HEIGHT)/MAIN_SCREEN_H; to: "background"; }
-				color: 0 0 0 0;
+				color: COLOR_BG_ALPHA;
 			}
 		}
 
@@ -106,7 +103,7 @@ group {
 				state: "default" 0.0;
 				rel1 { relative: 0 ((CALLER_INFO_STATUS_T_PAD+CALLER_INFO_STATUS_HEIGHT)/MAIN_SCREEN_H); to: "background"; }
 				rel2 { relative: 1 ((CALLER_INFO_STATUS_T_PAD+CALLER_INFO_STATUS_HEIGHT+CALLER_INFO_STATUS_HEIGHT)/MAIN_SCREEN_H); to: "background"; }
-				color: 0 0 0 0;
+				color: COLOR_BG_ALPHA;
 			}
 		}
 
@@ -364,7 +361,7 @@ group {
 				inherit: "default" 0.0;
 				visible: 1;
 				rel1 { relative: 0 0; to: "background";}
-				rel2 { relative: 1 (KEYPAD_AREA_H/TOTAL_H); to: "background";}
+				rel2 { relative: 1 (KEYPAD_AREA_H/MAIN_SCREEN_H); to: "background";}
 			}
 			description {
 				state: "hide" 0.0;

@@ -20,7 +20,7 @@
 #include "callui-keypad.h"
 #include "callui-common.h"
 #include "callui-view-elements.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-view-caller-info-defines.h"
 
 #define VC_KEYPAD_ENTRY_FONT "<font='Samsung Sans Num47:style=Light'>%s</>"

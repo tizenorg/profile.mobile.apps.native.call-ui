@@ -470,5 +470,9 @@ color_classes {
 		name: "btn_ic"; //AO015
 		color: 249 249 249 255;
 	}
+	color_class {
+		name: "btn_div"; //AO016
+		color: 217 217 217 255;
+	}
 }
 

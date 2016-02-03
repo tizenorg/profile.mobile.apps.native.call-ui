@@ -20,11 +20,11 @@
 
 //groups
 #define GROUP_THUMBNAIL_98							"thumbnail_98"
-#define GROUP_THUMBNAIL_186							"thumbnail_186"
+#define GROUP_THUMBNAIL_138							"thumbnail_138"
 
 #define GROUP_DEFAULT_THUMBNAIL_98					"default_thumbnail_98"
-#define GROUP_DEFAULT_THUMBNAIL_186					"default_thumbnail_186"
-#define GROUP_DEFAULT_CONFERENCE_THUMBNAIL_186		"default_conference_thumbnail_186"
+#define GROUP_DEFAULT_THUMBNAIL_138					"default_thumbnail_138"
+#define GROUP_DEFAULT_CONFERENCE_THUMBNAIL_138		"default_conference_thumbnail_138"
 
 //parts
 #define PART_SWALLOW_IMAGE							"swallow.image"

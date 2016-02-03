@@ -21,7 +21,7 @@
 #include "callui-view-single-call.h"
 #include "callui-view-multi-call-conf.h"
 #include "callui-view-multi-call-split.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-keypad.h"
 #include "callui-view-manager.h"
 #include "callui-view-elements.h"

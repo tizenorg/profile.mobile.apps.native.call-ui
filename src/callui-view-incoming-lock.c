@@ -24,7 +24,7 @@
 #include <tzplatform_config.h>
 
 #include "callui.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-view-elements.h"
 #include "callui-view-active-incoming-call.h"
 #include "callui-view-incoming-call.h"

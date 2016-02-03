@@ -76,9 +76,6 @@
 
 #define MSG_PKG		"org.tizen.message"
 
-#define MASK_ICON		IMGDIR"/call_photo_id_mask.png"
-#define MULTI_CALL_LIST_MASK_ICON		IMGDIR"/call_resume_play_mask.png"
-
 #define EDJ_NAME EDJDIR"/call.edj"
 #define CALL_THEME EDJDIR"/call_theme.edj"
 

@@ -20,7 +20,7 @@
 #include "callui-common.h"
 #include "callui-view-elements.h"
 #include "callui-view-multi-call-conf.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-keypad.h"
 
 #define	CALLUI_VIEW_MULTICALL_CONF_LAYOUT_ID "MULTIVIEWCONF"
