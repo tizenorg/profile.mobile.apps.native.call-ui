@@ -24,7 +24,7 @@
 #include <tzplatform_config.h>
 
 #include "callui.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-view-elements.h"
 #include "callui-view-active-incoming-call.h"
 #include "callui-view-incoming-call.h"
@@ -74,7 +74,7 @@ void _callui_view_incoming_lock_reject_msg_create_call_setting_handle(void *data
 	incoming_lock_view_priv_t *priv = (incoming_lock_view_priv_t *)vd->priv;
 	char *error = NULL;
 
-	priv->dl_handle = dlopen(CALLUI_CST_SO_PATH, RTLD_LAZY);
+	priv->dl_handle = dlopen("ug-call-setting", RTLD_LAZY);
 	if (priv->dl_handle) {
 		priv->msg_func_ptr = dlsym(priv->dl_handle, CALLUI_CST_REJECT_MSG_GET);
 		if ((error = dlerror()) != NULL) {

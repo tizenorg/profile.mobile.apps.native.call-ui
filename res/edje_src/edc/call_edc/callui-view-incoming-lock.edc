@@ -230,7 +230,7 @@
 			state: "default" 0.0; \
 			rel1 { relative: lpos tpos; } \
 			rel2 { relative: rpos bpos; } \
-			color: 0 0 0 0; \
+			color: COLOR_BG_ALPHA; \
 		} \
 	}
 
@@ -506,7 +506,7 @@ group {
 		CREATE_OUTER_CIRCLE_RECT("rect_outer_circle", MTLOCK_ACCEPT_OUTER_CIRCLE_L, MTLOCK_ACCEPT_OUTER_CIRCLE_T, MTLOCK_ACCEPT_OUTER_CIRCLE_R, MTLOCK_ACCEPT_OUTER_CIRCLE_B)
 		CREATE_OUTER_CIRCLE_CLIP("rect_outer_circle_clipper", MTLOCK_ACCEPT_OUTER_CIRCLE_L, MTLOCK_ACCEPT_OUTER_CIRCLE_CLIP_RECT_T, MTLOCK_ACCEPT_OUTER_CIRCLE_R, MTLOCK_ACCEPT_OUTER_CIRCLE_CLIP_RECT_B)
 		CREATE_OUTER_CIRCLE("accept_outer_circle", "rect_outer_circle", "call_button_bg_line_accept_reject.png", "rect_outer_circle_clipper", "AO046L1")
-		CREATE_INNER_CIRCLE_SIMPLE_IMAGE("accept_inner_circle_bg", MTLOCK_ACCEPT_INNER_CIRCLE_L, MTLOCK_ACCEPT_INNER_CIRCLE_T, MTLOCK_ACCEPT_INNER_CIRCLE_R, MTLOCK_ACCEPT_INNER_CIRCLE_B, "rect_outer_circle_clipper", "Call_button_bg_accept_reject.png", "AO046");
+		CREATE_INNER_CIRCLE_SIMPLE_IMAGE("accept_inner_circle_bg", MTLOCK_ACCEPT_INNER_CIRCLE_L, MTLOCK_ACCEPT_INNER_CIRCLE_T, MTLOCK_ACCEPT_INNER_CIRCLE_R, MTLOCK_ACCEPT_INNER_CIRCLE_B, "rect_outer_circle_clipper", "call_button_bg_accept_reject.png", "AO046");
 
 		CREATE_INNER_CIRCLE("accept_inner_circle", MTLOCK_ACCEPT_INNER_CIRCLE_L, MTLOCK_ACCEPT_INNER_CIRCLE_T, MTLOCK_ACCEPT_INNER_CIRCLE_R, MTLOCK_ACCEPT_INNER_CIRCLE_B, "call_btn_ic_accept.png", "AO004")
 	}
@@ -534,7 +534,7 @@ group {
 		CREATE_OUTER_CIRCLE_RECT("rect_outer_circle", MTLOCK_REJECT_OUTER_CIRCLE_L, MTLOCK_REJECT_OUTER_CIRCLE_T, MTLOCK_REJECT_OUTER_CIRCLE_R, MTLOCK_REJECT_OUTER_CIRCLE_B)
 		CREATE_OUTER_CIRCLE_CLIP("rect_outer_circle_clipper", MTLOCK_REJECT_OUTER_CIRCLE_L, MTLOCK_REJECT_OUTER_CIRCLE_CLIP_RECT_T, MTLOCK_REJECT_OUTER_CIRCLE_R, MTLOCK_REJECT_OUTER_CIRCLE_CLIP_RECT_B)
 		CREATE_OUTER_CIRCLE("reject_outer_circle", "rect_outer_circle", "call_button_bg_line_accept_reject.png", "rect_outer_circle_clipper", "AO047L1")
-		CREATE_INNER_CIRCLE_SIMPLE_IMAGE("reject_inner_circle_bg", MTLOCK_REJECT_INNER_CIRCLE_L, MTLOCK_REJECT_INNER_CIRCLE_T, MTLOCK_REJECT_INNER_CIRCLE_R, MTLOCK_REJECT_INNER_CIRCLE_B, "rect_outer_circle_clipper", "Call_button_bg_accept_reject.png", "AO047");
+		CREATE_INNER_CIRCLE_SIMPLE_IMAGE("reject_inner_circle_bg", MTLOCK_REJECT_INNER_CIRCLE_L, MTLOCK_REJECT_INNER_CIRCLE_T, MTLOCK_REJECT_INNER_CIRCLE_R, MTLOCK_REJECT_INNER_CIRCLE_B, "rect_outer_circle_clipper", "call_button_bg_accept_reject.png", "AO047");
 
 		CREATE_INNER_CIRCLE("reject_inner_circle", MTLOCK_REJECT_INNER_CIRCLE_L, MTLOCK_REJECT_INNER_CIRCLE_T, MTLOCK_REJECT_INNER_CIRCLE_R, MTLOCK_REJECT_INNER_CIRCLE_B, "call_btn_ic_reject.png", "AO005")
 	}
@@ -560,7 +560,7 @@ group {
 				rel1 { relative: MTLOCK_REJECT_MSG_BG_L MTLOCK_REJECT_MSG_BG_T;}
 				rel2 { relative: MTLOCK_REJECT_MSG_BG_R 1.0;}
 				align: 0.0 0.5;
-				color: 0 0 0 0;
+				color: COLOR_BG_ALPHA;
 				visible: 1;
 			}
 		}
@@ -581,7 +581,7 @@ group {
 			description {
 				state: "list_close" 0.0;
 				inherit: "default" 0.0;
-				image { normal: IMG_SRC_DIR/"call_inline_button_open.png"; }
+				image { normal: IMG_SRC_DIR/"call_inline_btn_open.png"; }
 				visible: 1;
 			}
 			description {
@@ -707,7 +707,7 @@ group {
 				state: "default" 0.0;
 				rel1 { relative: MTLOCK_REJECT_MSG_ARW_L MTLOCK_REJECT_MSG_ARW_CLOSE_T; }
 				rel2 { relative: MTLOCK_REJECT_MSG_ARW_R MTLOCK_REJECT_MSG_ARW_CLOSE_B; }
-				image { normal: IMG_SRC_DIR/"call_inline_button_close.png"; }
+				image { normal: IMG_SRC_DIR/"call_inline_btn_close.png"; }
 				align: 0.5 0.5;
 				color_class: "AO001";
 				visible: 1;

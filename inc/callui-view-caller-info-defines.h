@@ -32,7 +32,6 @@
 #define SIGNAL_SHOW_ARROW					"show,arrow"
 #define SIGNAL_HIDE_ARROW					"hide,arrow"
 
-#define GROUP_BTN_REGION					"btn_region"
 #define PART_TOP_FIRST_BTN					"top_first_button"
 #define PART_TOP_SECOND_BTN					"top_second_button"
 #define PART_TOP_THIRD_BTN					"top_third_button"

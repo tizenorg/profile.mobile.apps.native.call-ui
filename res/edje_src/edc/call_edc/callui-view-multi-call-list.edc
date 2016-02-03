@@ -32,16 +32,17 @@ group {
 			description {
 				state: "default" 0.0;
 				rel1 { relative: 0 INDICATOR_HEIGHT/MULTI_LIST_HEIGHT; to: "background"; }
-				rel2 { relative: 1 (INDICATOR_HEIGHT+51)/MULTI_LIST_HEIGHT; to: "background"; }
+				rel2 { relative: 1 (INDICATOR_HEIGHT+72)/MULTI_LIST_HEIGHT; to: "background"; }
 				color_class: "AO052";
 			}
 		}
+
 		part { name: "call_txt_status";
 			type: TEXT;
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				rel1 { relative: 15/480 0; to: "call_info_upper/rect";}
+				rel1 { relative: 32/MAIN_SCREEN_W 0; to: "call_info_upper/rect";}
 				rel2 { relative: 1 1;  to: "call_info_upper/rect";}
 				fixed: 1 1;
 				text {
@@ -59,7 +60,7 @@ group {
 			description {
 				state: "default" 0.0;
 				rel1 { relative: 0 0; to: "call_info_upper/rect";}
-				rel2 { relative: (480-15)/480 1; to: "call_info_upper/rect";}
+				rel2 { relative: (MAIN_SCREEN_W-32)/MAIN_SCREEN_W 1; to: "call_info_upper/rect";}
 				fixed: 1 1;
 				text {
 					align: 1 0.5;
@@ -73,7 +74,7 @@ group {
 			type: SWALLOW;
 			description {
 				state: "default" 0.0;
-				rel1 { relative: 0 (INDICATOR_HEIGHT+51)/MULTI_LIST_HEIGHT; to: "background"; }
+				rel1 { relative: 0 (INDICATOR_HEIGHT+72)/MULTI_LIST_HEIGHT; to: "background"; }
 				rel2 { relative: 1 (MULTI_LIST_HEIGHT-BOTTOM_BTN_BG_HEIGHT)/MULTI_LIST_HEIGHT; to: "background"; }
 			}
 		}

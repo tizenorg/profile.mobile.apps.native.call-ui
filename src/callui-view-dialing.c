@@ -88,8 +88,6 @@ static void __callui_view_dialing_draw_screen(callui_app_data_t *ad, Evas_Object
 	CALLUI_RETURN_IF_FAIL(now_call_data);
 	char *file_path = NULL;
 
-	call_view_data_t *q_vd = _callvm_get_call_view_data(ad, VIEW_QUICKPANEL_VIEW);
-
 	if (now_call_data == NULL) {
 		err("Now Data is NULL");
 		return;
@@ -138,10 +136,6 @@ static void __callui_view_dialing_draw_screen(callui_app_data_t *ad, Evas_Object
 	_callui_create_end_call_button(priv->contents, vd);
 
 	evas_object_show(eo);
-
-	if (q_vd) {
-		_callui_view_qp_update_text(_("IDS_CALL_POP_DIALLING"), 0, eo);
-	}
 
 	if (now_call_data->is_emergency == EINA_TRUE) {
 		elm_object_signal_emit(priv->caller_info, "set_emergency_mode", "");

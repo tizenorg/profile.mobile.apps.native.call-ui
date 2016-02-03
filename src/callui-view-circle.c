@@ -19,7 +19,7 @@
 #include "callui-view-circle.h"
 #include "callui-view-incoming-lock.h"
 #include "callui-view-elements.h"
-#include "callui-view-layout-wvga.h"
+#include "callui-view-layout.h"
 #include "callui-common.h"
 
 static void __callui_view_circle_mouse_down_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
