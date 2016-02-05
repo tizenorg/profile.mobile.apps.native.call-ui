@@ -101,7 +101,7 @@ static Evas_Object *__callui_view_multi_call_list_gl_icon_get_call(void *data, E
 	if ((strcmp(part, "elm.swallow.end") == 0)) {
 		Evas_Object *img = elm_image_add(obj);
 		elm_image_file_set(img, EDJ_NAME, GROUP_CALL_BTN_IC_END);
-		evas_object_size_hint_min_set(img, _callui_common_get_scaled_width(CALL_BTN_IC_BG_SIZE), _callui_common_get_scaled_height(CALL_BTN_IC_BG_SIZE));
+		evas_object_size_hint_min_set(img, ELM_SCALE_SIZE(CALL_BTN_IC_BG_SIZE), ELM_SCALE_SIZE(CALL_BTN_IC_BG_SIZE));
 		evas_object_propagate_events_set(img, EINA_FALSE);
 		evas_object_smart_callback_add(img, "clicked", __callui_view_multi_call_list_small_end_call_cb, call_data);
 		return img;
@@ -111,7 +111,7 @@ static Evas_Object *__callui_view_multi_call_list_gl_icon_get_call(void *data, E
 		}
 		Evas_Object *img = elm_image_add(obj);
 		elm_image_file_set(img, EDJ_NAME, GROUP_CALL_BTN_IC_SPLIT);
-		evas_object_size_hint_min_set(img, _callui_common_get_scaled_width(CALL_BTN_IC_BG_SIZE), _callui_common_get_scaled_height(CALL_BTN_IC_BG_SIZE));
+		evas_object_size_hint_min_set(img, ELM_SCALE_SIZE(CALL_BTN_IC_BG_SIZE), ELM_SCALE_SIZE(CALL_BTN_IC_BG_SIZE));
 		evas_object_propagate_events_set(img, EINA_FALSE);
 		evas_object_smart_callback_add(img, "clicked", __callui_view_multi_call_list_split_call_cb, call_data);
 		return img;

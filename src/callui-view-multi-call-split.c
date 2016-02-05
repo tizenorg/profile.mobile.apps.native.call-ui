@@ -39,7 +39,6 @@ static void _set_active_info(Evas_Object *parent, Evas_Object *content, callui_a
 static void _set_merge_swap(Evas_Object *parent, callui_app_data_t *ad);
 
 static void _create_btn_region(Evas_Object *parent);
-static void _create_action_panel(Evas_Object *parent);
 
 static Evas_Object *_create_call_info_layout(Evas_Object *parent, callui_app_data_t *ad);
 static Evas_Object *_create_split_layout(Evas_Object *parent, callui_app_data_t *ad);
@@ -164,13 +163,6 @@ static void _create_btn_region(Evas_Object *parent)
 	elm_object_part_content_set(parent, PART_SWALLOW_BTN_REGION, btn_region);
 }
 
-static void _create_action_panel(Evas_Object *parent)
-{
-	Evas_Object *action_panel = elm_layout_add(parent);
-	elm_layout_file_set(action_panel, EDJ_NAME, GROUP_ACTION_PANEL);
-	elm_object_part_content_set(parent, PART_SWALLOW_ACTIONS_PANEL, action_panel);
-}
-
 static Evas_Object *_create_call_info_layout(Evas_Object *parent, callui_app_data_t *ad)
 {
 	Evas_Object *one_hold_layout = elm_layout_add(parent);
@@ -196,7 +188,6 @@ static Evas_Object *_create_split_layout(Evas_Object *parent, callui_app_data_t 
 	elm_object_part_content_set(split_layout, PART_SWALLOW_CALL_INFO, call_info_layout);
 
 	_create_btn_region(split_layout);
-	_create_action_panel(split_layout);
 
 	return split_layout;
 }

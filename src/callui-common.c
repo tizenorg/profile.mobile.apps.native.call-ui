@@ -26,9 +26,9 @@
 #include <gio/gio.h>
 #include <runtime_info.h>
 #include <bluetooth.h>
-#include <system_info.h>
 #include <system_settings.h>
 #include <efl_util.h>
+#include <app_common.h>
 
 #ifndef USE_X11_API
 #include <Ecore_Wayland.h>
@@ -50,9 +50,9 @@
 #define CONTACT_PKG			"org.tizen.contacts"
 #define PHONE_PKG			"org.tizen.phone"
 #define BLUETOOTH_PKG		"ug-bluetooth-efl"
-#define BUS_NAME	"org.tizen.system.deviced"
-#define OBJECT_PATH	"/Org/Tizen/System/DeviceD"
-#define INTERFACE_NAME	BUS_NAME
+#define BUS_NAME			"org.tizen.system.deviced"
+#define OBJECT_PATH			"/Org/Tizen/System/DeviceD"
+#define INTERFACE_NAME		BUS_NAME
 
 #define DEVICED_PATH_DISPLAY	OBJECT_PATH"/Display"
 #define DEVICED_INTERFACE_DISPLAY	INTERFACE_NAME".display"
@@ -65,15 +65,12 @@
 
 static bool g_is_headset_connected;
 
-#define SCREEN_WIDTH 720
-#define SCREEN_HEIGHT 1280
-
-#define SYSTEM_INFO_KEY_SCREEN_WIDTH "http://tizen.org/feature/screen.width"
-#define SYSTEM_INFO_KEY_SCREEN_HEIGHT "http://tizen.org/feature/screen.height"
+#define CALL_EDJ_NAME		"/edje/call.edj"
+#define CALL_THEME_EDJ_NAME	"/edje/call_theme.edj"
 
 struct dbus_byte {
-        const char *data;
-        int size;
+	const char *data;
+	int size;
 };
 
 static Eina_Bool __callui_common_duration_timer_cb(void *data)
@@ -270,7 +267,6 @@ static bool __callui_common_bt_device_connected_profile(bt_profile_e profile, vo
 	}
 	return true;
 }
-
 
 static bool __callui_common_bt_adapter_bonded_device_cb(bt_device_info_s *device_info, void *user_data)
 {
@@ -873,32 +869,6 @@ gboolean _callui_common_is_powerkey_mode_on(void)
 	return bPowerkeyMode;
 }
 
-int _callui_common_get_scaled_width(int width)
-{
-	int systemWidth = 0;
-	int scaledWidth = 0;
-	int err = system_info_get_platform_int(SYSTEM_INFO_KEY_SCREEN_WIDTH, &systemWidth);
-	if (err != SYSTEM_INFO_ERROR_NONE) {
-		err("system_info_get_platform_int error %d", err);
-		return width;
-	}
-	scaledWidth = (systemWidth * width) / SCREEN_WIDTH;
-	return scaledWidth;
-}
-
-int _callui_common_get_scaled_height(int height)
-{
-	int systemHeight = 0;
-	int scaledHeight = 0;
-	int err = system_info_get_platform_int(SYSTEM_INFO_KEY_SCREEN_HEIGHT, &systemHeight);
-	if (err != SYSTEM_INFO_ERROR_NONE) {
-		err("system_info_get_platform_int error %d", err);
-		return height;
-	}
-	scaledHeight = (systemHeight * height) / SCREEN_HEIGHT;
-	return scaledHeight;
-}
-
 static void __callui_common_lock_state_cb (system_settings_key_e key, void *user_data)
 {
 	callui_app_data_t *ad = _callui_get_app_data();
@@ -917,4 +887,37 @@ void _callui_common_set_lock_state_changed_cb()
 void _callui_common_unset_lock_state_changed_cb()
 {
 	system_settings_unset_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE);
+}
+
+static const char *__callui_common_get_res_path()
+{
+	static char res_folder_path[PATH_MAX] = {'\0'};
+	if (res_folder_path[0] == '\0') {
+		char *res_path_buff = app_get_resource_path();
+		strncpy(res_folder_path, res_path_buff, PATH_MAX-1);
+		free(res_path_buff);
+	}
+	return res_folder_path;
+}
+
+static const char *__callui_common_get_resource(const char *res_name)
+{
+	if (res_name == NULL) {
+		err("res_name is NULL");
+		return NULL;
+	}
+
+	static char res_path[PATH_MAX] = {'\0'};
+	snprintf(res_path, PATH_MAX, "%s%s", __callui_common_get_res_path(), res_name);
+	return res_path;
+}
+
+const char *_callui_common_get_call_edj_path()
+{
+	return __callui_common_get_resource(CALL_EDJ_NAME);
+}
+
+const char *_callui_common_get_call_theme_path()
+{
+	return __callui_common_get_resource(CALL_THEME_EDJ_NAME);
 }

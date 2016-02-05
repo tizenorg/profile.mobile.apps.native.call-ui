@@ -346,16 +346,6 @@ Evas_Object *_callui_show_caller_info_status(void *data, const char *status);
 Evas_Object *_callui_show_caller_id(Evas_Object *contents, char *path);
 
 /**
- * @brief Create focus layout
- *
- * @param[in]    parent       Parent layout
- *
- * @return focus layout
- *
- */
-Evas_Object *_callui_view_create_focus_layout(Evas_Object *parent);
-
-/**
  * @brief Create more popup
  *
  * @param[in]    data         View data

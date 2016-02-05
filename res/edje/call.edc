@@ -25,10 +25,8 @@
 #define	IMG_SRC_DIR "call_edc"
 
 images {
-	image: IMG_SRC_DIR/"call_during_record.png" COMP;
 	image: IMG_SRC_DIR/"call_inline_btn_open.png" COMP;
 	image: IMG_SRC_DIR/"call_inline_btn_close.png" COMP;
-	image: IMG_SRC_DIR/"call_inline_button_close_1.png" COMP;
 	image: IMG_SRC_DIR/"call_photo_id.png" COMP;
 	image: IMG_SRC_DIR/"call_photo_id_mask.png" COMP;
 	image: IMG_SRC_DIR/"call_button_div_01.png" COMP;
@@ -59,17 +57,16 @@ images {
 	image: IMG_SRC_DIR/"call_lock_icon.png" COMP;
 	image: IMG_SRC_DIR/"call_photo_id_emergency.png" COMP;
 	image: IMG_SRC_DIR/"call_photo_id_conference.png" COMP;
-	image: IMG_SRC_DIR/"call_during_volume.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_ic_merge.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_ic_swap.png" COMP;
-	image: IMG_SRC_DIR/"call_ic_controll_01.png" COMP;
-	image: IMG_SRC_DIR/"call_open_arrow_2.png" COMP;
+	image: IMG_SRC_DIR/"call_multi_ic_arrow.png" COMP;
+	image: IMG_SRC_DIR/"call_open_arrow_01.png" COMP;
+	image: IMG_SRC_DIR/"call_open_arrow_02.png" COMP;
 	image: IMG_SRC_DIR/"call_photo_id_bg.png" COMP;
 	image: IMG_SRC_DIR/"call_button_bg_line_accept_reject.png" COMP;
 	image: IMG_SRC_DIR/"without_proximity_seneor_bg.png" COMP;
-	image: IMG_SRC_DIR/"handler_btn_02.png" COMP;
 	image: IMG_SRC_DIR/"button_edit_bg_new.png" COMP;
-	image: IMG_SRC_DIR/"call_btn_circle_02.png" COMP;
+	image: IMG_SRC_DIR/"call_btn_circle_98.png" COMP;
 	image: IMG_SRC_DIR/"background.png" COMP;
 	image: IMG_SRC_DIR/"background_dim.png" COMP;
 	image: IMG_SRC_DIR/"call_button_add.png" COMP;
@@ -83,7 +80,6 @@ collections {
 	RESOURCE_IMAGE("call_button_icon_03.png", IMG_SRC_DIR/"call_button_icon_03.png");
 	RESOURCE_IMAGE("call_button_icon_04.png", IMG_SRC_DIR/"call_button_icon_04.png");
 	RESOURCE_IMAGE("call_inline_btn_close.png", IMG_SRC_DIR/"call_inline_btn_close.png");
-	RESOURCE_IMAGE("call_inline_button_close_1.png", IMG_SRC_DIR/"call_inline_button_close_1.png");
 
 	#include "../edje_src/edc/call_edc/callui-view-button-layout.edc"
 	#include "../edje_src/edc/call_edc/callui-view-caller-info.edc"

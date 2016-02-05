@@ -266,47 +266,6 @@ static void __callui_view_incoming_call_reject_with_msg_mouse_up_cb(void *data, 
 	}
 }
 
-static void __callui_view_incoming_call_handle_reject_with_msg_event(void *data)
-{
-	dbg("..");
-	CALLUI_RETURN_IF_FAIL(data != NULL);
-
-	call_view_data_t *vd = (call_view_data_t *)data;
-	incoming_lock_view_priv_t *priv = (incoming_lock_view_priv_t *)vd->priv;
-	int max_height_limit = 0;
-
-	/*Max height possible*/
-	max_height_limit = priv->msg_list_height;
-	dbg("max_height_limit: %d", max_height_limit);
-
-	dbg("mouse down was pressed - handle move event");
-
-	if (EINA_FALSE == evas_object_data_get(priv->lock_reject_with_msg, REJ_MSG_LIST_OPEN_STATUS_KEY)) {
-		evas_object_move(priv->lock_reject_with_msg, 0, -max_height_limit);
-		evas_object_data_set(priv->lock_reject_with_msg, REJ_MSG_LIST_OPEN_STATUS_KEY, (const void *)EINA_TRUE);
-		__reject_screen_transit_complete_cb(vd, NULL);
-	} else {
-		/*Special case - Move the max distance - msg-list height*/
-		evas_object_move(priv->lock_reject_with_msg, 0, 0);
-		evas_object_data_set(priv->lock_reject_with_msg, REJ_MSG_LIST_OPEN_STATUS_KEY, (const void *)EINA_FALSE);
-		__reject_screen_transit_complete_cb(vd, NULL);
-	}
-}
-
-static void __callui_view_incoming_call_reject_msg_focus_key_down(void *data, Evas *evas, Evas_Object *obj, void *event_info)
-{
-	Evas_Event_Key_Down *ev = event_info;
-	if (!ev) return;
-	if (ev->event_flags & EVAS_EVENT_FLAG_ON_HOLD)
-		return;
-
-	if ((!strcmp(ev->keyname, "Return")) ||
-		(!strcmp(ev->keyname, "KP_Enter"))) {
-		dbg("..");
-		__callui_view_incoming_call_handle_reject_with_msg_event(data);
-	}
-}
-
 static Evas_Event_Flags __reject_msg_flick_gesture_move_event_cb(void *data, void *event_info)
 {
 	dbg("Flick_Gesture Move");
@@ -576,7 +535,7 @@ static void __callui_view_incoming_lock_reject_msg_close(void *data)
 		evas_object_move(priv->lock_reject_with_msg, 0, 0);
 		elm_object_signal_emit(priv->lock_reject_with_msg, "show-up-arrow-landscape", "reject_msg");
 		evas_object_hide(priv->dimming_ly);
-		evas_object_data_set(priv->lock_reject_with_msg, REJ_MSG_LIST_OPEN_STATUS_KEY, EINA_FALSE);
+		evas_object_data_set(priv->lock_reject_with_msg, REJ_MSG_LIST_OPEN_STATUS_KEY, (const void *)EINA_FALSE);
 	}
 }
 
@@ -612,7 +571,6 @@ static Evas_Object *__callui_view_incoming_call_create_reject_msg_layout(void *d
 	incoming_lock_view_priv_t *priv = (incoming_lock_view_priv_t *)vd->priv;
 	callui_app_data_t *ad = _callui_get_app_data();
 	Evas_Object *rej_msg_bg = NULL;
-	Evas_Object *focus = NULL;
 
 	if (priv->lock_reject_with_msg != NULL) {
 		evas_object_event_callback_del(priv->lock_reject_with_msg,
@@ -624,12 +582,6 @@ static Evas_Object *__callui_view_incoming_call_create_reject_msg_layout(void *d
 		priv->lock_reject_with_msg = NULL;
 	}
 	priv->lock_reject_with_msg = _callui_load_edj(ad->win, EDJ_NAME, GRP_LOCK_REJECT_WITH_MSG);
-
-	focus = _callui_view_create_focus_layout(priv->lock_reject_with_msg);
-
-	elm_object_part_content_set(priv->lock_reject_with_msg, "reject_msg_focus", focus);
-	evas_object_event_callback_add(focus, EVAS_CALLBACK_KEY_DOWN,
-			__callui_view_incoming_call_reject_msg_focus_key_down, vd);
 
 	evas_object_resize(priv->lock_reject_with_msg, ad->root_w, ad->root_h);
 
@@ -643,7 +595,7 @@ static Evas_Object *__callui_view_incoming_call_create_reject_msg_layout(void *d
 	elm_object_part_text_set(priv->lock_reject_with_msg, "reject_msg_text", _("IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"));
 
 	elm_object_signal_emit(priv->lock_reject_with_msg, "show-up-arrow", "reject_msg");
-	evas_object_data_set(priv->lock_reject_with_msg, REJ_MSG_LIST_OPEN_STATUS_KEY, EINA_FALSE);
+	evas_object_data_set(priv->lock_reject_with_msg, REJ_MSG_LIST_OPEN_STATUS_KEY, (const void *)EINA_FALSE);
 	evas_object_hide(priv->dimming_ly);
 
 	__reject_msg_list_param_reset(vd);

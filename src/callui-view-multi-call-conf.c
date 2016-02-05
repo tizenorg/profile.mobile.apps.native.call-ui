@@ -27,9 +27,7 @@
 typedef struct {
 	Evas_Object *contents;
 	Evas_Object *caller_info;
-	Evas_Object *held_call_ly;
 	Evas_Object *btn_ly;
-	Evas_Object *ic;
 	Evas_Object *manage_calls_ly;
 	Eina_Bool is_held;
 } callui_view_multi_call_conf_priv_t;
@@ -98,16 +96,9 @@ static void __callui_view_multi_call_conf_draw_screen(Evas_Object *eo, void *dat
 		snprintf(status_txt, sizeof(status_txt), _("IDS_CALL_BODY_ON_HOLD_ABB"));
 		_callui_show_caller_info_status(ad, status_txt);
 		elm_object_signal_emit(priv->caller_info, "set-hold-state", "call-screen");
-
-		elm_object_part_content_unset(priv->contents, "resume_icon_swallow");
-		elm_object_part_content_set(priv->contents, "resume_icon_swallow", priv->held_call_ly);
-		evas_object_show(priv->held_call_ly);
-
 	} else {
 		/*****deciding the call status according the sim name******/
 		elm_object_signal_emit(priv->caller_info, "set-unhold-state", "call-screen");
-		evas_object_hide(priv->held_call_ly);
-		elm_object_part_content_unset(priv->contents, "resume_icon_swallow");
 	}
 
 	elm_object_part_content_unset(priv->caller_info, "manage_calls_icon_swallow");
@@ -281,13 +272,6 @@ static int __callui_view_multi_call_conf_ondestroy(call_view_data_t *view_data)
 			edje_object_part_unswallow(_EDJ(priv->caller_info), priv->manage_calls_ly);
 			evas_object_del(priv->manage_calls_ly);
 			priv->manage_calls_ly = NULL;
-		}
-
-		if (priv->held_call_ly) {
-			elm_object_part_content_unset(priv->contents, "resume_icon_swallow");
-			edje_object_part_unswallow(_EDJ(priv->contents), priv->held_call_ly);
-			evas_object_del(priv->held_call_ly);
-			priv->held_call_ly = NULL;
 		}
 
 		free(priv);

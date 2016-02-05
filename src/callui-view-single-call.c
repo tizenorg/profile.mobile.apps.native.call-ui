@@ -26,8 +26,6 @@
 struct incall_one_view_priv {
 	Evas_Object *contents;
 	Evas_Object *caller_info;
-	Evas_Object *held_call_ly;
-	Evas_Object *extra_vol_ly;
 	Evas_Object *btn_ly;
 	Evas_Object *ic;
 };
@@ -124,14 +122,10 @@ static void __callui_view_single_call_draw_screen(callui_app_data_t *ad, Evas_Ob
 
 	if (is_held) {
 		dbg("=================HOLD======================");
-		evas_object_show(priv->held_call_ly);
-		elm_object_part_content_set(priv->contents, "resume_icon_swallow", priv->held_call_ly);
 		snprintf(status_txt, sizeof(status_txt), _("IDS_CALL_BODY_ON_HOLD_ABB"));
 		_callui_show_caller_info_status(ad, status_txt);
 	} else {
 		dbg("=================UNHOLD======================");
-		evas_object_hide(priv->held_call_ly);
-		elm_object_part_content_unset(priv->contents, "resume_icon_swallow");
 		_callui_common_update_call_duration(call_data->start_time);
 	}
 
@@ -205,9 +199,6 @@ static int __callui_view_single_call_oncreate(call_view_data_t *vd, unsigned int
 	if (ad->main_ly) {
 		priv->contents = __callui_view_single_call_create_contents(ad, GRP_MAIN_LY);
 		elm_object_part_content_set(ad->main_ly, "elm.swallow.content", priv->contents);
-
-		/* Extra Volume Layout */
-		priv->extra_vol_ly = __callui_view_single_call_create_contents(ad, GRP_EXTRA_VOLUME);
 
 		priv->btn_ly = elm_object_part_content_get(priv->contents, "btn_region");
 		if (!priv->btn_ly) {
@@ -284,16 +275,6 @@ static int __callui_view_single_call_ondestroy(call_view_data_t *view_data)
 		if (ad->ctxpopup) {
 			elm_ctxpopup_dismiss(ad->ctxpopup);
 			ad->ctxpopup = NULL;
-		}
-
-		if (priv->extra_vol_ly) {
-			evas_object_del(priv->extra_vol_ly);
-			priv->extra_vol_ly = NULL;
-		}
-
-		if (priv->held_call_ly) {
-			evas_object_del(priv->held_call_ly);
-			priv->held_call_ly = NULL;
 		}
 
 		/*Delete keypad layout*/

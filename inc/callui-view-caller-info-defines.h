@@ -39,7 +39,6 @@
 #define PART_BOTTOM_SECOND_BTN				"bottom_second_button"
 #define PART_BOTTOM_THIRD_BTN				"bottom_third_button"
 
-#define GROUP_ACTION_PANEL					"action_panel"
 #define PART_END_BTN						"end_btn"
 
 #define GROUP_ONE_HOLD_IN_CONFERENCE		"one_hold_in_conference"
@@ -48,7 +47,6 @@
 #define PART_SWALLOW_SWAP					"swallow.swap"
 #define PART_SWALLOW_ACTIVE_INFO			"swallow.active_info"
 #define PART_SWALLOW_BTN_REGION				"btn_region"
-#define PART_SWALLOW_ACTIONS_PANEL			"swallow.actions_panel"
 
 #define GROUP_SPLIT							"split"
 #define PART_SWALLOW_CALL_INFO				"swallow.call_info"

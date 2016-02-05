@@ -18,7 +18,7 @@
 styles {
 	style {
 		name: "lock_screen_txt_style";
-		base: "font="VC_FONT_REGULAR" font_size=30 color=#FFFFFF color_class:"ATO011" align=center text_class="ATO011" wrap=mixed";
+		base: "font="VC_FONT_REGULAR" font_size=40 color=#FFFFFF color_class:"ATO011" align=center text_class="ATO011" wrap=mixed";
 		tag: "br" "\n";
 		tag: "tab" "\t";
 	}
@@ -27,22 +27,11 @@ styles {
 group {
 	name: "lock-screen";
 	parts {
-		part {
-			name: "background";
-			type: RECT;
-			description {
-				state: "default" 0.0;
-				color: COLOR_BG_ALPHA;
-			}
-		}
-
-		part { name: "bg_img";
+		part { name: "background";
 			type: IMAGE;
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				rel1 { relative: 0 0; to: "background";}
-				rel2 { relative: 1 1; to: "background";}
 				image {
 					normal: IMG_SRC_DIR/"without_proximity_seneor_bg.png";
 				}
@@ -84,8 +73,6 @@ group {
 				color_class: "ATO011";
 			}
 		}
-
-
 	}
 }
 
