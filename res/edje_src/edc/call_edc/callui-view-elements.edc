@@ -16,11 +16,11 @@
  */
 
 RESOURCE_IMAGE_WITH_MASK(GROUP_THUMBNAIL_138, IMG_SRC_DIR/"call_photo_id_bg.png", PART_SWALLOW_IMAGE)
-RESOURCE_IMAGE_WITH_MASK(GROUP_THUMBNAIL_98, IMG_SRC_DIR/"call_btn_circle_02.png", PART_SWALLOW_IMAGE)
+RESOURCE_IMAGE_WITH_MASK(GROUP_THUMBNAIL_98, IMG_SRC_DIR/"call_btn_circle_98.png", PART_SWALLOW_IMAGE)
 
 RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE(GROUP_DEFAULT_THUMBNAIL_98, IMG_SRC_DIR/"call_photo_id_98.png", IMG_SRC_DIR/"call_photo_id_bg.png", "AO001", "AO002")
 RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE(GROUP_DEFAULT_THUMBNAIL_138, IMG_SRC_DIR/"call_photo_id.png", IMG_SRC_DIR/"call_photo_id_bg.png", "AO001", "AO002")
 RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE(GROUP_DEFAULT_CONFERENCE_THUMBNAIL_138, IMG_SRC_DIR/"call_photo_id_conference.png", IMG_SRC_DIR/"call_photo_id_bg.png", "AO001", "AO002")
 
-RESOURCE_IMAGE_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_SPLIT, IMG_SRC_DIR/"call_btn_ic_split.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_split_bg", "btn_ic_split_bg_pressed")
-RESOURCE_IMAGE_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_END, IMG_SRC_DIR/"call_btn_ic_end.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_end_bg", "btn_ic_end_bg_pressed")
+RESOURCE_IMAGE_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_SPLIT, IMG_SRC_DIR/"call_btn_ic_split.png", IMG_SRC_DIR/"call_btn_circle_98.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_split_bg", "btn_ic_split_bg_pressed")
+RESOURCE_IMAGE_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_END, IMG_SRC_DIR/"call_btn_ic_end.png", IMG_SRC_DIR/"call_btn_circle_98.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_end_bg", "btn_ic_end_bg_pressed")

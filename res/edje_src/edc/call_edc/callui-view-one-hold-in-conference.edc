@@ -16,7 +16,7 @@
  */
 
 images {
-	image: IMG_SRC_DIR/"call_ic_controll_01.png" COMP;
+	image: IMG_SRC_DIR/"call_multi_ic_arrow.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_hold_bg.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_hold_btn_merge_bg.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_hold_btn_swap_bg.png" COMP;
@@ -191,7 +191,7 @@ group {
 				visible: 0;
 				rel1.relative: ARROW_L ARROW_T;
 				rel2.relative: ARROW_R ARROW_B;
-				image.normal: IMG_SRC_DIR/"call_ic_controll_01.png";
+				image.normal: IMG_SRC_DIR/"call_multi_ic_arrow.png";
 			}
 			description {
 				state: "show" 0.0;
@@ -260,29 +260,6 @@ MERGE_SWAP_BTN(GROUP_SWAP_BTN,
 	IMG_SRC_DIR/"call_multi_hold_btn_swap_bg.png",
 	IMG_SRC_DIR/"call_multi_ic_swap.png",
 	"swap_btn_bg", "pressed")
-
-group {
-	name: GROUP_ACTION_PANEL;
-	parts {
-		part {
-			name: "background";
-			type: RECT;
-			description {
-				state: "default" 0.0;
-				color_class: "AO008";
-			}
-		}
-		part {
-			name: PART_END_BTN;
-			type: SWALLOW;
-			description {
-				state: "default" 0.0;
-				rel1.relative: END_BUTTON_L END_BUTTON_T;
-				rel2.relative: END_BUTTON_R END_BUTTON_B;
-			}
-		}
-	}
-}
 
 group {
 	name: GROUP_ONE_HOLD_IN_CONFERENCE;
@@ -408,21 +385,37 @@ group {
 				rel1.relative: 0.0 0.0;
 				rel2 {
 					relative: 1.0 0.0;
-					to_y: PART_SWALLOW_ACTIONS_PANEL;
+					to_y: "end_btn_area";
 				}
 			}
 		}
 
 		part {
-			name: PART_SWALLOW_ACTIONS_PANEL;
+			name: "end_btn_area"; 
+			type: RECT;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1.relative: ENDCALL_BTN_BG_L ENDCALL_BTN_BG_T;
+				rel2.relative: ENDCALL_BTN_BG_R ENDCALL_BTN_BG_B;
+				color_class: "AO008";
+			}
+		}
+
+		part {
+			name: PART_END_BTN;
 			type: SWALLOW;
+			scale: 1;
 			description {
 				state: "default" 0.0;
 				rel1 {
-					relative: 0.0 1.0;
-					to_y: PART_SWALLOW_BTN_REGION;
+					relative: ENDCALL_BTN_L ENDCALL_BTN_T; 
+					to: "end_btn_area";
 				}
-				rel2.relative: 1.0 1.0;
+				rel2 {
+					relative: ENDCALL_BTN_R ENDCALL_BTN_B; 
+					to: "end_btn_area";
+				}
 			}
 		}
 	}

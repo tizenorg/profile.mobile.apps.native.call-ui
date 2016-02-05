@@ -445,7 +445,7 @@ static void __callui_app_text_classes_set()
 	edje_text_class_set("ATO002", "R", 64);
 	edje_text_class_set("ATO003", "R", 40);
 	edje_text_class_set("ATO004", "R", 24);
-	edje_text_class_set("ATO005", "R", 20);
+	edje_text_class_set("ATO005", "R", 27);
 	edje_text_class_set("ATO006", "R", 24);
 	edje_text_class_set("ATO007", "R", 24);
 	edje_text_class_set("ATO008", "R", 24);

@@ -150,7 +150,7 @@ void _callvm_view_change(callui_view_id_t view_id, unsigned int param1, void *pa
 	CALLUI_RETURN_IF_FAIL(appdata);
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 	info("view:[%d] -> [%d]", ad->view_manager_handle->view_top, view_id);
-	if ((view_id >= VIEW_MAX) || (view_id < 0)) {
+	if (view_id >= VIEW_MAX) {
 		err("[=========== ERROR!!!! Invalid View ID : %d =================]", view_id);
 		return;
 	}

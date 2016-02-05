@@ -256,26 +256,6 @@ callui_lcd_control_t _callui_common_get_lcd_state();
 Eina_Bool _callui_common_is_earjack_connected(void);
 
 /**
- * @brief Get scaled width
- *
- * @param[in] width           Width
- *
- * @return scaled width
- *
- */
-int _callui_common_get_scaled_width(int width);
-
-/**
- * @brief Get scaled height
- *
- * @param[in] height         Hight
- *
- * @return scaled height
- *
- */
-int _callui_common_get_scaled_height(int height);
-
-/**
  * @brief Sets callback on lock state changed
  *
  */
@@ -286,5 +266,17 @@ void _callui_common_set_lock_state_changed_cb();
  *
  */
 void _callui_common_unset_lock_state_changed_cb();
+
+/**
+ * @brief Gets call edj file path
+ * @return Call edj file path
+ */
+const char *_callui_common_get_call_edj_path();
+
+/**
+ * @brief Gets call theme edj file path
+ * @return Call theme edj file path
+ */
+const char *_callui_common_get_call_theme_path();
 
 #endif //__CALLUI_COMMON_H_

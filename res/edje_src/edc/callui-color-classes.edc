@@ -363,58 +363,6 @@ color_classes {
 		color: 255 255 255 255;
 	}
 	color_class {
-		name: "AO019D";
-		color: 255 255 255 102;
-	}
-	color_class {
-		name: "A01O004E01";
-		color: 255 255 255 235;
-	}
-	color_class {
-		name: "A01O004E02";
-		color: 255 255 255 245;
-	}
-	color_class {
-		name: "A01O004E03";
-		color: 255 255 255 219;
-	}
-	color_class {
-		name: "A01O004E04";
-		color: 255 255 255 230;
-	}
-	color_class {
-		name: "A01O004E05";
-		color: 255 255 255 204;
-	}
-	color_class {
-		name: "A01O004E06";
-		color: 255 255 255 214;
-	}
-	color_class {
-		name: "A01O004E07";
-		color: 255 255 255 189;
-	}
-	color_class {
-		name: "A01O004E08";
-		color: 255 255 255 199;
-	}
-	color_class {
-		name: "A01O004P";
-		color: 247 251 252 153;
-	}
-	color_class {
-		name: "A01O005";
-		color: 49 148 163 255;
-	}
-	color_class {
-		name: "A01O006";
-		color: 49 148 163 230;
-	}
-	color_class {
-		name: "AO199";
-		color: 255 255 255 245;
-	}
-	color_class {
 		name: "ATO009D";
 		color: 127 127 127 77;
 	}
@@ -474,5 +422,10 @@ color_classes {
 		name: "btn_div"; //AO016
 		color: 217 217 217 255;
 	}
+	color_class {
+		name: "keypad_btn_bg"; //AO019
+		color: 250 250 250 10;
+	}
+	
 }
 

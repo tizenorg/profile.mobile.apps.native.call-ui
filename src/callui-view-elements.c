@@ -267,9 +267,9 @@ static void __callui_headset_btn_cb(void *data, Evas_Object *obj, void *event_in
 			cm_bluetooth_on(ad->cm_handle);
 			bupdate_btn = EINA_TRUE;
 		} else {
-			bt_adapter_state_e bt_state = -1;
+			bt_adapter_state_e bt_state = BT_ADAPTER_DISABLED;
 			int ret_code = bt_adapter_get_state(&bt_state);
-			if ((ret_code == BT_ERROR_NONE) && (bt_state != -1)) {
+			if (ret_code == BT_ERROR_NONE) {
 				info("BT status value: %d", bt_state);
 				if (bt_state == BT_ADAPTER_DISABLED) {
 					_callui_load_bluetooth_popup(ad);
@@ -582,14 +582,8 @@ static void __callui_end_btn_cb(void *data, Evas_Object *obj, void *event_info)
 Evas_Object *_callui_create_end_call_button(Evas_Object *parent, void *data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(parent != NULL, NULL);
-	Evas_Object *btn = NULL;
 
-	callui_app_data_t *ad = _callui_get_app_data();
-	if (_callvm_get_top_view_id(ad->view_manager_handle) == VIEW_INCALL_MULTICALL_SPLIT_VIEW) {
-		parent = elm_object_part_content_get(parent, PART_SWALLOW_ACTIONS_PANEL);
-	}
-	btn = elm_object_part_content_get(parent, PART_END_BTN);
-
+	Evas_Object *btn = elm_object_part_content_get(parent, PART_END_BTN);
 	if (!btn) {
 		btn = elm_button_add(parent);
 		elm_object_style_set(btn, "call_icon_only");
@@ -601,7 +595,6 @@ Evas_Object *_callui_create_end_call_button(Evas_Object *parent, void *data)
 	}
 	evas_object_smart_callback_del(btn, "clicked", __callui_end_btn_cb);
 	evas_object_smart_callback_add(btn, "clicked", __callui_end_btn_cb, data);
-	elm_object_signal_emit(parent, "show_end_btn_bg", "main_ly");
 	evas_object_show(btn);
 
 	return btn;
@@ -614,7 +607,6 @@ void _callui_destroy_end_call_button(Evas_Object *parent)
 
 	btn = elm_object_part_content_get(parent, PART_END_BTN);
 	if (btn) {
-		elm_object_signal_emit(parent, "hide_end_btn_bg", "main_ly");
 		evas_object_del(btn);
 		btn = NULL;
 	}
@@ -958,7 +950,7 @@ Evas_Object *_callui_create_thumbnail_with_size(Evas_Object *parent, const char 
 		elm_image_aspect_fixed_set(image, EINA_TRUE);
 		elm_image_fill_outside_set(image, EINA_TRUE);
 		if (set_size) {
-			evas_object_size_hint_min_set(image, _callui_common_get_scaled_width(thumbnail_size[type]), _callui_common_get_scaled_height(thumbnail_size[type]));
+		evas_object_size_hint_min_set(image, ELM_SCALE_SIZE(thumbnail_size[type]), ELM_SCALE_SIZE(thumbnail_size[type]));
 		}
 		elm_object_part_content_set(layout, PART_SWALLOW_IMAGE, image);
 
@@ -967,7 +959,7 @@ Evas_Object *_callui_create_thumbnail_with_size(Evas_Object *parent, const char 
 		Evas_Object *image = elm_image_add(parent);
 		elm_image_file_set(image, EDJ_NAME, group_default_thumbnail[type]);
 		if (set_size) {
-			evas_object_size_hint_min_set(image, _callui_common_get_scaled_width(thumbnail_size[type]), _callui_common_get_scaled_height(thumbnail_size[type]));
+			evas_object_size_hint_min_set(image, ELM_SCALE_SIZE(thumbnail_size[type]), ELM_SCALE_SIZE(thumbnail_size[type]));
 		}
 		return image;
 	}
@@ -1013,19 +1005,6 @@ Evas_Object *_callui_show_caller_id(Evas_Object *contents, char *path)
 	elm_object_signal_emit(contents, "hide_default_cid", "");
 
 	return layout;
-}
-
-Evas_Object *_callui_view_create_focus_layout(Evas_Object *parent)
-{
-	Evas_Object *focus = elm_button_add(parent);
-	elm_object_style_set(focus, "focus");
-
-	Evas_Object *evas_object = evas_object_rectangle_add(evas_object_evas_get(parent));
-	elm_object_part_content_set(focus, "elm.swallow.content", evas_object);
-	evas_object_color_set(evas_object, 0, 0, 0, 0);
-	evas_object_show(evas_object);
-
-	return focus;
 }
 
 static void __callui_hold_btn_cb(void *data, Evas_Object *obj, void *event_info)

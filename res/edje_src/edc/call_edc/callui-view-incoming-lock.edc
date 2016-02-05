@@ -481,13 +481,6 @@
 		after: after_prog_name; \
 	}
 
-color_classes {
-	color_class {
-		name: "ATO004";
-		color: 3 61 133 255;
-	}
-}
-
 group {
 	name: "lock_accept";
 

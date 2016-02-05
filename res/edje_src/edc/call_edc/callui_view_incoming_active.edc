@@ -172,7 +172,7 @@ group {
 				fixed: 1 1;
 				state: "default" 0.0;
 				image {
-				   normal: IMG_SRC_DIR/"handler_btn_02.png";
+				   normal: IMG_SRC_DIR/"call_inline_btn_open.png";
 				}
 			}
 		}

@@ -76,8 +76,10 @@
 
 #define MSG_PKG		"org.tizen.message"
 
-#define EDJ_NAME EDJDIR"/call.edj"
-#define CALL_THEME EDJDIR"/call_theme.edj"
+#define PACKAGE		"org.tizen.call-ui"
+
+#define EDJ_NAME	_callui_common_get_call_edj_path()
+#define CALL_THEME	_callui_common_get_call_theme_path()
 
 #ifndef _EDJ
 #define _EDJ(obj) elm_layout_edje_get(obj)
@@ -103,13 +105,9 @@
 #define APP_CONTROL_OPERATION_END_CALL "http://tizen.org/appcontrol/operation/end_call"
 #define GRP_CALLER_INFO "caller-info"
 #define GRP_MANAGE_CALLS "manage-calls"
-#define GRP_EXTRA_VOLUME "extra-volume"
 #define GRP_LOCK_ACCEPT "lock_accept"
 #define GRP_LOCK_REJECT "lock_reject"
 #define GRP_LOCK_REJECT_WITH_MSG "lock_reject_with_msg"
-
-#define MAIN_WIN_WVGA_W 480
-#define MAIN_WIN_WVGA_H 800
 
 #define	 CALLUI_DISPLAY_NAME_LENGTH_MAX			(255+1)			/**< Voiecall Display Name Max Length  */
 #define	 CALLUI_IMAGE_PATH_LENGTH_MAX			(255+1)			/**< Max File length for image */

@@ -423,26 +423,11 @@ void _callui_view_circle_accept_reject_reset(void *data)
 
 }
 
-static void __callui_view_circle_reject_focus_key_down(void *data, Evas *evas, Evas_Object *obj, void *event_info)
-{
-	dbg("..");
-	Evas_Event_Key_Down *ev = event_info;
-	if (!ev) return;
-	if (ev->event_flags & EVAS_EVENT_FLAG_ON_HOLD)
-		return;
-
-	if ((!strcmp(ev->keyname, "Return")) ||
-		(!strcmp(ev->keyname, "KP_Enter"))) {
-		dbg("..");
-	}
-}
-
 Evas_Object *_callui_view_circle_create_reject_layout(callui_app_data_t *ad, void *data)
 {
 	dbg("..");
 	call_view_data_t *vd = (call_view_data_t *)data;
 	Evas_Object *lock_reject = __callui_view_circle_get_reject_layout(vd);
-	Evas_Object *focus = NULL;
 	Evas_Object *inner_circle = NULL;
 	Evas_Object *outer_circle = NULL;
 	int x = 0;
@@ -472,10 +457,6 @@ Evas_Object *_callui_view_circle_create_reject_layout(callui_app_data_t *ad, voi
 	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MULTI_MOVE, __callui_view_circle_multi_move_cb, ad);
 	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MULTI_UP, __callui_view_circle_multi_up_cb, ad);
 
-	focus = _callui_view_create_focus_layout(ad->win);
-	evas_object_event_callback_add(focus, EVAS_CALLBACK_KEY_DOWN, __callui_view_circle_reject_focus_key_down, vd);
-	elm_object_part_content_set(lock_reject, "reject_inner_circle_focus", focus);
-
 	inner_circle = _callui_edje_object_part_get(lock_reject, "reject_inner_circle");
 	evas_object_geometry_get(inner_circle, &x, &y, &width, &height);
 	dbg("inner circle[%p] geometry: x = %d y = %d w1 =%d h1 =%d\n", inner_circle, x, y, width, height);
@@ -491,27 +472,11 @@ Evas_Object *_callui_view_circle_create_reject_layout(callui_app_data_t *ad, voi
 	return lock_reject;
 }
 
-static void __callui_view_circle_accept_focus_key_down(void *data, Evas *evas, Evas_Object *obj, void *event_info)
-{
-	dbg("..");
-	Evas_Event_Key_Down *ev = event_info;
-
-	if (!ev) return;
-	if (ev->event_flags & EVAS_EVENT_FLAG_ON_HOLD)
-		return;
-
-	if ((!strcmp(ev->keyname, "Return")) ||
-		(!strcmp(ev->keyname, "KP_Enter"))) {
-		dbg("..");
-	}
-}
-
 Evas_Object *_callui_view_circle_create_accept_layout(callui_app_data_t *ad, void *data)
 {
 	dbg("..");
 	call_view_data_t *vd = (call_view_data_t *)data;
 	Evas_Object *lock_accept = __callui_view_circle_get_accept_layout(vd);
-	Evas_Object *focus = NULL;
 	Evas_Object *inner_circle = NULL;
 	Evas_Object *outer_circle = NULL;
 	int x = 0;
@@ -539,11 +504,6 @@ Evas_Object *_callui_view_circle_create_accept_layout(callui_app_data_t *ad, voi
 	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MULTI_DOWN, __callui_view_circle_multi_down_cb, ad);
 	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MULTI_MOVE, __callui_view_circle_multi_move_cb, ad);
 	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MULTI_UP, __callui_view_circle_multi_up_cb, ad);
-
-	focus = _callui_view_create_focus_layout(ad->win);
-	evas_object_event_callback_add(focus, EVAS_CALLBACK_KEY_DOWN, __callui_view_circle_accept_focus_key_down, ad);
-	elm_object_part_content_set(lock_accept, "accept_inner_circle_focus", focus);
-	elm_object_focus_set(focus, EINA_TRUE);
 
 	inner_circle = _callui_edje_object_part_get(lock_accept, "accept_inner_circle");
 	evas_object_geometry_get(inner_circle, &x, &y, &width, &height);

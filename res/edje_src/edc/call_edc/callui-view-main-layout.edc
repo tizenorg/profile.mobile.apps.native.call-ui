@@ -15,21 +15,6 @@
  *
  */
 
-#define ACTION_PANEL_WIDTH 720
-#define ACTION_OFFSET_X 308
-#define ACTION_OFFSET_Y 24
-#define ACTION_HEIGHT 169
-#define ACTION_HEIGHT_OFFSET_Y 24
-
-styles {
-	style {
-		name: "call_timer_style";
-                base: "font="VC_FONT_REGULAR" font_size=24 color=#FFFFFF color_class:"ATO007" align=right text_class:"ATO007" wrap=mixed ellipsis=1.0";
-                tag: "br" "\n";
-                tag: "tab" "\t";
-	}
-}
-
 group {
     name: "main_ly";
 	parts {
@@ -40,16 +25,13 @@ group {
 				image.normal: IMG_SRC_DIR/"background.png";
 			}
 		}
-		part {
-			name: "textblock_bg";
-			type: RECT;
+
+		part { name: PART_SWALLOW_TEXTBLOCK_AREA;
+			type: SWALLOW;
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				rel1 { relative: 0 KEYPAD_ENTRY_TEXT_T; to: "background"; }
-				rel2 { relative: 1 KEYPAD_ENTRY_TEXT_B; to: "background"; }
-				color: COLOR_BG_ALPHA;
-				//color_class: "AO001";
+				rel2.relative: 1.0 KEYPAD_TXT_B;
 				visible: 1;
 			}
 			description {
@@ -61,104 +43,6 @@ group {
 				state: "hide" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
-			}
-		}
-
-		part {
-			name: PART_SWALLOW_TEXTBLOCK_AREA;
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel2.relative: 1.0 (1 - REL_H(KEYPAD_H+ENDCALL_BTN_BG_H));
-				visible: 1;
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-		}
-
-		part {
-			name: "call_info_upper/rect";
-			type: RECT;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0 CALLER_INFO_STATUS_T_PAD/MAIN_SCREEN_H; to: "background"; }
-				rel2 { relative: 1 (CALLER_INFO_STATUS_T_PAD+CALLER_INFO_STATUS_HEIGHT)/MAIN_SCREEN_H; to: "background"; }
-				color: COLOR_BG_ALPHA;
-			}
-		}
-
-		part {
-			name: "call_info_lower/rect";
-			type: RECT;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0 ((CALLER_INFO_STATUS_T_PAD+CALLER_INFO_STATUS_HEIGHT)/MAIN_SCREEN_H); to: "background"; }
-				rel2 { relative: 1 ((CALLER_INFO_STATUS_T_PAD+CALLER_INFO_STATUS_HEIGHT+CALLER_INFO_STATUS_HEIGHT)/MAIN_SCREEN_H); to: "background"; }
-				color: COLOR_BG_ALPHA;
-			}
-		}
-
-		part { name: "extra_volume_icon_swallow";	/*Call time or Call status*/
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0 0; to_x: "icon_padding"; to_y: "call_info_upper/rect";}
-				rel2 { relative: 0 1; to_x: "icon_padding"; to_y: "call_info_upper/rect";}
-				max: 27 27;
-				min: 27 27;
-				fixed: 1 1;
-				align: 1.0 0.5;
-			}
-
-		}
-
-		part { name: "icon_padding";
-			type: SPACER;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				fixed: 1 0;
-				min: 7 0;
-				align: 1 0;
-				rel1 { relative: 0 0; to: "resume_icon_swallow";}
-				rel2 { relative: 0 1; to: "resume_icon_swallow";}
-			}
-		}
-
-		part { name: "resume_icon_swallow";	/*Call time or Call status*/
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0 0; to_x: "txt_padding"; to_y: "call_info_upper/rect";}
-				rel2 { relative: 0 1; to_x: "txt_padding"; to_y: "call_info_upper/rect";}
-				max: 27 27;
-				min: 27 27;
-				fixed: 1 1;
-				align: 1.0 0.5;
-			}
-		}
-
-		part { name: "txt_padding";
-			type: SPACER;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				fixed: 1 0;
-				min: 14 0;
-				align: 1 0;
-				rel1 { relative: 0 0; to: "txt_timer";}
-				rel2 { relative: 0 1; to: "txt_timer";}
 			}
 		}
 
@@ -167,142 +51,47 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				rel1 { relative: CALLER_INFO_STATUS_L 0; to: "call_info_upper/rect";}
-				rel2 { relative: 1 1;  to: "call_info_upper/rect";}
+				rel1 { relative: CALLER_INFO_STATUS_L CALLER_INFO_STATUS_T; to: "background"; }
+				rel2 { relative: CALLER_INFO_STATUS_R CALLER_INFO_STATUS_B; to: "background"; }
 				fixed: 1 1;
 				text {
 					align: 0 0.5;
 					text_class: "ATO001";
 				}
 				align: 0 0.5;
-				max: CALL_STATUS_MAX_TEXT_WIDTH CALLER_INFO_STATUS_HEIGHT;
 				color_class: "ATO001";
 			}
 		}
 
-		/* CALL TIME*/
-		part { name: "txt_timer";	/*Call time or Call status*/
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: CALLER_INFO_STATUS_R 0; to: "call_info_upper/rect";}
-				rel2 { relative: CALLER_INFO_STATUS_R 1; to: "call_info_upper/rect";}
-				text {
-					align: 1 0.5;
-					min: 1 0;
-					style: "call_timer_style";
-					text_class: "ATO007";
-				}
-				align: 1 0.5;
-				max: TXT_TIMER_MAX_TEXT_WIDTH CALLER_INFO_STATUS_HEIGHT;
-				fixed: 1 1;
-				color_class: "ATO007";
-			}
-		}
-
-		part { name: "rec_timer";	/*recording Call time */
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: CALLER_INFO_STATUS_R 0; to: "call_info_lower/rect";}
-				rel2 { relative: CALLER_INFO_STATUS_R 1; to: "call_info_lower/rect";}
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-				text {
-					min: 1 0;
-					style: "call_timer_style";
-					text_class: ATO032;
-				}
-				align: 1 0.5;
-				color_class: ATO032;
-				max: TXT_TIMER_MAX_TEXT_WIDTH+10 CALLER_INFO_STATUS_HEIGHT;
-				fixed: 1 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-		}
-
-		part { name: "rec_image_spacer";
-			type: RECT;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 {relative: 0.0 0.0; to: "rec_timer";}
-				rel2 {relative: 0.0 1.0; to: "rec_timer";}
-				visible: 0;
-				align: 1 0;
-				min: 5 30;
-				max: 5 30;
-				fixed: 1 1;
-			}
-		}
-
-		part { name: "rec_image";
-			type: IMAGE;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 {relative: 0.0 0.0; to: "rec_image_spacer";}
-				rel2 {relative: 0.0 1.0; to: "rec_image_spacer";}
-				image.normal: IMG_SRC_DIR/"call_during_record.png" ;
-				aspect_preference: SOURCE;
-				min:30 30;
-				align: 1.0 0.5;
-				fixed: 1 1;
-				visible: 0;
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default";
-				visible: 0;
-			}
-		}
-
 		part { name: "caller_info_rect";
-						type: RECT;
-						scale: 1;
-						description {
-								state: "default" 0.0;
-								visible: 1;
-								rel1 { relative: CALLER_INFO_L CALLER_INFO_T; to: "background";}
-								rel2 { relative: CALLER_INFO_R CALLER_INFO_B; to: "background";}
-								color: COLOR_BG_ALPHA;
-								//min: CALLER_INFO_WIDTH CALLER_INFO_HEIGHT;
-						}
+			type: SPACER;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1 { relative: CALLER_INFO_L CALLER_INFO_T; to: "background";}
+				rel2 { relative: CALLER_INFO_R CALLER_INFO_B; to: "background";}
+			}
 		}
 
 		part { name: "caller_info";
-				type: SWALLOW;
-				scale: 1;
-				description {
-						state: "default" 0.0;
-								visible: 1;
-								rel1 { relative: 0.0 0.0; to: "caller_info_rect";}
-								rel2 { relative: 1.0 1.0; to: "caller_info_rect";}
-				}
-				description {
-					state: "show" 0.0;
-					inherit: "default" 0.0;
-					visible: 1;
-				}
-				description {
-					state: "hide" 0.0;
-					inherit: "default" 0.0;
-					visible: 0;
-				}
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				visible: 1;
+				rel1 { relative: 0.0 0.0; to: "caller_info_rect";}
+				rel2 { relative: 1.0 1.0; to: "caller_info_rect";}
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
 		}
 
 		part { name: "circle_btn_area";
@@ -325,16 +114,16 @@ group {
 		}
 
 		part { name: "btn_area";
-				type: RECT;
-				scale: 1;
-				description {
-						state: "default" 0.0;
-						visible: 1;
-						rel1{ relative: SIX_BTN_LAYOUT_L SIX_BTN_LAYOUT_T; to: "background";}
-						rel2{ relative: SIX_BTN_LAYOUT_R SIX_BTN_LAYOUT_B; to: "background";}
-						color: COLOR_BG_ALPHA;
-						align: 0.5 0.0;
-				}
+			type: RECT;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				visible: 1;
+				rel1{ relative: SIX_BTN_LAYOUT_L SIX_BTN_LAYOUT_T; to: "background";}
+				rel2{ relative: SIX_BTN_LAYOUT_R SIX_BTN_LAYOUT_B; to: "background";}
+				color: COLOR_BG_ALPHA;
+				align: 0.5 0.0;
+			}
 			description {
 				state: "show" 0.0;
 				inherit: "default" 0.0;
@@ -353,22 +142,23 @@ group {
 			description {
 				state: "default" 0.0;
 				visible: 0;
-				rel1 { relative: 0 KEYPAD_AREA_T_HIDE; to: "background";}
-				rel2 { relative: 1 KEYPAD_AREA_B_HIDE; to: "background";}
+				rel1.relative: 0.0 1.0;
+				rel2.relative: 1.0 2.0;
 			}
 			description {
 				state: "show" 0.0;
 				inherit: "default" 0.0;
 				visible: 1;
-				rel1 { relative: 0 0; to: "background";}
-				rel2 { relative: 1 (KEYPAD_AREA_H/MAIN_SCREEN_H); to: "background";}
+				rel1.relative: 0.0 0.0;
+				rel2 {
+					relative: 1.0 0.0;
+					to_y: "end_btn_area";
+				}
 			}
 			description {
 				state: "hide" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
-				rel1 { relative: 0 KEYPAD_AREA_T_HIDE; to: "background";}
-				rel2 { relative: 1 KEYPAD_AREA_B_HIDE; to: "background";}
 			}
 		}
 
@@ -394,142 +184,14 @@ group {
 			}
 		}
 
-		part { name: "btn_bg";
+		part { name: "end_btn_area"; 
 			type: RECT;
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				visible: 0;
-				rel1 { relative: ENDSINGLECALL_BTN_BG_L ENDSINGLECALL_BTN_BG_T; to: "background";}
-				rel2 { relative: ENDSINGLECALL_BTN_BG_R ENDSINGLECALL_BTN_BG_B; to: "background";}
-			}
-		}
-
-		part { name: "bottom_btn_bg";
-			type: RECT;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
+				rel1.relative: ENDCALL_BTN_BG_L ENDCALL_BTN_BG_T;
+				rel2.relative: ENDCALL_BTN_BG_R ENDCALL_BTN_BG_B;
 				color: 255 255 255 255;
-				rel1 { relative: BOTTOM_BTN_LAYOUT_L BOTTOM_BTN_LAYOUT_T; to: "background";}
-				rel2 { relative: BOTTOM_BTN_LAYOUT_R BOTTOM_BTN_LAYOUT_B; to: "background";}
-				align: 0.5 0.0;
-				min: 320 72;
-			}
-			description {
-				state: "visible" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-		}
-
-		part { name: "three_btn_voicecall";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1 { relative: ENDSINGLECALL_CALL_BTN_BG_L 17/BOTTOM_BTN_BG_HEIGHT; to: "bottom_btn_bg";}
-				rel2 { relative: ENDSINGLECALL_CALL_BTN_BG_R 91/BOTTOM_BTN_BG_HEIGHT; to: "bottom_btn_bg";}
-				align: 0.5 0.0;
-			}
-			description {
-				state: "visible" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-		}
-
-		part { name: "three_btn_message";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1 { relative: ENDSINGLECALL_MSG_BTN_BG_L 17/BOTTOM_BTN_BG_HEIGHT; to: "bottom_btn_bg";}
-				rel2 { relative: ENDSINGLECALL_MSG_BTN_BG_R 91/BOTTOM_BTN_BG_HEIGHT; to: "bottom_btn_bg";}
-				align: 0.5 0.0;
-			}
-			description {
-				state: "visible" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-		}
-
-		part { name: "btn_view_contacts";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1 { relative: ENDSINGLECALL_VIEW_CONTACT_BTN_L ENDSINGLECALL_VIEW_CONTACT_BTN_T; to: "btn_bg";}
-				rel2 { relative: ENDSINGLECALL_VIEW_CONTACT_BTN_R ENDSINGLECALL_VIEW_CONTACT_BTN_B; to: "btn_bg";}
-				align: 0.5 0.0;
-			}
-			description {
-				state: "visible" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-		}
-
-		part { name: "btn_create_contacts";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1 { relative: ENDSINGLECALL_CREATE_CONTACT_BTN_L ENDSINGLECALL_CREATE_CONTACT_BTN_T; to: "btn_bg";}
-				rel2 { relative: ENDSINGLECALL_CREATE_CONTACT_BTN_R ENDSINGLECALL_CREATE_CONTACT_BTN_B; to: "btn_bg";}
-				align: 0.5 0.0;
-			}
-			description {
-				state: "visible" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-		}
-
-		part { name: "btn_update";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1 { relative: ENDSINGLECALL_UPDATE_CONTACT_BTN_L ENDSINGLECALL_UPDATE_CONTACT_BTN_T; to: "btn_bg";}
-				rel2 { relative: ENDSINGLECALL_UPDATE_CONTACT_BTN_R ENDSINGLECALL_UPDATE_CONTACT_BTN_B; to: "btn_bg";}
-				align: 0.5 0.0;
-			}
-			description {
-				state: "visible" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-		}
-
-		part { name: "end_btn_area";
-				type: RECT;
-				scale: 1;
-				description {
-					state: "default" 0.0;
-					visible: 1;
-					rel1{ relative: BOTTOM_BTN_LAYOUT_L ((MAIN_SCREEN_H-ENDCALL_BTN_BG_HEIGHT)/MAIN_SCREEN_H); to: "background";}
-					rel2{ relative: BOTTOM_BTN_LAYOUT_R 1.0; to: "background";}
-					min: 320 72;
-					color: 255 255 255 255;
-					align: 0.5 1.0;
-				}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
 			}
 		}
 
@@ -538,38 +200,19 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				visible: 1;
-				rel1{ relative: (ACTION_OFFSET_X/ACTION_PANEL_WIDTH) ACTION_HEIGHT_OFFSET_Y/ACTION_HEIGHT; to: "end_btn_area";}
-				rel2{ relative: ((ACTION_PANEL_WIDTH-ACTION_OFFSET_X)/ACTION_PANEL_WIDTH) ((ACTION_HEIGHT-ACTION_HEIGHT_OFFSET_Y)/ACTION_HEIGHT); to: "end_btn_area";}
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
+				rel1 {
+					relative: ENDCALL_BTN_L ENDCALL_BTN_T; 
+					to: "end_btn_area";
+				}
+				rel2 {
+					relative: ENDCALL_BTN_R ENDCALL_BTN_B; 
+					to: "end_btn_area";
+				}
 			}
 		}
- 	}//parts
+ 	}
 
 	programs {
-		program { name: "show_recording_timer";
-			signal: "recording_time_show";
-			source: "rec_timer";
-			action: STATE_SET "show" 0.0;
-			target: "rec_timer";
-			target: "rec_image";
-		}
-		program { name: "hide_recording_timer";
-			signal: "recording_time_hide";
-			source: "rec_timer";
-			action: STATE_SET "hide" 0.0;
-			target: "rec_timer";
-			target: "rec_image";
-		}
 		program { name: "show_effect_allbtn";
 			signal: "SHOW_EFFECT";
 			source: "ALLBTN";
@@ -609,7 +252,6 @@ group {
 			name: "show_entry";
 			action: STATE_SET "show" 0.0;
 			target: PART_SWALLOW_TEXTBLOCK_AREA;
-			target: "textblock_bg";
 		}
 
 		program { name: "hide_keypadarea";
@@ -645,7 +287,6 @@ group {
 			name: "hide_entry";
 			action: STATE_SET "hide" 0.0;
 			target: PART_SWALLOW_TEXTBLOCK_AREA;
-			target: "textblock_bg";
 		}
 
 		program {
@@ -654,76 +295,10 @@ group {
 			source: "incall_layout";
 			in: 0.0 0.0;
 			action: STATE_SET "default" 0.0;
-
 			target: "background";
-			//target: "caller_id";
 			target: "caller_info";
 			target: "btn_region";
 			target: PART_SWALLOW_KEYPAD;
-		}
-
-		program { name: "show_1_btns";
-			signal: "show_end_menu_1_btns";
-			source: "show_1_btns";
-			action: STATE_SET "visible" 0.0;
-			target: "bottom_btn_bg";
-//			target: "three_btn_videocall";
-			target: "three_btn_voicecall";
-			target: "three_btn_message";
-			target: "btn_view_contacts";
-			target: "btn_create_contacts";
-			target: "btn_update";
-		}
-
-		program { name: "show_2_btns";
-			signal: "show_end_menu_2_btns";
-			source: "show_2_btns";
-			action: STATE_SET "visible" 0.0;
-			target: "bottom_btn_bg";
-//			target: "three_btn_videocall";
-			target: "three_btn_voicecall";
-			target: "three_btn_message";
-			target: "btn_view_contacts";
-			target: "btn_create_contacts";
-			target: "btn_update";
-		}
-
-		program {
-			name: "set_portrait_1_btn";
-			signal: "set_portrait_1_btn";
-			source: "end_singlecall_1_btn";
-			in: 0.0 0.0;
-			action: STATE_SET "default" 0.0;
-
-			target: "background";
-			target: "caller_info";
-			target: "btn_bg";
-			target: "bottom_btn_bg";
-//			target: "three_btn_videocall";
-			target: "three_btn_voicecall";
-			target: "three_btn_message";
-			target: "btn_view_contacts";
-			target: "btn_create_contacts";
-			target: "btn_update";
-		}
-
-		program {
-			name: "set_portrait_2_btn";
-			signal: "set_portrait_2_btn";
-			source: "end_singlecall_2_btn";
-			in: 0.0 0.0;
-			action: STATE_SET "default" 0.0;
-
-			target: "background";
-			target: "caller_info";
-			target: "btn_bg";
-			target: "bottom_btn_bg";
-//			target: "three_btn_videocall";
-			target: "three_btn_voicecall";
-			target: "three_btn_message";
-			target: "btn_view_contacts";
-			target: "btn_create_contacts";
-			target: "btn_update";
 		}
 
 		program { name: "show_mt_circle_bg";
@@ -732,24 +307,12 @@ group {
 			action: STATE_SET "show" 0.0;
 			target: "circle_btn_area";
 		}
+
 		program { name: "hide_mt_circle_bg";
 			signal: "mt_circle_bg_hide";
 			source: "mt_view";
 			action: STATE_SET "default" 0.0;
 			target: "circle_btn_area";
-		}
-
-		program { name: "show_end_btn_bg";
-			signal: "show_end_btn_bg";
-			source: "main_ly";
-			action: STATE_SET "show" 0.0;
-			target: "end_btn_area";
-		}
-		program { name: "hide_end_btn_bg";
-			signal: "hide_end_btn_bg";
-			source: "main_ly";
-			action: STATE_SET "hide" 0.0;
-			target: "end_btn_area";
 		}
 	}
 }

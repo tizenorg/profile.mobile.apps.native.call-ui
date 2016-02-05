@@ -170,9 +170,8 @@ static void __vcui_endcall_create_popup_cb(void *data, Evas *evas, Evas_Object *
 	eext_object_event_callback_add(priv->create_update_popup, EEXT_CALLBACK_BACK, __vcui_endcall_popup_back_cb, ad);
 
 	elm_popup_align_set(priv->create_update_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
-	if (priv->call_number) {
-		elm_object_part_text_set(priv->create_update_popup, "title,text",  priv->call_number);
-	}
+	elm_object_part_text_set(priv->create_update_popup, "title,text",  priv->call_number);
+
 	Evas_Object *genlist = elm_genlist_add(priv->create_update_popup);
 	elm_genlist_homogeneous_set(genlist, EINA_TRUE);
 	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
