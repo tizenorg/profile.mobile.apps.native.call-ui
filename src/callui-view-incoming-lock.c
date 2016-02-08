@@ -21,7 +21,6 @@
 #include <vconf.h>
 #include <notification.h>
 #include <Elementary.h>
-#include <tzplatform_config.h>
 
 #include "callui.h"
 #include "callui-view-layout.h"
@@ -31,8 +30,6 @@
 #include "callui-view-incoming-lock.h"
 #include "callui-common.h"
 #define REJ_MSG_LIST_OPEN_STATUS_KEY "list_open_status_key"
-#define CALLUI_CST_SO_PATH	tzplatform_mkpath(TZ_SYS_RO_UG, "/lib/libug-call-setting.so")
-#define CALLUI_CST_REJECT_MSG_GET	"cst_reject_msg_get"
 #define REJ_MSG_GENLIST_DATA "reject_msg_genlist_data"
 
 #define SAFE_C_CAST(type, value) ((type)(ptrdiff_t)value)
@@ -65,27 +62,6 @@ call_view_data_t *_callui_view_incoming_lock_new(callui_app_data_t *ad)
 	}
 
 	return &incoming_lock_view;
-}
-
-void _callui_view_incoming_lock_reject_msg_create_call_setting_handle(void *data)
-{
-	dbg("..");
-	call_view_data_t *vd = (call_view_data_t *)data;
-	incoming_lock_view_priv_t *priv = (incoming_lock_view_priv_t *)vd->priv;
-	char *error = NULL;
-
-	priv->dl_handle = dlopen(CALLUI_CST_SO_PATH, RTLD_LAZY);
-	if (priv->dl_handle) {
-		priv->msg_func_ptr = dlsym(priv->dl_handle, CALLUI_CST_REJECT_MSG_GET);
-		if ((error = dlerror()) != NULL) {
-			dbg("dlsym failed!!! error = %s", error);
-			priv->msg_func_ptr = NULL;
-			dlclose(priv->dl_handle);
-			priv->dl_handle = NULL;
-		}
-	} else {
-		dbg("failed to open %s", CALLUI_CST_SO_PATH);
-	}
 }
 
 static void __send_reject_msg_status_cb(msg_handle_t Handle, msg_struct_t pStatus, void *pUserParam)
@@ -242,21 +218,6 @@ static int __callui_view_incoming_lock_onshow(call_view_data_t *view_data, void 
 	return 0;
 }
 
-static char *__reject_list_get_msg_by_index(void *data, int index, Eina_Bool b_parsing)
-{
-	call_view_data_t *vd = (call_view_data_t *)data;
-	incoming_lock_view_priv_t *priv = (incoming_lock_view_priv_t *)vd->priv;
-
-	char *ret_str = NULL;
-
-	if (priv->msg_func_ptr) {
-		ret_str = (char *) priv->msg_func_ptr(index, b_parsing);  /* i : reject msg index(0 ~ 4)*/
-		sec_dbg("b_parsing(%d),ret_str(%s)", b_parsing, ret_str);
-	}
-
-	return ret_str;
-}
-
 static char *__callui_view_incoming_lock_reject_msg_gl_label_get_msg(void *data, Evas_Object *obj, const char *part)
 {
 	CALLUI_RETURN_NULL_IF_FAIL(part);
@@ -268,7 +229,7 @@ static char *__callui_view_incoming_lock_reject_msg_gl_label_get_msg(void *data,
 
 	if (!strcmp(part, "elm.text")) {
 		if (index != -1) {
-			msg_str = __reject_list_get_msg_by_index(vd, index, EINA_TRUE);
+			msg_str = _callui_common_get_reject_msg_by_index(index);
 			sec_dbg("msg_str(%s)", msg_str);
 			return msg_str; /*Send markup text to draw the genlist */
 		} else {
@@ -299,7 +260,7 @@ static void __reject_msg_gl_sel_msg(void *data, Evas_Object *obj, void *event_in
 		incoming_lock_view_priv_t *priv = (incoming_lock_view_priv_t *)vd->priv;
 		CALLUI_RETURN_IF_FAIL(priv);
 
-		ret_str =  __reject_list_get_msg_by_index(vd, index, EINA_TRUE);
+		ret_str =  _callui_common_get_reject_msg_by_index(index);
 		if (ret_str) {
 			reject_msg = elm_entry_markup_to_utf8(ret_str); /*send utf8 text to MSG */
 			if (reject_msg != NULL) {
