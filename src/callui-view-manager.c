@@ -34,7 +34,6 @@ struct _view_manager_data {
 	callui_view_id_t view_top;
 };
 
-
 static void __callvm_init_view_register_function(view_manager_data_t *vm_data, callui_view_id_t view_id, call_view_data_t *(*view_new) ())
 {
 	vm_data->func_new[view_id] = view_new;
@@ -54,7 +53,7 @@ view_manager_data_t *_callvm_init()
 	__callvm_init_view_register_function(vm_data, VIEW_INCALL_MULTICALL_LIST_VIEW, _callui_view_multi_call_list_new);
 	__callvm_init_view_register_function(vm_data, VIEW_QUICKPANEL_VIEW, _callui_view_qp_new);
 	__callvm_init_view_register_function(vm_data, VIEW_ENDCALL_VIEW, _callui_view_callend_new);
-	vm_data->view_top = -1;
+	vm_data->view_top = VIEW_UNDEFINED_TYPE;
 	return vm_data;
 }
 
@@ -150,7 +149,7 @@ void _callvm_view_change(callui_view_id_t view_id, unsigned int param1, void *pa
 	CALLUI_RETURN_IF_FAIL(appdata);
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 	info("view:[%d] -> [%d]", ad->view_manager_handle->view_top, view_id);
-	if (view_id >= VIEW_MAX) {
+	if ((view_id <= VIEW_UNDEFINED_TYPE) || (view_id >= VIEW_MAX)) {
 		err("[=========== ERROR!!!! Invalid View ID : %d =================]", view_id);
 		return;
 	}
@@ -163,7 +162,7 @@ void _callvm_view_change(callui_view_id_t view_id, unsigned int param1, void *pa
 	new_view_data_cb func_new = ad->view_manager_handle->func_new[view_id];
 
 
-	if ((last_view_id != -1) && (last_view_id != view_id)) {
+	if ((last_view_id != VIEW_UNDEFINED_TYPE) && (last_view_id != view_id)) {
 		dbg("hide & destroy [%d]", last_view_id);
 		_callvm_hide_view(views[last_view_id]);
 		views[last_view_id] = NULL;
@@ -246,7 +245,7 @@ void _callvm_terminate_app_or_view_change(void *appdata)
 				vd->view_st[i]->onDestroy(vd->view_st[i]);
 			}
 		}
-		vd->view_top = -1;
+		vd->view_top = VIEW_UNDEFINED_TYPE;
 		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 			_callui_lock_manager_set_callback_on_unlock(ad->lock_handle, __callvm_terminate_app, ad->lock_handle);
 		} else {

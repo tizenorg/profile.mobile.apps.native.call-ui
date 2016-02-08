@@ -21,7 +21,8 @@
 #include <Elementary.h>
 
 typedef enum {
-	VIEW_DIALLING_VIEW = 0,	/**< Dialling view*/
+	VIEW_UNDEFINED_TYPE = -1,
+	VIEW_DIALLING_VIEW,	/**< Dialling view*/
 	VIEW_INCOMING_LOCK_VIEW,/**< Incoming lock view*/
 	VIEW_INCALL_ONECALL_VIEW,/**< Incoming single call view*/
 	VIEW_INCALL_MULTICALL_SPLIT_VIEW,/**< Multicall split view */

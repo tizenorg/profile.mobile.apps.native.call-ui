@@ -513,7 +513,6 @@ static bool _callui_app_create_layout(void *data)
 	return true;
 }
 
-
 static void __callui_bt_deinit()
 {
 	int ret = BT_ERROR_NONE;
@@ -523,7 +522,6 @@ static void __callui_bt_deinit()
 		return;
 	}
 }
-
 
 static void _callui_app_terminate(void *data)
 {
@@ -860,8 +858,8 @@ static Eina_Bool __callui_app_win_hard_key_down_cb(void *data, int type, void *e
 		return EINA_FALSE;
 	}
 
-	if (_callvm_get_top_view_id(ad->view_manager_handle) == -1) {
-		dbg("ad->view_top is -1.");
+	if (_callvm_get_top_view_id(ad->view_manager_handle) == VIEW_UNDEFINED_TYPE) {
+		dbg("ad->view_top is UNDEFINED");
 		return EINA_FALSE;
 	}
 
