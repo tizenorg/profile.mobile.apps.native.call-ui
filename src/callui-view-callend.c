@@ -239,7 +239,7 @@ static void __callui_view_callend_create_screen(callui_app_data_t *ad, Evas_Obje
 	if (button_call_back) {
 		elm_layout_file_set(button_call_back, EDJ_NAME, "call_back");
 		evas_object_event_callback_add(button_call_back, EVAS_CALLBACK_MOUSE_UP,  __callui_endcall_voicecall_btn_cb, (void *)priv->call_number);
-		elm_object_part_text_set(button_call_back, "call_back_text", _("IDS_CALL_BUTTON_CALL"));
+		elm_object_part_text_set(button_call_back, "end_btn_text", _("IDS_CALL_BUTTON_CALL"));
 	}
 	elm_object_part_content_set(priv->contents, "button_call_back", button_call_back);
 
@@ -247,7 +247,7 @@ static void __callui_view_callend_create_screen(callui_app_data_t *ad, Evas_Obje
 	if (button_message) {
 		elm_layout_file_set(button_message, EDJ_NAME, "message_button");
 		evas_object_event_callback_add(button_message, EVAS_CALLBACK_MOUSE_UP, __vcui_endcall_msg_btn_cb, (void *)priv->call_number);
-		elm_object_part_text_set(button_message, "message_text", _("IDS_COM_BODY_MESSAGE"));
+		elm_object_part_text_set(button_message, "end_btn_text", _("IDS_COM_BODY_MESSAGE"));
 	}
 	elm_object_part_content_set(priv->contents, "button_message_back", button_message);
 	elm_object_part_text_set(priv->contents, "main_title_status", _("IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"));

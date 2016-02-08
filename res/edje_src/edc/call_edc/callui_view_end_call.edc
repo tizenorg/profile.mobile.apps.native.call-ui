@@ -17,7 +17,7 @@
 
 styles {
 	style {
-		name: "call_timer_style1";
+		name: "call_timer_style";
 		base: "font=Tizen:style=Regular align=left font_size=40 color=#FFFFFF ellipsis=1.0";
 	}
 	style {
@@ -29,10 +29,6 @@ styles {
 		base: "font=Tizen:style=Regular align=left font_size=34 color=#FFFFFF ellipsis=1.0";
 	}
 	style {
-		name: "call_timer_style2";
-		base: "font=Tizen:style=Regular align=right font_size=40 color=#FFFFFF ellipsis=1.0";
-	}
-	style {
 		name: "button_style";
 		base: "font=Tizen:style=Regular align=center font_size=34 color=#808080 ellipsis=1.0";
 	}
@@ -42,154 +38,165 @@ styles {
 	}
 }
 
-#define SPACE_NOTIFICATION 40
-#define SPACE_NOTI_MAIN_TITLE 30
-#define MAIN_TITLE 54
-#define SPACE_MAIN_TITLE_MAIN_IMAGE 40
-#define MAIN_IMAGE 98
-#define SPACE_MAIN_IMAGE 44
-#define BOTTOM_BUTTON_HEIGHT 162
-#define MAIN_BG_HEIGHT (SPACE_NOTIFICATION+SPACE_NOTI_MAIN_TITLE+MAIN_TITLE+SPACE_MAIN_TITLE_MAIN_IMAGE+MAIN_IMAGE+SPACE_MAIN_IMAGE+BOTTOM_BUTTON_HEIGHT)
-#define MAIN_WIDTH 720
-#define MAIN_WIDTH_TWO (720/2)
-#define MAIN_HEIGHT 1280
-#define WIDTH_MAIN_TITLE 32
-#define SPACER_MAIN_TITLE_CALL_NAME 15
-#define SPACER_MAIN_INFO (SPACE_NOTI_MAIN_TITLE+MAIN_TITLE+SPACER_MAIN_TITLE_CALL_NAME)
-#define SIZE_TEXT_INFO 78
-#define SPACE_TEXT_INFO_BUTTON 6
-#define WIDTH_CREATE_BUTTON 359
-#define HEIGHT_CREATE_BUTTON 46
-#define ADD_ICON_BUTTON_ICON_SIZE 80
-#define ADD_BUTTON_ICON_SIZE 120
-#define ADD_BUTTON_OFFSET 20
+#define MAIN_WIDTH					MAIN_SCREEN_W
+#define MAIN_HEIGHT					MAIN_SCREEN_H
+#define MAIN_WIDTH_TWO				(MAIN_WIDTH/2)
 
-#define ADD_ICON_BUTTON_L_PAD 32
-#define ADD_ICON_BUTTON_R_PAD 17
+#define EC_MAIN_TITLE_T_PAD			30
+#define EC_MAIN_TITLE_H				54
+#define EC_CONTACT_IMAGE_T_PAD		30
+#define EC_CONTACT_IMAGE_SIZE		168
+#define EC_BOTTOM_BTN_T_PAD			44
+#define EC_BOTTOM_BTN_H				190
+#define EC_MAIN_BG_H				(INDICATOR_HEIGHT+EC_MAIN_TITLE_T_PAD+EC_MAIN_TITLE_H+EC_CONTACT_IMAGE_T_PAD+EC_CONTACT_IMAGE_SIZE+EC_BOTTOM_BTN_T_PAD+EC_BOTTOM_BTN_H)
 
-#define BOTTOM_BUTTON_ICON_SIZE 64
-#define BOTTOM_BUTTON_TEXT_SIZE 132
-#define BOTTOM_BUTTON_ICON_T_PAD 32
-#define BOTTOM_BUTTON_ICON_L_PAD ((MAIN_WIDTH_TWO/2)-(BOTTOM_BUTTON_ICON_SIZE/2))
-#define BOTTOM_BUTTON_R_PAD (BOTTOM_BUTTON_R_PAD+BOTTOM_BUTTON_ICON_SIZE)
-#define BOTTOM_BUTTON_TEXT_R_PAD 114
-#define BOTTOM_BUTTON_TEXT_L_PAD (BOTTOM_BUTTON_TEXT_R_PAD+BOTTOM_BUTTON_TEXT_SIZE)
-#define BOTTOM_BUTTON_TEXT_B_PAD 32
+#define EC_MAIN_TITLE_R_PAD			32
 
-#define MAIN_TITLE_X0 ((WIDTH_MAIN_TITLE)/MAIN_WIDTH)
-#define MAIN_TITLE_Y0 ((SPACE_NOTIFICATION+SPACE_NOTI_MAIN_TITLE)/MAIN_BG_HEIGHT)
-#define MAIN_TITLE_Y1 ((SPACE_NOTIFICATION+MAIN_TITLE+SPACE_NOTI_MAIN_TITLE)/MAIN_BG_HEIGHT)
+#define EC_CONTACT_NAME_T_PAD		50
+#define EC_CONTACT_NAME_H			76
 
-#define CONTACT_IMAGE_X0 (WIDTH_MAIN_TITLE/MAIN_WIDTH)
-#define CONTACT_IMAGE_Y0 ((SPACE_NOTIFICATION+MAIN_TITLE+SPACE_NOTI_MAIN_TITLE+SPACE_MAIN_TITLE_MAIN_IMAGE)/MAIN_BG_HEIGHT)
-#define CONTACT_IMAGE_X1 ((WIDTH_MAIN_TITLE+MAIN_IMAGE)/MAIN_WIDTH)
-#define CONTACT_IMAGE_Y1 ((SPACE_NOTIFICATION+MAIN_TITLE+SPACE_NOTI_MAIN_TITLE+SPACE_MAIN_TITLE_MAIN_IMAGE+MAIN_IMAGE)/MAIN_BG_HEIGHT)
+#define EC_CONTACT_NUMBER_T_PAD		6
+#define EC_CONTACT_NUMBER_H			46
 
-#define RECT_BUTTON_X0 (0.0)
-#define RECT_BUTTON_Y0 ((MAIN_BG_HEIGHT-BOTTOM_BUTTON_HEIGHT)/MAIN_BG_HEIGHT)
+#define EC_ADD_BTN_ICON_SIZE		80
+#define EC_ADD_BTN_ICON_B_PAD		88
+#define EC_ADD_BTN_SIZE				120
+#define EC_ADD_BUTTON_R_PAD			20
 
-#define CONTACT_NAME_X0 (CONTACT_IMAGE_X1+(WIDTH_MAIN_TITLE/MAIN_WIDTH))
-#define CONTACT_NAME_Y0 ((SPACE_NOTIFICATION+MAIN_TITLE+SPACE_NOTI_MAIN_TITLE+SPACER_MAIN_TITLE_CALL_NAME)/MAIN_BG_HEIGHT)
-#define CONTACT_NAME_X1 ((MAIN_WIDTH-ADD_ICON_BUTTON_R_PAD-ADD_ICON_BUTTON_ICON_SIZE-ADD_ICON_BUTTON_L_PAD)/MAIN_WIDTH)
-#define CONTACT_NAME_Y1 ((SPACE_NOTIFICATION+MAIN_TITLE+SPACE_NOTI_MAIN_TITLE+SPACER_MAIN_TITLE_CALL_NAME+76)/MAIN_BG_HEIGHT)
+#define EC_ADD_ICON_BTN_L_PAD		32
+#define EC_ADD_ICON_BTN_R_PAD		17
 
-#define CONTACT_NUMBER_X0 (CONTACT_IMAGE_X1+(WIDTH_MAIN_TITLE/MAIN_WIDTH))
-#define CONTACT_NUMBER_Y0 ((SPACE_NOTIFICATION+MAIN_TITLE+SPACE_NOTI_MAIN_TITLE+SPACER_MAIN_TITLE_CALL_NAME+76+6)/MAIN_BG_HEIGHT)
-#define CONTACT_NUMBER_X1 ((MAIN_WIDTH-ADD_ICON_BUTTON_R_PAD-ADD_ICON_BUTTON_ICON_SIZE-ADD_ICON_BUTTON_L_PAD)/MAIN_WIDTH)
-#define CONTACT_NUMBER_Y1 ((SPACE_NOTIFICATION+MAIN_TITLE+SPACE_NOTI_MAIN_TITLE+SPACER_MAIN_TITLE_CALL_NAME+76+6+46)/MAIN_BG_HEIGHT)
+#define EC_BOTTOM_BTN_ICON_SIZE		64
+#define EC_BOTTOM_BTN_TEXT_W		132
+#define EC_BOTTOM_BTN_ICON_T_PAD	36
+#define EC_BOTTOM_BTN_ICON_L_PAD	((MAIN_WIDTH_TWO-EC_BOTTOM_BTN_ICON_SIZE)/2)
+#define EC_BOTTOM_BTN_R_PAD			(EC_BOTTOM_BTN_R_PAD+EC_BOTTOM_BTN_ICON_SIZE)
 
-#define CREATE_CONTACT_X0 ((MAIN_WIDTH-ADD_ICON_BUTTON_R_PAD-ADD_ICON_BUTTON_ICON_SIZE)/MAIN_WIDTH)
-#define CREATE_CONTACT_Y0 ((MAIN_BG_HEIGHT-BOTTOM_BUTTON_HEIGHT-64-24-ADD_ICON_BUTTON_ICON_SIZE)/MAIN_BG_HEIGHT)
-#define CREATE_CONTACT_X1 ((MAIN_WIDTH-ADD_ICON_BUTTON_R_PAD)/MAIN_WIDTH)
-#define CREATE_CONTACT_Y1 ((MAIN_BG_HEIGHT-BOTTOM_BUTTON_HEIGHT-64-24)/MAIN_BG_HEIGHT)
+#define EC_BOTTOM_BTN_TEXT_B_PAD	38
+#define EC_BOTTOM_BTN_TEXT_R_PAD	((MAIN_WIDTH_TWO-EC_BOTTOM_BTN_TEXT_W)/2)
+#define EC_BOTTOM_BTN_TEXT_L_PAD	(EC_BOTTOM_BTN_TEXT_R_PAD+EC_BOTTOM_BTN_TEXT_W)
 
-#define BUTTON_ICON_X0 (BOTTOM_BUTTON_ICON_L_PAD/MAIN_WIDTH_TWO)
-#define BUTTON_ICON_Y0 (BOTTOM_BUTTON_ICON_T_PAD/BOTTOM_BUTTON_HEIGHT)
-#define BUTTON_ICON_X1 ((BOTTOM_BUTTON_ICON_L_PAD+BOTTOM_BUTTON_ICON_SIZE)/MAIN_WIDTH_TWO)
-#define BUTTON_ICON_Y1 (BOTTOM_BUTTON_ICON_T_PAD+BOTTOM_BUTTON_ICON_SIZE)/BOTTOM_BUTTON_HEIGHT
+#define EC_MAIN_TITLE_X0		((EC_MAIN_TITLE_R_PAD)/MAIN_WIDTH)
+#define EC_MAIN_TITLE_Y0		((INDICATOR_HEIGHT+EC_MAIN_TITLE_T_PAD)/EC_MAIN_BG_H)
+#define EC_MAIN_TITLE_Y1		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD)/EC_MAIN_BG_H)
 
-#define BUTTON_TEXT_X0 (BOTTOM_BUTTON_TEXT_R_PAD/MAIN_WIDTH_TWO)
-#define BUTTON_TEXT_Y0 ((BOTTOM_BUTTON_ICON_T_PAD+BOTTOM_BUTTON_ICON_SIZE)/BOTTOM_BUTTON_HEIGHT)
-#define BUTTON_TEXT_X1 (BOTTOM_BUTTON_TEXT_L_PAD/MAIN_WIDTH_TWO)
-#define BUTTON_TEXT_Y1 ((BOTTOM_BUTTON_HEIGHT-BOTTOM_BUTTON_TEXT_B_PAD)/BOTTOM_BUTTON_HEIGHT)
+#define EC_CONTACT_IMAGE_X0		(EC_MAIN_TITLE_R_PAD/MAIN_WIDTH)
+#define EC_CONTACT_IMAGE_Y0		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_IMAGE_T_PAD)/EC_MAIN_BG_H)
+#define EC_CONTACT_IMAGE_X1		((EC_MAIN_TITLE_R_PAD+EC_CONTACT_IMAGE_SIZE)/MAIN_WIDTH)
+#define EC_CONTACT_IMAGE_Y1		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_IMAGE_T_PAD+EC_CONTACT_IMAGE_SIZE)/EC_MAIN_BG_H)
 
-group {
-	name: "call_back";
-	parts {
-		part { name: "rect_call_back";
-			type: RECT;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				color: 255 255 255 255;
-			}
-			description {
-				state: "pressed" 0.0;
-				color: 0 0 0 76;
-			}
-		}
+#define EC_RECT_BUTTON_X0		0.0
+#define EC_RECT_BUTTON_Y0		((EC_MAIN_BG_H-EC_BOTTOM_BTN_H)/EC_MAIN_BG_H)
 
-		part { name: "call_back_text";
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				fixed: 1 1;
-				rel1 { relative: BUTTON_TEXT_X0 BUTTON_TEXT_Y0; to: "rect_call_back";}
-				rel2 { relative: BUTTON_TEXT_X1 BUTTON_TEXT_Y1; to: "rect_call_back";}
-				text {
-					fit: 1 1;
-					style:"button_style";
-				}
-			}
-			description {
-				state: "pressed" 0.0;
-				inherit: "default" 0.0;
-				text.style:"button_style_pressed";
-			}
-		}
+#define EC_CONTACT_NAME_X0		(EC_CONTACT_IMAGE_X1+(EC_MAIN_TITLE_R_PAD/MAIN_WIDTH))
+#define EC_CONTACT_NAME_Y0		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD)/EC_MAIN_BG_H)
+#define EC_CONTACT_NAME_X1		((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD-EC_ADD_BTN_ICON_SIZE-EC_ADD_ICON_BTN_L_PAD)/MAIN_WIDTH)
+#define EC_CONTACT_NAME_Y1		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD+EC_CONTACT_NAME_H)/EC_MAIN_BG_H)
 
-		part { name: "call_back_icon";
-			type: IMAGE;
-			scale: 1;
-			description {
-				fixed: 1 1;
-				state: "default" 0.0;
-				rel1 { relative: BUTTON_ICON_X0 BUTTON_ICON_Y0; to: "rect_call_back";}
-				rel2 { relative: BUTTON_ICON_X1 BUTTON_ICON_Y1; to: "rect_call_back";}
-				image {
-					normal: IMG_SRC_DIR/"call_button_icon_03.png";
-				}
-				color_class: "AO009";
-			}
-			description {
-				state: "pressed" 0.0;
-				inherit: "default" 0.0;
-				color_class: "AO001";
-			}
-		}
-	}
-	programs {
-		program {
-			name: "pressed";
-			signal: "mouse,down,*";
-			source: "*";
-			action: STATE_SET "pressed" 0.0;
-			target: "rect_call_back";
-			target: "call_back_icon";
-			target: "call_back_text";
-		}
-		program {
-			name: "unpressed";
-			signal: "mouse,up,*";
-			source: "*";
-			action: STATE_SET "default" 0.0;
-			target: "rect_call_back";
-			target: "call_back_icon";
-			target: "call_back_text";
-		}
-	}
-}
+#define EC_CONTACT_NUMBER_X0	(EC_CONTACT_IMAGE_X1+(EC_MAIN_TITLE_R_PAD/MAIN_WIDTH))
+#define EC_CONTACT_NUMBER_Y0	((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD+EC_CONTACT_NAME_H+EC_CONTACT_NUMBER_T_PAD)/EC_MAIN_BG_H)
+#define EC_CONTACT_NUMBER_X1	((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD-EC_ADD_BTN_ICON_SIZE-EC_ADD_ICON_BTN_L_PAD)/MAIN_WIDTH)
+#define EC_CONTACT_NUMBER_Y1	((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD+EC_CONTACT_NAME_H+EC_CONTACT_NUMBER_T_PAD+EC_CONTACT_NUMBER_H)/EC_MAIN_BG_H)
+
+#define EC_CREATE_CONTACT_X0	((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD-EC_ADD_BTN_ICON_SIZE)/MAIN_WIDTH)
+#define EC_CREATE_CONTACT_Y0	((EC_MAIN_BG_H-EC_BOTTOM_BTN_H-EC_ADD_BTN_ICON_B_PAD-EC_ADD_BTN_ICON_SIZE)/EC_MAIN_BG_H)
+#define EC_CREATE_CONTACT_X1	((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD)/MAIN_WIDTH)
+#define EC_CREATE_CONTACT_Y1	((EC_MAIN_BG_H-EC_BOTTOM_BTN_H-EC_ADD_BTN_ICON_B_PAD)/EC_MAIN_BG_H)
+
+#define EC_BUTTON_ICON_X0		(EC_BOTTOM_BTN_ICON_L_PAD/MAIN_WIDTH_TWO)
+#define EC_BUTTON_ICON_Y0		(EC_BOTTOM_BTN_ICON_T_PAD/EC_BOTTOM_BTN_H)
+#define EC_BUTTON_ICON_X1		((EC_BOTTOM_BTN_ICON_L_PAD+EC_BOTTOM_BTN_ICON_SIZE)/MAIN_WIDTH_TWO)
+#define EC_BUTTON_ICON_Y1		(EC_BOTTOM_BTN_ICON_T_PAD+EC_BOTTOM_BTN_ICON_SIZE)/EC_BOTTOM_BTN_H
+
+#define EC_BUTTON_TEXT_X0		(EC_BOTTOM_BTN_TEXT_R_PAD/MAIN_WIDTH_TWO)
+#define EC_BUTTON_TEXT_Y0		((EC_BOTTOM_BTN_ICON_T_PAD+EC_BOTTOM_BTN_ICON_SIZE)/EC_BOTTOM_BTN_H)
+#define EC_BUTTON_TEXT_X1		(EC_BOTTOM_BTN_TEXT_L_PAD/MAIN_WIDTH_TWO)
+#define EC_BUTTON_TEXT_Y1		((EC_BOTTOM_BTN_ICON_T_PAD+EC_BOTTOM_BTN_ICON_SIZE+EC_BOTTOM_BTN_TEXT_B_PAD)/EC_BOTTOM_BTN_H)
+
+#define EC_ADD_BTN_ICON_X0		(EC_ADD_BUTTON_R_PAD/EC_ADD_BTN_SIZE)
+#define EC_ADD_BTN_ICON_Y0		(EC_ADD_BUTTON_R_PAD/EC_ADD_BTN_SIZE)
+#define EC_ADD_BTN_ICON_X1		((EC_ADD_BTN_ICON_SIZE + EC_ADD_BUTTON_R_PAD)/EC_ADD_BTN_SIZE)
+#define EC_ADD_BTN_ICON_Y1		((EC_ADD_BTN_ICON_SIZE + EC_ADD_BUTTON_R_PAD)/EC_ADD_BTN_SIZE)
+
+#define EC_MAIN_BG_Y1	(EC_MAIN_BG_H/MAIN_HEIGHT)
+
+#define END_BOTTOM_BUTTON(style_name, img_path) \
+group { \
+	name: style_name; \
+	parts { \
+		part { name: "bg"; \
+			type: RECT; \
+			scale: 1; \
+			description { \
+				state: "default" 0.0; \
+				color: 255 255 255 255; \
+			} \
+			description { \
+				state: "pressed" 0.0; \
+				color: 0 0 0 76; \
+			} \
+		} \
+		part { name: "end_btn_text"; \
+			type: TEXTBLOCK; \
+			scale: 1; \
+			description { \
+				state: "default" 0.0; \
+				rel1 { relative: EC_BUTTON_TEXT_X0 EC_BUTTON_TEXT_Y0; to: "bg";} \
+				rel2 { relative: EC_BUTTON_TEXT_X1 EC_BUTTON_TEXT_Y1; to: "bg";} \
+				text { \
+					fit: 1 1; \
+					style:"button_style"; \
+				} \
+			} \
+			description { \
+				state: "pressed" 0.0; \
+				inherit: "default" 0.0; \
+				text.style:"button_style_pressed"; \
+			} \
+		} \
+		part { name: "end_btn_icon"; \
+			type: IMAGE; \
+			scale: 1; \
+			description { \
+				state: "default" 0.0; \
+				rel1 { relative: EC_BUTTON_ICON_X0 EC_BUTTON_ICON_Y0; to: "bg";} \
+				rel2 { relative: EC_BUTTON_ICON_X1 EC_BUTTON_ICON_Y1; to: "bg";} \
+				image { \
+					normal: img_path; \
+				} \
+				color_class: "AO009"; \
+			} \
+			description { \
+				state: "pressed" 0.0; \
+				inherit: "default" 0.0; \
+				color_class: "AO001"; \
+			} \
+		} \
+	} \
+	programs { \
+		program { \
+			name: "pressed"; \
+			signal: "mouse,down,*"; \
+			source: "*"; \
+			action: STATE_SET "pressed" 0.0; \
+			target: "bg"; \
+			target: "end_btn_icon"; \
+			target: "end_btn_text"; \
+		} \
+		program { \
+			name: "unpressed"; \
+			signal: "mouse,up,*"; \
+			source: "*"; \
+			action: STATE_SET "default" 0.0; \
+			target: "bg"; \
+			target: "end_btn_icon"; \
+			target: "end_btn_text"; \
+		} \
+	} \
+} \
+
+END_BOTTOM_BUTTON("call_back", IMG_SRC_DIR/"call_button_icon_03.png")
+END_BOTTOM_BUTTON("message_button", IMG_SRC_DIR/"call_button_icon_04.png")
 
 group {
 	name: "create_contact_button";
@@ -212,10 +219,9 @@ group {
 			type: IMAGE;
 			scale: 1;
 			description {
-				fixed: 1 1;
 				state: "default" 0.0;
-				rel1 { relative: (ADD_BUTTON_OFFSET/ADD_BUTTON_ICON_SIZE) (ADD_BUTTON_OFFSET/ADD_BUTTON_ICON_SIZE); to: "bg";}
-				rel2 { relative: ((ADD_ICON_BUTTON_ICON_SIZE + ADD_BUTTON_OFFSET)/ADD_BUTTON_ICON_SIZE) ((ADD_ICON_BUTTON_ICON_SIZE + ADD_BUTTON_OFFSET)/ADD_BUTTON_ICON_SIZE); to: "bg";}
+				rel1 { relative: EC_ADD_BTN_ICON_X0 EC_ADD_BTN_ICON_Y0; to: "bg";}
+				rel2 { relative: EC_ADD_BTN_ICON_X1 EC_ADD_BTN_ICON_Y1; to: "bg";}
 				image {
 					normal: IMG_SRC_DIR/"call_button_add.png";
 				}
@@ -242,84 +248,6 @@ group {
 }
 
 group {
-	name: "message_button";
-	parts {
-		part { name: "rect_message";
-			type: RECT;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				color: 255 255 255 255;
-			}
-			description {
-				state: "pressed" 0.0;
-				color: 0 0 0 76;
-			}
-		}
-
-		part { name: "message_text";
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				fixed: 1 1;
-				state: "default" 0.0;
-				rel1 { relative: BUTTON_TEXT_X0 BUTTON_TEXT_Y0; to: "rect_message";}
-				rel2 { relative: BUTTON_TEXT_X1 BUTTON_TEXT_Y1; to: "rect_message";}
-				text {
-					fit: 1 1;
-					style:"button_style";
-				}
-			}
-			description {
-				state: "pressed" 0.0;
-				inherit: "default" 0.0;
-				text.style:"button_style_pressed";
-			}
-		}
-
-		part { name: "message_icon";
-			type: IMAGE;
-			scale: 1;
-			description {
-				fixed: 1 1;
-				state: "default" 0.0;
-				rel1 { relative: BUTTON_ICON_X0 BUTTON_ICON_Y0; to: "rect_message";}
-				rel2 { relative: BUTTON_ICON_X1 BUTTON_ICON_Y1; to: "rect_message";}
-				image {
-					normal: IMG_SRC_DIR/"call_button_icon_04.png";
-				}
-				color_class: "AO009";
-			}
-			description {
-				state: "pressed" 0.0;
-				inherit: "default" 0.0;
-				color_class: "AO001";
-			}
-		}
-	}
-	programs {
-		program {
-			name: "pressed";
-			signal: "mouse,down,*";
-			source: "*";
-			action: STATE_SET "pressed" 0.0;
-			target: "rect_message";
-			target: "message_icon";
-			target: "message_text";
-		}
-		program {
-			name: "unpressed";
-			signal: "mouse,up,*";
-			source: "*";
-			action: STATE_SET "default" 0.0;
-			target: "rect_message";
-			target: "message_icon";
-			target: "message_text";
-		}
-	}
-}
-
-group {
 	name: "main_end_call";
 	parts {
 		part { name: "background";
@@ -333,11 +261,10 @@ group {
 		part { name: "contact_ly";
 			type: RECT;
 			description {
-				fixed: 1 1;
 				state: "default" 0.0;
 				color_class: "AO001";
-				rel1 { relative: 0 0; to: "background"; }
-				rel2 { relative: 1 (MAIN_BG_HEIGHT/MAIN_HEIGHT); to: "background"; }
+				rel1 { relative: 0.0 0.0; to: "background"; }
+				rel2 { relative: 1.0 EC_MAIN_BG_Y1; to: "background"; }
 			}
 			description {
 				state: "show" 0.0;
@@ -355,10 +282,9 @@ group {
 			type: SWALLOW;
 			scale: 1;
 			description {
-				fixed: 1 1;
 				state: "default" 0.0;
-				rel1 { relative: CONTACT_IMAGE_X0 CONTACT_IMAGE_Y0; to: "contact_ly";}
-				rel2 { relative: CONTACT_IMAGE_X1 CONTACT_IMAGE_Y1; to: "contact_ly";}
+				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
+				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
 			}
 			description {
 				state: "show" 0.0;
@@ -377,9 +303,8 @@ group {
 			scale: 1;
 			description {
 				visible: 0;
-				fixed: 1 1;
-				rel1 { relative: CONTACT_IMAGE_X0 CONTACT_IMAGE_Y0; to: "contact_ly";}
-				rel2 { relative: CONTACT_IMAGE_X1 CONTACT_IMAGE_Y1; to: "contact_ly";}
+				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
+				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
 				image {
 					normal: IMG_SRC_DIR/"call_photo_id_mask.png";
 				}
@@ -402,9 +327,8 @@ group {
 			scale: 1;
 			description {
 				visible: 0;
-				fixed: 1 1;
-				rel1 { relative: CONTACT_IMAGE_X0 CONTACT_IMAGE_Y0; to: "contact_ly";}
-				rel2 { relative: CONTACT_IMAGE_X1 CONTACT_IMAGE_Y1; to: "contact_ly";}
+				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
+				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
 				image {
 					normal: IMG_SRC_DIR/"call_photo_id.png";
 				}
@@ -428,9 +352,8 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				fixed: 1 1;
-				rel1 { relative: CONTACT_NAME_X0 CONTACT_NAME_Y0; to: "contact_ly";}
-				rel2 { relative: CONTACT_NAME_X1 CONTACT_NAME_Y1; to: "contact_ly";}
+				rel1 { relative: EC_CONTACT_NAME_X0 EC_CONTACT_NAME_Y0; to: "contact_ly";}
+				rel2 { relative: EC_CONTACT_NAME_X1 EC_CONTACT_NAME_Y1; to: "contact_ly";}
 				text {
 					ellipsis: 0.0;
 					style:"call_name";
@@ -453,9 +376,8 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				fixed: 1 1;
-				rel1 { relative: CONTACT_NUMBER_X0 CONTACT_NUMBER_Y0; to: "contact_ly";}
-				rel2 { relative: CONTACT_NUMBER_X1 CONTACT_NUMBER_Y1; to: "contact_ly";}
+				rel1 { relative: EC_CONTACT_NUMBER_X0 EC_CONTACT_NUMBER_Y0; to: "contact_ly";}
+				rel2 { relative: EC_CONTACT_NUMBER_X1 EC_CONTACT_NUMBER_Y1; to: "contact_ly";}
 				text {
 					ellipsis: 1.0;
 					style:"call_number";
@@ -478,10 +400,8 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				fixed: 1 1;
-				align: 0.5 0.5;
-				rel1 { relative: CREATE_CONTACT_X0 CREATE_CONTACT_Y0; to: "contact_ly";}
-				rel2 { relative: CREATE_CONTACT_X1 CREATE_CONTACT_Y1; to: "contact_ly";}
+				rel1 { relative: EC_CREATE_CONTACT_X0 EC_CREATE_CONTACT_Y0; to: "contact_ly";}
+				rel2 { relative: EC_CREATE_CONTACT_X1 EC_CREATE_CONTACT_Y1; to: "contact_ly";}
 			}
 			description {
 				state: "show" 0.0;
@@ -500,8 +420,7 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				fixed: 1 1;
-				rel1 { relative: 0.0 RECT_BUTTON_Y0; to: "contact_ly";}
+				rel1 { relative: 0.0 EC_RECT_BUTTON_Y0; to: "contact_ly";}
 				rel2 { relative: 0.5 1.0; to: "contact_ly";}
 			}
 		}
@@ -511,8 +430,7 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				fixed: 1 1;
-				rel1 { relative: 0.5 RECT_BUTTON_Y0; to: "contact_ly";}
+				rel1 { relative: 0.5 EC_RECT_BUTTON_Y0; to: "contact_ly";}
 				rel2 { relative: 1.0 1.0; to: "contact_ly";}
 			}
 		}
@@ -521,10 +439,9 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				fixed: 1 1;
-				rel1 { relative: MAIN_TITLE_X0 MAIN_TITLE_Y0; to: "contact_ly";}
-				rel2 { relative: 1.0 MAIN_TITLE_Y1; to: "contact_ly";}
-				text.style:"call_timer_style1";
+				rel1 { relative: EC_MAIN_TITLE_X0 EC_MAIN_TITLE_Y0; to: "contact_ly";}
+				rel2 { relative: 1.0 EC_MAIN_TITLE_Y1; to: "contact_ly";}
+				text.style:"call_timer_style";
 			}
 		}
 	}
