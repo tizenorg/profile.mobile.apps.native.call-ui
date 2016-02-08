@@ -392,7 +392,7 @@ Evas_Object *_callui_create_quickpanel_mute_button(void *data, Eina_Bool bdisabl
 void _callui_view_qp_hide(callui_app_data_t *ad)
 {
 	dbg("..");
-	minicontrol_send_event(ad->win_quickpanel, MINICONTROL_EVENT_REQUEST_HIDE, NULL);
+	minicontrol_send_event(ad->win_quickpanel, MINICONTROL_PROVIDER_EVENT_REQUEST_HIDE, NULL);
 }
 
 static void __callui_view_qp_update_caller(Evas_Object *eo, call_data_t *pcall_data)
