@@ -921,3 +921,98 @@ const char *_callui_common_get_call_theme_path()
 {
 	return __callui_common_get_resource(CALL_THEME_EDJ_NAME);
 }
+
+static char *__callui_common_vconf_get_str(const char *in_key)
+{
+	char *result = vconf_get_str(in_key);
+	if (result == NULL) {
+		err("vconf get error : %s", in_key);
+	}
+	return result;
+}
+
+static char *__callui_common_parse_vconf_string(char *input_string)
+{
+	if (NULL == input_string) {
+		err("Input string is NULL");
+		return NULL;
+	}
+	int i;
+	char *parsed_message = NULL;
+
+	parsed_message = (char *)calloc(strlen(input_string) + 1, sizeof(char));
+	if (NULL == parsed_message) {
+		err("Parsed message is NULL");
+		return NULL;
+	}
+
+	for (i = 0; i < strlen(input_string); i++) {
+		if (input_string[i] == '<' && input_string[i+1] == 'b' &&
+			input_string[i+2] == 'r' && input_string[i+3] == '/' &&
+			input_string[i+4] == '>') {
+			i = i + 4;
+		} else {
+			int j = 0;
+			for (; i < strlen(input_string); i++) {
+				if (input_string[i] == '<' && input_string[i+1] == 'b' &&
+					input_string[i+2] == 'r' && input_string[i+3] == '/' &&
+					input_string[i+4] == '>') {
+					if (parsed_message[j-1] != ' ') {
+						parsed_message[j] = ' ';
+						j++;
+					}
+					i = i + 4;
+				} else {
+					parsed_message[j] = input_string[i];
+					j++;
+				}
+			}
+		}
+	}
+	return parsed_message;
+}
+
+char *_callui_common_reject_msg_get(int index)
+{
+	char *message = NULL;
+	char *markup_converted_message = NULL;
+	char *return_str = NULL;
+	char *parsed_message = NULL;
+
+	switch (index) {
+	case 0:
+		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG1_STR);
+		break;
+	case 1:
+		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG2_STR);
+		break;
+	case 2:
+		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG3_STR);
+		break;
+	case 3:
+		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG4_STR);
+		break;
+	case 4:
+		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG5_STR);
+		break;
+	case 5:
+		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG6_STR);
+		break;
+	default:
+		return NULL;
+	}
+
+	if (NULL == message) {
+		return NULL;
+	}
+
+	markup_converted_message = elm_entry_utf8_to_markup(message);
+	parsed_message = __callui_common_parse_vconf_string(markup_converted_message);
+	return_str = strdup(_(parsed_message));
+
+	free(parsed_message);
+	free(message);
+	free(markup_converted_message);
+
+	return return_str;
+}

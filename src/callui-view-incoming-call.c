@@ -604,7 +604,7 @@ static Evas_Object *__callui_view_incoming_call_create_reject_msg_layout(void *d
 	evas_object_event_callback_add(priv->lock_reject_with_msg, EVAS_CALLBACK_MOUSE_UP, __callui_view_incoming_call_hw_mouse_up_cb, vd);
 
 	evas_object_show(priv->lock_reject_with_msg);
-	_callui_view_incoming_lock_reject_msg_create_call_setting_handle(vd);
+
 	__reject_msg_create_glist(vd);
 	return priv->lock_reject_with_msg;
 }

@@ -70,14 +70,6 @@ Evas_Object *_callui_view_incoming_lock_get_reject_layout(call_view_data_t *vd);
 void _callui_view_incoming_lock_set_reject_layout(call_view_data_t *vd, Evas_Object *layout);
 
 /**
- * @brief Create call setting handler
- *
- * @param[in]   data                    View data
- *
- */
-void _callui_view_incoming_lock_reject_msg_create_call_setting_handle(void *data);
-
-/**
  * @brief Send reject message
  *
  * @param[in]   data                    View data
@@ -137,11 +129,8 @@ typedef struct {
 
 	gboolean bmouse_down_pressed;
 
-	void *dl_handle;
-
 	Elm_Genlist_Item_Class *itc_reject_msg;
 	Evas_Coord y_momentum;
-	char *(*msg_func_ptr) ();
 	char reject_msg[CALLUI_REJECT_MSG_LENGTH_MAX];
 
 } incoming_lock_view_priv_t;

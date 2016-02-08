@@ -80,7 +80,6 @@ static void __callui_view_active_incoming_call_reject_message_btn_cb(void *data,
 		if (ad) {
 			evas_object_resize(ad->win, ad->root_w, ad->root_h);
 		}
-		_callui_view_incoming_lock_reject_msg_create_call_setting_handle(vd);
 		__callui_view_active_incoming_call_reject_msg_create_glist(vd);
 		elm_object_signal_emit(priv->contents, "big_main_ly", "main_incoming_active_call");
 	}
