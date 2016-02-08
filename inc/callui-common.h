@@ -279,4 +279,11 @@ const char *_callui_common_get_call_edj_path();
  */
 const char *_callui_common_get_call_theme_path();
 
+/**
+ * @brief Gets reject message text by index
+ * @param[in] index		index of the reject message
+ * @return reject message text
+ */
+char *_callui_common_get_reject_msg_by_index(int index);
+
 #endif //__CALLUI_COMMON_H_
