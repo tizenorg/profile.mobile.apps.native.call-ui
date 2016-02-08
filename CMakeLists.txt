@@ -59,7 +59,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} "-pie" ${pkgs_LDFLAGS})
 
 ADD_CUSTOM_COMMAND(
 		OUTPUT ${CMAKE_BINARY_DIR}/call.edj
-		COMMAND edje_cc -no-save -id ${EDC_IMG_DIR}
+		COMMAND edje_cc -id ${EDC_IMG_DIR}
 		${EDJE_CC_DEFINITIONS}
 		${EDJE_DIR}/call.edc ${CMAKE_BINARY_DIR}/call.edj
 		DEPENDS ${EDJE_DIR}/call.edc
@@ -86,7 +86,7 @@ ADD_CUSTOM_TARGET(call.edje ALL DEPENDS ${CMAKE_BINARY_DIR}/call.edj)
 
 ADD_CUSTOM_COMMAND(
 		OUTPUT ${CMAKE_BINARY_DIR}/call_theme.edj
-		COMMAND edje_cc -no-save -id ${EDC_IMG_DIR}
+		COMMAND edje_cc -id ${EDC_IMG_DIR}
 		${EDJE_CC_DEFINITIONS}
 		${EDJE_DIR}/call_theme.edc ${CMAKE_BINARY_DIR}/call_theme.edj
 		DEPENDS ${EDJE_DIR}/call_theme.edc
