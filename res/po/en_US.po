@@ -178,3 +178,18 @@ msgstr "Return to call screen"
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Auto rejected call"
 
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Sorry, I'm busy. Call you later."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Sorry, I'm busy. Please text me."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "I can't talk now. What's up?"
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "I'm in a meeting."
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Sorry, I'm driving now."
+
