@@ -95,7 +95,6 @@
 #define GRP_MULTICALL "multicall-list"
 #define GRP_REJECT_MSG "reject_with_msg"
 #define GRP_QUICKPANEL "quickpanel"
-#define GRP_QUICKPANEL_LS "quickpanel_ls"
 #define GRP_SEPARATOR_LAYOUT "separator-layout"
 #define GRP_SEPARATOR_LAYOUT_1BUTTON "separator-layout-1button"
 #define GRP_SEPARATOR_LAYOUT_2BUTTON "separator-layout-2button"
@@ -209,7 +208,6 @@ typedef struct appdata {
 
 	/*quickpanel*/
 	Evas_Object *win_quickpanel;
-	bool landscape;
 	Evas_Object *quickpanel_layout;
 	char *quickpanel_text;
 } callui_app_data_t;
