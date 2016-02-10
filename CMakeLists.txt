@@ -77,7 +77,6 @@ ADD_CUSTOM_COMMAND(
 			${EDC_SRC_DIR}/call_edc/callui_view_end_call.edc
 			${EDC_SRC_DIR}/call_edc/callui-view-lock-screen.edc
 			${EDC_SRC_DIR}/call_edc/callui-view-quick-pannel.edc
-			${EDC_SRC_DIR}/call_edc/callui-view-quick-pannel-landscape.edc
 			${EDC_SRC_DIR}/call_edc/callui_view_incoming_active.edc
 			${EDC_SRC_DIR}/call_edc/callui-view-one-hold-in-conference.edc
 			${EDC_SRC_DIR}/call_edc/callui-view-elements.edc

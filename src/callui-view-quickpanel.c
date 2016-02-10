@@ -15,20 +15,21 @@
  *
  */
 
-#include "callui.h"
-#include "callui-view-elements.h"
-#include "callui-view-quickpanel.h"
 #include <minicontrol-provider.h>
 #include <minicontrol-internal.h>
-#include "callui-view-layout.h"
-#include "callui-common.h"
 #include <app_control.h>
 #include <bundle.h>
 
+#include "callui.h"
+#include "callui-view-elements.h"
+#include "callui-view-quickpanel.h"
+#include "callui-view-layout.h"
+#include "callui-common.h"
+
 #define VIEW_QUICKPANEL_LAYOUT_ID "QUICKPANELVIEW"
-#define MSG_DOMAIN_CONTROL_ACCESS (int)ECORE_X_ATOM_E_ILLUME_ACCESS_CONTROL
 #define TXT_TIMER_BUF_LEN 26
 #define CALL_NUMBER_ONE 1
+#define QP_WIN_H 172
 
 struct callui_view_qp_priv {
 	Evas_Object *caller_id;
@@ -586,16 +587,25 @@ static int __callui_view_qp_oncreate(call_view_data_t *view_data, unsigned int p
 	if (!view_data->layout) {
 		ad->win_quickpanel = __callui_view_qp_create_window();
 		if (ad->win_quickpanel == NULL) {
-			dbg("ERROR");
+			err("__callui_view_qp_create_window FAILED!");
 			return -1;
 		}
+
 		priv->rotate_angle = elm_win_rotation_get(ad->win_quickpanel);
 		dbg("current rotate angle(%d)", priv->rotate_angle);
 		view_data->layout = __callui_view_qp_create_layout_main(ad->win_quickpanel);
 		if (view_data->layout == NULL) {
-			dbg("ERROR");
+			err("__callui_view_qp_create_layout_main FAILED!");
 			return -1;
 		}
+		ad->quickpanel_layout = __callui_view_qp_create_contents(view_data, GRP_QUICKPANEL);
+		if (ad->quickpanel_layout == NULL) {
+			err("__callui_view_qp_create_contents FAILED!");
+			return -1;
+		}
+		elm_object_part_content_set(view_data->layout, "elm.swallow.content", ad->quickpanel_layout);
+		evas_object_name_set(ad->quickpanel_layout, VIEW_QUICKPANEL_LAYOUT_ID);
+		evas_object_event_callback_add(ad->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_launch_top_view_cb, ad);
 	}
 
 	//TODO Ecore x is not supported. Need to implement handling of rotation change events from qp
@@ -628,28 +638,14 @@ static int __callui_view_qp_onshow(call_view_data_t *view_data, void *appdata)
 	dbg("quickpanel view show!!");
 	callui_app_data_t *ad = _callui_get_app_data();
 	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)view_data->priv;
-	if (ad->quickpanel_layout) {
-		evas_object_event_callback_del(ad->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_launch_top_view_cb);
-		evas_object_del(ad->quickpanel_layout);
-		ad->quickpanel_layout = NULL;
-	}
 
 	if (priv->rotate_angle == 0 || priv->rotate_angle == 180) {
 		dbg("portrait mode layout");
-		ad->landscape = false;
 		evas_object_resize(ad->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_W), ELM_SCALE_SIZE(QP_WIN_H));
-		ad->quickpanel_layout = __callui_view_qp_create_contents(view_data, GRP_QUICKPANEL);
 	} else if (priv->rotate_angle == 90 || priv->rotate_angle == 270) {
 		dbg("landscape mode layout");
-		ad->landscape = true;
 		evas_object_resize(ad->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_H), ELM_SCALE_SIZE(QP_WIN_H));
-		ad->quickpanel_layout = __callui_view_qp_create_contents(view_data, GRP_QUICKPANEL_LS);
 	}
-
-	elm_object_part_content_set(view_data->layout, "elm.swallow.content", ad->quickpanel_layout);
-	evas_object_name_set(ad->quickpanel_layout, VIEW_QUICKPANEL_LAYOUT_ID);
-	dbg("[========== QUICKPANEL:ad->quickpanel_layout Addr : [%p] ==========]", ad->quickpanel_layout);
-	evas_object_event_callback_add(ad->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_launch_top_view_cb, ad);
 
 	__callui_view_qp_draw_screen(ad->quickpanel_layout, ad);
 	evas_object_show(ad->win_quickpanel);
@@ -687,6 +683,7 @@ static int __callui_view_qp_ondestroy(call_view_data_t *view_data)
 	}
 
 	if (ad->quickpanel_layout) {
+		evas_object_event_callback_del_full(ad->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_launch_top_view_cb, ad);
 		evas_object_del(ad->quickpanel_layout);
 		ad->quickpanel_layout = NULL;
 	}

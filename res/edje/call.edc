@@ -90,7 +90,6 @@ collections {
 	#include "../edje_src/edc/call_edc/callui_view_end_call.edc"
 	#include "../edje_src/edc/call_edc/callui-view-lock-screen.edc"
 	#include "../edje_src/edc/call_edc/callui-view-quick-pannel.edc"
-	#include "../edje_src/edc/call_edc/callui-view-quick-pannel-landscape.edc"
 	#include "../edje_src/edc/call_edc/callui_view_incoming_active.edc"
 	#include "../edje_src/edc/call_edc/callui-view-one-hold-in-conference.edc"
 	#include "../edje_src/edc/call_edc/callui-view-elements.edc"

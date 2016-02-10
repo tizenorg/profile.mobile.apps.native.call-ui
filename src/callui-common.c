@@ -29,10 +29,7 @@
 #include <system_settings.h>
 #include <efl_util.h>
 #include <app_common.h>
-
-#ifndef USE_X11_API
 #include <Ecore_Wayland.h>
-#endif
 
 #include "callui-common.h"
 #include "callui-view-elements.h"
@@ -341,28 +338,15 @@ void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
 	dbg("_callui_common_win_set_noti_type");
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 
-#ifdef USE_X11_API
-	Ecore_X_Window win = elm_win_xwindow_get(ad->win);
-#else
 	Ecore_Wl_Window *win = elm_win_wl_window_get(ad->win);
-#endif
-
 	if (bwin_noti == EINA_FALSE) {
 		dbg("window type: NORMAL");
 		/* Set Normal window */
-#ifdef USE_X11_API
-		ecore_x_netwm_window_type_set(win, ECORE_X_WINDOW_TYPE_NORMAL);
-#else
 		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_TOPLEVEL);
-#endif
 	} else {
 		dbg("window type: NOTI-HIGH");
 		/* Set Notification window */
-#ifdef USE_X11_API
-		ecore_x_netwm_window_type_set(win, ECORE_X_WINDOW_TYPE_NOTIFICATION);
-#else
 		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_NOTIFICATION);
-#endif
 		/* Set Notification's priority to LEVEL_HIGH */
 		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
 	}

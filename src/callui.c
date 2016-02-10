@@ -468,6 +468,9 @@ static bool _callui_app_create(void *data)
 	callui_app_data_t *ad = data;
 	int ret = 0;
 
+	/* Set base scale */
+	elm_app_base_scale_set(2.6);
+
 	_callui_common_dvc_control_lcd_state(LCD_OFF_SLEEP_LOCK);
 
 	elm_config_preferred_engine_set("opengl_x11");
@@ -489,9 +492,6 @@ static bool _callui_app_create(void *data)
 static bool _callui_app_create_layout(void *data)
 {
 	callui_app_data_t *ad = data;
-
-	/* Set base scale */
-	elm_app_base_scale_set(2.6);
 
 	ad->win = __callui_create_main_win(ad);
 	if (ad->win == NULL) {

@@ -35,10 +35,6 @@
 #define MAIN_LAYOUT_W		MAIN_SCREEN_W
 #define MAIN_LAYOUT_H		MAIN_SCREEN_H
 
-#define QP_WIN_W			MAIN_SCREEN_W
-// TODO: need to check and correct if is needed
-#define QP_WIN_H	208
-
 #define NORMAL_HOLD_FONT_SIZE	36
 
 #define CALLER_INFO_L_PAD			0
@@ -209,10 +205,6 @@
 /* Relative X & Y positions of widgets w.r.t. Full Screen */
 #define REL_W(x)		((x)/MAIN_SCREEN_W)
 #define REL_H(y)		((y)/MAIN_LAYOUT_H)
-
-/* Relative X & Y positions of widgets w.r.t. Quick-panel layout */
-#define REL_QP_W(x)		((x)/QP_WIN_W)
-#define REL_QP_H(y)		((y)/QP_WIN_H)
 
 /* Relative X & Y positions of widgets w.r.t. Quick-panel button layout */
 #define REL_QP_BTN_W(x)		((x)/QP_CALL_ICON_WIDTH)
