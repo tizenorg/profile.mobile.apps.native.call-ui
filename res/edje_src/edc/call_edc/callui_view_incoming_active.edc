@@ -261,18 +261,6 @@ group {
 			}
 		}
 
-		part { name: "dim_bg";
-			type: RECT;
-			description {
-				fixed: 1 1;
-				visible: 1;
-				state: "default" 0.0;
-				color: 0 0 0 25;
-				rel1 { relative: 0.0 0.0; to: "bg";}
-				rel2 { relative: 1.0 1.0; to: "bg";}
-			}
-		}
-
 		part { name: "caller_id";
 			type: SWALLOW;
 			scale: 1;

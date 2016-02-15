@@ -151,7 +151,6 @@ typedef struct appdata {
 	Evas_Object *win;
 	Evas_Object *win_conformant;
 	Evas_Object *nf;
-	Evas_Object *bg;
 
 	/* Main Layout contents Start */
 	Evas_Object *main_ly;
