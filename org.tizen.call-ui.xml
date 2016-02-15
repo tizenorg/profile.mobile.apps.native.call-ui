@@ -5,10 +5,10 @@
 	<ui-application appid="org.tizen.call-ui" exec="/usr/apps/org.tizen.call-ui/bin/call-ui" nodisplay="true" multiple="false" type="capp" taskmanage="false">
 		<label>Voice Call</label>
 		<label xml:lang="en-gb">Voice Call</label>
-		<application-service>
+		<app-control>
 			<operation name="http://tizen.org/appcontrol/operation/call"/>
 			<uri name="tel"/>
-		</application-service>
+		</app-control>
 		<metadata key="http://tizen.org/metadata/background-category/media"/>
 		<metadata key="http://tizen.org/metadata/background-category/background-network"/>
 	</ui-application>
