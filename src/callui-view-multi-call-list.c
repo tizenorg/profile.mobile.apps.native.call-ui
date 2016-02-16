@@ -31,30 +31,22 @@ typedef struct {
 	GSList *call_list;
 } callui_view_multi_call_list_priv_t;
 
-static int __callui_view_multi_call_list_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *param3);
-static int __callui_view_multi_call_list_onupdate(call_view_data_t *view_data, void *update_data1);
-static int __callui_view_multi_call_list_onhide(call_view_data_t *view_data);
+static int __callui_view_multi_call_list_oncreate(call_view_data_t *view_data, void *appdata);
+static int __callui_view_multi_call_list_onupdate(call_view_data_t *view_data);
 static int __callui_view_multi_call_list_onshow(call_view_data_t *view_data,  void *appdata);
 static int __callui_view_multi_call_list_ondestroy(call_view_data_t *view_data);
-static int __callui_view_multi_call_list_onrotate(call_view_data_t *view_data);
-
-static call_view_data_t s_view = {
-	.type = VIEW_INCALL_MULTICALL_LIST_VIEW,
-	.layout = NULL,
-	.onCreate = __callui_view_multi_call_list_oncreate,
-	.onUpdate = __callui_view_multi_call_list_onupdate,
-	.onHide = __callui_view_multi_call_list_onhide,
-	.onShow = __callui_view_multi_call_list_onshow,
-	.onDestroy = __callui_view_multi_call_list_ondestroy,
-	.onRotate = __callui_view_multi_call_list_onrotate,
-	.priv = NULL,
-};
 
 call_view_data_t *_callui_view_multi_call_list_new(callui_app_data_t *ad)
 {
-	s_view.priv = calloc(1, sizeof(callui_view_multi_call_list_priv_t));
-	CALLUI_RETURN_VALUE_IF_FAIL(s_view.priv, NULL);
-	return &s_view;
+	call_view_data_t* multi_call_list_view = calloc(1, sizeof(call_view_data_t));
+	multi_call_list_view->type = VIEW_TYPE_MULTICALL_LIST;
+	multi_call_list_view->layout = NULL;
+	multi_call_list_view->onCreate = __callui_view_multi_call_list_oncreate;
+	multi_call_list_view->onUpdate = __callui_view_multi_call_list_onupdate;
+	multi_call_list_view->onDestroy = __callui_view_multi_call_list_ondestroy;
+	multi_call_list_view->priv = calloc(1, sizeof(callui_view_multi_call_list_priv_t));
+	CALLUI_RETURN_VALUE_IF_FAIL(multi_call_list_view->priv, NULL);
+	return multi_call_list_view;
 }
 
 static void __callui_view_multi_call_list_small_end_call_cb(void *data, Evas_Object *obj, void *event_info)
@@ -224,7 +216,7 @@ void __callui_view_multi_call_list_genlist_item_append(void *data)
 static void __callui_view_multi_call_list_back_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	callui_app_data_t *ad = (callui_app_data_t *)data;
-	_callvm_view_auto_change(ad);
+	_callui_vm_auto_change_view(ad->view_manager_handle);
 }
 
 static Evas_Object *__callui_view_multi_call_list_create_contents(Evas_Object *parent, char *group)
@@ -244,9 +236,11 @@ static Evas_Object *__callui_view_multi_call_list_create_contents(Evas_Object *p
 	return eo;
 }
 
-static int __callui_view_multi_call_list_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *param3)
+static int __callui_view_multi_call_list_oncreate(call_view_data_t *view_data, void *appdata)
 {
 	dbg("multicall-list view create");
+
+	view_data->ad = (callui_app_data_t *)appdata;
 
 	__callui_view_multi_call_list_onshow(view_data, NULL);
 
@@ -259,7 +253,7 @@ static void __callui_view_multi_call_list_free_cb(gpointer data)
 	cm_conf_call_data_free(call_data);
 }
 
-static int __callui_view_multi_call_list_onupdate(call_view_data_t *view_data, void *update_data1)
+static int __callui_view_multi_call_list_onupdate(call_view_data_t *view_data)
 {
 	dbg("multicall-list view update");
 
@@ -282,14 +276,6 @@ static int __callui_view_multi_call_list_onupdate(call_view_data_t *view_data, v
 	evas_object_show(priv->contents);
 	evas_object_hide(ad->main_ly);
 	evas_object_show(ad->main_ly);
-	return 0;
-}
-
-static int __callui_view_multi_call_list_onhide(call_view_data_t *view_data)
-{
-	dbg("multicall-list view hide");
-	callui_app_data_t *ad = _callui_get_app_data();
-	evas_object_hide(ad->main_ly);
 	return 0;
 }
 
@@ -340,14 +326,13 @@ static int __callui_view_multi_call_list_onshow(call_view_data_t *view_data,  vo
 	return 0;
 }
 
-static int __callui_view_multi_call_list_ondestroy(call_view_data_t *view_data)
+static int __callui_view_multi_call_list_ondestroy(call_view_data_t *vd)
 {
-	dbg("multicall-list view destroy");
-
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad, -1);
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCALL_MULTICALL_LIST_VIEW);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, -1);
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->ad, -1);
+
+	callui_app_data_t *ad = vd->ad;
+
 	callui_view_multi_call_list_priv_t *priv = (callui_view_multi_call_list_priv_t *)vd->priv;
 
 	if (priv != NULL) {
@@ -364,17 +349,6 @@ static int __callui_view_multi_call_list_ondestroy(call_view_data_t *view_data)
 		priv = NULL;
 	}
 	vd->layout = NULL;
-	_callvm_reset_call_view_data(ad, VIEW_INCALL_MULTICALL_LIST_VIEW);
-	dbg("complete destroy multi view list");
+
 	return 0;
 }
-
-static int __callui_view_multi_call_list_onrotate(call_view_data_t *view_data)
-{
-	dbg("*** Multi Call List view Rotate ***");
-
-	__callui_view_multi_call_list_onshow(view_data, NULL);
-	return 0;
-}
-
-

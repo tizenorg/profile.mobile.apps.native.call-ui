@@ -125,7 +125,7 @@ static Evas_Object *__callui_create_button_style(void *data, Evas_Object **p_but
 	Evas_Object *sw = NULL;
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 	CALLUI_RETURN_VALUE_IF_FAIL(ad, NULL);
-	layout = _callvm_get_view_layout(ad);
+	layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
 	CALLUI_RETURN_VALUE_IF_FAIL(layout, NULL);
 	btn_ly = elm_object_part_content_get(layout, "btn_region");
 	CALLUI_RETURN_VALUE_IF_FAIL(btn_ly, NULL);
@@ -546,24 +546,24 @@ static void __callui_end_btn_cb(void *data, Evas_Object *obj, void *event_info)
 	dbg("vd->type:[%d]", vd->type);
 
 	switch (vd->type) {
-	case VIEW_DIALLING_VIEW:
+	case VIEW_TYPE_DIALLING:
 		{
 			if (ad->active)
 				ret = cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
 		}
 		break;
-	case VIEW_INCALL_ONECALL_VIEW:
+	case VIEW_TYPE_SINGLECALL:
 		{
 			ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_CALLS);
 		}
 		break;
-	case VIEW_INCALL_MULTICALL_SPLIT_VIEW:
+	case VIEW_TYPE_MULTICALL_SPLIT:
 		{
 			ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
 		}
 		break;
-	case VIEW_INCALL_MULTICALL_CONF_VIEW:
-	case VIEW_INCALL_MULTICALL_LIST_VIEW:
+	case VIEW_TYPE_MULTICALL_CONF:
+	case VIEW_TYPE_MULTICALL_LIST:
 		{
 			ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_CALLS);
 		}
@@ -694,7 +694,7 @@ Evas_Object *_callui_create_message_button_disabled(void *data)
 	Evas_Object *icon = NULL;
 
 	switch (vd->type) {
-	case VIEW_ENDCALL_VIEW:
+	case VIEW_TYPE_ENDCALL:
 		{
 			layout = _callui_view_callend_get_layout(vd);
 		}
@@ -763,7 +763,7 @@ Evas_Object *_callui_create_view_contact_button(void *data, int ct_id)
 	CALLUI_RETURN_VALUE_IF_FAIL(vd != NULL, NULL);
 
 	switch (vd->type) {
-	case VIEW_ENDCALL_VIEW:
+	case VIEW_TYPE_ENDCALL:
 		{
 			layout = _callui_view_callend_get_layout(vd);
 		}
@@ -801,7 +801,7 @@ Evas_Object *_callui_create_create_contacts_button(void *data, char *number)
 	Evas_Object *sw = NULL;
 
 	switch (vd->type) {
-	case VIEW_ENDCALL_VIEW:
+	case VIEW_TYPE_ENDCALL:
 		{
 			layout = _callui_view_callend_get_layout(vd);
 		}
@@ -873,7 +873,7 @@ Evas_Object *_callui_create_update_existing_contact_button(void *data, char *num
 	CALLUI_RETURN_VALUE_IF_FAIL(vd != NULL, NULL);
 
 	switch (vd->type) {
-	case VIEW_ENDCALL_VIEW:
+	case VIEW_TYPE_ENDCALL:
 		{
 			layout = _callui_view_callend_get_layout(vd);
 		}
@@ -909,7 +909,7 @@ Evas_Object *_callui_create_message_button(void *data, char *number)
 
 	Evas_Object *icon = NULL;
 	switch (vd->type) {
-	case VIEW_ENDCALL_VIEW:
+	case VIEW_TYPE_ENDCALL:
 		{
 			layout = _callui_view_callend_get_layout(vd);
 		}
@@ -988,7 +988,8 @@ Evas_Object *_callui_show_caller_info_status(void *data, const char *status)
 {
 	Evas_Object *layout = NULL;
 
-	layout = _callvm_get_view_layout(data);
+	callui_app_data_t *ad = (callui_app_data_t *)data;
+	layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
 	edje_object_part_text_set(_EDJ(layout), "call_txt_status", status);
 
 	return layout;
@@ -1102,7 +1103,7 @@ void _callui_load_more_option(void *data)
 		eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
 
 		/* Hold/Resume */
-		if (vd->type != VIEW_INCALL_MULTICALL_SPLIT_VIEW) {
+		if (vd->type != VIEW_TYPE_MULTICALL_SPLIT) {
 			if (ad->active != NULL) {
 				elm_ctxpopup_item_append(ctxpopup, _("IDS_CALL_BUTTON_HOLD"), NULL, __callui_hold_btn_cb, ad);
 			} else {/* CALL_HOLD */
@@ -1240,8 +1241,9 @@ static void __callui_second_call_cancel_btn_response_cb(void *data, Evas_Object 
 {
 	dbg("..");
 
-	__callui_unload_second_call_popup(data);
-	_callvm_view_change(VIEW_INCOMING_LOCK_VIEW, -1, NULL, data);
+	callui_app_data_t *ad = (callui_app_data_t*) data;
+	__callui_unload_second_call_popup(ad);
+	_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_INCOMING_LOCK);
 
 	return;
 }

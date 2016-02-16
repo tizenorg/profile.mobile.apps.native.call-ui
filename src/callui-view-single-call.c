@@ -29,35 +29,30 @@ struct incall_one_view_priv {
 	Evas_Object *btn_ly;
 	Evas_Object *ic;
 };
+typedef struct incall_one_view_priv incall_one_view_priv_t;
 
-static int __callui_view_single_call_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *param3);
-static int __callui_view_single_call_onupdate(call_view_data_t *view_data, void *update_data1);
-static int __callui_view_single_call_onhide(call_view_data_t *view_data);
+static int __callui_view_single_call_oncreate(call_view_data_t *view_data, void *appdata);
+static int __callui_view_single_call_onupdate(call_view_data_t *view_data);
 static int __callui_view_single_call_onshow(call_view_data_t *view_data, void *appdata);
 static int __callui_view_single_call_ondestroy(call_view_data_t *view_data);
 static Evas_Object *__callui_view_single_call_create_contents(void *data, char *grpname);
-static int __callui_view_single_call_onRotate(call_view_data_t *view_data);
 
-call_view_data_t *_callui_view_single_call_new(callui_app_data_t *ad)
+call_view_data_t *_callui_view_single_call_new()
 {
-	static call_view_data_t one_call_view = {
-		.type = VIEW_INCALL_ONECALL_VIEW,
-		.layout = NULL,
-		.onCreate = __callui_view_single_call_oncreate,
-		.onUpdate = __callui_view_single_call_onupdate,
-		.onHide = __callui_view_single_call_onhide,
-		.onShow = __callui_view_single_call_onshow,
-		.onDestroy = __callui_view_single_call_ondestroy,
-		.onRotate = __callui_view_single_call_onRotate,
-		.priv = NULL,
-	};
-	one_call_view.priv = calloc(1, sizeof(incall_one_view_priv_t));
+	call_view_data_t *single_call_view = calloc(1, sizeof(call_view_data_t));
 
-	if (!one_call_view.priv) {
+	single_call_view->type = VIEW_TYPE_SINGLECALL;
+	single_call_view->layout = NULL;
+	single_call_view->onCreate = __callui_view_single_call_oncreate;
+	single_call_view->onUpdate = __callui_view_single_call_onupdate;
+	single_call_view->onDestroy = __callui_view_single_call_ondestroy;
+	single_call_view->priv = calloc(1, sizeof(incall_one_view_priv_t));
+
+	if (!single_call_view->priv) {
 		err("ERROR!!!!!!!!!!! ");
 	}
 
-	return &one_call_view;
+	return single_call_view;
 }
 
 static Evas_Object *__callui_view_single_call_create_contents(void *data, char *grpname)
@@ -178,13 +173,14 @@ static void __callui_view_single_call_draw_screen(callui_app_data_t *ad, Evas_Ob
 	evas_object_show(eo);
 }
 
-static int __callui_view_single_call_oncreate(call_view_data_t *vd, unsigned int param1, void *param2, void *appdata)
+static int __callui_view_single_call_oncreate(call_view_data_t *vd, void *appdata)
 {
 	dbg("incall view create");
 
 	incall_one_view_priv_t *priv = (incall_one_view_priv_t *)vd->priv;
 	callui_app_data_t *ad = (callui_app_data_t *) appdata;
 	call_data_t *call_data = NULL;
+	vd->ad = ad;
 
 	if (ad->active) {
 		call_data = ad->active;
@@ -229,20 +225,11 @@ static int __callui_view_single_call_oncreate(call_view_data_t *vd, unsigned int
 	return 0;
 }
 
-static int __callui_view_single_call_onupdate(call_view_data_t *view_data, void *update_data)
+static int __callui_view_single_call_onupdate(call_view_data_t *view_data)
 {
 	dbg("incall view update");
 	callui_app_data_t *ad = _callui_get_app_data();
 	__callui_view_single_call_onshow(view_data, ad);
-	return 0;
-}
-
-static int __callui_view_single_call_onhide(call_view_data_t *view_data)
-{
-	dbg("incall view hide");
-	callui_app_data_t *ad = _callui_get_app_data();
-
-	evas_object_hide(ad->main_ly);
 	return 0;
 }
 
@@ -260,15 +247,13 @@ static int __callui_view_single_call_onshow(call_view_data_t *view_data, void *a
 	return 0;
 }
 
-static int __callui_view_single_call_ondestroy(call_view_data_t *view_data)
+static int __callui_view_single_call_ondestroy(call_view_data_t *vd)
 {
-	dbg("incall view destroy");
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad, -1);
-
-
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCALL_ONECALL_VIEW);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, -1);
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->ad, -1);
+
+	callui_app_data_t *ad = vd->ad;
+
 	incall_one_view_priv_t *priv = (incall_one_view_priv_t *)vd->priv;
 
 	if (priv != NULL) {
@@ -290,14 +275,6 @@ static int __callui_view_single_call_ondestroy(call_view_data_t *view_data)
 		priv = NULL;
 	}
 
-	_callvm_reset_call_view_data(ad, VIEW_INCALL_ONECALL_VIEW);
-
 	dbg("complete destroy one view");
 	return 0;
 }
-
-static int __callui_view_single_call_onRotate(call_view_data_t *view_data)
-{
-	return 0;
-}
-

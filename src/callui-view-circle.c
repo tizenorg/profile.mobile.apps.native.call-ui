@@ -61,7 +61,7 @@ static void __callui_view_circle_handle_accept(call_view_data_t *vd, callui_app_
 		_callui_common_unlock_swipe_lock();
 	}
 
-	if (vd->type == VIEW_INCOMING_LOCK_VIEW) {
+	if (vd->type == VIEW_TYPE_INCOMING_LOCK) {
 		if (ad->active == NULL) {
 			dbg("No Call Or Held call - Accept");
 
@@ -82,7 +82,7 @@ static void __callui_view_circle_handle_reject(call_view_data_t *vd, callui_app_
 	dbg("..");
 	int ret = -1;
 
-	if (vd->type == VIEW_INCOMING_LOCK_VIEW) {
+	if (vd->type == VIEW_TYPE_INCOMING_LOCK) {
 		ret = cm_reject_call(ad->cm_handle);
 		if (ret != CM_ERROR_NONE) {
 			err("cm_reject_call() is failed");
@@ -96,7 +96,7 @@ static Evas_Object *__callui_view_circle_get_accept_layout(void *data)
 	call_view_data_t *vd = (call_view_data_t *)data;
 	Evas_Object *layout = NULL;
 	switch (vd->type) {
-	case VIEW_INCOMING_LOCK_VIEW:
+	case VIEW_TYPE_INCOMING_LOCK:
 		{
 			layout = _callui_view_incoming_lock_get_accept_layout(vd);
 		}
@@ -112,7 +112,7 @@ static void __callui_view_circle_set_accept_layout(void *data, Evas_Object *layo
 {
 	call_view_data_t *vd = (call_view_data_t *)data;
 	switch (vd->type) {
-	case VIEW_INCOMING_LOCK_VIEW:
+	case VIEW_TYPE_INCOMING_LOCK:
 		{
 			_callui_view_incoming_lock_set_accept_layout(vd, layout);
 		}
@@ -127,7 +127,7 @@ static Evas_Object *__callui_view_circle_get_reject_layout(void *data)
 	call_view_data_t *vd = (call_view_data_t *)data;
 	Evas_Object *layout = NULL;
 	switch (vd->type) {
-	case VIEW_INCOMING_LOCK_VIEW:
+	case VIEW_TYPE_INCOMING_LOCK:
 		{
 			layout = _callui_view_incoming_lock_get_reject_layout(vd);
 		}
@@ -143,7 +143,7 @@ static void __callui_view_circle_set_reject_layout(void *data, Evas_Object *layo
 {
 	call_view_data_t *vd = (call_view_data_t *)data;
 	switch (vd->type) {
-	case VIEW_INCOMING_LOCK_VIEW:
+	case VIEW_TYPE_INCOMING_LOCK:
 		{
 			_callui_view_incoming_lock_set_reject_layout(vd, layout);
 		}
@@ -183,12 +183,15 @@ static void __callui_view_circle_accept_down(call_view_data_t *vd, callui_app_da
 
 static void __callui_view_circle_mouse_down_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
-	dbg("");
-	Evas_Event_Mouse_Down *ev = event_info;
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCOMING_LOCK_VIEW);
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(event_info);
 
-	CALLUI_RETURN_IF_FAIL(vd);
+	call_view_data_t *vd = (call_view_data_t *)data;
+
+	CALLUI_RETURN_IF_FAIL(vd->ad);
+
+	Evas_Event_Mouse_Down *ev = event_info;
+	callui_app_data_t *ad = vd->ad;
 
 	if (-1 == accept_touch_num && -1 == reject_touch_num) {
 		__callui_view_circle_accept_down(vd, ad, ev->canvas.x, ev->canvas.y);
@@ -204,12 +207,15 @@ static void __callui_view_circle_mouse_down_cb(void *data, Evas *evas, Evas_Obje
 
 static void __callui_view_circle_multi_down_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
-	Evas_Event_Multi_Down *ev = event_info;
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCOMING_LOCK_VIEW);
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(event_info);
 
-	CALLUI_RETURN_IF_FAIL(vd);
+	call_view_data_t *vd = (call_view_data_t *)data;
+
+	CALLUI_RETURN_IF_FAIL(vd->ad);
+
+	Evas_Event_Multi_Down *ev = event_info;
+	callui_app_data_t *ad = vd->ad;
 
 	dbg("ev->device = %d, accept_touch_num = %d", ev->device, accept_touch_num);
 	if (-1 == accept_touch_num && -1 == reject_touch_num) {
@@ -251,12 +257,16 @@ static void __callui_view_circle_accept_move(call_view_data_t *vd, callui_app_da
 
 static void __callui_view_circle_mouse_move_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(event_info);
+
+	call_view_data_t *vd = (call_view_data_t *)data;
+
+	CALLUI_RETURN_IF_FAIL(vd->ad);
+
 	Evas_Event_Mouse_Move *ev = event_info;
-	CALLUI_RETURN_IF_FAIL(ev);
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad);
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCOMING_LOCK_VIEW);
-	CALLUI_RETURN_IF_FAIL(vd);
+	callui_app_data_t *ad = vd->ad;
+
 	if (accept_touch_num == 0)
 		__callui_view_circle_accept_move(vd, ad, ev->cur.canvas.x, ev->cur.canvas.y);
 	else if (reject_touch_num == 0)
@@ -265,9 +275,16 @@ static void __callui_view_circle_mouse_move_cb(void *data, Evas *evas, Evas_Obje
 
 static void __callui_view_circle_multi_move_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(event_info);
+
+	call_view_data_t *vd = (call_view_data_t *)data;
+
+	CALLUI_RETURN_IF_FAIL(vd->ad);
+
 	Evas_Event_Multi_Move *ev = event_info;
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCOMING_LOCK_VIEW);
+	callui_app_data_t *ad = vd->ad;
+
 	dbg("ev->device = %d, accept_touch_num = %d", ev->device, accept_touch_num);
 	if (vd) {
 		if (accept_touch_num == ev->device)
@@ -305,13 +322,15 @@ static void __callui_view_circle_accept_up(call_view_data_t *vd, callui_app_data
 
 static void __callui_view_circle_mouse_up_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(event_info);
+
+	call_view_data_t *vd = (call_view_data_t *)data;
+
+	CALLUI_RETURN_IF_FAIL(vd->ad);
+
 	Evas_Event_Mouse_Up *ev = event_info;
-	CALLUI_RETURN_IF_FAIL(ev);
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad);
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCOMING_LOCK_VIEW);
-	CALLUI_RETURN_IF_FAIL(vd);
+	callui_app_data_t *ad = vd->ad;
 
 	if (accept_touch_num == 0) {
 		__callui_view_circle_accept_up(vd, ad, ev->canvas.x, ev->canvas.y);
@@ -324,14 +343,15 @@ static void __callui_view_circle_mouse_up_cb(void *data, Evas *evas, Evas_Object
 
 static void __callui_view_circle_multi_up_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(event_info);
+
+	call_view_data_t *vd = (call_view_data_t *)data;
+
+	CALLUI_RETURN_IF_FAIL(vd->ad);
+
 	Evas_Event_Multi_Up *ev = event_info;
-	CALLUI_RETURN_IF_FAIL(ev);
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad);
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCOMING_LOCK_VIEW);
-	CALLUI_RETURN_IF_FAIL(vd);
-	dbg("ev->device = %d", ev->device);
+	callui_app_data_t *ad = vd->ad;
 
 	if (accept_touch_num == ev->device) {
 		__callui_view_circle_accept_up(vd, ad, ev->canvas.x, ev->canvas.y);
@@ -450,12 +470,12 @@ Evas_Object *_callui_view_circle_create_reject_layout(callui_app_data_t *ad, voi
 
 	elm_object_part_text_set(lock_reject, "reject_text", _("IDS_CALL_BUTTON_REJECT"));
 
-	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MOUSE_DOWN, __callui_view_circle_mouse_down_cb, ad);
-	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MOUSE_MOVE, __callui_view_circle_mouse_move_cb, ad);
-	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MOUSE_UP, __callui_view_circle_mouse_up_cb, ad);
-	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MULTI_DOWN, __callui_view_circle_multi_down_cb, ad);
-	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MULTI_MOVE, __callui_view_circle_multi_move_cb, ad);
-	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MULTI_UP, __callui_view_circle_multi_up_cb, ad);
+	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MOUSE_DOWN, __callui_view_circle_mouse_down_cb, vd);
+	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MOUSE_MOVE, __callui_view_circle_mouse_move_cb, vd);
+	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MOUSE_UP, __callui_view_circle_mouse_up_cb, vd);
+	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MULTI_DOWN, __callui_view_circle_multi_down_cb, vd);
+	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MULTI_MOVE, __callui_view_circle_multi_move_cb, vd);
+	evas_object_event_callback_add(lock_reject, EVAS_CALLBACK_MULTI_UP, __callui_view_circle_multi_up_cb, vd);
 
 	inner_circle = _callui_edje_object_part_get(lock_reject, "reject_inner_circle");
 	evas_object_geometry_get(inner_circle, &x, &y, &width, &height);
@@ -498,12 +518,12 @@ Evas_Object *_callui_view_circle_create_accept_layout(callui_app_data_t *ad, voi
 	elm_object_signal_emit(lock_accept, "outer_circle,hide", "outer-circle");
 
 	elm_object_part_text_set(lock_accept, "accept_text", _("IDS_CALL_BUTTON_ACCEPT"));
-	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MOUSE_DOWN, __callui_view_circle_mouse_down_cb, ad);
-	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MOUSE_MOVE, __callui_view_circle_mouse_move_cb, ad);
-	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MOUSE_UP, __callui_view_circle_mouse_up_cb, ad);
-	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MULTI_DOWN, __callui_view_circle_multi_down_cb, ad);
-	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MULTI_MOVE, __callui_view_circle_multi_move_cb, ad);
-	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MULTI_UP, __callui_view_circle_multi_up_cb, ad);
+	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MOUSE_DOWN, __callui_view_circle_mouse_down_cb, vd);
+	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MOUSE_MOVE, __callui_view_circle_mouse_move_cb, vd);
+	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MOUSE_UP, __callui_view_circle_mouse_up_cb, vd);
+	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MULTI_DOWN, __callui_view_circle_multi_down_cb, vd);
+	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MULTI_MOVE, __callui_view_circle_multi_move_cb, vd);
+	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MULTI_UP, __callui_view_circle_multi_up_cb, vd);
 
 	inner_circle = _callui_edje_object_part_get(lock_accept, "accept_inner_circle");
 	evas_object_geometry_get(inner_circle, &x, &y, &width, &height);

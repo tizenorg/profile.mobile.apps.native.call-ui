@@ -24,12 +24,10 @@
 /**
  * @brief Create Incoming lock view
  *
- * @param[in]   ad                     Application data
- *
  * @return View data
  *
  */
-call_view_data_t *_callui_view_incoming_lock_new(callui_app_data_t *ad);
+call_view_data_t *_callui_view_incoming_lock_new();
 
 /**
  * @brief Incoming lock set accept layout

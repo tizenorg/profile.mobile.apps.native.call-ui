@@ -54,6 +54,11 @@ typedef enum {
    LCD_OFF
 } callui_lcd_control_t;
 
+typedef enum {
+   CALLUI_RESULT_OK,
+   CALLUI_RESULT_FAIL,
+   CALLUI_RESULT_INVALID_PARAM
+} callui_result_t;
 
 /**
  * @brief Set call duration
@@ -285,5 +290,10 @@ const char *_callui_common_get_call_theme_path();
  * @return reject message text
  */
 char *_callui_common_get_reject_msg_by_index(int index);
+
+/**
+ * @brief Makes request on close application
+ */
+void _callui_common_exit_app();
 
 #endif //__CALLUI_COMMON_H_

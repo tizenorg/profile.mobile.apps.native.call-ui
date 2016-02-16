@@ -22,12 +22,12 @@
 #include "callui-view-manager.h"
 
 /**
- * @param[in]    ad          Application data
+ * @brief Creates multi call split view
  *
- * @return new split view data
+ * @return New multi call split view data
  *
  */
-call_view_data_t *_callui_view_multi_call_split_new(callui_app_data_t *ad);
+call_view_data_t *_callui_view_multi_call_split_new();
 
 #endif	//_CALLUI_VIEW_MULTI_CALL_SPLIT_H_
 

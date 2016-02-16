@@ -25,53 +25,10 @@
 
 #include "callui-view-manager.h"
 #include "callui-lock-manager.h"
+#include "callui-debug.h"
 
 #ifndef CALLUI_EXPORT_API
 #define CALLUI_EXPORT_API __attribute__ ((visibility("default")))
-#endif
-
-#ifndef CALLUI_LOG_TAG
-#define CALLUI_LOG_TAG "CALLUI"
-#endif
-
-#define info(fmt,args...)   { __dlog_print(LOG_ID_MAIN, DLOG_INFO,  CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
-#define dbg(fmt,args...)    { __dlog_print(LOG_ID_MAIN, DLOG_DEBUG, CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
-#define warn(fmt,args...)   { __dlog_print(LOG_ID_MAIN, DLOG_WARN,  CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
-#define err(fmt,args...)    { __dlog_print(LOG_ID_MAIN, DLOG_ERROR, CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
-#define fatal(fmt,args...)  { __dlog_print(LOG_ID_MAIN, DLOG_FATAL, CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##args); }
-
-#define sec_err(fmt, arg...)  {SECURE_LOGE(CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##arg); }
-#define sec_warn(fmt, arg...) {SECURE_LOGW(CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##arg); }
-#define sec_dbg(fmt, arg...)  {SECURE_LOGD(CALLUI_LOG_TAG, "%s: %s(%d) > " fmt "\n", __FILE__, __func__, __LINE__, ##arg); }
-
-#ifndef CALLUI_RETURN_IF_FAIL
-#define CALLUI_RETURN_IF_FAIL(check_condition)	{\
-	if (!(check_condition)) \
-	{ \
-		err("%s: Failed", #check_condition); \
-		return;	\
-	} \
-}
-#endif
-
-#ifndef CALLUI_RETURN_VALUE_IF_FAIL
-#define CALLUI_RETURN_VALUE_IF_FAIL(check_condition, value)	{\
-	if (!(check_condition)) \
-	{ \
-		err("%s: Failed", #check_condition); \
-		return value;	\
-	} \
-}
-#endif
-
-#ifndef CALLUI_RETURN_NULL_IF_FAIL
-#define CALLUI_RETURN_NULL_IF_FAIL(check_condition)	{\
-	if (!(check_condition)) \
-	{ \
-		err("%s: Failed", #check_condition); \
-		return NULL;	\
-	} \
-}
 #endif
 
 #define MSG_PKG		"org.tizen.message"
@@ -146,8 +103,11 @@ typedef struct _call_data_t {
 	call_contact_data_t call_ct_info;	/**< Contact information */
 }call_data_t;
 
-typedef struct appdata {
-	Evas *evas;
+//typedef struct view_manager *view_manager_h;
+//
+//typedef struct appdata callui_app_data_t;
+
+struct appdata {
 	Evas_Object *win;
 	Evas_Object *win_conformant;
 	Evas_Object *nf;
@@ -161,7 +121,7 @@ typedef struct appdata {
 	Evas_Object *second_call_popup;
 	Evas_Object *bt_popup;
 
-	view_manager_data_t *view_manager_handle;
+	callui_vm_h view_manager_handle;
 
 	bool multi_call_list_end_clicked;
 
@@ -209,7 +169,7 @@ typedef struct appdata {
 	Evas_Object *win_quickpanel;
 	Evas_Object *quickpanel_layout;
 	char *quickpanel_text;
-} callui_app_data_t;
+};
 
 callui_app_data_t *_callui_get_app_data();
 

@@ -24,12 +24,10 @@
 /**
  * @brief Create multicall conf
  *
- * @param[in]    ad          Application data
- *
  * @return New multicall data
  *
  */
-call_view_data_t *_callui_view_multi_call_conf_new(callui_app_data_t *ad);
+call_view_data_t *_callui_view_multi_call_conf_new();
 
 #endif	/*_CALLUI_VIEW_MULTI_CALL_CONF_H_*/
 

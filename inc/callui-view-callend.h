@@ -20,17 +20,13 @@
 
 #include "callui-view-manager.h"
 
-typedef struct callui_endcall_view_priv callui_endcall_view_priv_t;
-
 /**
  * @brief Create end call layout
- *
- * @param[in]    ad              Application data
  *
  * @return End call view data
  *
  */
-call_view_data_t *_callui_view_callend_new(callui_app_data_t *ad);
+call_view_data_t *_callui_view_callend_new();
 
 /**
  * @brief Get end call layout

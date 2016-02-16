@@ -51,22 +51,10 @@ static void _manage_callers_cb(void *data, Evas_Object *obj, const char *emissio
 static void _merge_cb(void *data, Evas_Object *obj, const char *emission, const char *source);
 static void _swap_cb(void *data, Evas_Object *obj, const char *emission, const char *source);
 
-static int _callui_view_multi_call_split_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *param3);
-static int _callui_view_multi_call_split_onupdate(call_view_data_t *view_data, void *update_data1);
+static int _callui_view_multi_call_split_oncreate(call_view_data_t *view_data, void *appdata);
+static int _callui_view_multi_call_split_onupdate(call_view_data_t *view_data);
 static int _callui_view_multi_call_split_onshow(call_view_data_t *view_data, void *appdata);
 static int _callui_view_multi_call_split_ondestroy(call_view_data_t *view_data);
-
-static call_view_data_t s_view = {
-	.type = VIEW_INCALL_MULTICALL_SPLIT_VIEW,
-	.layout = NULL,
-	.onCreate = _callui_view_multi_call_split_oncreate,
-	.onUpdate = _callui_view_multi_call_split_onupdate,
-	.onHide = NULL,
-	.onShow = _callui_view_multi_call_split_onshow,
-	.onDestroy = _callui_view_multi_call_split_ondestroy,
-	.onRotate = NULL,
-	.priv = NULL,
-};
 
 static Evas_Object *_create_merge_swap_btn(Evas_Object *parent, const char *name, const char *text)
 {
@@ -224,7 +212,7 @@ static void _callui_view_multi_call_split_draw_screen(Evas_Object *eo, void *dat
 static void _manage_callers_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	callui_app_data_t *ad = data;
-	_callvm_view_change(VIEW_INCALL_MULTICALL_LIST_VIEW, 0, NULL, ad);
+	_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_MULTICALL_LIST);
 }
 
 static void _merge_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
@@ -245,11 +233,12 @@ static void _swap_cb(void *data, Evas_Object *obj, const char *emission, const c
 	}
 }
 
-static int _callui_view_multi_call_split_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *param3)
+static int _callui_view_multi_call_split_oncreate(call_view_data_t *view_data, void *appdata)
 {
 	dbg("multi-split view create");
 
-	callui_app_data_t *ad = _callui_get_app_data();
+	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+	view_data->ad = ad;
 
 	_callui_view_multi_call_split_onshow(view_data, ad);
 	_callui_lock_manager_start(ad->lock_handle);
@@ -257,7 +246,7 @@ static int _callui_view_multi_call_split_oncreate(call_view_data_t *view_data, u
 	return 0;
 }
 
-static int _callui_view_multi_call_split_onupdate(call_view_data_t *view_data, void *update_data1)
+static int _callui_view_multi_call_split_onupdate(call_view_data_t *view_data)
 {
 	dbg("multi-split view update");
 	callui_app_data_t *ad = _callui_get_app_data();
@@ -279,29 +268,29 @@ static int _callui_view_multi_call_split_onshow(call_view_data_t *view_data, voi
 	return 0;
 }
 
-static int _callui_view_multi_call_split_ondestroy(call_view_data_t *view_data)
+static int _callui_view_multi_call_split_ondestroy(call_view_data_t *vd)
 {
-	dbg("multi-split view destroy");
-
-	callui_app_data_t *ad = _callui_get_app_data();
-
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCALL_MULTICALL_SPLIT_VIEW);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, -1);
 
 	free(vd->priv);
 	vd->priv = NULL;
 
-	_callvm_reset_call_view_data(ad, VIEW_INCALL_MULTICALL_SPLIT_VIEW);
 	return 0;
 }
 
-call_view_data_t *_callui_view_multi_call_split_new(callui_app_data_t*ad)
+call_view_data_t *_callui_view_multi_call_split_new()
 {
-	s_view.priv = calloc(1, sizeof(incall_multi_view_split_priv_t));
+	call_view_data_t *multi_call_split_view = calloc(1, sizeof(call_view_data_t));
 
-	if (!s_view.priv) {
+	multi_call_split_view->type = VIEW_TYPE_MULTICALL_SPLIT;
+	multi_call_split_view->layout = NULL;
+	multi_call_split_view->onCreate = _callui_view_multi_call_split_oncreate;
+	multi_call_split_view->onUpdate = _callui_view_multi_call_split_onupdate;
+	multi_call_split_view->onDestroy = _callui_view_multi_call_split_ondestroy;
+	multi_call_split_view->priv = calloc(1, sizeof(incall_multi_view_split_priv_t));
+	if (!multi_call_split_view->priv) {
 		err("ERROR!");
 	}
 
-	return &s_view;
+	return multi_call_split_view;
 }

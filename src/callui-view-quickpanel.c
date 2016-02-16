@@ -36,50 +36,50 @@ struct callui_view_qp_priv {
 	int rotate_angle;
 	//Ecore_Event_Handler *client_msg_handler;
 };
+typedef struct callui_view_qp_priv callui_view_qp_priv_t;
+
 static Evas_Object *__callui_view_qp_create_contents(void *data, char *group);
-static int __callui_view_qp_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *param3);
-static int __callui_view_qp_onupdate(call_view_data_t *view_data, void *update_data1);
-static int __callui_view_qp_onhide(call_view_data_t *view_data);
+static int __callui_view_qp_oncreate(call_view_data_t *view_data, void *appdata);
+static int __callui_view_qp_onupdate(call_view_data_t *view_data);
 static int __callui_view_qp_onshow(call_view_data_t *view_data, void *appdata);
 static int __callui_view_qp_ondestroy(call_view_data_t *view_data);
 
 // TODO ecore x atom actions are not supported. Need to move on event from mini controller.
 //static Eina_Bool __callui_qp_client_message_cb(void *data, int type, void *event);
 
-call_view_data_t *_callui_view_qp_new(callui_app_data_t *ad)
+call_view_data_t *_callui_view_qp_new()
 {
-	static call_view_data_t qp_view = {
-	.type = VIEW_QUICKPANEL_VIEW,
-	.layout = NULL,
-	.onCreate = __callui_view_qp_oncreate,
-	.onUpdate = __callui_view_qp_onupdate,
-	.onHide = __callui_view_qp_onhide,
-	.onShow = __callui_view_qp_onshow,
-	.onDestroy = __callui_view_qp_ondestroy,
-	.onRotate = NULL,
-	.priv = NULL,
-	};
-	qp_view.priv = calloc(1, sizeof(callui_view_qp_priv_t));
-	if (!qp_view.priv) {
+	call_view_data_t *qp_view = calloc(1, sizeof(call_view_data_t));
+
+	qp_view->type = VIEW_TYPE_QUICKPANEL,
+	qp_view->layout = NULL,
+	qp_view->onCreate = __callui_view_qp_oncreate,
+	qp_view->onUpdate = __callui_view_qp_onupdate,
+	qp_view->onDestroy = __callui_view_qp_ondestroy,
+	qp_view->priv = NULL,
+
+	qp_view->priv = calloc(1, sizeof(callui_view_qp_priv_t));
+	if (!qp_view->priv) {
 		err("ERROR!!!!!!!!!!! ");
 	}
-	return &qp_view;
+	return qp_view;
 };
 
 void _callui_view_quickpanel_change(void)
 {
-	dbg("..");
+	// TODO: need to refactor logic
+	/*dbg("..");
 
 	callui_app_data_t *ad = _callui_get_app_data();
 	CALLUI_RETURN_IF_FAIL(ad);
 
-	call_view_data_t *view_data = _callvm_get_call_view_data(ad, VIEW_QUICKPANEL_VIEW);
+	call_view_data_t *view_data = _callui_vm_get_call_view_data(ad, VIEW_TYPE_QUICKPANEL);
 
 	if (ad->win_quickpanel) {
 		if (!(ad->held) && !(ad->active) && (!ad->incom)) {
 			dbg("destroy quickpanel");
 			_callui_view_qp_hide(ad);
-			_callvm_reset_call_view_data(ad, VIEW_QUICKPANEL_VIEW);
+			_callui_vm_reset_call_view_data(ad, VIEW_TYPE_QUICKPANEL);
 			ad->win_quickpanel = NULL;
 		} else if (view_data && view_data->layout != NULL) {
 			dbg("update quickpanel");
@@ -90,12 +90,12 @@ void _callui_view_quickpanel_change(void)
 		if (view_data == NULL) {
 			view_data = _callui_view_qp_new(ad);
 			CALLUI_RETURN_IF_FAIL(view_data);
-			_callvm_set_call_view_data(ad, VIEW_QUICKPANEL_VIEW, view_data);
+			_callui_vm_set_call_view_data(ad, VIEW_TYPE_QUICKPANEL, view_data);
 		}
 		if (view_data->layout == NULL) {
 			__callui_view_qp_oncreate(view_data, 0, NULL, ad);
 		}
-	}
+	}*/
 }
 
 // TODO ecore x atom actions are not supported. Need to move on event from mini controller.
@@ -577,13 +577,15 @@ static Evas_Object *__callui_view_qp_create_contents(void *data, char *group)
 	return eo;
 }
 
-static int __callui_view_qp_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *appdata)
+static int __callui_view_qp_oncreate(call_view_data_t *view_data, void *appdata)
 {
 	dbg("quickpanel view create!!");
 
 	callui_app_data_t *ad = (callui_app_data_t *) appdata;
+
 	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)view_data->priv;
 	ad->view_data = view_data;
+	view_data->ad = ad;
 	if (!view_data->layout) {
 		ad->win_quickpanel = __callui_view_qp_create_window();
 		if (ad->win_quickpanel == NULL) {
@@ -617,19 +619,11 @@ static int __callui_view_qp_oncreate(call_view_data_t *view_data, unsigned int p
 	return 0;
 }
 
-static int __callui_view_qp_onupdate(call_view_data_t *view_data, void *update_data1)
+static int __callui_view_qp_onupdate(call_view_data_t *view_data)
 {
 	dbg("quickpanel view update!!");
 
 	__callui_view_qp_onshow(view_data, NULL);
-	return 0;
-}
-
-static int __callui_view_qp_onhide(call_view_data_t *view_data)
-{
-	dbg("quickpanel view hide!!");
-
-	evas_object_hide(view_data->layout);
 	return 0;
 }
 
@@ -659,14 +653,12 @@ static int __callui_view_qp_onshow(call_view_data_t *view_data, void *appdata)
 	return 0;
 }
 
-static int __callui_view_qp_ondestroy(call_view_data_t *view_data)
+static int __callui_view_qp_ondestroy(call_view_data_t *vd)
 {
-	dbg("quickpanel view destroy!!");
-
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad, -1);
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_QUICKPANEL_VIEW);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, -1);
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->ad, -1);
+
+	callui_app_data_t *ad = vd->ad;
 
 	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)vd->priv;
 
@@ -693,8 +685,6 @@ static int __callui_view_qp_ondestroy(call_view_data_t *view_data)
 		evas_object_del(vd->layout);
 		vd->layout = NULL;
 	}
-
-	_callvm_reset_call_view_data(ad, VIEW_QUICKPANEL_VIEW);
 
 	if (ad->win_quickpanel) {
 		evas_object_del(ad->win_quickpanel);

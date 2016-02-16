@@ -458,7 +458,7 @@ static void __reject_msg_create_glist(void *data)
 void _callui_view_incoming_call_draw_screen(callui_app_data_t *ad, call_view_data_t *vd)
 {
 	incoming_lock_view_priv_t *priv = (incoming_lock_view_priv_t *)vd->priv;
-	Evas_Object *eo = priv->contents;
+
 	char *file_path = NULL;
 	call_data_t *call_data = NULL;
 
@@ -504,7 +504,7 @@ void _callui_view_incoming_call_draw_screen(callui_app_data_t *ad, call_view_dat
 		__callui_view_incoming_call_create_reject_msg_layout(vd);
 	}
 
-	evas_object_show(eo);
+	evas_object_show(priv->contents);
 }
 
 static Eina_Bool __callui_view_incoming_lock_reject_msg_available(callui_app_data_t *ad, char *call_num)
@@ -516,11 +516,7 @@ static Eina_Bool __callui_view_incoming_lock_reject_msg_available(callui_app_dat
 		info("Invalid number");
 		return EINA_FALSE;
 	}
-/*	else if (ad->b_msg_restricted) {
-		CALL_UI_DEBUG(VC_LOG_WARN, "MDM");
-		return EINA_FALSE;
-	}
-*/
+
 	return EINA_TRUE;
 }
 
@@ -614,26 +610,25 @@ int _callui_view_incoming_call_oncreate(call_view_data_t *view_data, void *appda
 	dbg("mt-lock view create!!");
 
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-	dbg(" active %d", ad->active);
-	dbg(" incoming %d", ad->incom);
+	dbg(" active %p", ad->active);
+	dbg(" incoming %p", ad->incom);
 	incoming_lock_view_priv_t *priv = (incoming_lock_view_priv_t *) view_data->priv;
 
 	evas_object_resize(ad->win, ad->root_w, ad->root_h);
 	evas_object_pointer_mode_set(ad->win, EVAS_OBJECT_POINTER_MODE_NOGRAB);
+
 	if (ad->main_ly) {
 		priv->contents = __callui_view_incoming_call_create_contents(ad, GRP_MAIN_LY);
 		elm_object_part_content_set(ad->main_ly, "elm.swallow.content",  priv->contents);
 
-		priv->caller_info = elm_object_part_content_get(priv->contents, "caller_info");
-		if (!priv->caller_info) {
-			priv->caller_info = __callui_view_incoming_call_create_contents(ad, GRP_CALLER_INFO);
-			elm_object_part_content_set(priv->contents, "caller_info", priv->caller_info);
-		}
+		priv->caller_info = __callui_view_incoming_call_create_contents(ad, GRP_CALLER_INFO);
+		elm_object_part_content_set(priv->contents, "caller_info", priv->caller_info);
+
 		elm_object_signal_emit(priv->contents, "mt_circle_bg_show", "mt_view");
-		_callui_destroy_end_call_button(priv->contents);
 		evas_object_name_set(priv->caller_info, VIEW_INCOMING_LOCK_LAYOUT_ID);
 	}
-	if (_callui_lock_manager_is_started(ad->lock_handle) == TRUE) {
+
+	if (_callui_lock_manager_is_started(ad->lock_handle)) {
 		_callui_lock_manager_force_stop(ad->lock_handle);
 	}
 

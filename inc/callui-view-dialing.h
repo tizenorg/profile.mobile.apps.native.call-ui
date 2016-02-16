@@ -18,19 +18,14 @@
 #ifndef __CALLUI_DIALING_VIEW_H_
 #define __CALLUI_DIALING_VIEW_H_
 
-#include "callui.h"
 #include "callui-view-manager.h"
-
-typedef struct callui_view_dialing_priv callui_view_dialing_priv_t;
 
 /**
  * @brief Create dialing view
  *
- * @param[in]    ad     Application data
- *
  * @return New dialing view data
  *
  */
-call_view_data_t *_callui_dialing_view_dialing_new(callui_app_data_t *ad);
+call_view_data_t *_callui_dialing_view_dialing_new();
 
 #endif //__CALLUI_DIALING_VIEW_H_

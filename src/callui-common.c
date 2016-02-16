@@ -15,6 +15,7 @@
  *
  */
 
+#include <app.h>
 #include <app_control.h>
 #include <vconf.h>
 #include <sys/sysinfo.h>
@@ -92,7 +93,7 @@ void _callui_common_set_call_duration(char *time_dur)
 	Evas_Object *layout = NULL;
 	layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
 	CALLUI_RETURN_IF_FAIL(layout);
-	if (_callvm_get_top_view_id(ad->view_manager_handle) == VIEW_INCALL_MULTICALL_SPLIT_VIEW) {
+	if (_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_MULTICALL_SPLIT) {
 		Evas_Object *one_hold_layout = elm_object_part_content_get(layout, PART_SWALLOW_CALL_INFO);
 		Evas_Object *active_layout = elm_object_part_content_get(one_hold_layout, PART_SWALLOW_ACTIVE_INFO);
 		elm_object_part_text_set(active_layout, PART_TEXT_STATUS, time_dur);
@@ -181,7 +182,7 @@ static Eina_Bool __callui_common_ending_timer_expired_cb(void *data)
 	callui_app_data_t *ad = _callui_get_app_data();
 
 	ad->ending_timer = NULL;
-	_callvm_terminate_app_or_view_change(ad);
+	_callui_common_exit_app();
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -335,7 +336,7 @@ long _callui_common_get_uptime(void)
 
 void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
 {
-	dbg("_callui_common_win_set_noti_type");
+	dbg("_callui_common_win_set_noti_type START");
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 
 	Ecore_Wl_Window *win = elm_win_wl_window_get(ad->win);
@@ -350,6 +351,8 @@ void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
 		/* Set Notification's priority to LEVEL_HIGH */
 		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
 	}
+	dbg("_callui_common_win_set_noti_type END");
+
 	return;
 }
 
@@ -1000,4 +1003,9 @@ char *_callui_common_get_reject_msg_by_index(int index)
 	free(markup_converted_message);
 
 	return return_str;
+}
+
+void _callui_common_exit_app()
+{
+	ui_app_exit();
 }

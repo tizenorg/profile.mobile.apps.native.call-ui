@@ -18,19 +18,14 @@
 #ifndef __CALLUI_ONECALL_VIEW_H_
 #define __CALLUI_ONECALL_VIEW_H_
 
-#include "callui.h"
 #include "callui-view-manager.h"
-
-typedef struct incall_one_view_priv incall_one_view_priv_t;
 
 /**
  * @brief Create single call view
  *
- * @param[in]    ad         Application data
- *
  * @return New single call data
  *
  */
-call_view_data_t *_callui_view_single_call_new(callui_app_data_t *ad);
+call_view_data_t *_callui_view_single_call_new();
 
 #endif //__CALLUI_ONECALL_VIEW_H_

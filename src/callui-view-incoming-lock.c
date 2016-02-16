@@ -33,34 +33,27 @@
 
 #define SAFE_C_CAST(type, value) ((type)(ptrdiff_t)value)
 
-static int __callui_view_incoming_lock_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *appdata);
-static int __callui_view_incoming_lock_onupdate(call_view_data_t *view_data, void *update_data1);
-static int __callui_view_incoming_lock_onhide(call_view_data_t *view_data);
+static int __callui_view_incoming_lock_oncreate(call_view_data_t *view_data, void *appdata);
+static int __callui_view_incoming_lock_onupdate(call_view_data_t *view_data);
 static int __callui_view_incoming_lock_onshow(call_view_data_t *view_data, void *appdata);
 static int __callui_view_incoming_lock_ondestroy(call_view_data_t *view_data);
-static int __callui_view_incoming_lock_onrotate(call_view_data_t *view_data);
 
-call_view_data_t *_callui_view_incoming_lock_new(callui_app_data_t *ad)
+call_view_data_t *_callui_view_incoming_lock_new()
 {
-	dbg("_callui_view_incoming_lock_new");
-	static call_view_data_t incoming_lock_view = {
-		.type = VIEW_INCOMING_LOCK_VIEW,
-		.layout = NULL,
-		.onCreate = __callui_view_incoming_lock_oncreate,
-		.onUpdate = __callui_view_incoming_lock_onupdate,
-		.onHide = __callui_view_incoming_lock_onhide,
-		.onShow = __callui_view_incoming_lock_onshow,
-		.onDestroy = __callui_view_incoming_lock_ondestroy,
-		.onRotate = __callui_view_incoming_lock_onrotate,
-		.priv = NULL,
-	};
-	incoming_lock_view.priv = calloc(1, sizeof(incoming_lock_view_priv_t));
+	call_view_data_t *incoming_lock_view = calloc(1, sizeof(call_view_data_t));
 
-	if (!incoming_lock_view.priv) {
+	incoming_lock_view->type = VIEW_TYPE_INCOMING_LOCK;
+	incoming_lock_view->layout = NULL;
+	incoming_lock_view->onCreate = __callui_view_incoming_lock_oncreate;
+	incoming_lock_view->onUpdate = __callui_view_incoming_lock_onupdate;
+	incoming_lock_view->onDestroy = __callui_view_incoming_lock_ondestroy;
+	incoming_lock_view->priv = calloc(1, sizeof(incoming_lock_view_priv_t));
+
+	if (!incoming_lock_view->priv) {
 		err("ERROR!!!!!!!!!!!");
 	}
 
-	return &incoming_lock_view;
+	return incoming_lock_view;
 }
 
 static void __send_reject_msg_status_cb(msg_handle_t Handle, msg_struct_t pStatus, void *pUserParam)
@@ -154,9 +147,12 @@ void _callui_view_incoming_lock_view_send_reject_msg(void *data, call_data_t *ca
 	return;
 }
 
-static int __callui_view_incoming_lock_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *appdata)
+static int __callui_view_incoming_lock_oncreate(call_view_data_t *view_data, void *appdata)
 {
+
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+	view_data->ad = ad;
+
 	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK && ad->held == NULL
 			&& ad->active == NULL && ad->incom != NULL && ad->active_incoming == false) {
 
@@ -172,20 +168,11 @@ static int __callui_view_incoming_lock_oncreate(call_view_data_t *view_data, uns
 	return 0;
 }
 
-static int __callui_view_incoming_lock_onupdate(call_view_data_t *view_data, void *update_data1)
+static int __callui_view_incoming_lock_onupdate(call_view_data_t *view_data)
 {
 	dbg("mt-lock view update!!");
 	callui_app_data_t *ad = _callui_get_app_data();
 	__callui_view_incoming_lock_onshow(view_data, ad);
-	return 0;
-}
-
-static int __callui_view_incoming_lock_onhide(call_view_data_t *view_data)
-{
-	dbg("mt-lock view hide!!");
-	callui_app_data_t *ad = _callui_get_app_data();
-
-	evas_object_hide(ad->main_ly);
 	return 0;
 }
 
@@ -409,13 +396,6 @@ static int __callui_view_incoming_lock_ondestroy(call_view_data_t *vd)
 		priv = NULL;
 	}
 	elm_win_keygrab_unset(ad->win, CALLUI_KEY_SELECT, 0, 0);
-
-	return 0;
-}
-
-static int __callui_view_incoming_lock_onrotate(call_view_data_t *view_data)
-{
-	dbg("*** Incoming view Rotate ***");
 
 	return 0;
 }

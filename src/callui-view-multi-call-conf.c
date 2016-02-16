@@ -32,41 +32,32 @@ typedef struct {
 	Eina_Bool is_held;
 } callui_view_multi_call_conf_priv_t;
 
-static int __callui_view_multi_call_conf_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *param3);
-static int __callui_view_multi_call_conf_onupdate(call_view_data_t *view_data, void *update_data1);
-static int __callui_view_multi_call_conf_onhide(call_view_data_t *view_data);
+static int __callui_view_multi_call_conf_oncreate(call_view_data_t *view_data, void *appdata);
+static int __callui_view_multi_call_conf_onupdate(call_view_data_t *view_data);
 static int __callui_view_multi_call_conf_onshow(call_view_data_t *view_data,  void *appdata);
 static int __callui_view_multi_call_conf_ondestroy(call_view_data_t *view_data);
-static int __callui_view_multi_call_conf_onrotate(call_view_data_t *view_data);
 
-static call_view_data_t s_view = {
-	.type = VIEW_INCALL_MULTICALL_CONF_VIEW,
-	.layout = NULL,
-	.onCreate = __callui_view_multi_call_conf_oncreate,
-	.onUpdate = __callui_view_multi_call_conf_onupdate,
-	.onHide = __callui_view_multi_call_conf_onhide,
-	.onShow = __callui_view_multi_call_conf_onshow,
-	.onDestroy = __callui_view_multi_call_conf_ondestroy,
-	.onRotate = __callui_view_multi_call_conf_onrotate,
-	.priv = NULL,
-};
-
-call_view_data_t *_callui_view_multi_call_conf_new(callui_app_data_t *ad)
+call_view_data_t *_callui_view_multi_call_conf_new()
 {
-	s_view.priv = calloc(1, sizeof(callui_view_multi_call_conf_priv_t));
+	call_view_data_t *multi_call_conf_view = calloc(1, sizeof(call_view_data_t));
+	multi_call_conf_view->type = VIEW_TYPE_MULTICALL_CONF;
+	multi_call_conf_view->layout = NULL;
+	multi_call_conf_view->onCreate = __callui_view_multi_call_conf_oncreate;
+	multi_call_conf_view->onUpdate = __callui_view_multi_call_conf_onupdate;
+	multi_call_conf_view->onDestroy = __callui_view_multi_call_conf_ondestroy;
 
-	if (!s_view.priv) {
+	multi_call_conf_view->priv = calloc(1, sizeof(callui_view_multi_call_conf_priv_t));
+	if (!multi_call_conf_view->priv) {
 		err("ERROR!!!!!!!!!!! ");
 	}
-
-	return &s_view;
+	return multi_call_conf_view;
 }
 
 static void __callui_view_manage_btn_clicked_cb(void *data, Evas_Object *o, const char *emission, const char *source)
 {
 	dbg("..");
 	callui_app_data_t *ad = _callui_get_app_data();
-	_callvm_view_change(VIEW_INCALL_MULTICALL_LIST_VIEW, 0, 0, ad);
+	_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_MULTICALL_LIST);
 	return;
 }
 
@@ -162,10 +153,12 @@ static void __callui_view_multi_call_conf_more_btn_cb(void *data, Evas_Object *o
 	return;
 }
 
-static int __callui_view_multi_call_conf_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *param3)
+static int __callui_view_multi_call_conf_oncreate(call_view_data_t *view_data, void *appdata)
 {
 	callui_view_multi_call_conf_priv_t *priv = (callui_view_multi_call_conf_priv_t *)view_data->priv;
-	callui_app_data_t *ad = _callui_get_app_data();
+	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+
+	view_data->ad = ad;
 
 	if (ad->main_ly) {
 		/* Create Main Layout */
@@ -209,19 +202,11 @@ static int __callui_view_multi_call_conf_oncreate(call_view_data_t *view_data, u
 	return 0;
 }
 
-static int __callui_view_multi_call_conf_onupdate(call_view_data_t *view_data, void *update_data1)
+static int __callui_view_multi_call_conf_onupdate(call_view_data_t *view_data)
 {
 	dbg("multicall-conf view update");
 
 	__callui_view_multi_call_conf_onshow(view_data, NULL);
-	return 0;
-}
-
-static int __callui_view_multi_call_conf_onhide(call_view_data_t *view_data)
-{
-	dbg("multicall-conf view hide");
-	callui_app_data_t *ad = _callui_get_app_data();
-	evas_object_hide(ad->main_ly);
 	return 0;
 }
 
@@ -240,14 +225,13 @@ static int __callui_view_multi_call_conf_onshow(call_view_data_t *view_data,  vo
 	return 0;
 }
 
-static int __callui_view_multi_call_conf_ondestroy(call_view_data_t *view_data)
+static int __callui_view_multi_call_conf_ondestroy(call_view_data_t *vd)
 {
-	dbg("multicall-conf view destroy");
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad, -1);
-
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_INCALL_MULTICALL_CONF_VIEW);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, -1);
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->ad, -1);
+
+	callui_app_data_t *ad = vd->ad;
+
 	callui_view_multi_call_conf_priv_t *priv = (callui_view_multi_call_conf_priv_t *)vd->priv;
 
 	if (priv != NULL) {
@@ -278,25 +262,5 @@ static int __callui_view_multi_call_conf_ondestroy(call_view_data_t *view_data)
 		priv = NULL;
 	}
 
-	_callvm_reset_call_view_data(ad, VIEW_INCALL_MULTICALL_CONF_VIEW);
-
-	dbg("complete destroy multi view conf");
-
 	return 0;
 }
-
-static int __callui_view_multi_call_conf_onrotate(call_view_data_t *view_data)
-{
-	dbg("*** Multi Call conf-view Rotate ***");
-	callui_view_multi_call_conf_priv_t *priv = view_data->priv;
-	callui_app_data_t *ad = _callui_get_app_data();
-
-	elm_object_signal_emit(priv->contents, "set_portrait", "multicall_conf_layout");
-	elm_object_signal_emit(priv->contents, "SHOW_NO_EFFECT", "ALLBTN");
-	elm_object_signal_emit(priv->caller_info, "set_portrait", "caller_info_layout");
-
-	evas_object_show(ad->win);
-
-	return 0;
-}
-

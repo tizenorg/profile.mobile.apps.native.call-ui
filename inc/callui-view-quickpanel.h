@@ -19,17 +19,13 @@
 #ifndef __VCUI_VIEW_QUICKPANEL_H_
 #define __VCUI_VIEW_QUICKPANEL_H_
 
-typedef struct callui_view_qp_priv callui_view_qp_priv_t;
-
 /**
  * @brief Create quickpanel view
- *
- * @param[in]    ad                Application data
  *
  * @return quickpanel view
  *
  */
-call_view_data_t *_callui_view_qp_new(callui_app_data_t * ad);
+call_view_data_t *_callui_view_qp_new();
 
 /**
  * @brief Hide quick panel

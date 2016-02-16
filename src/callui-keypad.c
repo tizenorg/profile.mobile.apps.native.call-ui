@@ -290,7 +290,8 @@ static void __callui_keypad_create_entry(void *data)
 	keypad_data_t *pkeypad_data = gkeypad_data;
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 	CALLUI_RETURN_IF_FAIL(ad != NULL);
-	Evas_Object *current_ly = _callvm_get_view_layout(ad);
+	Evas_Object *current_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
+	CALLUI_RETURN_IF_FAIL(current_ly != NULL);
 
 	CALLUI_RETURN_IF_FAIL(pkeypad_data != NULL);
 
@@ -327,7 +328,7 @@ void _callui_keypad_show_layout(void *app_data)
 	CALLUI_RETURN_IF_FAIL(pkeypad_data);
 	callui_app_data_t *ad = (callui_app_data_t *)app_data;
 	CALLUI_RETURN_IF_FAIL(ad);
-	Evas_Object *view_ly = _callvm_get_view_layout(ad);
+	Evas_Object *view_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
 	CALLUI_RETURN_IF_FAIL(view_ly);
 
 	elm_object_signal_emit(pkeypad_data->keypad_ly, "SHOW", "KEYPADBTN");
@@ -361,7 +362,7 @@ void _callui_keypad_hide_layout(void *app_data)
 	CALLUI_RETURN_IF_FAIL(pkeypad_data);
 	callui_app_data_t *ad = (callui_app_data_t *)app_data;
 	CALLUI_RETURN_IF_FAIL(ad);
-	Evas_Object *view_ly = _callvm_get_view_layout(ad);
+	Evas_Object *view_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
 	CALLUI_RETURN_IF_FAIL(view_ly);
 
 	elm_object_signal_emit(pkeypad_data->keypad_ly, "HIDE", "KEYPADBTN");
@@ -387,7 +388,7 @@ void _callui_keypad_create_layout(void *appdata)
 	dbg("..");
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 	CALLUI_RETURN_IF_FAIL(ad);
-	Evas_Object *parent_ly = _callvm_get_view_layout(ad);
+	Evas_Object *parent_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
 	CALLUI_RETURN_IF_FAIL(parent_ly);
 
 	_callui_keypad_delete_layout(ad);
@@ -418,7 +419,7 @@ void _callui_keypad_delete_layout(void *appdata)
 	CALLUI_RETURN_IF_FAIL(ad);
 	keypad_data_t *pkeypad_data = gkeypad_data;
 	CALLUI_RETURN_IF_FAIL(pkeypad_data);
-	Evas_Object *parent_ly = _callvm_get_view_layout(ad);
+	Evas_Object *parent_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
 	CALLUI_RETURN_IF_FAIL(parent_ly);
 
 	elm_object_signal_emit(parent_ly, "HIDE", "KEYPAD_AREA");

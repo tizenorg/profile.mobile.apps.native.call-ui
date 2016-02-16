@@ -32,36 +32,31 @@ struct callui_view_dialing_priv {
 	Evas_Object *ic;
 	Eina_Bool bredial;
 };
+typedef struct callui_view_dialing_priv callui_view_dialing_priv_t;
 
 #define	 VIEW_DIALING_LAYOUT_ID "DIALVIEW"
 
-static int __callui_view_dialing_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *appdata);
-static int __callui_view_dialing_onupdate(call_view_data_t *view_data, void *update_data1);
-static int __callui_view_dialing_onhide(call_view_data_t *view_data);
+static int __callui_view_dialing_oncreate(call_view_data_t *view_data, void *appdata);
+static int __callui_view_dialing_onupdate(call_view_data_t *view_data);
 static int __callui_view_dialing_onshow(call_view_data_t *view_data, void *appdata);
 static int __callui_view_dialing_ondestroy(call_view_data_t *view_data);
-static int __callui_view_dialing_onrotate(call_view_data_t *view_data);
 
-call_view_data_t *_callui_dialing_view_dialing_new(callui_app_data_t *ad)
+call_view_data_t *_callui_dialing_view_dialing_new()
 {
-	static call_view_data_t dialing_view = {
-		.type = VIEW_DIALLING_VIEW,
-		.layout = NULL,
-		.onCreate = __callui_view_dialing_oncreate,
-		.onUpdate = __callui_view_dialing_onupdate,
-		.onHide = __callui_view_dialing_onhide,
-		.onShow = __callui_view_dialing_onshow,
-		.onDestroy = __callui_view_dialing_ondestroy,
-		.onRotate = __callui_view_dialing_onrotate,
-		.priv = NULL,
-	};
-	dialing_view.priv = calloc(1, sizeof(callui_view_dialing_priv_t));
+	call_view_data_t *dialing_view = calloc(1, sizeof(call_view_data_t));
 
-	if (!dialing_view.priv) {
+	dialing_view->type = VIEW_TYPE_DIALLING;
+	dialing_view->layout = NULL;
+	dialing_view->onCreate = __callui_view_dialing_oncreate;
+	dialing_view->onUpdate = __callui_view_dialing_onupdate;
+	dialing_view->onDestroy = __callui_view_dialing_ondestroy;
+	dialing_view->priv = calloc(1, sizeof(callui_view_dialing_priv_t));
+
+	if (!dialing_view->priv) {
 		err("ERROR!!!!!!!!!!! ");
 	}
 
-	return &dialing_view;
+	return dialing_view;
 }
 
 static Evas_Object *__callui_view_dialing_create_contents(void *data, char *grpname)
@@ -148,11 +143,13 @@ static void __callui_view_dialing_draw_screen(callui_app_data_t *ad, Evas_Object
 			EVAS_CALLBACK_RENDER_POST, __vcui_view_dialing_post_render_cb, vd);*/
 }
 
-static int __callui_view_dialing_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *appdata)
+static int __callui_view_dialing_oncreate(call_view_data_t *view_data, void *appdata)
 {
 	dbg("dialling view create!!");
 	callui_app_data_t *ad = (callui_app_data_t *) appdata;
 	callui_view_dialing_priv_t *priv = (callui_view_dialing_priv_t *)view_data->priv;
+
+	view_data->ad = ad;
 
 	if (ad->main_ly) {
 		priv->contents = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
@@ -184,19 +181,8 @@ static int __callui_view_dialing_oncreate(call_view_data_t *view_data, unsigned 
 	return 0;
 }
 
-static int __callui_view_dialing_onupdate(call_view_data_t *view_data, void *update_data)
+static int __callui_view_dialing_onupdate(call_view_data_t *view_data)
 {
-	return 0;
-}
-
-static int __callui_view_dialing_onhide(call_view_data_t *view_data)
-{
-	dbg("dialling view hide");
-
-	callui_app_data_t *ad = _callui_get_app_data();
-
-	evas_object_hide(ad->main_ly);
-
 	return 0;
 }
 
@@ -231,13 +217,5 @@ static int __callui_view_dialing_ondestroy(call_view_data_t *vd)
 		priv = NULL;
 	}
 
-	_callvm_reset_call_view_data(ad, VIEW_DIALLING_VIEW);
-
-	return 0;
-}
-
-static int __callui_view_dialing_onrotate(call_view_data_t *view_data)
-{
-	dbg("*** Dialling view Rotate ***");
 	return 0;
 }

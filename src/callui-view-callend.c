@@ -36,41 +36,34 @@ struct callui_endcall_view_priv {
 	int call_end_type;
 	bool is_emergency_call;
 };
+typedef struct callui_endcall_view_priv callui_endcall_view_priv_t;
 
 #define APP_CONTROL_MIME_CONTACT "application/vnd.tizen.contact"
 #define CONTACT_NUMBER_BUF_LEN 32
 #define BG_COLOR_ALPHA 120
 
-static int __callui_view_callend_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *param3);
-static int __callui_view_callend_onupdate(call_view_data_t *view_data, void *update_data1);
-static int __callui_view_callend_onhide(call_view_data_t *view_data);
+static int __callui_view_callend_oncreate(call_view_data_t *view_data, void *appdata);
+static int __callui_view_callend_onupdate(call_view_data_t *view_data);
 static int __callui_view_callend_onshow(call_view_data_t *view_data, void *appdata);
 static int __callui_view_callend_ondestroy(call_view_data_t *view_data);
-static int __callui_view_callend_onrotate(call_view_data_t *view_data);
 static void __callui_view_callend_create_screen(callui_app_data_t *ad, Evas_Object *eo, void *data);
 static Evas_Object *__callui_view_callend_create_contents(void *data, char *grp_name);
 
-call_view_data_t *_callui_view_callend_new(callui_app_data_t *ad)
+call_view_data_t *_callui_view_callend_new()
 {
-	static call_view_data_t callend_view = {
-		.type = VIEW_ENDCALL_VIEW,
-		.layout = NULL,
-		.onCreate = __callui_view_callend_oncreate,
-		.onUpdate = __callui_view_callend_onupdate,
-		.onHide = __callui_view_callend_onhide,
-		.onShow = __callui_view_callend_onshow,
-		.onDestroy = __callui_view_callend_ondestroy,
-		.onRotate = __callui_view_callend_onrotate,
-		.priv = NULL,
-	};
+	call_view_data_t *callend_view = calloc(1, sizeof(call_view_data_t));
+	callend_view->type = VIEW_TYPE_ENDCALL;
+	callend_view->layout = NULL;
+	callend_view->onCreate = __callui_view_callend_oncreate;
+	callend_view->onUpdate = __callui_view_callend_onupdate;
+	callend_view->onDestroy = __callui_view_callend_ondestroy;
 
-	callend_view.priv = calloc(1, sizeof(callui_endcall_view_priv_t));
-
-	if (!callend_view.priv) {
+	callend_view->priv = calloc(1, sizeof(callui_endcall_view_priv_t));
+	if (!callend_view->priv) {
 		err("ERROR!!!!!!!!!!!");
 	}
 
-	return &callend_view;
+	return callend_view;
 }
 
 static void __callui_endcall_voicecall_btn_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
@@ -102,7 +95,7 @@ static void __vcui_endcall_create_contact_btn_cb(void *data, Evas_Object *obj, v
 {
 	callui_app_data_t *ad = _callui_get_app_data();
 	CALLUI_RETURN_IF_FAIL(ad);
-	_callvm_terminate_app_or_view_change(ad);
+	_callui_common_exit_app();
 	app_control_h request;
 	app_control_create(&request);
 	app_control_set_operation(request, APP_CONTROL_OPERATION_ADD);
@@ -122,7 +115,7 @@ static void __vcui_endcall_update_contact_btn_cb(void *data, Evas_Object *obj, v
 {
 	callui_app_data_t *ad = _callui_get_app_data();
 	CALLUI_RETURN_IF_FAIL(ad);
-	_callvm_terminate_app_or_view_change(ad);
+	_callui_common_exit_app();
 	app_control_h request;
 	app_control_create(&request);
 	app_control_set_operation(request, APP_CONTROL_OPERATION_EDIT);
@@ -291,7 +284,7 @@ static Evas_Object *__callui_view_callend_create_contents(void *data, char *grp_
 	return eo;
 }
 
-static int __callui_view_callend_oncreate(call_view_data_t *view_data, unsigned int param1, void *param2, void *data)
+static int __callui_view_callend_oncreate(call_view_data_t *view_data, void *data)
 {
 	dbg("endcall view create");
 	call_view_data_t *vd = view_data;
@@ -299,6 +292,7 @@ static int __callui_view_callend_oncreate(call_view_data_t *view_data, unsigned 
 	callui_endcall_view_priv_t *priv = (callui_endcall_view_priv_t *)vd->priv;
 	call_data_t *call_data = NULL;
 
+	vd->ad = ad;
 	priv->bshowbutton = FALSE;	/* Init */
 
 	if (ad->active) {
@@ -344,18 +338,9 @@ static int __callui_view_callend_oncreate(call_view_data_t *view_data, unsigned 
 	return 0;
 }
 
-static int __callui_view_callend_onupdate(call_view_data_t *view_data, void *update_data)
+static int __callui_view_callend_onupdate(call_view_data_t *view_data)
 {
 	dbg("end call view update");
-	return 0;
-}
-
-static int __callui_view_callend_onhide(call_view_data_t *view_data)
-{
-	dbg("end call view hide");
-	callui_app_data_t *ad = _callui_get_app_data();
-
-	evas_object_hide(ad->main_ly);
 	return 0;
 }
 
@@ -373,13 +358,10 @@ static int __callui_view_callend_onshow(call_view_data_t *view_data, void *appda
 	return 0;
 }
 
-static int __callui_view_callend_ondestroy(call_view_data_t *view_data)
+static int __callui_view_callend_ondestroy(call_view_data_t *vd)
 {
-	dbg("endcall view destroy");
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad, -1);
-	call_view_data_t *vd = _callvm_get_call_view_data(ad, VIEW_ENDCALL_VIEW);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, -1);
+
 	callui_endcall_view_priv_t *priv = (callui_endcall_view_priv_t *)vd->priv;
 
 	_callui_common_delete_ending_timer();
@@ -408,15 +390,6 @@ static int __callui_view_callend_ondestroy(call_view_data_t *view_data)
 		priv = NULL;
 	}
 
-	_callvm_reset_call_view_data(ad, VIEW_ENDCALL_VIEW);
-
-	dbg("complete destroy one view");
-	return 0;
-}
-
-static int __callui_view_callend_onrotate(call_view_data_t *view_data)
-{
-	dbg("*** Call End view Rotate ***");
 	return 0;
 }
 
