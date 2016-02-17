@@ -103,9 +103,7 @@ typedef struct _call_data_t {
 	call_contact_data_t call_ct_info;	/**< Contact information */
 }call_data_t;
 
-//typedef struct view_manager *view_manager_h;
-//
-//typedef struct appdata callui_app_data_t;
+typedef struct _callui_qp_mc *callui_qp_mc_h;
 
 struct appdata {
 	Evas_Object *win;
@@ -115,7 +113,7 @@ struct appdata {
 	/* Main Layout contents Start */
 	Evas_Object *main_ly;
 	/* Main Layout contents End */
-	call_view_data_t *view_data;
+	callui_qp_mc_h qp_minicontrol;
 
 	Evas_Object *ctxpopup;
 	Evas_Object *second_call_popup;
@@ -164,11 +162,6 @@ struct appdata {
 	Ecore_Event_Handler *downkey_handler;
 	Ecore_Event_Handler *upkey_handler;
 	Ecore_Timer *earset_key_longpress_timer;
-
-	/*quickpanel*/
-	Evas_Object *win_quickpanel;
-	Evas_Object *quickpanel_layout;
-	char *quickpanel_text;
 };
 
 callui_app_data_t *_callui_get_app_data();

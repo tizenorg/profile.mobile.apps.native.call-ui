@@ -411,6 +411,16 @@ void _callui_create_extravolume_notify_popup(void);
 void _callui_create_toast_message(char *string);
 
 /**
+ * @brief Speaker button callback
+ *
+ * @param[in]    data         Application data
+ * @param[in]    obj          Parent object
+ * @param[in]    event_info   The event's name string
+ *
+ */
+void _callui_spk_btn_cb(void *data, Evas_Object *obj, void *event_info);
+
+/**
  * @brief Mute button callback
  *
  * @param[in]    data         Application data

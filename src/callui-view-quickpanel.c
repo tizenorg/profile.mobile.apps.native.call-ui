@@ -31,102 +31,103 @@
 #define CALL_NUMBER_ONE 1
 #define QP_WIN_H 172
 
-struct callui_view_qp_priv {
+struct _callui_qp_mc {
+	Evas_Object *win_quickpanel;
+	Evas_Object *quickpanel_layout;
 	Evas_Object *caller_id;
+	bool is_activated;
 	int rotate_angle;
+	callui_app_data_t *ad;
 	//Ecore_Event_Handler *client_msg_handler;
 };
-typedef struct callui_view_qp_priv callui_view_qp_priv_t;
+typedef struct _callui_qp_mc callui_qp_mc_t;
 
-static Evas_Object *__callui_view_qp_create_contents(void *data, char *group);
-static int __callui_view_qp_oncreate(call_view_data_t *view_data, void *appdata);
-static int __callui_view_qp_onupdate(call_view_data_t *view_data);
-static int __callui_view_qp_onshow(call_view_data_t *view_data, void *appdata);
-static int __callui_view_qp_ondestroy(call_view_data_t *view_data);
+static int  __callui_qp_mc_activate(callui_qp_mc_h qp);
+static void __callui_qp_mc_deactivate(callui_qp_mc_h qp);
+static void __callui_qp_mc_refresh(callui_qp_mc_h qp);
+static void __callui_qp_mc_hide(callui_qp_mc_h qp);
+static void __callui_qp_mc_update_text(char *txt_status, int count, Evas_Object *eo);
+
+static void __callui_qp_mc_caller_id_cb(void *data, Evas_Object *obj, void *event_info);
+static void __callui_qp_mc_launch_top_view_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+
+static void __callui_qp_mc_resume_btn_cb(void *data, Evas_Object *obj, void *event_info);
+static void __callui_qp_mc_end_btn_cb(void *data, Evas_Object *obj, void *event_info);
+
+static Evas_Object *__callui_qp_mc_create_resume_btn(callui_qp_mc_h qp);
+static Evas_Object *__callui_qp_mc_create_call_btn(callui_qp_mc_h qp);
+static Evas_Object *__callui_qp_mc_create_end_btn(callui_qp_mc_h qp);
+
+static void __callui_qp_mc_update_caller(Evas_Object *eo, call_data_t *call_data);
+static void __callui_qp_mc_update_comp_status(callui_qp_mc_h qp,
+		Evas_Object *eo,
+		bool mute_state,
+		char *ls_part,
+		call_data_t *call_data);
+
+static void __callui_qp_mc_draw_screen(callui_qp_mc_h qp);
+static void __callui_qp_mc_provider_cb(minicontrol_viewer_event_e event_type, bundle *event_arg);
+static Evas_Object *__callui_qp_mc_create_window();
+static Evas_Object *__callui_qp_mc_create_contents(callui_qp_mc_h qp, char *group);
 
 // TODO ecore x atom actions are not supported. Need to move on event from mini controller.
-//static Eina_Bool __callui_qp_client_message_cb(void *data, int type, void *event);
+//static Eina_Bool __callui_qp_mc_client_message_cb(void *data, int type, void *event);
 
-call_view_data_t *_callui_view_qp_new()
+callui_qp_mc_h _callui_qp_mc_create(callui_app_data_t *ad)
 {
-	call_view_data_t *qp_view = calloc(1, sizeof(call_view_data_t));
+	CALLUI_RETURN_NULL_IF_FAIL(ad);
 
-	qp_view->type = VIEW_TYPE_QUICKPANEL,
-	qp_view->layout = NULL,
-	qp_view->onCreate = __callui_view_qp_oncreate,
-	qp_view->onUpdate = __callui_view_qp_onupdate,
-	qp_view->onDestroy = __callui_view_qp_ondestroy,
-	qp_view->priv = NULL,
+	callui_qp_mc_h qp = calloc(1, sizeof(callui_qp_mc_t));
 
-	qp_view->priv = calloc(1, sizeof(callui_view_qp_priv_t));
-	if (!qp_view->priv) {
-		err("ERROR!!!!!!!!!!! ");
-	}
-	return qp_view;
+	CALLUI_RETURN_NULL_IF_FAIL(qp);
+
+	qp->ad = ad;
+
+	return qp;
 };
 
-void _callui_view_quickpanel_change(void)
+void _callui_qp_mc_destroy(callui_qp_mc_h qp)
 {
-	// TODO: need to refactor logic
-	/*dbg("..");
+	CALLUI_RETURN_IF_FAIL(qp);
 
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_IF_FAIL(ad);
+	__callui_qp_mc_deactivate(qp);
 
-	call_view_data_t *view_data = _callui_vm_get_call_view_data(ad, VIEW_TYPE_QUICKPANEL);
-
-	if (ad->win_quickpanel) {
-		if (!(ad->held) && !(ad->active) && (!ad->incom)) {
-			dbg("destroy quickpanel");
-			_callui_view_qp_hide(ad);
-			_callui_vm_reset_call_view_data(ad, VIEW_TYPE_QUICKPANEL);
-			ad->win_quickpanel = NULL;
-		} else if (view_data && view_data->layout != NULL) {
-			dbg("update quickpanel");
-			__callui_view_qp_onupdate(view_data, NULL);
-		}
-	} else {
-		dbg("create quickpanel");
-		if (view_data == NULL) {
-			view_data = _callui_view_qp_new(ad);
-			CALLUI_RETURN_IF_FAIL(view_data);
-			_callui_vm_set_call_view_data(ad, VIEW_TYPE_QUICKPANEL, view_data);
-		}
-		if (view_data->layout == NULL) {
-			__callui_view_qp_oncreate(view_data, 0, NULL, ad);
-		}
-	}*/
+	free(qp);
 }
 
 // TODO ecore x atom actions are not supported. Need to move on event from mini controller.
 /*
-static Eina_Bool __callui_qp_client_message_cb(void *data, int type, void *event)
+static Eina_Bool __callui_qp_mc_client_message_cb(void *data, int type, void *event)
 {
-	dbg("__callui_qp_client_message_cb");
+	dbg("__callui_qp_mc_client_message_cb");
 	int new_angle = 0;
 	Ecore_X_Event_Client_Message *ev = (Ecore_X_Event_Client_Message *) event;
-	call_view_data_t *vd = (call_view_data_t *)data;
-	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)vd->priv;
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
 
 	if ((ev->message_type == ECORE_X_ATOM_E_ILLUME_ROTATE_WINDOW_ANGLE)
 		|| (ev->message_type == ECORE_X_ATOM_E_ILLUME_ROTATE_ROOT_ANGLE)) {
 		new_angle = ev->data.l[0];
 		dbg("ROTATION: %d", new_angle);
-		priv->rotate_angle = new_angle;
-		__callui_view_qp_onshow(vd, NULL);
+		qp->rotate_angle = new_angle;
+		__callui_qp_mc_refresh(qp);
 	}
 
 	return ECORE_CALLBACK_RENEW;
 }
 */
-static void __callui_view_qp_caller_id_cb(void *data, Evas_Object *obj, void *event_info)
+
+static void __callui_qp_mc_caller_id_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
+	CALLUI_RETURN_IF_FAIL(data);
 
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
 
-	_callui_view_qp_hide(ad);
+	CALLUI_RETURN_IF_FAIL(qp->ad);
+
+	callui_app_data_t *ad = qp->ad;
+
+	__callui_qp_mc_hide(qp);
+
 	if (ad->incom) {
 		int ret = -1;
 		ret = cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_NORMAL);
@@ -148,11 +149,16 @@ static void __callui_view_qp_caller_id_cb(void *data, Evas_Object *obj, void *ev
 	elm_win_activate(ad->win);
 }
 
-static void __callui_qp_launch_top_view_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __callui_qp_mc_launch_top_view_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
-	_callui_view_qp_hide(data);
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
+
+	CALLUI_RETURN_IF_FAIL(qp->ad);
+
+	callui_app_data_t *ad = qp->ad;
+	__callui_qp_mc_hide(qp);
 
 	app_control_h request;
 	app_control_create(&request);
@@ -162,39 +168,19 @@ static void __callui_qp_launch_top_view_cb(void *data, Evas *evas, Evas_Object *
 		err("app_control_send_launch_request() failed(0x%x)", err);
 		return;
 	}
+
 	app_control_destroy(request);
 	ad->on_background = false;
 	_callui_lock_manager_start(ad->lock_handle);
 }
 
-static void __callui_qp_spk_btn_cb(void *data, Evas_Object *obj, void *event_info)
+static void __callui_qp_mc_resume_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
-	int ret = -1;
+	CALLUI_RETURN_IF_FAIL(data);
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
+	CALLUI_RETURN_IF_FAIL(qp->ad);
+	callui_app_data_t *ad = qp->ad;
 
-	if (ad->speaker_status == EINA_TRUE) {
-		ret = cm_speaker_off(ad->cm_handle);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_speaker_off() is failed. ret[%d]", ret);
-			return;
-		}
-	} else {
-		ret = cm_speaker_on(ad->cm_handle);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_speaker_on() is failed. ret[%d]", ret);
-			return;
-		}
-	}
-	_callui_update_speaker_btn(ad, !ad->speaker_status);
-}
-
-static void __callui_qp_resume_btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	dbg("..");
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
 	int ret = -1;
 
 	if (ad->held != NULL) {
@@ -210,21 +196,20 @@ static void __callui_qp_resume_btn_cb(void *data, Evas_Object *obj, void *event_
 	}
 }
 
-Evas_Object *_callui_create_quickpanel_resume_button(void *data, Eina_Bool bdisable)
+static Evas_Object *__callui_qp_mc_create_resume_btn(callui_qp_mc_h qp)
 {
-	dbg("..");
-	Evas_Object *btn = NULL;
-	Evas_Object *layout = NULL;
-	CALLUI_RETURN_NULL_IF_FAIL(data);
-	callui_app_data_t *ad = (callui_app_data_t *)data;
+	CALLUI_RETURN_NULL_IF_FAIL(qp);
+	CALLUI_RETURN_NULL_IF_FAIL(qp->quickpanel_layout);
+	CALLUI_RETURN_NULL_IF_FAIL(qp->ad);
 
-	layout = ad->quickpanel_layout;
-	CALLUI_RETURN_NULL_IF_FAIL(layout);
+	Evas_Object *btn = NULL;
+	Evas_Object *layout = qp->quickpanel_layout;
+	callui_app_data_t *ad = qp->ad;
 
 	btn = edje_object_part_swallow_get(_EDJ(layout), "swallow.resume_button");
 	if (btn) {
 		sec_dbg("Object Already Exists, so Update Only");
-		evas_object_smart_callback_del(btn, "clicked", __callui_qp_resume_btn_cb);
+		evas_object_smart_callback_del(btn, "clicked", __callui_qp_mc_resume_btn_cb);
 	} else {
 		sec_dbg("Object Doesn't Exists, so Re-Create");
 		btn = elm_button_add(layout);
@@ -233,31 +218,30 @@ Evas_Object *_callui_create_quickpanel_resume_button(void *data, Eina_Bool bdisa
 
 	if (ad->held != NULL) {
 		elm_object_style_set(btn, "style_call_icon_only_qp_resume");
-		evas_object_smart_callback_add(btn, "clicked", __callui_qp_resume_btn_cb, ad);
 	} else {
 		elm_object_style_set(btn, "style_call_icon_only_qp_resume_on");
-		evas_object_smart_callback_add(btn, "clicked", __callui_qp_resume_btn_cb, ad);
 	}
+	evas_object_smart_callback_add(btn, "clicked", __callui_qp_mc_resume_btn_cb, qp);
 	evas_object_propagate_events_set(btn, EINA_FALSE);
 
 	return btn;
 }
 
-Evas_Object *_callui_create_quickpanel_speaker_button(void *data, Eina_Bool bdisable)
+void _callui_qp_mc_update_speaker_status(callui_qp_mc_h qp, Eina_Bool is_disable)
 {
-	dbg("..");
-	Evas_Object *btn, *layout, *sw;
-	CALLUI_RETURN_NULL_IF_FAIL(data);
-	callui_app_data_t *ad = (callui_app_data_t *)data;
+	CALLUI_RETURN_IF_FAIL(qp);
+	CALLUI_RETURN_IF_FAIL(qp->quickpanel_layout);
+	CALLUI_RETURN_IF_FAIL(qp->ad);
 
-	layout = ad->quickpanel_layout;
-	CALLUI_RETURN_NULL_IF_FAIL(layout);
+	Evas_Object *btn, *layout, *sw;
+	layout = qp->quickpanel_layout;
+	callui_app_data_t *ad = qp->ad;
 
 	sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.speaker_button");
 	if (sw) {
 		sec_dbg("Object Already Exists, so Update Only");
 		btn = sw;
-		evas_object_smart_callback_del(btn, "clicked", __callui_qp_spk_btn_cb);
+		evas_object_smart_callback_del(btn, "clicked", _callui_spk_btn_cb);
 	} else {
 		sec_dbg("Object Doesn't Exists, so Re-Create");
 		btn = elm_button_add(layout);
@@ -266,30 +250,29 @@ Evas_Object *_callui_create_quickpanel_speaker_button(void *data, Eina_Bool bdis
 
 	if (ad->speaker_status == EINA_FALSE) {
 		elm_object_style_set(btn, "style_call_icon_only_qp_speaker");
-		evas_object_smart_callback_add(btn, "clicked", __callui_qp_spk_btn_cb, ad);
+		evas_object_smart_callback_add(btn, "clicked", _callui_spk_btn_cb, ad);
 	} else {
 		elm_object_style_set(btn, "style_call_icon_only_qp_speaker_on");
-		evas_object_smart_callback_add(btn, "clicked", __callui_qp_spk_btn_cb, ad);
+		evas_object_smart_callback_add(btn, "clicked", _callui_spk_btn_cb, ad);
 	}
 	evas_object_propagate_events_set(btn, EINA_FALSE);
 
-	elm_object_disabled_set(btn, bdisable);
-	return btn;
+	elm_object_disabled_set(btn, is_disable);
 }
 
-static Evas_Object *__callui_create_quickpanel_call_button(void *data)
+static Evas_Object *__callui_qp_mc_create_call_btn(callui_qp_mc_h qp)
 {
+	CALLUI_RETURN_NULL_IF_FAIL(qp);
+
 	Evas_Object *layout, *sw;
 	Evas_Object *btn = NULL;
-	callui_app_data_t *ad = (callui_app_data_t *)data;
+	layout = qp->quickpanel_layout;
 
-	layout = ad->quickpanel_layout;
-	CALLUI_RETURN_NULL_IF_FAIL(layout);
 	sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.call_button");
 	if (sw) {
 		dbg("Object Already Exists, so Update Only");
 		btn = sw;
-		evas_object_smart_callback_del(btn, "clicked", __callui_view_qp_caller_id_cb);
+		evas_object_smart_callback_del(btn, "clicked", __callui_qp_mc_caller_id_cb);
 	} else {
 		dbg("Object Doesn't Exists, so Re-Create");
 		btn = elm_button_add(layout);
@@ -298,21 +281,25 @@ static Evas_Object *__callui_create_quickpanel_call_button(void *data)
 
 	elm_object_style_set(btn, "style_call_icon_only_qp_call");
 
-	evas_object_smart_callback_add(btn, "clicked", __callui_view_qp_caller_id_cb, ad);
+	evas_object_smart_callback_add(btn, "clicked", __callui_qp_mc_caller_id_cb, qp);
 	evas_object_propagate_events_set(btn, EINA_FALSE);
 
 	return btn;
 }
 
-static void __qp_end_btn_cb(void *data, Evas_Object *obj, void *event_info)
+static void __callui_qp_mc_end_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
+	CALLUI_RETURN_IF_FAIL(data);
 
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
+
+	CALLUI_RETURN_IF_FAIL(qp->ad);
+
+	callui_app_data_t *ad = qp->ad;
 
 	int ret = -1;
-	_callui_view_qp_hide(ad);
+	__callui_qp_mc_hide(qp);
+
 	if (ad->incom) {
 		ret = cm_reject_call(ad->cm_handle);
 	} else if (CM_CALL_STATE_DIALING == ad->active->call_state)/*(dialling_view)*/ {
@@ -330,18 +317,19 @@ static void __qp_end_btn_cb(void *data, Evas_Object *obj, void *event_info)
 	}
 }
 
-static Evas_Object *__callui_create_quickpanel_end_button(void *data)
+static Evas_Object *__callui_qp_mc_create_end_btn(callui_qp_mc_h qp)
 {
-	Evas_Object *btn, *layout, *sw;
-	callui_app_data_t *ad = (callui_app_data_t *)data;
+	CALLUI_RETURN_NULL_IF_FAIL(qp);
+	CALLUI_RETURN_NULL_IF_FAIL(qp->quickpanel_layout);
 
-	layout = ad->quickpanel_layout;
-	CALLUI_RETURN_NULL_IF_FAIL(layout);
+	Evas_Object *btn, *layout, *sw;
+	layout = qp->quickpanel_layout;
+
 	sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.end_button");
 	if (sw) {
 		dbg("Object Already Exists, so Update Only");
 		btn = sw;
-		evas_object_smart_callback_del(btn, "clicked", __qp_end_btn_cb);
+		evas_object_smart_callback_del(btn, "clicked", __callui_qp_mc_end_btn_cb);
 	} else {
 		dbg("Object Doesn't Exists, so Re-Create");
 		btn = elm_button_add(layout);
@@ -350,20 +338,20 @@ static Evas_Object *__callui_create_quickpanel_end_button(void *data)
 
 	elm_object_style_set(btn, "style_call_icon_only_qp_end");
 
-	evas_object_smart_callback_add(btn, "clicked", __qp_end_btn_cb, ad);
+	evas_object_smart_callback_add(btn, "clicked", __callui_qp_mc_end_btn_cb, qp);
 	evas_object_propagate_events_set(btn, EINA_FALSE);
 	return btn;
 }
 
-Evas_Object *_callui_create_quickpanel_mute_button(void *data, Eina_Bool bdisable)
+void _callui_qp_mc_update_mute_status(callui_qp_mc_h qp, Eina_Bool is_disable)
 {
-	dbg("..");
-	Evas_Object *btn, *layout, *sw;
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_NULL_IF_FAIL(ad);
+	CALLUI_RETURN_IF_FAIL(qp);
+	CALLUI_RETURN_IF_FAIL(qp->quickpanel_layout);
+	CALLUI_RETURN_IF_FAIL(qp->ad);
 
-	layout = ad->quickpanel_layout;
-	CALLUI_RETURN_NULL_IF_FAIL(layout);
+	Evas_Object *btn, *layout, *sw;
+	layout = qp->quickpanel_layout;
+	callui_app_data_t *ad = qp->ad;
 
 	sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.mute_button");
 	if (sw) {
@@ -385,35 +373,27 @@ Evas_Object *_callui_create_quickpanel_mute_button(void *data, Eina_Bool bdisabl
 	}
 
 	evas_object_propagate_events_set(btn, EINA_FALSE);
-	elm_object_disabled_set(btn, bdisable);
-
-	return btn;
+	elm_object_disabled_set(btn, is_disable);
 }
 
-void _callui_view_qp_hide(callui_app_data_t *ad)
+static void __callui_qp_mc_hide(callui_qp_mc_h qp)
 {
-	dbg("..");
-	minicontrol_send_event(ad->win_quickpanel, MINICONTROL_PROVIDER_EVENT_REQUEST_HIDE, NULL);
+	minicontrol_send_event(qp->win_quickpanel, MINICONTROL_PROVIDER_EVENT_REQUEST_HIDE, NULL);
 }
 
-static void __callui_view_qp_update_caller(Evas_Object *eo, call_data_t *pcall_data)
+static void __callui_qp_mc_update_caller(Evas_Object *eo, call_data_t *call_data)
 {
-	dbg("..");
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_IF_FAIL(ad);
+	CALLUI_RETURN_IF_FAIL(eo);
+	CALLUI_RETURN_IF_FAIL(call_data);
 
-	if (pcall_data == NULL) {
-		return;
-	}
-
-	char *call_name = pcall_data->call_ct_info.call_disp_name;
-	char *file_path = pcall_data->call_ct_info.caller_id_path;
+	char *call_name = call_data->call_ct_info.call_disp_name;
+	char *file_path = call_data->call_ct_info.caller_id_path;
 
 	char *call_number = NULL;
-	if (strlen(pcall_data->call_disp_num) > 0) {
-		call_number = pcall_data->call_disp_num;
+	if (strlen(call_data->call_disp_num) > 0) {
+		call_number = call_data->call_disp_num;
 	} else {
-		call_number = pcall_data->call_num;
+		call_number = call_data->call_num;
 	}
 
 	if (strlen(call_name) == 0) {
@@ -440,67 +420,75 @@ static void __callui_view_qp_update_caller(Evas_Object *eo, call_data_t *pcall_d
 	}
 }
 
-static void __callui_view_qp_update_screen(void *data, Evas_Object *eo, bool mute_state, char *ls_part, call_data_t *call_data)
+static void __callui_qp_mc_update_comp_status(callui_qp_mc_h qp,
+		Evas_Object *eo,
+		bool mute_state,
+		char *ls_part,
+		call_data_t *call_data)
 {
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad);
-	_callui_create_quickpanel_mute_button(ad, mute_state);
-	__callui_view_qp_update_caller(eo, call_data);
+	CALLUI_RETURN_IF_FAIL(qp);
+
+	_callui_qp_mc_update_mute_status(qp, mute_state);
+	__callui_qp_mc_update_caller(eo, call_data);
 	elm_object_signal_emit(eo, ls_part, "");
 }
 
-static void __callui_view_qp_draw_screen(Evas_Object *eo, void *data)
+static void __callui_qp_mc_draw_screen(callui_qp_mc_h qp)
 {
-	dbg("..");
-	call_data_t *call_data = NULL;
-	callui_app_data_t *ad = (callui_app_data_t *)data;
+	CALLUI_RETURN_IF_FAIL(qp);
+	CALLUI_RETURN_IF_FAIL(qp->quickpanel_layout);
+	CALLUI_RETURN_IF_FAIL(qp->ad);
 
-	Evas_Object *call_btn = __callui_create_quickpanel_call_button(ad);
+	call_data_t *call_data = NULL;
+	callui_app_data_t *ad = qp->ad;
+	Evas_Object *eo = qp->quickpanel_layout;
+
+	Evas_Object *call_btn = __callui_qp_mc_create_call_btn(qp);
 	elm_object_disabled_set(call_btn, EINA_TRUE);
-	_callui_create_quickpanel_speaker_button(ad, EINA_FALSE);
+	_callui_qp_mc_update_speaker_status(qp, EINA_FALSE);
 
 	if (ad->incom) {
 		/**incoming call**/
 
 		call_data = ad->incom;
-		__callui_view_qp_update_screen(ad, eo, EINA_TRUE, "incoming_call", call_data);
-		_callui_view_qp_update_text(_("IDS_CALL_BODY_INCOMING_CALL"), 0, eo);
-		_callui_create_quickpanel_speaker_button(ad, EINA_TRUE);
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "incoming_call", call_data);
+		__callui_qp_mc_update_text(_("IDS_CALL_BODY_INCOMING_CALL"), 0, eo);
+		_callui_qp_mc_update_speaker_status(qp, EINA_TRUE);
 		elm_object_disabled_set(call_btn, EINA_FALSE);
 	} else if (ad->active && (CM_CALL_STATE_DIALING == ad->active->call_state)) {
 		/**dialling**/
 
 		call_data = ad->active;
-		_callui_view_qp_update_text(_("IDS_CALL_POP_DIALLING"), 0, eo);
-		__callui_view_qp_update_screen(ad, eo, EINA_TRUE, "outgoing_call", call_data);
+		__callui_qp_mc_update_text(_("IDS_CALL_POP_DIALLING"), 0, eo);
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "outgoing_call", call_data);
 		elm_object_signal_emit(eo, "outgoing_call", "");
 	} else if ((ad->active) && (ad->held)) {
 		/**split call**/
 
 		call_data = ad->active;
-		__callui_view_qp_update_screen(ad, eo, EINA_FALSE, "during_call", call_data);
-		_callui_view_qp_update_text(NULL, ad->active->member_count, eo);
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_FALSE, "during_call", call_data);
+		__callui_qp_mc_update_text(NULL, ad->active->member_count, eo);
 	} else if ((ad->active)) {
 		/**active call**/
 
 		call_data = ad->active;
-		__callui_view_qp_update_screen(ad, eo, EINA_FALSE, "during_call", call_data);
-		_callui_view_qp_update_text(NULL, ad->active->member_count, eo);
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_FALSE, "during_call", call_data);
+		__callui_qp_mc_update_text(NULL, ad->active->member_count, eo);
 		_callui_common_update_call_duration(call_data->start_time);
 	} else if ((ad->held)) {
 		/**held call**/
 
 		call_data = ad->held;
-		__callui_view_qp_update_screen(ad, eo, EINA_TRUE, "resume_call", call_data);
-		_callui_create_quickpanel_resume_button(ad, EINA_TRUE);
-		_callui_view_qp_update_text(_("IDS_CALL_BODY_ON_HOLD_ABB"), ad->held->member_count, eo);
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "resume_call", call_data);
+		__callui_qp_mc_create_resume_btn(qp);
+		__callui_qp_mc_update_text(_("IDS_CALL_BODY_ON_HOLD_ABB"), ad->held->member_count, eo);
 	} else {
 		dbg("incoming call. error!");
 	}
-	__callui_create_quickpanel_end_button(ad);
+	__callui_qp_mc_create_end_btn(qp);
 }
 
-static void __callui_view_qp_provider_cb(minicontrol_viewer_event_e event_type, bundle *event_arg)
+static void __callui_qp_mc_provider_cb(minicontrol_viewer_event_e event_type, bundle *event_arg)
 {
 	dbg("__callui_view_qp_viewer_cb %i", event_type);
 	char *angle = NULL;
@@ -510,20 +498,21 @@ static void __callui_view_qp_provider_cb(minicontrol_viewer_event_e event_type, 
 
 	callui_app_data_t *ad = _callui_get_app_data();
 	CALLUI_RETURN_IF_FAIL(ad);
-	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)ad->view_data->priv;
+
+	callui_qp_mc_h qp = ad->qp_minicontrol;
 	if (angle && angle[0] != '\0') {
-		priv->rotate_angle = atoi(angle);
+		qp->rotate_angle = atoi(angle);
 	}
-	__callui_view_qp_onshow(ad->view_data, NULL);
+	__callui_qp_mc_refresh(qp);
 }
 
-static Evas_Object *__callui_view_qp_create_window()
+static Evas_Object *__callui_qp_mc_create_window()
 {
-	dbg("...");
-	Evas_Object *win = NULL;
+	dbg("..");
+	Evas_Object *win = minicontrol_create_window("org.tizen.call-ui",
+			MINICONTROL_TARGET_VIEWER_QUICK_PANEL,
+			__callui_qp_mc_provider_cb);
 
-	win = minicontrol_create_window("org.tizen.call-ui", MINICONTROL_TARGET_VIEWER_QUICK_PANEL, __callui_view_qp_provider_cb);
-	elm_win_alpha_set(win, EINA_TRUE);
 	evas_object_resize(win, ELM_SCALE_SIZE(MAIN_SCREEN_W), ELM_SCALE_SIZE(QP_WIN_H));
 
 	if (elm_win_wm_rotation_supported_get(win)) {
@@ -535,181 +524,111 @@ static Evas_Object *__callui_view_qp_create_window()
 	return win;
 }
 
-static Evas_Object *__callui_view_qp_create_layout_main(Evas_Object *parent)
+static Evas_Object *__callui_qp_mc_create_contents(callui_qp_mc_h qp, char *group)
 {
-	if (parent == NULL) {
-		dbg("ERROR");
-		return NULL;
-	}
+	CALLUI_RETURN_NULL_IF_FAIL(qp);
 
-	Evas_Object *ly;
-	ly = elm_layout_add(parent);
-
-	if (ly == NULL) {
-		err("Failed elm_layout_add.");
-		return NULL;
-	}
-
-	elm_layout_theme_set(ly, "layout", "application", "default");
-	evas_object_size_hint_weight_set(ly, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	elm_win_resize_object_add(parent, ly);
-
-	edje_object_signal_emit(_EDJ(ly), "elm,state,show,content", "elm");
-
-	return ly;
+	return _callui_load_edj(qp->win_quickpanel, EDJ_NAME, group);
 }
 
-static Evas_Object *__callui_view_qp_create_contents(void *data, char *group)
+static int __callui_qp_mc_activate(callui_qp_mc_h qp)
 {
-	if (data == NULL) {
-		dbg("ERROR");
-		return NULL;
-	}
-	callui_app_data_t *ad = _callui_get_app_data();
-	Evas_Object *eo = NULL;
+	CALLUI_RETURN_VALUE_IF_FAIL(qp, CALLUI_RESULT_INVALID_PARAM);
 
-	/* load edje */
-	eo = _callui_load_edj(ad->win_quickpanel, EDJ_NAME, group);
-
-	if (eo == NULL)
-		return NULL;
-
-	return eo;
-}
-
-static int __callui_view_qp_oncreate(call_view_data_t *view_data, void *appdata)
-{
-	dbg("quickpanel view create!!");
-
-	callui_app_data_t *ad = (callui_app_data_t *) appdata;
-
-	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)view_data->priv;
-	ad->view_data = view_data;
-	view_data->ad = ad;
-	if (!view_data->layout) {
-		ad->win_quickpanel = __callui_view_qp_create_window();
-		if (ad->win_quickpanel == NULL) {
-			err("__callui_view_qp_create_window FAILED!");
-			return -1;
+	if (!qp->win_quickpanel) {
+		qp->win_quickpanel = __callui_qp_mc_create_window();
+		if (qp->win_quickpanel == NULL) {
+			err("__callui_qp_mc_create_window FAILED!");
+			return CALLUI_RESULT_FAIL;
 		}
 
-		priv->rotate_angle = elm_win_rotation_get(ad->win_quickpanel);
-		dbg("current rotate angle(%d)", priv->rotate_angle);
-		view_data->layout = __callui_view_qp_create_layout_main(ad->win_quickpanel);
-		if (view_data->layout == NULL) {
-			err("__callui_view_qp_create_layout_main FAILED!");
-			return -1;
+		qp->rotate_angle = elm_win_rotation_get(qp->win_quickpanel);
+		dbg("current rotate angle(%d)", qp->rotate_angle);
+
+		qp->quickpanel_layout = __callui_qp_mc_create_contents(qp, GRP_QUICKPANEL);
+		if (qp->quickpanel_layout == NULL) {
+			err("__callui_qp_mc_create_contents FAILED!");
+			return CALLUI_RESULT_FAIL;
 		}
-		ad->quickpanel_layout = __callui_view_qp_create_contents(view_data, GRP_QUICKPANEL);
-		if (ad->quickpanel_layout == NULL) {
-			err("__callui_view_qp_create_contents FAILED!");
-			return -1;
-		}
-		elm_object_part_content_set(view_data->layout, "elm.swallow.content", ad->quickpanel_layout);
-		evas_object_name_set(ad->quickpanel_layout, VIEW_QUICKPANEL_LAYOUT_ID);
-		evas_object_event_callback_add(ad->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_launch_top_view_cb, ad);
+
+		elm_win_resize_object_add(qp->win_quickpanel, qp->quickpanel_layout);
+		evas_object_name_set(qp->quickpanel_layout, VIEW_QUICKPANEL_LAYOUT_ID);
+		evas_object_event_callback_add(qp->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_mc_launch_top_view_cb, qp);
 	}
 
 	//TODO Ecore x is not supported. Need to implement handling of rotation change events from qp
-	/*if (priv->client_msg_handler == NULL)
-		priv->client_msg_handler = ecore_event_handler_add(ECORE_X_EVENT_CLIENT_MESSAGE, __callui_qp_client_message_cb, view_data);
+	/*if (qp->client_msg_handler == NULL)
+		qp->client_msg_handler = ecore_event_handler_add(ECORE_X_EVENT_CLIENT_MESSAGE, __callui_qp_mc_client_message_cb, qp);
 		*/
 
-	__callui_view_qp_onshow(view_data, NULL);
-	return 0;
+	__callui_qp_mc_refresh(qp);
+
+	return CALLUI_RESULT_OK;
 }
 
-static int __callui_view_qp_onupdate(call_view_data_t *view_data)
+static void __callui_qp_mc_refresh(callui_qp_mc_h qp)
 {
-	dbg("quickpanel view update!!");
+	CALLUI_RETURN_IF_FAIL(qp);
 
-	__callui_view_qp_onshow(view_data, NULL);
-	return 0;
-}
-
-static int __callui_view_qp_onshow(call_view_data_t *view_data, void *appdata)
-{
-	dbg("quickpanel view show!!");
-	callui_app_data_t *ad = _callui_get_app_data();
-	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)view_data->priv;
-
-	if (priv->rotate_angle == 0 || priv->rotate_angle == 180) {
+	if (qp->rotate_angle == 0 || qp->rotate_angle == 180) {
 		dbg("portrait mode layout");
-		evas_object_resize(ad->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_W), ELM_SCALE_SIZE(QP_WIN_H));
-	} else if (priv->rotate_angle == 90 || priv->rotate_angle == 270) {
+		evas_object_resize(qp->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_W), ELM_SCALE_SIZE(QP_WIN_H));
+	} else if (qp->rotate_angle == 90 || qp->rotate_angle == 270) {
 		dbg("landscape mode layout");
-		evas_object_resize(ad->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_H), ELM_SCALE_SIZE(QP_WIN_H));
+		evas_object_resize(qp->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_H), ELM_SCALE_SIZE(QP_WIN_H));
 	}
 
-	__callui_view_qp_draw_screen(ad->quickpanel_layout, ad);
-	evas_object_show(ad->win_quickpanel);
-	evas_object_show(ad->quickpanel_layout);
-	evas_object_show(view_data->layout);
+	__callui_qp_mc_draw_screen(qp);
+
+	evas_object_show(qp->win_quickpanel);
+	evas_object_show(qp->quickpanel_layout);
 
 	/* Prohibit remove of mini control */
-
-	minicontrol_send_event(ad->win_quickpanel, MINICONTROL_EVENT_REQUEST_LOCK, NULL);
-
-	return 0;
+	minicontrol_send_event(qp->win_quickpanel, MINICONTROL_EVENT_REQUEST_LOCK, NULL);
 }
 
-static int __callui_view_qp_ondestroy(call_view_data_t *vd)
+static void __callui_qp_mc_deactivate(callui_qp_mc_h qp)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(vd, -1);
-	CALLUI_RETURN_VALUE_IF_FAIL(vd->ad, -1);
+	CALLUI_RETURN_IF_FAIL(qp);
 
-	callui_app_data_t *ad = vd->ad;
-
-	callui_view_qp_priv_t *priv = (callui_view_qp_priv_t *)vd->priv;
-
-	if (priv != NULL) {
-		if (priv->caller_id) {
-			evas_object_del(priv->caller_id);
-			priv->caller_id = NULL;
+	if (qp != NULL) {
+		if (qp->caller_id) {
+			evas_object_del(qp->caller_id);
 		}
-
-		//ecore_event_handler_del(priv->client_msg_handler);
-
-		free(priv);
-		priv = NULL;
+		//ecore_event_handler_del(qp->client_msg_handler);
 	}
 
-	if (ad->quickpanel_layout) {
-		evas_object_event_callback_del_full(ad->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_launch_top_view_cb, ad);
-		evas_object_del(ad->quickpanel_layout);
-		ad->quickpanel_layout = NULL;
+	if (qp->quickpanel_layout) {
+		evas_object_event_callback_del_full(qp->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_mc_launch_top_view_cb, qp);
+		evas_object_del(qp->quickpanel_layout);
+		qp->quickpanel_layout = NULL;
 	}
 
-	if (vd->layout != NULL) {
-		evas_object_hide(vd->layout);
-		evas_object_del(vd->layout);
-		vd->layout = NULL;
+	if (qp->win_quickpanel) {
+		evas_object_del(qp->win_quickpanel);
+		qp->win_quickpanel = NULL;
 	}
-
-	if (ad->win_quickpanel) {
-		evas_object_del(ad->win_quickpanel);
-		ad->win_quickpanel = NULL;
-	}
-
-	return 0;
 }
 
-void _callui_view_qp_update_text(char *txt_status, int count, Evas_Object *eo)
+static void __callui_qp_mc_update_text(char *txt_status, int count, Evas_Object *eo)
 {
 	CALLUI_RETURN_IF_FAIL(eo);
+
 	if (txt_status != NULL) {
 		edje_object_part_text_set(_EDJ(eo), "txt_timer", txt_status);
 	}
 	if (count > 1) {
 		edje_object_part_text_set(_EDJ(eo), "txt_call_name", _("IDS_CALL_OPT_CONFERENCE_CALL"));
 	}
-
 }
 
-void _callui_view_qp_set_call_timer(Evas_Object *qp_layout, char *pcall_timer)
+void _callui_qp_mc_update_calltime_status(callui_qp_mc_h qp, char *call_timer)
 {
-	CALLUI_RETURN_IF_FAIL(qp_layout);
-	callui_app_data_t *ad  = _callui_get_app_data();
+	CALLUI_RETURN_IF_FAIL(qp);
+
+	callui_app_data_t *ad  = qp->ad;
+	Evas_Object *qp_layout = qp->quickpanel_layout;
+
 	if (!ad) {
 		dbg("ad is NULL!!!");
 		return;
@@ -719,11 +638,28 @@ void _callui_view_qp_set_call_timer(Evas_Object *qp_layout, char *pcall_timer)
 		if (ad->held) {
 			char buf[TXT_TIMER_BUF_LEN] = {0};
 			char buf_tmp[TXT_TIMER_BUF_LEN] = {0};
-			snprintf(buf_tmp, sizeof(buf_tmp), "%s / %s", pcall_timer, _("IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"));
+			snprintf(buf_tmp, sizeof(buf_tmp), "%s / %s", call_timer, _("IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"));
 			snprintf(buf, sizeof(buf), buf_tmp, CALL_NUMBER_ONE);
 			edje_object_part_text_set(_EDJ(qp_layout), "txt_timer", buf);
 		} else {
-			edje_object_part_text_set(_EDJ(qp_layout), "txt_timer", _(pcall_timer));
+			edje_object_part_text_set(_EDJ(qp_layout), "txt_timer", _(call_timer));
 		}
 	}
 }
+
+void _callui_qp_mc_update(callui_qp_mc_h qp)
+{
+	debug_enter();
+	int res;
+
+	if (!qp->is_activated) {
+		res = __callui_qp_mc_activate(qp);
+		CALLUI_RETURN_IF_FAIL(res == CALLUI_RESULT_OK);
+		qp->is_activated = true;
+	}
+
+	__callui_qp_mc_refresh(qp);
+
+	debug_leave();
+}
+

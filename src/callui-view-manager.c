@@ -61,7 +61,6 @@ callui_vm_h _callui_vm_create(callui_app_data_t *ad)
 	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_MULTICALL_SPLIT, _callui_view_multi_call_split_new);
 	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_MULTICALL_CONF, _callui_view_multi_call_conf_new);
 	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_MULTICALL_LIST, _callui_view_multi_call_list_new);
-	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_QUICKPANEL, _callui_view_qp_new);
 	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_ENDCALL, _callui_view_callend_new);
 
 	vm->cur_view_type = VIEW_TYPE_UNDEFINED;
@@ -167,10 +166,10 @@ int _callui_vm_change_view(callui_vm_h vm, callui_view_type_e type)
 	if (type == VIEW_TYPE_DIALLING || type == VIEW_TYPE_INCOMING_LOCK) {
 		elm_win_activate(vm->ad->win);
 	}
+
 	if (type != VIEW_TYPE_ENDCALL) {
-		// TODO: currently not working functionality.
-		// Will be replaced in QP commit.
-		_callui_view_quickpanel_change();
+		// TODO: temp solution. Need to be replaced in future
+		_callui_qp_mc_update(vm->ad->qp_minicontrol);
 	}
 
 	evas_object_show(vm->ad->win);

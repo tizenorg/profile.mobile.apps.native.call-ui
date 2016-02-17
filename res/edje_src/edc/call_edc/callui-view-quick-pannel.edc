@@ -104,12 +104,13 @@ group {
 	name: "quickpanel";
 	parts {
 		part { name: "bg";
-			type: SPACER;
+			type: RECT;
 			scale: 1;
 			description {
 				state: "default" 0.0;
 				min: 0 QP_H;
 				fixed: 0 1;
+				color: 255 255 255 255;
 			}
 		}
 		part { name: "pad.left";

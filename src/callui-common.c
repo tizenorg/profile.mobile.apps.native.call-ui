@@ -101,8 +101,8 @@ void _callui_common_set_call_duration(char *time_dur)
 		edje_object_part_text_set(_EDJ(layout), "call_txt_status", _(time_dur));
 	}
 
-	if (ad->win_quickpanel && ad->quickpanel_layout) {
-		_callui_view_qp_set_call_timer(ad->quickpanel_layout, time_dur);
+	if (ad->qp_minicontrol) {
+		_callui_qp_mc_update_calltime_status(ad->qp_minicontrol, time_dur);
 	}
 }
 
