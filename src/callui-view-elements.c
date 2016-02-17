@@ -142,11 +142,11 @@ static Evas_Object *__callui_create_button_style(void *data, Evas_Object **p_but
 	return btn_ly;
 }
 
-static void __callui_spk_btn_cb(void *data, Evas_Object *obj, void *event_info)
+void _callui_spk_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	dbg("..");
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
+	CALLUI_RETURN_IF_FAIL(data != NULL);
+	callui_app_data_t *ad = (callui_app_data_t *)data;
 	int ret = -1;
 
 	if (ad->speaker_status == EINA_TRUE) {
@@ -184,7 +184,7 @@ void _callui_update_speaker_btn(callui_app_data_t *ad, Eina_Bool is_on)
 
 	/* Update Buttons */
 	_callui_create_top_first_button(ad);
-	_callui_create_quickpanel_speaker_button(ad, EINA_FALSE);
+	_callui_qp_mc_update_speaker_status(ad->qp_minicontrol, EINA_FALSE);
 
 	return;
 }
@@ -207,7 +207,7 @@ void _callui_update_mute_btn(callui_app_data_t *ad, Eina_Bool is_on)
 
 	ad->mute_status = is_on;
 	_callui_create_bottom_second_button(ad);
-	_callui_create_quickpanel_mute_button(ad, EINA_FALSE);
+	_callui_qp_mc_update_mute_status(ad->qp_minicontrol, EINA_FALSE);
 
 	return;
 }
@@ -331,9 +331,9 @@ Evas_Object *_callui_create_top_first_button(callui_app_data_t *ad)
 	CALLUI_RETURN_VALUE_IF_FAIL(ad != NULL, NULL);
 	__callui_create_button_style(ad, &btn, PART_TOP_FIRST_BTN);
 
-	evas_object_smart_callback_del(btn, "clicked", __callui_spk_btn_cb);
+	evas_object_smart_callback_del(btn, "clicked", _callui_spk_btn_cb);
 	elm_object_text_set(btn, _("IDS_CALL_BUTTON_SPEAKER"));
-	evas_object_smart_callback_add(btn, "clicked", __callui_spk_btn_cb, ad);
+	evas_object_smart_callback_add(btn, "clicked", _callui_spk_btn_cb, ad);
 	if (ad->speaker_status == EINA_FALSE) {
 		elm_object_style_set(btn, "style_call_sixbtn_speaker");
 	} else {

@@ -101,8 +101,8 @@ void _callui_common_set_call_duration(char *time_dur)
 		edje_object_part_text_set(_EDJ(layout), "call_txt_status", _(time_dur));
 	}
 
-	if (ad->win_quickpanel && ad->quickpanel_layout) {
-		_callui_view_qp_set_call_timer(ad->quickpanel_layout, time_dur);
+	if (ad->qp_minicontrol) {
+		_callui_qp_mc_update_calltime_status(ad->qp_minicontrol, time_dur);
 	}
 }
 
@@ -337,21 +337,21 @@ long _callui_common_get_uptime(void)
 void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
 {
 	dbg("_callui_common_win_set_noti_type START");
-	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-
-	Ecore_Wl_Window *win = elm_win_wl_window_get(ad->win);
-	if (bwin_noti == EINA_FALSE) {
-		dbg("window type: NORMAL");
-		/* Set Normal window */
-		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_TOPLEVEL);
-	} else {
-		dbg("window type: NOTI-HIGH");
-		/* Set Notification window */
-		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_NOTIFICATION);
-		/* Set Notification's priority to LEVEL_HIGH */
-		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
-	}
-	dbg("_callui_common_win_set_noti_type END");
+//	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+//
+//	Ecore_Wl_Window *win = elm_win_wl_window_get(ad->win);
+//	if (bwin_noti == EINA_FALSE) {
+//		dbg("window type: NORMAL");
+//		/* Set Normal window */
+//		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_TOPLEVEL);
+//	} else {
+//		dbg("window type: NOTI-HIGH");
+//		/* Set Notification window */
+//		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_NOTIFICATION);
+//		/* Set Notification's priority to LEVEL_HIGH */
+//		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
+//	}
+//	dbg("_callui_common_win_set_noti_type END");
 
 	return;
 }

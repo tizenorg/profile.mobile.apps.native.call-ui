@@ -484,6 +484,8 @@ static bool _callui_app_create(void *data)
 
 	ad->lock_handle = _callui_lock_manager_create();
 
+	ad->qp_minicontrol =_callui_qp_mc_create(ad);
+
 	elm_theme_extension_add(NULL, CALL_THEME);
 
 	return true;
@@ -563,6 +565,11 @@ static void _callui_app_terminate(void *data)
 	if (ad->view_manager_handle) {
 		_callui_vm_destroy(ad->view_manager_handle);
 		ad->view_manager_handle = NULL;
+	}
+
+	if (ad->qp_minicontrol) {
+		_callui_qp_mc_destroy(ad->qp_minicontrol);
+		ad->qp_minicontrol = NULL;
 	}
 
 	if (ad->lock_handle) {

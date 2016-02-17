@@ -15,71 +15,23 @@
  *
  */
 
+#ifndef __UI_VIEW_QUICKPANEL_H_
+#define __UI_VIEW_QUICKPANEL_H_
 
-#ifndef __VCUI_VIEW_QUICKPANEL_H_
-#define __VCUI_VIEW_QUICKPANEL_H_
+#include <Eina.h>
 
-/**
- * @brief Create quickpanel view
- *
- * @return quickpanel view
- *
- */
-call_view_data_t *_callui_view_qp_new();
+typedef struct _callui_qp_mc *callui_qp_mc_h;
 
-/**
- * @brief Hide quick panel
- *
- * @param[in] ad                  Application data
- *
- */
-void _callui_view_qp_hide(callui_app_data_t *ad);
+callui_qp_mc_h _callui_qp_mc_create(callui_app_data_t *ad);
 
-/**
- * @brief Update text
- *
- * @param[in] txt_status          The status text
- * @param[in] count               The number of active calls
- * @param[in] eo                  Quick panel layout
- *
- */
-void _callui_view_qp_update_text(char *txt_status, int count, Evas_Object *eo);
+void _callui_qp_mc_destroy(callui_qp_mc_h qp);
 
-/**
- * @brief Create quick panel mute button
- *
- * @param[in] data                Application data
- * @param[in] bdisable            Disable state
- *
- * @return button
- *
- */
-Evas_Object *_callui_create_quickpanel_mute_button(void *data, Eina_Bool bdisable);
+void _callui_qp_mc_update_mute_status(callui_qp_mc_h qp, Eina_Bool is_disable);
 
-/**
- * @brief Create quick panel speaker button
- *
- * @param[in] data               Application data
- * @param[in] bdisable           Speaker state
- *
- * @return button
- *
- */
-Evas_Object *_callui_create_quickpanel_speaker_button(void *data, Eina_Bool bdisable);
+void _callui_qp_mc_update_speaker_status(callui_qp_mc_h qp, Eina_Bool is_disable);
 
-/**
- * @brief Create quick panel if it not exist or update.
- *
- */
-void _callui_view_quickpanel_change();
+void _callui_qp_mc_update_calltime_status(callui_qp_mc_h qp, char *call_timer);
 
-/**
- * @brief Set call timer
- *
- * @param[in] qp_layout          Quick panel layout
- * @param[in] pcall_timer        Timer
- *
- */
-void _callui_view_qp_set_call_timer(Evas_Object *qp_layout, char *pcall_timer);
+void _callui_qp_mc_update(callui_qp_mc_h qp);
 
-#endif				/*__VCUI_VIEW_QUICKPANEL_H_*/
+#endif	/*__UI_VIEW_QUICKPANEL_H_*/
