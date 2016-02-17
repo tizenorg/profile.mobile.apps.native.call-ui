@@ -326,9 +326,6 @@ static int __callui_view_callend_oncreate(call_view_data_t *view_data, unsigned 
 			btn_ly = NULL;
 		}
 		evas_object_del(contents);
-
-		elm_win_alpha_set(ad->win, EINA_TRUE);
-		evas_object_color_set(ad->bg, 0, 0, 0, BG_COLOR_ALPHA);
 		contents = NULL;
 	}
 

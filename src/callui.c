@@ -144,7 +144,7 @@ static void __callui_update_all_call_data(callui_app_data_t *ad, cm_call_event_d
 	__callui_update_call_data(&(ad->held), call_data);
 }
 
-static void __callui_process_incoming_call(callui_app_data_t *ad, unsigned int call_id)
+static void __callui_process_incoming_call(callui_app_data_t *ad)
 {
 	dbg("..");
 	cm_call_data_t *cm_incom = NULL;
@@ -405,11 +405,6 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 		elm_win_indicator_opacity_set(eo, ELM_WIN_INDICATOR_TRANSLUCENT);
 		elm_win_conformant_set(eo, EINA_TRUE);
 
-		ad->bg = elm_bg_add(eo);
-		evas_object_size_hint_weight_set(eo, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-		evas_object_show(ad->bg);
-		elm_object_part_content_set(eo, "elm.swallow.bg", ad->bg);
-
 		ad->win_conformant = elm_conformant_add(eo);
 		elm_object_signal_emit(ad->win_conformant, "elm,state,indicator,overlap", "elm");
 		evas_object_size_hint_weight_set(ad->win_conformant, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -477,11 +472,14 @@ static bool _callui_app_create(void *data)
 	ret = __callui_init(ad);
 	if (!ret) {
 		err("__callui_init failed");
-		elm_exit();
 		return FALSE;
 	}
 
-	_callui_app_create_layout(ad);
+	if (!_callui_app_create_layout(ad)) {
+		err("_callui_app_create_layout failed");
+		return FALSE;
+	}
+
 	ad->lock_handle = _callui_lock_manager_create();
 
 	elm_theme_extension_add(NULL, CALL_THEME);
@@ -595,7 +593,6 @@ static void _callui_app_service(app_control_h app_control, void *data)
 	callui_app_data_t *ad = data;
 	char *tmp = NULL;
 	int ret = 0;
-	unsigned int call_id = -1;
 	char *uri_bundle = NULL;
 	char *operation = NULL;
 
@@ -605,8 +602,6 @@ static void _callui_app_service(app_control_h app_control, void *data)
 		_callui_common_dvc_control_lcd_state(LCD_OFF_SLEEP_LOCK);
 	}
 
-	evas_object_color_set(ad->bg, 255, 255, 255, 255);
-
 	ret = app_control_get_operation(app_control, &operation);
 	CALLUI_RETURN_IF_FAIL(ret == APP_CONTROL_ERROR_NONE);
 	CALLUI_RETURN_IF_FAIL(operation != NULL);
@@ -615,7 +610,9 @@ static void _callui_app_service(app_control_h app_control, void *data)
 	ret = app_control_get_uri(app_control, &uri_bundle);
 	CALLUI_RETURN_IF_FAIL(ret == APP_CONTROL_ERROR_NONE);
 
+	sec_warn("operation: [%s]", operation);
 	sec_warn("uri_bundle: [%s]", uri_bundle);
+
 	if ((strcmp(operation, APP_CONTROL_OPERATION_CALL) == 0) &&
 		(strncmp(uri_bundle, "tel:", 4) == 0)) {
 		if ((strncmp(uri_bundle, "tel:MT", 6) == 0)) {
@@ -626,8 +623,7 @@ static void _callui_app_service(app_control_h app_control, void *data)
 			}
 			if (tmp) {
 				dbg("handle: [%s]", tmp);
-				call_id = atoi(tmp);
-				g_free(tmp);
+				free(tmp);
 				tmp = NULL;
 			} else {
 				err("handle val is NULL");
@@ -640,18 +636,15 @@ static void _callui_app_service(app_control_h app_control, void *data)
 			if (tmp) {
 				dbg("sim_slot: [%s]", tmp);
 				ad->sim_slot = atoi(tmp);
-				g_free(tmp);
+				free(tmp);
 				tmp = NULL;
 			}
-			__callui_process_incoming_call(ad, call_id);
+			__callui_process_incoming_call(ad);
 		} else {
 			tmp = (char *)uri_bundle + 4;
 			sec_dbg("number: [%s]", tmp);
 			if (tmp) {
 				sec_dbg("number: [%s]", tmp);
-				if (!ad->main_ly) {
-					_callui_app_create_layout(ad);
-				}
 				evas_object_resize(ad->win, ad->root_w, ad->root_h);
 				if (!ad->waiting_dialing) {
 					__callui_process_outgoing_call(ad, tmp);
@@ -661,31 +654,22 @@ static void _callui_app_service(app_control_h app_control, void *data)
 			}
 		}
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_DEFAULT) == 0) {
-		if (!ad->main_ly) {
-			_callui_app_create_layout(ad);
-		}
-		__callui_process_incoming_call(ad, call_id);
+		/* */
+		warn("Unsupported operation type");
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_DURING_CALL) == 0) {
-		if (!ad->main_ly) {
-			_callui_app_create_layout(ad);
+		if (CM_ERROR_NONE != cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_NORMAL)) {
+			err("cm_answer_call failed. ret[%d]", ret);
 		}
-		ret = cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_NORMAL);
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_MESSAGE_REJECT) == 0) {
 		/* TODO Implement reject with message button functionality */
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_END_CALL) == 0) {
-		cm_reject_call(ad->cm_handle);
+		if (CM_ERROR_NONE != cm_reject_call(ad->cm_handle)) {
+			err("cm_reject_call failed. ret[%d]", ret);
+		}
 	}
 
-	if (operation) {
-		g_free(operation);
-		operation = NULL;
-	}
-
-	if (uri_bundle) {
-		g_free(uri_bundle);
-		uri_bundle = NULL;
-	}
-
+	free(operation);
+	free(uri_bundle);
 }
 
 callui_app_data_t *_callui_get_app_data()
