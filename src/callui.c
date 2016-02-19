@@ -172,8 +172,6 @@ static void __callui_process_outgoing_call(callui_app_data_t *ad, char *number)
 		return;
 	}
 	ad->waiting_dialing = true;
-	ad->active = __callui_call_data_new(number);
-	return;
 }
 
 static void __callui_call_event_cb(cm_call_event_e call_event, cm_call_event_data_t *call_state_data, void *user_data)
@@ -185,6 +183,7 @@ static void __callui_call_event_cb(cm_call_event_e call_event, cm_call_event_dat
 
 	cm_call_event_data_get_sim_slot(call_state_data, &ad->sim_slot);
 	ad->waiting_dialing = false;
+
 	switch (call_event) {
 	case CM_CALL_EVENT_ACTIVE:
 		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
