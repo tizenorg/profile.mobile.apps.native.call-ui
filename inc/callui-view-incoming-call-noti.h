@@ -15,27 +15,16 @@
  *
  */
 
-#ifndef __CALLUI_VIEW_ACTIVE_INCOMING_CALL_H_
-#define __CALLUI_VIEW_ACTIVE_INCOMING_CALL_H_
+#ifndef __CALLUI_VIEW_INCOMING_CALL_NOTI_H__
+#define __CALLUI_VIEW_INCOMING_CALL_NOTI_H__
 
-#include "callui-view-manager.h"
-
-/**
- * @brief Draw screen for active incoming call
- *
- * @param[in]   ad      Call ui app data
- * @param[in]   vd      Call view data
- *
- */
-void _callui_view_active_incoming_call_draw_screen(callui_app_data_t *ad, call_view_data_t *vd);
+typedef struct _callui_view_incoming_call_noti *callui_view_incoming_call_noti_h;
 
 /**
- * @brief Create layout for active incoming call
+ * @brief Creates incoming call active notification view instance
  *
- * @param[in]   vd       Call view data
- * @param[in]   appdata  app data
- *
+ * @return View data handler
  */
-int _callui_view_active_incoming_call_oncreate(call_view_data_t *view_data, void *appdata);
+callui_view_incoming_call_noti_h _callui_view_incoming_call_noti_new();
 
-#endif /* __CALLUI_VIEW_ACTIVE_INCOMING_CALL_H_ */
+#endif /* __CALLUI_VIEW_INCOMING_CALL_NOTI_H__ */

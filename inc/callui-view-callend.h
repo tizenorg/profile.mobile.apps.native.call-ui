@@ -15,27 +15,16 @@
  *
  */
 
-#ifndef _CALLUI_VIEW_CALLEND_H_
-#define _CALLUI_VIEW_CALLEND_H_
+#ifndef __CALLUI_VIEW_CALLEND_H__
+#define __CALLUI_VIEW_CALLEND_H__
 
-#include "callui-view-manager.h"
-
-/**
- * @brief Create end call layout
- *
- * @return End call view data
- *
- */
-call_view_data_t *_callui_view_callend_new();
+typedef struct _callui_view_callend *callui_view_callend_h;
 
 /**
- * @brief Get end call layout
+ * @brief Creates Call End view instance
  *
- * @param[in]    vd              View data
- *
- * @return End call layout
- *
+ * @return View data handler
  */
-Evas_Object *_callui_view_callend_get_layout(call_view_data_t *vd);
+callui_view_callend_h _callui_view_callend_new();
 
-#endif //_CALLUI_VIEW_CALLEND_H_
+#endif /* __CALLUI_VIEW_CALLEND_H__ */
