@@ -100,17 +100,4 @@ group {
 			}
 		}
 	}//parts
-
-	programs {
-		program {
-			name: "set_portrait";
-			signal: "set_portrait";
-			source: "multicall_list_layout";
-			in: 0.0 0.0;
-			action: STATE_SET "default" 0.0;
-
-			target: "background";
-			target: "swl_calllist";
-		}
-	}
 }

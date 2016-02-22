@@ -14,6 +14,9 @@
  *  limitations under the License.
  *
  */
+
+#include <dlog.h>
+
 #ifndef __CALLUI_DEBUG_H__
 #define __CALLUI_DEBUG_H__
 

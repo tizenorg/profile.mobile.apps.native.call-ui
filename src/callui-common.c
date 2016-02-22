@@ -30,6 +30,8 @@
 #include <system_settings.h>
 #include <efl_util.h>
 #include <app_common.h>
+#include <msg.h>
+#include <msg_transport.h>
 #include <Ecore_Wayland.h>
 
 #include "callui-common.h"
@@ -179,17 +181,20 @@ void _callui_common_delete_duration_timer()
 static Eina_Bool __callui_common_ending_timer_expired_cb(void *data)
 {
 	dbg("__callui_common_ending_timer_expired_cb");
-	callui_app_data_t *ad = _callui_get_app_data();
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+	callui_app_data_t *ad = (callui_app_data_t *)data;
 
 	ad->ending_timer = NULL;
 	_callui_common_exit_app();
+
 	return ECORE_CALLBACK_CANCEL;
 }
 
 static Eina_Bool __callui_common_ending_timer_blink_cb(void *data)
 {
 	dbg("__callui_common_ending_timer_blink_cb");
-	callui_app_data_t *ad = _callui_get_app_data();
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+	callui_app_data_t *ad = (callui_app_data_t *)data;
 
 	if ((ad->blink_cnt % 2) == 0) {
 		_callui_show_caller_info_status(ad, _("IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"));
@@ -204,7 +209,7 @@ static Eina_Bool __callui_common_ending_timer_blink_cb(void *data)
 			ecore_timer_del(ad->ending_timer);
 			ad->ending_timer = NULL;
 		}
-		ad->ending_timer = ecore_timer_add(2, __callui_common_ending_timer_expired_cb, NULL);
+		ad->ending_timer = ecore_timer_add(2, __callui_common_ending_timer_expired_cb, ad);
 
 		ad->blink_timer = NULL;
 		return ECORE_CALLBACK_CANCEL;
@@ -212,21 +217,24 @@ static Eina_Bool __callui_common_ending_timer_blink_cb(void *data)
 	return ECORE_CALLBACK_RENEW;
 }
 
-void _callui_common_create_ending_timer(call_view_data_t *vd)
+void _callui_common_create_ending_timer(void *appdata)
 {
-	CALLUI_RETURN_IF_FAIL(vd);
-	callui_app_data_t *ad = _callui_get_app_data();
+	CALLUI_RETURN_IF_FAIL(appdata);
+	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+
 	ad->blink_cnt = 0;
 	if (ad->blink_timer) {
 		ecore_timer_del(ad->blink_timer);
 		ad->blink_timer = NULL;
 	}
-	ad->blink_timer = ecore_timer_add(0.5, __callui_common_ending_timer_blink_cb, vd);
+	ad->blink_timer = ecore_timer_add(0.5, __callui_common_ending_timer_blink_cb, ad);
 }
 
-void _callui_common_delete_ending_timer(void)
+void _callui_common_delete_ending_timer(void *appdata)
 {
-	callui_app_data_t *ad = _callui_get_app_data();
+	CALLUI_RETURN_IF_FAIL(appdata);
+	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+
 	if (ad->ending_timer) {
 		ecore_timer_del(ad->ending_timer);
 		ad->ending_timer = NULL;
@@ -240,8 +248,9 @@ void _callui_common_delete_ending_timer(void)
 
 char *_callui_common_get_sim_name(void *appdata)
 {
-	dbg("_callui_common_get_sim_name");
+	CALLUI_RETURN_VALUE_IF_FAIL(appdata, NULL);
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+
 	char *sim_name = NULL;
 	if (ad->sim_slot == CM_SIM_SLOT_1_E) {
 		sim_name = vconf_get_str(VCONFKEY_SETAPPL_SIM1_NAME);
@@ -804,8 +813,6 @@ void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
 		edje_object_part_text_set(_EDJ(caller_info), "txt_call_name", "");
 		edje_object_part_text_set(_EDJ(caller_info), "txt_phone_num", "");
 	}
-
-	return;
 }
 
 gboolean _callui_common_is_extra_volume_available(void)
@@ -1008,4 +1015,107 @@ char *_callui_common_get_reject_msg_by_index(int index)
 void _callui_common_exit_app()
 {
 	ui_app_exit();
+}
+
+static void ___callui_common_send_reject_msg_status_cb(msg_handle_t Handle, msg_struct_t pStatus, void *pUserParam)
+{
+	CALLUI_RETURN_IF_FAIL(pStatus != NULL);
+	int status = MSG_NETWORK_SEND_FAIL;
+
+	msg_get_int_value(pStatus, MSG_SENT_STATUS_NETWORK_STATUS_INT, &status);
+	dbg("status:[%d]", status);
+}
+
+int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(reject_msg, CALLUI_RESULT_INVALID_PARAM);
+
+	int res = CALLUI_RESULT_FAIL;
+	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+	call_data_t *call_data = ad->incom;
+
+	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
+
+	if (strlen(reject_msg) == 0) {
+		err("Is not reject with message case");
+		return res;
+	}
+
+	msg_handle_t msgHandle = NULL;
+	msg_error_t err = msg_open_msg_handle(&msgHandle);
+	if (err != MSG_SUCCESS) {
+		dbg("msg_open_msg_handle()- failed [%d]", err);
+		return res;
+	}
+
+	err = msg_reg_sent_status_callback(msgHandle, ___callui_common_send_reject_msg_status_cb, NULL);
+	if (err != MSG_SUCCESS) {
+		dbg("msg_reg_sent_status_callback()- failed [%d]", err);
+		msg_close_msg_handle(&msgHandle);
+		return res;
+	}
+
+	msg_struct_t msgInfo = msg_create_struct(MSG_STRUCT_MESSAGE_INFO);
+	msg_struct_t sendOpt = msg_create_struct(MSG_STRUCT_SENDOPT);
+	msg_struct_t pReq = msg_create_struct(MSG_STRUCT_REQUEST_INFO);
+
+	/* Set message type to SMS reject*/
+	msg_set_int_value(msgInfo, MSG_MESSAGE_TYPE_INT, MSG_TYPE_SMS_REJECT);
+
+	int slot_id = ad->sim_slot;
+	dbg("msg_sms_send_message() Sim slot [%d]", slot_id);
+	if (slot_id != -1) {
+		slot_id++;
+		msg_set_int_value(msgInfo, MSG_MESSAGE_SIM_INDEX_INT, slot_id);
+	}
+
+	/* No setting send option */
+	msg_set_bool_value(sendOpt, MSG_SEND_OPT_SETTING_BOOL, FALSE);
+
+	/* Set message body */
+	if (msg_set_str_value(msgInfo, MSG_MESSAGE_SMS_DATA_STR, reject_msg, strlen(reject_msg)) != MSG_SUCCESS) {
+		err("msg_set_str_value() - failed");
+	} else {
+		/* Create address list*/
+		msg_struct_list_s *addr_list;
+		msg_get_list_handle(msgInfo, MSG_MESSAGE_ADDR_LIST_STRUCT, (void **)&addr_list);
+		msg_struct_t addr_info = addr_list->msg_struct_info[0];
+		char *call_number = call_data->call_num;
+
+		/* Set message address */
+		msg_set_int_value(addr_info, MSG_ADDRESS_INFO_RECIPIENT_TYPE_INT, MSG_RECIPIENTS_TYPE_TO);
+		msg_set_str_value(addr_info, MSG_ADDRESS_INFO_ADDRESS_VALUE_STR, call_number, strlen(call_number));
+		addr_list->nCount = 1;
+
+		/* Set message struct to Request*/
+		msg_set_struct_handle(pReq, MSG_REQUEST_MESSAGE_HND, msgInfo);
+		msg_set_struct_handle(pReq, MSG_REQUEST_SENDOPT_HND, sendOpt);
+
+		/* Send message */
+		err = msg_sms_send_message(msgHandle, pReq);
+		if (err != MSG_SUCCESS) {
+			err("msg_sms_send_message() - failed [%d]", err);
+		} else {
+			dbg("Sending...");
+			res = CALLUI_RESULT_OK;
+		}
+	}
+	msg_close_msg_handle(&msgHandle);
+	msg_release_struct(&pReq);
+	msg_release_struct(&msgInfo);
+	msg_release_struct(&sendOpt);
+
+	return res;
+}
+
+bool _callui_is_on_handsfree_mode()
+{
+	callui_app_data_t *ad = _callui_get_app_data();
+	return (ad->speaker_status || ad->headset_status || ad->earphone_status);
+}
+
+bool _callui_is_on_background()
+{
+	callui_app_data_t *ad = _callui_get_app_data();
+	return ad->on_background;
 }

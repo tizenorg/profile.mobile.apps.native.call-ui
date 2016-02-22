@@ -15,17 +15,16 @@
  *
  */
 
-#ifndef __CALLUI_ONECALL_VIEW_H_
-#define __CALLUI_ONECALL_VIEW_H_
+#ifndef __CALLUI_ONECALL_VIEW_H__
+#define __CALLUI_ONECALL_VIEW_H__
 
-#include "callui-view-manager.h"
+typedef struct _call_view_single_call *call_view_single_call_h;
 
 /**
- * @brief Create single call view
+ * @brief Create Single call view instance
  *
- * @return New single call data
- *
+ * @return View data handler
  */
-call_view_data_t *_callui_view_single_call_new();
+call_view_single_call_h _callui_view_single_call_new();
 
-#endif //__CALLUI_ONECALL_VIEW_H_
+#endif /* __CALLUI_ONECALL_VIEW_H__ */
