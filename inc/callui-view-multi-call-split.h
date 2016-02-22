@@ -16,18 +16,18 @@
  */
 
 
-#ifndef _CALLUI_VIEW_MULTI_CALL_SPLIT_H_
-#define _CALLUI_VIEW_MULTI_CALL_SPLIT_H_
+#ifndef __CALLUI_VIEW_MULTI_CALL_SPLIT_H__
+#define __CALLUI_VIEW_MULTI_CALL_SPLIT_H__
 
-#include "callui-view-manager.h"
+typedef struct _callui_view_mc_split *callui_view_mc_split_h;
 
 /**
- * @brief Creates multi call split view
+ * @brief Creates Multicall split view instance
  *
- * @return New multi call split view data
+ * @return View data handler
  *
  */
-call_view_data_t *_callui_view_multi_call_split_new();
+callui_view_mc_split_h _callui_view_multi_call_split_new();
 
-#endif	//_CALLUI_VIEW_MULTI_CALL_SPLIT_H_
+#endif	/* __CALLUI_VIEW_MULTI_CALL_SPLIT_H__ */
 

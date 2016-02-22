@@ -15,252 +15,215 @@
  *
  */
 
-
+#include "callui-view-multi-call-conf.h"
 #include "callui.h"
 #include "callui-common.h"
 #include "callui-view-elements.h"
-#include "callui-view-multi-call-conf.h"
 #include "callui-view-layout.h"
 #include "callui-keypad.h"
 
-#define	CALLUI_VIEW_MULTICALL_CONF_LAYOUT_ID "MULTIVIEWCONF"
-typedef struct {
-	Evas_Object *contents;
+#include <Elementary.h>
+
+#define CALLUI_BUF_MEMBER_SIZE 512
+#define CALLUI_BUF_STATUS_SIZE 129
+
+struct _callui_view_mc_conf {
+	call_view_data_base_t base_view;
+
 	Evas_Object *caller_info;
-	Evas_Object *btn_ly;
-	Evas_Object *manage_calls_ly;
-	Eina_Bool is_held;
-} callui_view_multi_call_conf_priv_t;
+} callui_view_mc_list;
 
-static int __callui_view_multi_call_conf_oncreate(call_view_data_t *view_data, void *appdata);
-static int __callui_view_multi_call_conf_onupdate(call_view_data_t *view_data);
-static int __callui_view_multi_call_conf_onshow(call_view_data_t *view_data,  void *appdata);
-static int __callui_view_multi_call_conf_ondestroy(call_view_data_t *view_data);
+typedef struct _callui_view_mc_conf _callui_view_mc_conf_t;
 
-call_view_data_t *_callui_view_multi_call_conf_new()
+static int __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, void *appdata);
+static int __callui_view_multi_call_conf_onupdate(call_view_data_base_t *view_data);
+static int __callui_view_multi_call_conf_ondestroy(call_view_data_base_t *view_data);
+
+static int __create_main_content(callui_view_mc_conf_h vd);
+static int __update_displayed_data(callui_view_mc_conf_h vd);
+
+static void __manage_calls_btn_clicked_cb(void *data, Evas_Object *o, const char *emission, const char *source);
+static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
+static void __more_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
+
+callui_view_mc_conf_h _callui_view_multi_call_conf_new()
 {
-	call_view_data_t *multi_call_conf_view = calloc(1, sizeof(call_view_data_t));
-	multi_call_conf_view->type = VIEW_TYPE_MULTICALL_CONF;
-	multi_call_conf_view->layout = NULL;
-	multi_call_conf_view->onCreate = __callui_view_multi_call_conf_oncreate;
-	multi_call_conf_view->onUpdate = __callui_view_multi_call_conf_onupdate;
-	multi_call_conf_view->onDestroy = __callui_view_multi_call_conf_ondestroy;
+	debug_enter();
 
-	multi_call_conf_view->priv = calloc(1, sizeof(callui_view_multi_call_conf_priv_t));
-	if (!multi_call_conf_view->priv) {
-		err("ERROR!!!!!!!!!!! ");
-	}
-	return multi_call_conf_view;
+	callui_view_mc_conf_h mc_list_conf = calloc(1, sizeof(_callui_view_mc_conf_t));
+	CALLUI_RETURN_NULL_IF_FAIL(mc_list_conf);
+
+	mc_list_conf->base_view.onCreate = __callui_view_multi_call_conf_oncreate;
+	mc_list_conf->base_view.onUpdate = __callui_view_multi_call_conf_onupdate;
+	mc_list_conf->base_view.onDestroy = __callui_view_multi_call_conf_ondestroy;
+
+	return mc_list_conf;
 }
 
-static void __callui_view_manage_btn_clicked_cb(void *data, Evas_Object *o, const char *emission, const char *source)
+static int __create_main_content(callui_view_mc_conf_h vd)
 {
-	dbg("..");
-	callui_app_data_t *ad = _callui_get_app_data();
-	_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_MULTICALL_LIST);
-	return;
+	callui_app_data_t *ad = vd->base_view.ad;
+
+	/* Main Layout */
+	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_MAIN_LY);
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
+	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
+
+	// TODO: replace this into view manager in nearest future
+	eext_object_event_callback_add(vd->base_view.contents, EEXT_CALLBACK_MORE, __more_btn_click_cb, ad);
+
+	/* Caller info layout */
+	vd->caller_info = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_CALLER_INFO);
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
+	elm_object_part_content_set(vd->base_view.contents, "caller_info", vd->caller_info);
+
+	/* Manage button Layout */
+	Evas_Object *manage_calls_ly = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_MANAGE_CALLS);
+	CALLUI_RETURN_VALUE_IF_FAIL(manage_calls_ly, CALLUI_RESULT_ALLOCATION_FAIL);
+	elm_object_part_content_set(vd->caller_info, "manage_calls_icon_swallow", manage_calls_ly);
+	edje_object_signal_callback_add(_EDJ(manage_calls_ly), "mouse,clicked,1", "btn", __manage_calls_btn_clicked_cb, vd);
+
+	Evas_Object *btn_layout = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_BUTTON_LAYOUT);
+	CALLUI_RETURN_VALUE_IF_FAIL(btn_layout, CALLUI_RESULT_ALLOCATION_FAIL);
+	elm_object_part_content_set(vd->base_view.contents, "btn_region", btn_layout);
+
+	/*create keypad layout*/
+	int res = _callui_keypad_create_layout(ad);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_end_call_button(vd->base_view.contents, __end_call_btn_click_cb, vd),
+			CALLUI_RESULT_ALLOCATION_FAIL);
+
+	return res;
 }
 
-static void __callui_view_multi_call_conf_draw_screen(Evas_Object *eo, void *data)
+static int __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, void *appdata)
 {
-	dbg("..");
+	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
 
-	call_view_data_t *vd = (call_view_data_t *)data;
-	callui_view_multi_call_conf_priv_t *priv = (callui_view_multi_call_conf_priv_t *)vd->priv;
-	callui_app_data_t *ad = _callui_get_app_data();
-	char buf[512] = { 0, };
+	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)view_data;
+	view_data->ad = (callui_app_data_t *)appdata;
+
+	int res = __create_main_content(vd);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+
+	return __update_displayed_data(vd);
+}
+
+static int __callui_view_multi_call_conf_onupdate(call_view_data_base_t *view_data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
+
+	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)view_data;
+
+	return __update_displayed_data(vd);
+}
+
+static int __update_displayed_data(callui_view_mc_conf_h vd)
+{
+	callui_app_data_t *ad = vd->base_view.ad;
+
+	char buf[CALLUI_BUF_MEMBER_SIZE] = { 0 };
+	char status_txt[CALLUI_BUF_STATUS_SIZE] = { 0 };
 	call_data_t *call_data = NULL;
-	char status_txt[128 + 1] = { '\0', };
+	Eina_Bool is_held;
 
 	if (ad->active) {
 		call_data = ad->active;
-		priv->is_held = EINA_FALSE;
+		is_held = EINA_FALSE;
 	} else if (ad->held) {
 		call_data = ad->held;
-		priv->is_held = EINA_TRUE;
-	} else {
-		err("call data is null");
-		return;
+		is_held = EINA_TRUE;
 	}
+	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
 
-	if (priv->is_held == EINA_TRUE) {
+	if (is_held) {
 		snprintf(status_txt, sizeof(status_txt), _("IDS_CALL_BODY_ON_HOLD_ABB"));
 		_callui_show_caller_info_status(ad, status_txt);
-		elm_object_signal_emit(priv->caller_info, "set-hold-state", "call-screen");
+		elm_object_signal_emit(vd->caller_info, "set-hold-state", "call-screen");
 	} else {
-		/*****deciding the call status according the sim name******/
-		elm_object_signal_emit(priv->caller_info, "set-unhold-state", "call-screen");
+		elm_object_signal_emit(vd->caller_info, "set-unhold-state", "call-screen");
 	}
 
-	elm_object_part_content_unset(priv->caller_info, "manage_calls_icon_swallow");
-	elm_object_part_content_set(priv->caller_info, "manage_calls_icon_swallow", priv->manage_calls_ly);
-	evas_object_show(priv->manage_calls_ly);
-	edje_object_signal_callback_del(_EDJ(priv->manage_calls_ly), "mouse,clicked,1", "btn", __callui_view_manage_btn_clicked_cb);
-	edje_object_signal_callback_add(_EDJ(priv->manage_calls_ly), "mouse,clicked,1", "btn", __callui_view_manage_btn_clicked_cb, priv);
-
-	elm_object_signal_emit(priv->caller_info, "set_conference_mode", "");
+	elm_object_signal_emit(vd->caller_info, "set_conference_mode", "");
 	_callui_show_caller_info_name(ad, _("IDS_CALL_BODY_CONFERENCE"));
-	char * status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
-	snprintf(buf, 512, status, call_data->member_count);
+	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
+	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->member_count);
 	_callui_show_caller_info_number(ad, buf);
 
-	if (priv->is_held == EINA_TRUE) {
-		_callui_create_top_second_button_disabled(ad);
-		_callui_create_bottom_second_button_disabled(ad);
+	if (is_held) {
+		CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_second_button_disabled(ad), CALLUI_RESULT_FAIL);
+		CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_second_button_disabled(ad), CALLUI_RESULT_FAIL);
 	} else {
-		/*Delete keypad layout - before creating the keypad button again
-		 * Since layout are created again in update_cb
-		 * to handle rotation use-case*/
-		if (_callui_keypad_get_show_status() == EINA_TRUE) {
+		if (_callui_keypad_get_show_status()) {
 			_callui_keypad_hide_layout(ad);
 		}
-
-		_callui_create_top_second_button(ad);
-		_callui_create_bottom_second_button(ad);
+		CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_second_button(ad), CALLUI_RESULT_FAIL);
+		CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_second_button(ad), CALLUI_RESULT_FAIL);
 	}
-	_callui_create_top_third_button(ad);
-	_callui_create_bottom_first_button(ad);
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_third_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_first_button(ad), CALLUI_RESULT_FAIL);
 
-	_callui_create_top_first_button(ad);
-	_callui_create_bottom_third_button(ad);
-	elm_object_signal_emit(priv->contents, "SHOW_NO_EFFECT", "ALLBTN");
-	_callui_create_end_call_button(priv->contents, vd);
-	evas_object_show(eo);
-}
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_first_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_third_button(ad), CALLUI_RESULT_FAIL);
 
-static Evas_Object *__callui_view_multi_call_conf_create_contents(void *data, char *group)
-{
-	if (data == NULL) {
-		err("ERROR");
-		return NULL;
-	}
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	Evas_Object *eo;
+	elm_object_signal_emit(vd->base_view.contents, "SHOW_NO_EFFECT", "ALLBTN");
 
-	/* load edje */
-	eo = _callui_load_edj(ad->main_ly, EDJ_NAME, group);
-	if (eo == NULL)
-		return NULL;
-
-	return eo;
-}
-
-static void __callui_view_multi_call_conf_more_btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	call_view_data_t *vd = (call_view_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(vd != NULL);
-	_callui_load_more_option(vd);
-	return;
-}
-
-static int __callui_view_multi_call_conf_oncreate(call_view_data_t *view_data, void *appdata)
-{
-	callui_view_multi_call_conf_priv_t *priv = (callui_view_multi_call_conf_priv_t *)view_data->priv;
-	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-
-	view_data->ad = ad;
-
-	if (ad->main_ly) {
-		/* Create Main Layout */
-		priv->contents = __callui_view_multi_call_conf_create_contents(ad, GRP_MAIN_LY);
-		elm_object_part_content_set(ad->main_ly, "elm.swallow.content", priv->contents);
-
-		if (priv->contents) {
-			eext_object_event_callback_del(priv->contents, EEXT_CALLBACK_MORE, __callui_view_multi_call_conf_more_btn_cb);
-		}
-		eext_object_event_callback_add(priv->contents, EEXT_CALLBACK_MORE, __callui_view_multi_call_conf_more_btn_cb, view_data);
-
-		priv->caller_info = elm_object_part_content_get(priv->contents, "caller_info");
-		if (!priv->caller_info) {
-			priv->caller_info = __callui_view_multi_call_conf_create_contents(ad, GRP_CALLER_INFO);
-			elm_object_part_content_set(priv->contents, "caller_info", priv->caller_info);
-		}
-
-		/* Manage button Layout */
-		priv->manage_calls_ly = elm_object_part_content_get(priv->caller_info, "manage_calls_icon_swallow");
-		if (!priv->manage_calls_ly) {
-			priv->manage_calls_ly = __callui_view_multi_call_conf_create_contents(ad, GRP_MANAGE_CALLS);
-		}
-
-		priv->btn_ly = elm_object_part_content_get(priv->contents, "btn_region");
-		if (!priv->btn_ly) {
-			priv->btn_ly = __callui_view_multi_call_conf_create_contents(ad, GRP_BUTTON_LAYOUT);
-			elm_object_part_content_set(priv->contents, "btn_region", priv->btn_ly);
-		}
-
-		evas_object_name_set(priv->contents, CALLUI_VIEW_MULTICALL_CONF_LAYOUT_ID);
-		dbg("[========== MULTIVIEWCONF: priv->contents Addr : [%p] ==========]", priv->contents);
-
-		/*create keypad layout*/
-		_callui_keypad_create_layout(ad);
-	} else {
-		err("ERROR");
-		return -1;
-	}
-
-	__callui_view_multi_call_conf_onshow(view_data, NULL);
-	return 0;
-}
-
-static int __callui_view_multi_call_conf_onupdate(call_view_data_t *view_data)
-{
-	dbg("multicall-conf view update");
-
-	__callui_view_multi_call_conf_onshow(view_data, NULL);
-	return 0;
-}
-
-static int __callui_view_multi_call_conf_onshow(call_view_data_t *view_data,  void *appdata)
-{
-	dbg("multicall-conf view show");
-
-	callui_view_multi_call_conf_priv_t *priv = (callui_view_multi_call_conf_priv_t *)view_data->priv;
-	callui_app_data_t *ad = _callui_get_app_data();
-
-	__callui_view_multi_call_conf_draw_screen(priv->contents, view_data);
+	evas_object_show(vd->base_view.contents);
 
 	evas_object_hide(ad->main_ly);
 	evas_object_show(ad->main_ly);
 
-	return 0;
+	return CALLUI_RESULT_OK;
 }
 
-static int __callui_view_multi_call_conf_ondestroy(call_view_data_t *vd)
+static int __callui_view_multi_call_conf_ondestroy(call_view_data_base_t *view_data)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(vd, -1);
-	CALLUI_RETURN_VALUE_IF_FAIL(vd->ad, -1);
+	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
-	callui_app_data_t *ad = vd->ad;
+	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)view_data;
+	callui_app_data_t *ad = vd->base_view.ad;
 
-	callui_view_multi_call_conf_priv_t *priv = (callui_view_multi_call_conf_priv_t *)vd->priv;
-
-	if (priv != NULL) {
-		if (ad->ctxpopup) {
-			elm_ctxpopup_dismiss(ad->ctxpopup);
-			ad->ctxpopup = NULL;
-		}
-
-		_callui_show_caller_info_number(ad, ""); /*reset the number text*/
-
-		/*Delete keypad layout*/
-		_callui_keypad_delete_layout(ad);
-
-		if (priv->contents) {
-			eext_object_event_callback_del(priv->contents, EEXT_CALLBACK_MORE, __callui_view_multi_call_conf_more_btn_cb);
-			_callui_common_reset_main_ly_text_fields(priv->contents);
-		}
-		elm_object_signal_emit(priv->contents, "HIDE_BTN_LY", "ALLBTN");
-
-		if (priv->manage_calls_ly) {
-			elm_object_part_content_unset(priv->caller_info, "manage_calls_icon_swallow");
-			edje_object_part_unswallow(_EDJ(priv->caller_info), priv->manage_calls_ly);
-			evas_object_del(priv->manage_calls_ly);
-			priv->manage_calls_ly = NULL;
-		}
-
-		free(priv);
-		priv = NULL;
+	if (ad->ctxpopup) {
+		elm_ctxpopup_dismiss(ad->ctxpopup);
+		ad->ctxpopup = NULL;
 	}
 
-	return 0;
+	_callui_keypad_delete_layout(ad);
+
+	eext_object_event_callback_del(vd->base_view.contents, EEXT_CALLBACK_MORE, __more_btn_click_cb);
+
+	DELETE_EVAS_OBJECT(vd->base_view.contents);
+
+	free(vd);
+
+	return CALLUI_RESULT_OK;
+}
+
+static void __manage_calls_btn_clicked_cb(void *data, Evas_Object *o, const char *emission, const char *source)
+{
+	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)data;
+	callui_app_data_t *ad = vd->base_view.ad;
+
+	_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_MULTICALL_LIST);
+	return;
+}
+
+static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)data;
+	callui_app_data_t *ad = vd->base_view.ad;
+
+	int ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_CALLS);
+	if (ret != CM_ERROR_NONE) {
+		err("cm_end_call() is failed");
+	}
+}
+
+static void __more_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	_callui_load_more_option(data);
 }

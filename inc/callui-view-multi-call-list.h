@@ -16,16 +16,17 @@
  */
 
 
-#ifndef _CALLUI_VIEW_MULTI_CALL_LIST_H_
-#define _CALLUI_VIEW_MULTI_CALL_LIST_H_
+#ifndef __CALLUI_VIEW_MULTI_CALL_LIST_H__
+#define __CALLUI_VIEW_MULTI_CALL_LIST_H__
+
+typedef struct _callui_view_mc_list *callui_view_mc_list_h;
 
 /**
- * @brief Create multicall list view
+ * @brief Creates Multicall list view instance
  *
- * @param[in]    ad            Application data
- *
- * @return New multicall list data
+ * @return View data handler
  *
  */
-call_view_data_t *_callui_view_multi_call_list_new(callui_app_data_t *ad);
-#endif
+callui_view_mc_list_h _callui_view_multi_call_list_new();
+
+#endif	/* __CALLUI_VIEW_MULTI_CALL_LIST_H__ */

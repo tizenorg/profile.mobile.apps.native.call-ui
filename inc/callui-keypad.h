@@ -50,8 +50,10 @@ void _callui_keypad_hide_layout(void *appdata);
  *
  * @param[in]    appdata         Application data
  *
+ * @return CALLUI_RESULT_OK os success or error code otherwise
+ *
  */
-void _callui_keypad_create_layout(void *appdata);
+int _callui_keypad_create_layout(void *appdata);
 
 /**
  * @brief Delete keypad layout

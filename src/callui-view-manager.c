@@ -19,18 +19,18 @@
 #include "callui-view-dialing.h"
 #include "callui-view-single-call.h"
 #include "callui-view-callend.h"
-#include "callui-view-incoming-lock.h"
+#include "callui-view-incoming-call-noti.h"
+#include "callui-view-incoming-call.h"
 #include "callui-view-multi-call-split.h"
 #include "callui-view-multi-call-conf.h"
 #include "callui-view-multi-call-list.h"
 #include "callui-view-quickpanel.h"
 #include "callui-common.h"
 
-typedef call_view_data_t *(*new_view_data_cb) ();
+typedef call_view_data_base_t *(*new_view_data_cb) ();
 
 struct _callui_vm {
-	new_view_data_cb func_new[VIEW_TYPE_MAX];
-	call_view_data_t *cur_view;
+	call_view_data_base_t *cur_view;
 	callui_view_type_e cur_view_type;
 	callui_app_data_t *ad;
 };
@@ -38,13 +38,33 @@ typedef struct _callui_vm callui_vm_t;
 
 static int __callui_vm_destroy_cur_view(callui_vm_h vm);
 static int __callui_vm_create_update_view(callui_vm_h vm, callui_view_type_e type);
-static void __callui_vm_init_view_reg_func(callui_vm_h vm,
-		callui_view_type_e view_type,
-		call_view_data_t *(*view_new) ());
 
-static void __callui_vm_init_view_reg_func(callui_vm_h vm, callui_view_type_e view_type, call_view_data_t *(*view_new) ())
+static call_view_data_base_t *_allocate_view(callui_view_type_e view_type)
 {
-	vm->func_new[view_type] = view_new;
+	debug_enter();
+
+	switch (view_type)
+	{
+	case VIEW_TYPE_DIALLING:
+		return (call_view_data_base_t *)_callui_dialing_view_dialing_new();
+	case VIEW_TYPE_INCOMING_CALL_NOTI:
+		return (call_view_data_base_t *)_callui_view_incoming_call_noti_new();
+	case VIEW_TYPE_INCOMING_CALL:
+		return (call_view_data_base_t *)_callui_view_incoming_call_new();
+	case VIEW_TYPE_SINGLECALL:
+		return (call_view_data_base_t *)_callui_view_single_call_new();
+	case VIEW_TYPE_MULTICALL_SPLIT:
+		return (call_view_data_base_t *)_callui_view_multi_call_split_new();
+	case VIEW_TYPE_MULTICALL_CONF:
+		return (call_view_data_base_t *)_callui_view_multi_call_conf_new();
+	case VIEW_TYPE_MULTICALL_LIST:
+		return (call_view_data_base_t *)_callui_view_multi_call_list_new();
+	case VIEW_TYPE_ENDCALL:
+		return (call_view_data_base_t *)_callui_view_callend_new();
+	default:
+		return NULL;
+	}
+	return NULL;
 }
 
 callui_vm_h _callui_vm_create(callui_app_data_t *ad)
@@ -54,14 +74,6 @@ callui_vm_h _callui_vm_create(callui_app_data_t *ad)
 	callui_vm_h vm = calloc(1, sizeof(callui_vm_t));
 
 	CALLUI_RETURN_VALUE_IF_FAIL(vm, NULL);
-
-	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_DIALLING, _callui_dialing_view_dialing_new);
-	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_INCOMING_LOCK, _callui_view_incoming_lock_new);
-	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_SINGLECALL, _callui_view_single_call_new);
-	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_MULTICALL_SPLIT, _callui_view_multi_call_split_new);
-	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_MULTICALL_CONF, _callui_view_multi_call_conf_new);
-	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_MULTICALL_LIST, _callui_view_multi_call_list_new);
-	__callui_vm_init_view_reg_func(vm, VIEW_TYPE_ENDCALL, _callui_view_callend_new);
 
 	vm->cur_view_type = VIEW_TYPE_UNDEFINED;
 	vm->ad = ad;
@@ -89,8 +101,10 @@ callui_view_type_e _callui_vm_get_cur_view_type(callui_vm_h vm)
 
 static int __callui_vm_destroy_cur_view(callui_vm_h vm)
 {
-	int res;
-	call_view_data_t *view = vm->cur_view;
+	int res = CALLUI_RESULT_FAIL;
+
+	call_view_data_base_t *view = vm->cur_view;
+
 	CALLUI_RETURN_VALUE_IF_FAIL(view, CALLUI_RESULT_FAIL);
 	CALLUI_RETURN_VALUE_IF_FAIL(view->onDestroy, CALLUI_RESULT_FAIL);
 
@@ -98,7 +112,6 @@ static int __callui_vm_destroy_cur_view(callui_vm_h vm)
 		res = view->onDestroy(view);
 	}
 
-	free(vm->cur_view);
 	vm->cur_view = NULL;
 	vm->cur_view_type = VIEW_TYPE_UNDEFINED;
 
@@ -107,14 +120,13 @@ static int __callui_vm_destroy_cur_view(callui_vm_h vm)
 
 static int __callui_vm_create_update_view(callui_vm_h vm, callui_view_type_e type)
 {
-	call_view_data_t *view = vm->cur_view;
+	call_view_data_base_t *view = vm->cur_view;
 	int res;
 
 	if (!view) {
 		dbg("Try create new view [%d]", type);
-		CALLUI_RETURN_VALUE_IF_FAIL(vm->func_new[type], CALLUI_RESULT_FAIL);
 
-		view = vm->func_new[type]();
+		view = _allocate_view(type);
 		CALLUI_RETURN_VALUE_IF_FAIL(view, CALLUI_RESULT_FAIL);
 
 		if (!view->onCreate) {
@@ -122,7 +134,9 @@ static int __callui_vm_create_update_view(callui_vm_h vm, callui_view_type_e typ
 			free(view);
 			return CALLUI_RESULT_FAIL;
 		}
+
 		res = view->onCreate(view, vm->ad);
+
 		if (res != CALLUI_RESULT_OK) {
 			err("onCreate callback failed! res[%d]", res);
 			free(view);
@@ -153,7 +167,7 @@ int _callui_vm_change_view(callui_vm_h vm, callui_view_type_e type)
 	callui_view_type_e last_view_type = vm->cur_view_type;
 
 	if ((last_view_type != VIEW_TYPE_UNDEFINED) && (last_view_type != type)) {
-		dbg("hide & destroy [%d]", last_view_type);
+		dbg("destroy [%d]", last_view_type);
 		res = __callui_vm_destroy_cur_view(vm);
 		CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 	}
@@ -163,8 +177,12 @@ int _callui_vm_change_view(callui_vm_h vm, callui_view_type_e type)
 
 	vm->cur_view_type = type;
 
-	if (type == VIEW_TYPE_DIALLING || type == VIEW_TYPE_INCOMING_LOCK) {
+	if (type == VIEW_TYPE_DIALLING || type == VIEW_TYPE_INCOMING_CALL) {
 		elm_win_activate(vm->ad->win);
+	}
+
+	if (type == VIEW_TYPE_INCOMING_CALL_NOTI) {
+		vm->ad->incoming_noti = true;
 	}
 
 	if (type != VIEW_TYPE_ENDCALL) {
@@ -191,7 +209,18 @@ int _callui_vm_auto_change_view(callui_vm_h vm)
 
 	int res;
 	if (ad->incom) {
-		res = _callui_vm_change_view(vm, VIEW_TYPE_INCOMING_LOCK);
+
+		callui_view_type_e type = VIEW_TYPE_INCOMING_CALL;
+
+#ifdef ACTIVE_NOTIFICATION_AVAILABLE
+		if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK &&
+				ad->active == NULL &&
+				ad->held == NULL &&
+				ad->incoming_noti == false) {
+			type = VIEW_TYPE_INCOMING_CALL_NOTI;
+		}
+#endif
+		res =_callui_vm_change_view(ad->view_manager_handle, type);
 	} else if (ad->active) {
 		if (CM_CALL_STATE_DIALING == ad->active->call_state) {
 			res = _callui_vm_change_view(vm, VIEW_TYPE_DIALLING);

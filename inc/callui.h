@@ -18,14 +18,15 @@
 #ifndef __CALLUI_H_
 #define __CALLUI_H_
 
-#include <dlog.h>
+#include "callui-view-manager.h"
+#include "callui-lock-manager.h"
+#include "callui-debug.h"
+
 #include <efl_extension.h>
 #include <call-manager.h>
 #include <call-manager-extension.h>
 
-#include "callui-view-manager.h"
-#include "callui-lock-manager.h"
-#include "callui-debug.h"
+#define ACTIVE_NOTIFICATION_AVAILABLE 1
 
 #ifndef CALLUI_EXPORT_API
 #define CALLUI_EXPORT_API __attribute__ ((visibility("default")))
@@ -64,6 +65,11 @@
 #define GRP_LOCK_ACCEPT "lock_accept"
 #define GRP_LOCK_REJECT "lock_reject"
 #define GRP_LOCK_REJECT_WITH_MSG "lock_reject_with_msg"
+#define GRP_DIMMING_LAYOUT "dimming_ly"
+#define GRP_ENDCALL_MAIN_LAYOUT "main_end_call"
+#define GRP_ENDCALL_CALL_BACK_BTN "call_back"
+#define GRP_ENDCALL_MSG_BTN "message_button"
+#define GRP_ENDCALL_CREATE_CONT_BTN "create_contact_button"
 
 #define	 CALLUI_DISPLAY_NAME_LENGTH_MAX			(255+1)			/**< Voiecall Display Name Max Length  */
 #define	 CALLUI_IMAGE_PATH_LENGTH_MAX			(255+1)			/**< Max File length for image */
@@ -146,7 +152,7 @@ struct appdata {
 	call_data_t *active;
 	call_data_t *held;
 
-	bool active_incoming;
+	bool incoming_noti;
 
 	bool waiting_dialing;
 

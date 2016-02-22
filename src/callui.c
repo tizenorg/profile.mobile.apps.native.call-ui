@@ -15,21 +15,22 @@
  *
  */
 
+#include "callui.h"
+#include "callui-view-elements.h"
+#include "callui-common.h"
+#include "callui-view-quickpanel.h"
+#include "callui-view-layout.h"
+
 #include <app_control.h>
 #include <app.h>
 #include <glib-object.h>
 #include <vconf.h>
 #include <vconf-keys.h>
 #include <bluetooth.h>
-#include "sys/socket.h"
-#include "sys/un.h"
-#include "callui.h"
-#include "callui-view-elements.h"
-#include "callui-common.h"
 #include <device/display.h>
 #include <device/callback.h>
-#include "callui-view-quickpanel.h"
-#include "callui-view-layout.h"
+#include <sys/socket.h>
+#include <sys/un.h>
 
 #define EARSET_KEY_LONG_PRESS_TIMEOUT			1.0
 
@@ -157,7 +158,19 @@ static void __callui_process_incoming_call(callui_app_data_t *ad)
 	CALLUI_RETURN_IF_FAIL(cm_incom);
 
 	__callui_update_call_data(&(ad->incom), cm_incom);
-	_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_INCOMING_LOCK);
+
+	callui_view_type_e type = VIEW_TYPE_INCOMING_CALL;
+
+#ifdef ACTIVE_NOTIFICATION_AVAILABLE
+	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK &&
+			ad->active == NULL &&
+			ad->held == NULL &&
+			ad->incom != NULL &&
+			ad->incoming_noti == false) {
+		type = VIEW_TYPE_INCOMING_CALL_NOTI;
+	}
+#endif
+	_callui_vm_change_view(ad->view_manager_handle, type);
 
 	cm_call_data_free(cm_incom);
 	return;
@@ -334,7 +347,7 @@ static void __callui_call_list_init(callui_app_data_t *ad)
 	ad->active = NULL;
 	ad->incom = NULL;
 	ad->held = NULL;
-	ad->active_incoming = false;
+	ad->incoming_noti = false;
 	ad->multi_call_list_end_clicked = false;
 	ad->start_lock_manager_on_resume = false;
 	ad->on_background = false;
@@ -380,17 +393,10 @@ static void __callui_win_delete_request_cb(void *data, Evas_Object *obj, void *e
 
 static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 {
-	/*
-	 * Widget Tree
-	 * Window
-	 *  - conform
-	 *   - layout main
-	 *    - naviframe */
-
 	dbg("Create window");
 	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_BASIC);
-	elm_win_alpha_set(eo, EINA_TRUE);
 	elm_win_fullscreen_set(eo, EINA_FALSE);
+	elm_win_alpha_set(eo, EINA_TRUE);
 
 	if (eo) {
 		elm_win_title_set(eo, PACKAGE);
@@ -398,7 +404,7 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 		elm_win_screen_size_get(eo, NULL, NULL, &ad->root_w, &ad->root_h);
 
 		dbg("root_w = %d, root_h = %d..", ad->root_w, ad->root_h);
-		evas_object_resize(eo, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_CALL_HEIGHT));
+		evas_object_resize(eo, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
 
 		elm_win_center(eo, EINA_FALSE, EINA_TRUE);
 		evas_object_move(eo, 0, 0);
@@ -695,7 +701,6 @@ callui_app_data_t *_callui_get_app_data()
 	return &g_ad;
 }
 
-
 CALLUI_EXPORT_API int main(int argc, char *argv[])
 {
 	dbg("..");
@@ -723,8 +728,6 @@ CALLUI_EXPORT_API int main(int argc, char *argv[])
 static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *event)
 {
 	dbg("..");
-	gboolean bpowerkey_enabled = EINA_FALSE;
-	gboolean banswering_enabled = EINA_FALSE;
 
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 	Ecore_Event_Key *ev = event;
@@ -734,36 +737,51 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 		return 0;
 	}
 
-	dbg("Top view(%d)", _callui_vm_get_cur_view_type(ad->view_manager_handle));
+	callui_view_type_e view_type = _callui_vm_get_cur_view_type(ad->view_manager_handle);
+
+	dbg("Top view(%d)", view_type);
 
 	/*power key case */
 	if (!strcmp(ev->keyname, CALLUI_KEY_POWER)) {
 		dbg("in keypower");
-		bpowerkey_enabled = _callui_common_is_powerkey_mode_on();
-		dbg("[KEY]KEY_POWER pressed, bpowerkey_enabled(%d)", bpowerkey_enabled);
-		if (bpowerkey_enabled == EINA_TRUE && !_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
-			if (_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_DIALLING) {
-				if (ad->active)
+		int is_powerkey_enabled = _callui_common_is_powerkey_mode_on();
+		dbg("[KEY]KEY_POWER pressed, is_powerkey_enabled(%d)", is_powerkey_enabled);
+
+		if (is_powerkey_enabled && !_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
+
+			if (view_type == VIEW_TYPE_DIALLING) {
+				if (ad->active) {
 					cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
-			} else if (_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_INCOMING_LOCK) {
-				if (ad->incom)
+				}
+			} else if (view_type == VIEW_TYPE_INCOMING_CALL ||
+					view_type == VIEW_TYPE_INCOMING_CALL_NOTI) {
+				if (ad->incom) {
 					cm_end_call(ad->cm_handle, ad->incom->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
-			} else if ((_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_SINGLECALL)
-						|| (_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_MULTICALL_CONF)
-						|| (_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_MULTICALL_LIST)) {
-				if (ad->active)
+				}
+			} else if (view_type == VIEW_TYPE_SINGLECALL ||
+					view_type == VIEW_TYPE_MULTICALL_CONF ||
+					view_type == VIEW_TYPE_MULTICALL_LIST) {
+				if (ad->active) {
 					cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_ALL_CALLS);
-				else if (ad->held)
+				} else if (ad->held) {
 					cm_end_call(ad->cm_handle, ad->held->call_id, CALL_RELEASE_TYPE_ALL_CALLS);
-			} else if (_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_MULTICALL_SPLIT) {
-				if (ad->active)
+				}
+			} else if (view_type == VIEW_TYPE_MULTICALL_SPLIT) {
+				if (ad->active) {
 					cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
-			} else {
-				dbg("nothing...");
+				}
 			}
 		} else {
 			if (ad->incom && !ad->active && !ad->held) {
-				_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_INCOMING_LOCK);
+				callui_view_type_e type = VIEW_TYPE_INCOMING_CALL;
+
+#ifdef ACTIVE_NOTIFICATION_AVAILABLE
+				if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK &&
+						ad->incoming_noti == false) {
+					type = VIEW_TYPE_INCOMING_CALL_NOTI;
+				}
+#endif
+				_callui_vm_change_view(ad->view_manager_handle, type);
 			}
 		}
 	} else if (!strcmp(ev->keyname, CALLUI_KEY_MEDIA)) {
@@ -783,33 +801,32 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 		} else {
 			dbg("KEY_SELECT key ungrab success");
 		}
-		if (_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_INCOMING_LOCK) {
-			banswering_enabled = _callui_common_is_answering_mode_on();
-			if (banswering_enabled == EINA_TRUE) {
+		if (view_type == VIEW_TYPE_INCOMING_CALL ||
+				view_type == VIEW_TYPE_INCOMING_CALL_NOTI) {
+
+			if (_callui_common_is_answering_mode_on()) {
+				dbg("Answering mode on and Home key pressed on MT screen");
+
 				int unhold_call_count = 0;
 				if (ad->active) {
 					unhold_call_count = ad->active->member_count;
 				}
-				dbg("Answering mode on and Home key pressed on MT screen");
 
 				if (unhold_call_count == 0) {
 					dbg("No Call Or Held call - Accept");
 					cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_NORMAL);
-					if (_callui_common_get_idle_lock_type() == LOCK_TYPE_SWIPE_LOCK)
+					if (_callui_common_get_idle_lock_type() == LOCK_TYPE_SWIPE_LOCK) {
 						_callui_common_unlock_swipe_lock();
+					}
 				} else if (ad->second_call_popup == NULL) {
 					dbg("Show popup - 2nd MT call - test volume popup");
 					_callui_load_second_call_popup(ad);
 				}
 			} else {
-				int result = 0;
-				/* Grab home key event to keep incoming call view */
-				result = elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST);
-				if (result) {
+				if (elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
 					dbg("KEY_SELECT key ungrab failed");
 				}
 			}
-
 		} else {
 			// TODO Implement other way to verify focus window == current
 			//Ecore_X_Window focus_win = ecore_x_window_focus_get();
