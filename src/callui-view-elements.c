@@ -18,24 +18,22 @@
 #include <vconf.h>
 #include <vconf-keys.h>
 #include <bluetooth.h>
+#include <app_control.h>
+#include <notification.h>
 
 #include "callui-view-elements.h"
 #include "callui-view-manager.h"
 #include "callui-view-dialing.h"
 #include "callui-view-single-call.h"
 #include "callui-view-callend.h"
-#include "callui-view-incoming-lock.h"
 #include "callui-view-multi-call-split.h"
 #include "callui-view-layout.h"
 #include "callui-common.h"
 #include "callui-keypad.h"
 #include "callui-view-multi-call-conf.h"
-#include "callui-view-incoming-lock.h"
 #include "callui-view-quickpanel.h"
 #include "callui-view-caller-info-defines.h"
 #include "callui-proximity-lock-manager.h"
-#include <app_control.h>
-#include <notification.h>
 
 #define	POPUP_LIST_W		300
 #define	POPUP_LIST_ITEM_H 	120
@@ -48,10 +46,6 @@ typedef struct {
 	char option_msg[512];
 } second_call_popup_data_t;
 
-static void __vcui_msg_btn_cb(void *data, Evas_Object *obj, void *event_info);
-static void __vcui_view_contact_btn_cb(void *data, Evas_Object *obj, void *event_info);
-static void __vcui_update_existing_contact_btn_cb(void *data, Evas_Object *obj, void *event_info);
-static void __vcui_create_contact_btn_cb(void *data, Evas_Object *obj, void *event_info);
 static void __callui_unload_more_option(callui_app_data_t *ad);
 
 const char *group_thumbnail[] = {
@@ -535,53 +529,10 @@ Evas_Object *_callui_create_bottom_third_button_disabled(callui_app_data_t *ad)
 	return btn;
 }
 
-static void __callui_end_btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	call_view_data_t *vd = (call_view_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(vd != NULL);
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
-	int ret = -1;
-
-	dbg("vd->type:[%d]", vd->type);
-
-	switch (vd->type) {
-	case VIEW_TYPE_DIALLING:
-		{
-			if (ad->active)
-				ret = cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
-		}
-		break;
-	case VIEW_TYPE_SINGLECALL:
-		{
-			ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_CALLS);
-		}
-		break;
-	case VIEW_TYPE_MULTICALL_SPLIT:
-		{
-			ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
-		}
-		break;
-	case VIEW_TYPE_MULTICALL_CONF:
-	case VIEW_TYPE_MULTICALL_LIST:
-		{
-			ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_CALLS);
-		}
-		break;
-	default:
-		err("ERROR - wrong vd type:[%d]", vd->type);
-		break;
-	}
-
-	if (ret != CM_ERROR_NONE) {
-		err("cm_end_call() is failed");
-	}
-	return;
-}
-
-Evas_Object *_callui_create_end_call_button(Evas_Object *parent, void *data)
+Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb cb_func, void *data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(parent != NULL, NULL);
+	CALLUI_RETURN_VALUE_IF_FAIL(cb_func != NULL, NULL);
 
 	Evas_Object *btn = elm_object_part_content_get(parent, PART_END_BTN);
 	if (!btn) {
@@ -592,9 +543,9 @@ Evas_Object *_callui_create_end_call_button(Evas_Object *parent, void *data)
 		elm_image_file_set(icon, EDJ_NAME, "call_button_icon_01.png");
 		elm_object_part_content_set(btn, "elm.swallow.content", icon);
 		elm_object_part_content_set(parent, PART_END_BTN, btn);
+
+		evas_object_smart_callback_add(btn, "clicked", cb_func, data);
 	}
-	evas_object_smart_callback_del(btn, "clicked", __callui_end_btn_cb);
-	evas_object_smart_callback_add(btn, "clicked", __callui_end_btn_cb, data);
 	evas_object_show(btn);
 
 	return btn;
@@ -611,325 +562,6 @@ void _callui_destroy_end_call_button(Evas_Object *parent)
 		btn = NULL;
 	}
 	return;
-}
-
-Evas_Object *_callui_create_voicecall_button_disabled(void *data)
-{
-	Evas_Object *btn = NULL;
-	Evas_Object *layout = NULL;
-
-	call_view_data_t *vd = (call_view_data_t *)data;
-
-	CALLUI_RETURN_VALUE_IF_FAIL(vd != NULL, NULL);
-	Evas_Object *icon = NULL;
-
-	layout = _callui_view_callend_get_layout(vd);
-
-	btn = elm_button_add(layout);
-	elm_object_style_set(btn, "call_icon_only");
-	icon = elm_image_add(btn);
-	elm_image_file_set(icon, EDJ_NAME, "call_button_icon_03.png");
-	elm_object_part_content_set(btn, "elm.swallow.content", icon);
-
-	elm_object_part_content_set(layout, "three_btn_voicecall", btn);
-	elm_object_disabled_set(btn, EINA_TRUE);
-	evas_object_show(btn);
-
-	return btn;
-}
-
-static void __callui_voicecall_btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	dbg("__vcui_voicecall_btn_cb..");
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_IF_FAIL(ad);
-	char *call_number = (char *)data;
-	CALLUI_RETURN_IF_FAIL(call_number);
-
-	evas_object_smart_callback_del(obj, "clicked", __callui_voicecall_btn_cb);
-
-	_callui_common_delete_ending_timer();
-	ad->speaker_status = EINA_FALSE;
-	ad->mute_status = EINA_FALSE;
-	ad->extra_volume_status = EINA_FALSE;
-	cm_dial_call(ad->cm_handle, call_number, CM_CALL_TYPE_VOICE, ad->sim_slot);
-	g_free(call_number);
-	return;
-}
-
-Evas_Object *_callui_create_voicecall_button(void *data, char *number)
-{
-	Evas_Object *btn = NULL;
-	Evas_Object *layout = NULL;
-
-	call_view_data_t *vd = NULL;
-
-	CALLUI_RETURN_VALUE_IF_FAIL((vd = (call_view_data_t *)data) != NULL, NULL);
-	Evas_Object *icon = NULL;
-	layout = _callui_view_callend_get_layout(vd);
-
-	btn = elm_button_add(layout);
-	elm_object_style_set(btn, "call_icon_only");
-	icon = elm_image_add(btn);
-	elm_image_file_set(icon, EDJ_NAME, "call_button_icon_03.png");
-	elm_object_part_content_set(btn, "elm.swallow.content", icon);
-
-	elm_object_part_content_set(layout, "three_btn_voicecall", btn);
-
-	evas_object_smart_callback_del(btn, "clicked", __callui_voicecall_btn_cb);
-	evas_object_smart_callback_add(btn, "clicked", __callui_voicecall_btn_cb, g_strdup(number));
-
-	evas_object_show(btn);
-	return btn;
-}
-
-Evas_Object *_callui_create_message_button_disabled(void *data)
-{
-	Evas_Object *btn = NULL;
-	Evas_Object *layout = NULL;
-
-	call_view_data_t *vd = (call_view_data_t *)data;
-
-	CALLUI_RETURN_VALUE_IF_FAIL(vd != NULL, NULL);
-	Evas_Object *icon = NULL;
-
-	switch (vd->type) {
-	case VIEW_TYPE_ENDCALL:
-		{
-			layout = _callui_view_callend_get_layout(vd);
-		}
-		break;
-	default:
-		err("ERROR - wrong vd type:[%d]", vd->type);
-		return NULL;
-	}
-
-	btn = elm_button_add(layout);
-	elm_object_style_set(btn, "call_icon_only");
-	icon = elm_image_add(btn);
-	elm_image_file_set(icon, EDJ_NAME, "call_button_icon_04.png");
-	elm_object_part_content_set(btn, "elm.swallow.content", icon);
-
-	elm_object_part_content_set(layout, "three_btn_message", btn);
-	elm_object_disabled_set(btn, EINA_TRUE);
-	evas_object_show(btn);
-
-	return btn;
-}
-
-static void __vcui_msg_btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	char *number = (char *)data;
-	app_control_h request;
-	app_control_create(&request);
-	app_control_set_operation(request, APP_CONTROL_OPERATION_COMPOSE);
-	char str[CONTACT_NUMBER_BUF_LEN];
-	snprintf(str, sizeof(str), "%s%s", "sms:", number);
-	app_control_set_uri(request, str);
-	int result = app_control_send_launch_request(request, NULL, NULL);
-	if (result != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() failed (%d)", result);
-	}
-	free(number);
-	app_control_destroy(request);
-
-
-}
-
-static void __vcui_view_contact_btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	char *contact_id = (char *)data;
-	app_control_h request;
-	app_control_create(&request);
-	app_control_set_operation(request, APP_CONTROL_OPERATION_VIEW);
-	app_control_set_mime(request, APP_CONTROL_MIME_CONTACT);
-	app_control_add_extra_data(request, APP_CONTROL_DATA_ID, contact_id);
-
-	int result = app_control_send_launch_request(request, NULL, NULL);
-	if (result != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() failed (%d)", result);
-	}
-	free(contact_id);
-	app_control_destroy(request);
-}
-
-Evas_Object *_callui_create_view_contact_button(void *data, int ct_id)
-{
-	Evas_Object *btn;
-	Evas_Object *layout;
-	Evas_Object *sw;
-
-	call_view_data_t *vd = (call_view_data_t *)data;
-	CALLUI_RETURN_VALUE_IF_FAIL(vd != NULL, NULL);
-
-	switch (vd->type) {
-	case VIEW_TYPE_ENDCALL:
-		{
-			layout = _callui_view_callend_get_layout(vd);
-		}
-		break;
-	default:
-		err("ERROR - wrong vd type:[%d]", vd->type);
-		return NULL;
-	}
-
-	sw = edje_object_part_swallow_get(_EDJ(layout), "btn_view_contacts");
-	if (sw) {
-		btn = sw;
-	} else {
-		btn = elm_button_add(layout);
-		elm_object_part_content_set(layout, "btn_view_contacts", btn);
-	}
-
-	elm_object_style_set(btn, "style_call_end_view_contact_button");
-	elm_object_text_set(btn, _("IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"));
-	char str[CONTACT_ID_BUF_LEN];
-	sprintf(str, "%d", ct_id);
-	evas_object_smart_callback_add(btn, "clicked", __vcui_view_contact_btn_cb, (void *)strdup(str));
-
-	return btn;
-}
-
-Evas_Object *_callui_create_create_contacts_button(void *data, char *number)
-{
-
-	call_view_data_t *vd = (call_view_data_t *)data;
-	CALLUI_RETURN_VALUE_IF_FAIL(vd != NULL, NULL);
-
-	Evas_Object *btn = NULL;
-	Evas_Object *layout = NULL;
-	Evas_Object *sw = NULL;
-
-	switch (vd->type) {
-	case VIEW_TYPE_ENDCALL:
-		{
-			layout = _callui_view_callend_get_layout(vd);
-		}
-		break;
-	default:
-		err("ERROR - wrong vd type:[%d]", vd->type);
-		return NULL;
-	}
-
-	sw = edje_object_part_swallow_get(_EDJ(layout), "btn_create_contacts");
-	if (sw) {
-		btn = sw;
-	} else {
-		btn = elm_button_add(layout);
-		elm_object_part_content_set(layout, "btn_create_contacts", btn);
-	}
-
-	info("Going to set style");
-	elm_object_style_set(btn, "style_call_end_create_contact_button");
-
-	elm_object_text_set(btn, _("IDS_COM_OPT_CREATE_CONTACT"));
-	evas_object_smart_callback_add(btn, "clicked", __vcui_create_contact_btn_cb, (void *)strdup(number));
-
-	return btn;
-}
-
-static void __vcui_create_contact_btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	dbg("_vcui_create_contact_btn_cb");
-	char *number = (char *)data;
-	app_control_h request;
-	app_control_create(&request);
-	app_control_set_operation(request, APP_CONTROL_OPERATION_ADD);
-	app_control_set_mime(request, APP_CONTROL_MIME_CONTACT);
-
-	if (number) {
-		app_control_add_extra_data(request, APP_CONTROL_DATA_PHONE, number);
-	}
-	app_control_send_launch_request(request, NULL, NULL);
-	free(number);
-	app_control_destroy(request);
-}
-
-static void __vcui_update_existing_contact_btn_cb(void *data,
-		Evas_Object *obj, void *event_info)
-{
-	dbg("__vcui_update_existing_contact_btn_cb");
-	char * number = (char *)data;
-	app_control_h request;
-	app_control_create(&request);
-	app_control_set_operation(request, APP_CONTROL_OPERATION_EDIT);
-	app_control_set_mime(request, APP_CONTROL_MIME_CONTACT);
-
-	if (number) {
-		app_control_add_extra_data(request, APP_CONTROL_DATA_PHONE, number);
-	}
-	app_control_send_launch_request(request, NULL, NULL);
-	free(number);
-	app_control_destroy(request);
-}
-
-Evas_Object *_callui_create_update_existing_contact_button(void *data, char *number)
-{
-	Evas_Object *btn;
-	Evas_Object *layout;
-	Evas_Object *sw;
-
-	call_view_data_t *vd = (call_view_data_t *)data;
-	CALLUI_RETURN_VALUE_IF_FAIL(vd != NULL, NULL);
-
-	switch (vd->type) {
-	case VIEW_TYPE_ENDCALL:
-		{
-			layout = _callui_view_callend_get_layout(vd);
-		}
-		break;
-	default:
-		err("ERROR - wrong vd type:[%d]", vd->type);
-		return NULL;
-	}
-
-	sw = edje_object_part_swallow_get(_EDJ(layout), "btn_update");
-	if (sw) {
-		btn = sw;
-	} else {
-		btn = elm_button_add(layout);
-		elm_object_part_content_set(layout, "btn_update", btn);
-	}
-
-	elm_object_style_set(btn, "style_call_end_update_contact_button");
-	elm_object_text_set(btn, _("IDS_CALL_BUTTON_UPDATE_EXISTING"));
-	evas_object_smart_callback_add(btn, "clicked",
-			__vcui_update_existing_contact_btn_cb, (void *)strdup(number));
-
-	return btn;
-}
-
-Evas_Object *_callui_create_message_button(void *data, char *number)
-{
-	Evas_Object *btn = NULL;
-	Evas_Object *layout = NULL;
-
-	call_view_data_t *vd = NULL;
-	CALLUI_RETURN_VALUE_IF_FAIL((vd = (call_view_data_t *)data) != NULL, NULL);
-
-	Evas_Object *icon = NULL;
-	switch (vd->type) {
-	case VIEW_TYPE_ENDCALL:
-		{
-			layout = _callui_view_callend_get_layout(vd);
-		}
-		break;
-	default:
-		err("ERROR - wrong vd type:[%d]", vd->type);
-		return NULL;
-	}
-
-	btn = elm_button_add(layout);
-	elm_object_style_set(btn, "call_icon_only");
-	icon = elm_image_add(btn);
-	elm_image_file_set(icon, EDJ_NAME, "call_button_icon_04.png");
-	elm_object_part_content_set(btn, "elm.swallow.content", icon);
-
-	elm_object_part_content_set(layout, "three_btn_message", btn);
-	evas_object_smart_callback_add(btn, "clicked", __vcui_msg_btn_cb, (void *)strdup(number));
-
-	evas_object_show(btn);
-	return btn;
 }
 
 /* Creates thumbnail */
@@ -1075,26 +707,24 @@ static void __callui_more_option_delete_cb(void *data, Evas *e, Evas_Object *obj
 
 void _callui_load_more_option(void *data)
 {
-	dbg("..");
-	callui_app_data_t *ad = _callui_get_app_data();
-	call_view_data_t *vd = (call_view_data_t *)data;
+	CALLUI_RETURN_IF_FAIL(data);
 
-	bool is_lcd_locked = FALSE;
+	callui_app_data_t *ad = (callui_app_data_t *)data;
+	bool is_lcd_locked = false;
+
 	if (_callui_proximity_lock_manager_is_supported()) {
 		is_lcd_locked = _callui_lock_manager_is_lcd_off(ad->lock_handle);
 	} else {
 		is_lcd_locked = _callui_lock_manager_is_started(ad->lock_handle);
 	}
 
-	if (is_lcd_locked == TRUE) {
+	if (is_lcd_locked) {
 		dbg( "Lock screen active. Do not show popup.");
 		return;
 	}
 
 	if (ad->ctxpopup == NULL) {
-		Evas_Object *ctxpopup = NULL;
-
-		ctxpopup = elm_ctxpopup_add(ad->main_ly);
+		Evas_Object *ctxpopup = elm_ctxpopup_add(ad->main_ly);
 		elm_object_style_set(ctxpopup, "more/default");
 		elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
 		evas_object_smart_callback_add(ctxpopup, "dismissed", __callui_more_option_dismissed_cb, ad);
@@ -1103,20 +733,13 @@ void _callui_load_more_option(void *data)
 		eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
 
 		/* Hold/Resume */
-		if (vd->type != VIEW_TYPE_MULTICALL_SPLIT) {
+		if (_callui_vm_get_cur_view_type(ad->view_manager_handle) != VIEW_TYPE_MULTICALL_SPLIT) {
 			if (ad->active != NULL) {
 				elm_ctxpopup_item_append(ctxpopup, _("IDS_CALL_BUTTON_HOLD"), NULL, __callui_hold_btn_cb, ad);
-			} else {/* CALL_HOLD */
+			} else {
 				elm_ctxpopup_item_append(ctxpopup, _("IDS_CALL_BUTTON_RESUME_ABB"), NULL, __callui_unhold_btn_cb, ad);
 			}
 		}
-
-		/* SIM Service */
-/*		if (__vcui_view_popup_is_sim_available() == EINA_TRUE) {
-			ctx_it = elm_ctxpopup_item_append(ctxpopup, _("IDS_CALL_OPT_SIM_SERVICES"),
-				NULL, __vcui_view_popup_sim_service_cb, vd);
-		}
-*/
 		elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP,
 											ELM_CTXPOPUP_DIRECTION_UNKNOWN,
 											ELM_CTXPOPUP_DIRECTION_UNKNOWN,
@@ -1243,7 +866,7 @@ static void __callui_second_call_cancel_btn_response_cb(void *data, Evas_Object 
 
 	callui_app_data_t *ad = (callui_app_data_t*) data;
 	__callui_unload_second_call_popup(ad);
-	_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_INCOMING_LOCK);
+	_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_INCOMING_CALL);
 
 	return;
 }
@@ -1591,14 +1214,35 @@ void _callui_create_toast_message(char *string)
 	return;
 }
 
-bool _callui_is_on_handsfree_mode()
+static void __callui_create_new_msg_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	callui_app_data_t *ad = _callui_get_app_data();
-	return (ad->speaker_status || ad->headset_status || ad->earphone_status);
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_app_data_t *ad = (callui_app_data_t *)data;
+
+	CALLUI_RETURN_IF_FAIL(ad->incom);
+
+	call_data_t *call_data = ad->incom;
+	char *tel_number = call_data->call_num;
+
+	_callui_common_launch_msg_composer(ad, tel_number);
+
+	int ret = cm_reject_call(ad->cm_handle);
+	if (ret != CM_ERROR_NONE) {
+		err("cm_reject_call() is failed");
+	}
 }
 
-bool _callui_is_on_background()
+int _callui_create_reject_msg_button(void *app_data, Evas_Object *parent, char *part)
 {
-	callui_app_data_t *ad = _callui_get_app_data();
-	return ad->on_background;
+	Evas_Object *msg_button = elm_button_add(parent);
+	CALLUI_RETURN_VALUE_IF_FAIL(msg_button, CALLUI_RESULT_ALLOCATION_FAIL);
+
+	elm_object_style_set(msg_button, "default");
+	elm_object_text_set(msg_button,  _("IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"));
+	evas_object_smart_callback_add(msg_button, "clicked", __callui_create_new_msg_btn_click_cb, app_data);
+	elm_object_part_content_set(parent, part, msg_button);
+	evas_object_show(msg_button);
+
+	return CALLUI_RESULT_OK;
 }

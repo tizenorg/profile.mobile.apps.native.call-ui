@@ -26,7 +26,6 @@
 #include "callui-view-layout.h"
 #include "callui-common.h"
 
-#define VIEW_QUICKPANEL_LAYOUT_ID "QUICKPANELVIEW"
 #define TXT_TIMER_BUF_LEN 26
 #define CALL_NUMBER_ONE 1
 #define QP_WIN_H 172
@@ -552,7 +551,6 @@ static int __callui_qp_mc_activate(callui_qp_mc_h qp)
 		}
 
 		elm_win_resize_object_add(qp->win_quickpanel, qp->quickpanel_layout);
-		evas_object_name_set(qp->quickpanel_layout, VIEW_QUICKPANEL_LAYOUT_ID);
 		evas_object_event_callback_add(qp->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_mc_launch_top_view_cb, qp);
 	}
 

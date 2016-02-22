@@ -15,36 +15,56 @@
  *
  */
 
-#ifndef __CALLUI_VIEW_INCOMING_CALL_H_
-#define __CALLUI_VIEW_INCOMING_CALL_H_
+#ifndef __CALLUI_VIEW_INCOMING_LOCK_H__
+#define __CALLUI_VIEW_INCOMING_LOCK_H__
 
-#include "callui-view-manager.h"
-#include "callui.h"
+#include <Elementary.h>
 
-/**
- * @brief Draw screen for incoming call
- *
- * @param[in]   ad            Call ui app data
- * @param[in]   vd            Call view data
- *
- */
-void _callui_view_incoming_call_draw_screen(callui_app_data_t *ad, call_view_data_t *vd);
+typedef struct _callui_view_incoming_call *callui_view_incoming_call_h;
 
 /**
- * @brief Create layout for incoming call
+ * @brief Creates Incoming call view instance
  *
- * @param[in]   vd            Call view data
- * @param[in]   appdata       Application data
- *
+ * @return View data handler
  */
-int _callui_view_incoming_call_oncreate(call_view_data_t *view_data, void *appdata);
+callui_view_incoming_call_h _callui_view_incoming_call_new();
 
 /**
- * @brief Destroy incoming call
+ * @brief Sets accept layout to Incoming call view
  *
- * @param[in]   data         View data
+ * @param[in]	vd		View data handler
+ * @param[in]	layout	Accept layout
  *
+ * @return CALLUI_RESULT_OK on success or error code otherwise
  */
-void _callui_view_incoming_call_ondestroy(void *data);
+int _callui_view_incoming_call_set_accept_layout(callui_view_incoming_call_h vd, Evas_Object *layout);
 
-#endif /* __CALLUI_VIEW_INCOMING_CALL_H_ */
+/**
+ * @brief Gets accept layout from Incoming call view
+ *
+ * @param[in]	vd		View data handler
+ *
+ * @return Accept layout
+ */
+Evas_Object *_callui_view_incoming_call_get_accept_layout(callui_view_incoming_call_h vd);
+
+/**
+ * @brief Sets reject layout to Incoming call view
+ *
+ * @param[in]	vd		View data handler
+ * @param[in]	layout	Reject layout
+ *
+ * @return CALLUI_RESULT_OK on success or error code otherwise
+ */
+int _callui_view_incoming_call_set_reject_layout(callui_view_incoming_call_h vd, Evas_Object *layout);
+
+/**
+ * @brief Gets reject layout from Incoming call view
+ *
+ * @param[in]	vd		View data handler
+ *
+ * @return Reject layout
+ */
+Evas_Object *_callui_view_incoming_call_get_reject_layout(callui_view_incoming_call_h vd);
+
+#endif /* __CALLUI_VIEW_INCOMING_LOCK_H__ */

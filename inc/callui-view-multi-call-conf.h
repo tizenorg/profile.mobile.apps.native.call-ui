@@ -16,18 +16,18 @@
  */
 
 
-#ifndef _CALLUI_VIEW_MULTI_CALL_CONF_H_
-#define _CALLUI_VIEW_MULTI_CALL_CONF_H_
+#ifndef __CALLUI_VIEW_MULTI_CALL_CONF_H__
+#define __CALLUI_VIEW_MULTI_CALL_CONF_H__
 
-#include "callui-view-manager.h"
+typedef struct _callui_view_mc_conf *callui_view_mc_conf_h;
 
 /**
- * @brief Create multicall conf
+ * @brief Creates Multicall conference view instance
  *
- * @return New multicall data
+ * @return View data handler
  *
  */
-call_view_data_t *_callui_view_multi_call_conf_new();
+callui_view_mc_conf_h _callui_view_multi_call_conf_new();
 
-#endif	/*_CALLUI_VIEW_MULTI_CALL_CONF_H_*/
+#endif	/* __CALLUI_VIEW_MULTI_CALL_CONF_H__ */
 

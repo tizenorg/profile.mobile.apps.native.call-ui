@@ -29,6 +29,34 @@
 #define CALLUI_KEY_VOLUMEUP "XF86AudioRaiseVolume"
 #define CALLUI_KEY_VOLUMEDOWN "XF86AudioLowerVolume"
 
+#define CALLUI_REJ_MSG_MAX_LENGTH (210+1)
+#define CALLUI_REJ_MSG_MAX_COUNT 6
+
+#define CALLUI_SAFE_C_CAST(type, value) ((type)(ptrdiff_t)value)
+
+#undef FREE
+#define FREE(ptr) \
+	do {\
+		free(ptr);\
+		ptr = NULL;\
+	} while (0)
+
+#undef G_FREE
+#define G_FREE(ptr) \
+	do {\
+		g_free(ptr);\
+		ptr = NULL;\
+	} while (0)
+
+#undef DELETE_EVAS_OBJECT
+#define DELETE_EVAS_OBJECT(x) \
+	do { \
+		if (x != NULL) { \
+			evas_object_del(x); \
+			x = NULL; \
+		} \
+	} while (0)
+
 
 typedef enum {
 	LOCK_TYPE_UNLOCK = 1,
@@ -57,7 +85,8 @@ typedef enum {
 typedef enum {
    CALLUI_RESULT_OK,
    CALLUI_RESULT_FAIL,
-   CALLUI_RESULT_INVALID_PARAM
+   CALLUI_RESULT_INVALID_PARAM,
+   CALLUI_RESULT_ALLOCATION_FAIL
 } callui_result_t;
 
 /**
@@ -90,17 +119,15 @@ void _callui_common_delete_duration_timer();
 
 /**
  * @brief create ending timer
- *
- * @param[in] vd            View data
- *
+ * @param[in] appdata        App data
  */
-void _callui_common_create_ending_timer(call_view_data_t *vd);
+void _callui_common_create_ending_timer(void *appdata);
 
 /**
  * @brief Delete ending timer
- *
+ * @param[in] appdata        App data
  */
-void _callui_common_delete_ending_timer(void);
+void _callui_common_delete_ending_timer(void *appdata);
 
 /**
  * @brief Get sim name
@@ -226,7 +253,7 @@ gboolean _callui_common_is_extra_volume_available(void);
  * @return state
  *
  */
-gboolean _callui_common_is_answering_mode_on(void);
+int _callui_common_is_answering_mode_on(void);
 
 /**
  * @brief state is powerkey mode on
@@ -234,7 +261,7 @@ gboolean _callui_common_is_answering_mode_on(void);
  * @return state
  *
  */
-gboolean _callui_common_is_powerkey_mode_on(void);
+int _callui_common_is_powerkey_mode_on(void);
 
 /**
  * @brief Changed lcd state
@@ -295,5 +322,25 @@ char *_callui_common_get_reject_msg_by_index(int index);
  * @brief Makes request on close application
  */
 void _callui_common_exit_app();
+
+/**
+ * @brief Sends reject message to incoming call recipient
+ * @param[in] appdata		application data
+ * @param[in] reject_msg	reject message txt
+ * @return result CALLUI_RESULT_OK on success and error result otherwise
+ */
+int _callui_common_send_reject_msg(void *appdata, char *reject_msg);
+
+/**
+ * @brief Gets audio mode
+ * @return @c true when callui is on handsfree mode, otherwise false
+ */
+bool _callui_is_on_handsfree_mode();
+
+/**
+ * @brief Gets background state
+ * @return @c true when callui is on background, otherwise false
+ */
+bool _callui_is_on_background();
 
 #endif //__CALLUI_COMMON_H_

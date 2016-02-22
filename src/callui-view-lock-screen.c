@@ -159,11 +159,10 @@ static Eina_Bool __lock_timeout_cb(void *data)
 
 	priv->no_lock_timer = NULL;
 
-	if (_callui_vm_get_cur_view_type(ad->view_manager_handle) >= VIEW_TYPE_MULTICALL_LIST) {
+	callui_view_type_e type = _callui_vm_get_cur_view_type(ad->view_manager_handle);
+	if (type >= VIEW_TYPE_MULTICALL_LIST) {
 		return ECORE_CALLBACK_CANCEL;
-	}
-
-	if (_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_INCOMING_LOCK) {
+	} else if (type == VIEW_TYPE_INCOMING_CALL || type == VIEW_TYPE_INCOMING_CALL_NOTI) {
 		return ECORE_CALLBACK_RENEW;
 	}
 
