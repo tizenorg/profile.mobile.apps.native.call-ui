@@ -179,12 +179,13 @@ Evas_Object *_callui_create_bottom_third_button_disabled(callui_app_data_t *ad);
  * @brief Create end call button
  *
  * @param[in]    parent    Parent object
+ * @param[in]    cb_func   Callback function
  * @param[in]    data      App data
  *
  * @return layout
  *
  */
-Evas_Object *_callui_create_end_call_button(Evas_Object *parent, void *data);
+Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb cb_func, void *data);
 
 /**
  * @brief Destroy end call button
@@ -193,81 +194,6 @@ Evas_Object *_callui_create_end_call_button(Evas_Object *parent, void *data);
  *
  */
 void _callui_destroy_end_call_button(Evas_Object *parent);
-
-/**
- * @brief Create disabled voice call button
- *
- * @param[in]    data      View data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_voicecall_button_disabled(void *data);
-
-/**
- * @brief Create disabled message button
- *
- * @param[in]    data      View data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_message_button_disabled(void *data);
-
-/**
- * @brief Create view contact button
- *
- * @param[in]    data       View data
- * @param[in]    ct_id      Contact id
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_view_contact_button(void *data, int ct_id);
-
-/**
- * @brief Create contact button
- *
- * @param[in]    data       View data
- * @param[in]    number     Contact number
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_create_contacts_button(void *data, char *number);
-
-/**
- * @brief Update existing contact button
- *
- * @param[in]    data       View data
- * @param[in]    number     Contact number
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_update_existing_contact_button(void *data, char *number);
-
-/**
- * @brief Create voice call button
- *
- * @param[in]    data       View data
- * @param[in]    number     Contact number
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_voicecall_button(void *data, char *number);
-
-/**
- * @brief Create message button
- *
- * @param[in]    data       View data
- * @param[in]    number     Contact number
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_message_button(void *data, char *number);
 
 /**
  * @brief Create bg layout
@@ -476,19 +402,13 @@ void _callui_update_extra_vol_btn(callui_app_data_t *ad, Eina_Bool is_on);
 void _callui_set_background_layout(Evas_Object *parent);
 
 /**
- * @brief Gets audio mode
+ * @brief Create and set background layout
  *
- * @return @c true when callui is on handsfree mode, otherwise false
- *
- */
-bool _callui_is_on_handsfree_mode();
-
-/**
- * @brief Gets background state
- *
- * @return @c true when callui is on background, otherwise false
+ * @param[in]    app_data		Application data pointer
+ * @param[in]    parent       	Parent object
+ * @param[in]    part       	Part name in parent to be set reject message button
  *
  */
-bool _callui_is_on_background();
+int _callui_create_reject_msg_button(void *app_data, Evas_Object *parent, char *part);
 
 #endif //__CALLUI_VIEW_ELEMENTS_H_

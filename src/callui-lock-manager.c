@@ -18,7 +18,7 @@
 #include "callui-lock-manager.h"
 #include "callui-proximity-lock-manager.h"
 #include "callui-view-lock-screen.h"
-#include "callui-view-elements.h"
+#include "callui-common.h"
 
 lock_data_t *_callui_lock_manager_create()
 {

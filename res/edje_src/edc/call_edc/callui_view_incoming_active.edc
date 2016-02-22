@@ -223,7 +223,7 @@ group {
 }
 
 group {
-	name: "main_incoming_active_call";
+	name: "main_active_noti_call";
 	parts {
 		part { name: "screen_bg";
 			type: RECT;
@@ -513,7 +513,7 @@ group {
 		program {
 			name: "show_image";
 			signal: "show_image";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "show" 0.0;
 			target: "caller_id_mask";
 			target: "caller_id_default";
@@ -521,7 +521,7 @@ group {
 		program {
 			name: "hide_image";
 			signal: "hide_image";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "hide" 0.0;
 			target: "caller_id_mask";
 			target: "caller_id_default";
@@ -529,7 +529,7 @@ group {
 		program {
 			name: "small_main_ly";
 			signal: "small_main_ly";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "small" 0.0;
 			target: "bg";
 			after: "hide_reject_msg";
@@ -538,21 +538,21 @@ group {
 		program {
 			name: "show_reject_msg";
 			signal: "show_reject_msg";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "show" 0.0;
 			target: "swallow.reject_msg";
 		}
 		program {
 			name: "hide_reject_msg";
 			signal: "hide_reject_msg";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "hide" 0.0;
 			target: "swallow.reject_msg";
 		}
 		program {
 			name: "big_main_ly";
 			signal: "big_main_ly";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "big" 0.0;
 			target: "bg";
 			after: "show_reject_msg";
@@ -561,14 +561,14 @@ group {
 		program {
 			name: "show_swipe_call";
 			signal: "show_swipe_call";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "show" 0.0;
 			target: "swallow.swipe_button";
 		}
 		program {
 			name: "hide_swipe_call";
 			signal: "hide_swipe_call";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "hide" 0.0;
 			target: "swallow.swipe_button";
 			after: "show_reject_msg";
@@ -576,7 +576,7 @@ group {
 		program {
 			name: "big_buttons";
 			signal: "big_buttons";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "big" 0.0;
 			target: "swallow.call_button";
 			target: "swallow.end_call_button";
@@ -585,14 +585,14 @@ group {
 		program {
 			name: "hide_swallow.rj_msg_button";
 			signal: "hide_swallow.rj_msg_button";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "hide" 0.0;
 			target: "swallow.rj_msg_button";
 		}
 		program {
 			name: "small_buttons";
 			signal: "small_buttons";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "small" 0.0;
 			target: "swallow.call_button";
 			target: "swallow.end_call_button";
@@ -601,7 +601,7 @@ group {
 		program {
 			name: "show_swallow.rj_msg_button";
 			signal: "show_swallow.rj_msg_button";
-			source: "main_incoming_active_call";
+			source: "main_active_noti_call";
 			action: STATE_SET "show" 0.0;
 			target: "swallow.rj_msg_button";
 		}

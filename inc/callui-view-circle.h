@@ -18,36 +18,33 @@
 #ifndef __CALLUI_ONECALL_CIRCLE_VIEW_H_
 #define __CALLUI_ONECALL_CIRCLE_VIEW_H_
 
+#include "callui-view-incoming-call.h"
 #include "callui.h"
 
-/**
- * @brief Reset accept/reject layout
- *
- * @param[in]    data     View data
- *
- */
-void _callui_view_circle_accept_reject_reset(void *data);
+#include <Elementary.h>
 
 /**
  * @brief Create reject layout
  *
- * @param[in]    ad       Application data
- * @param[in]    data     View data
+ * @param[in]	ad		Application data
+ * @param[in]	vd		Incoming call lock view hander
+ * @param[in]	parent	Parent Evas_Object
  *
- * @return Reject layout
+ * @return CALLUI_RESULT_OK on success or error code otherwise
  *
  */
-Evas_Object *_callui_view_circle_create_reject_layout(callui_app_data_t *ad, void *data);
+int _callui_view_circle_create_reject_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent);
 
 /**
  * @brief Create accept layout
  *
- * @param[in]    ad       Application data
- * @param[in]    data     View data
+ * @param[in]	ad		Application data
+ * @param[in]	vd		Incoming call lock view hander
+ * @param[in]	parent	Parent Evas_Object
  *
- * @return Accept layout
+ * @return CALLUI_RESULT_OK on success or error code otherwise
  *
  */
-Evas_Object *_callui_view_circle_create_accept_layout(callui_app_data_t *ad, void *data);
+int _callui_view_circle_create_accept_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent);
 
 #endif
