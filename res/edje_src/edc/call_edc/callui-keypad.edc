@@ -198,6 +198,129 @@
 			emit("pad_clicked", txt); \
 		} \
 	}
+	
+group{
+	name: "keypad_layout";
+	parts {
+		part { name: "bg";
+			type: SPACER;
+			mouse_events:1;
+			repeat_events: 1;
+			description {
+				state: "default" 0.0;
+			}
+		}
+		part { name: "keypad.pad.bottom";
+			type: SPACER;
+			mouse_events: 1;
+			repeat_events: 1;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.0 1.0;
+				min: 0 KEYPAD_H;
+				fixed: 0 1;
+				align: 0 1;
+			}
+		}
+		part { name: PART_SWALLOW_TEXTBLOCK_AREA;
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				visible: 0;
+				rel1.relative: 0.0 0.0;
+				rel2 {
+					relative: 1.0 0.0;
+					to: "keypad.pad.bottom";
+				}
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+		part { name: PART_SWALLOW_KEYPAD;
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				visible: 0;
+				rel1.relative: 0.0 1.0;
+				rel2.relative: 1.0 2.0;
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+				rel1.relative: 0.0 0.0;
+				rel2.relative: 1.0 1.0;
+			}
+			description {
+				state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		}
+	}
+	programs {
+		program { name: "show_keypadbtn_anim";
+			signal: "SHOW";
+			source: "KEYPAD_BTN";
+			after: "show_entry";
+			after: "show_keypadbtn";
+		}
+		program {
+			name: "show_entry";
+			action: STATE_SET "show" 0.0;
+			target: PART_SWALLOW_TEXTBLOCK_AREA;
+		}
+		program { name: "show_keypadbtn";
+			action: STATE_SET "show" 0.0;
+			transition: LINEAR 0.25;
+			target: PART_SWALLOW_KEYPAD;
+		}
+		program { name: "hide_keypadbtn_anim";
+			signal: "HIDE";
+			source: "KEYPAD_BTN";
+			after: "hide_keypadbtn_with_anim";
+		}
+		program { name: "hide_keypadbtn_no_anim";
+			signal: "QUICK_HIDE";
+			source: "KEYPAD_BTN";
+			after: "hide_keypadbtn_without_anim";
+		}
+		program {
+			name: "hide_complete_notify";
+			action: SIGNAL_EMIT "hide_completed" "*";
+		}
+		program {
+			name: "hide_entry";
+			action: STATE_SET "hide" 0.0;
+			target: PART_SWALLOW_TEXTBLOCK_AREA;
+		}
+		program {
+			name: "hide_keypadbtn_with_anim";
+			action: STATE_SET "default" 0.0;
+			transition: LINEAR 0.25;
+			target: PART_SWALLOW_KEYPAD;
+			after: "hide_entry";
+			after: "hide_complete_notify";
+		}
+		program {
+			name: "hide_keypadbtn_without_anim";
+			action: STATE_SET "default" 0.0;
+			target: PART_SWALLOW_KEYPAD;
+			after: "hide_entry";
+			after: "hide_complete_notify";
+		}
+	}
+}
 
 group{
 	name: "keypad";

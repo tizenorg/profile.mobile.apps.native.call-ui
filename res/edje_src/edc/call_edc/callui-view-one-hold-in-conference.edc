@@ -328,7 +328,6 @@ group {
 				image.normal: IMG_SRC_DIR/"background.png";
 			}
 		}
-
 		part {
 			name: PART_SWALLOW_CALL_INFO;
 			type: SWALLOW;
@@ -343,7 +342,6 @@ group {
 				visible: 0;
 			}
 		}
-
 		part {
 			name: PART_SWALLOW_BTN_REGION;
 			type: SWALLOW;
@@ -353,43 +351,6 @@ group {
 				rel2.relative: 1.0 SIX_BTN_LAYOUT_B;
 			}
 		}
-
-		part {
-			name: PART_SWALLOW_TEXTBLOCK_AREA;
-			type: SWALLOW;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1.relative: 0.0 0.0;
-				rel2.relative: 1.0 (1 - REL_H(KEYPAD_H+ENDCALL_BTN_BG_H));
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-		}
-
-		part {
-			name: PART_SWALLOW_KEYPAD;
-			type: SWALLOW;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1.relative: 0.0 1.0;
-				rel2.relative: 1.0 2.0;
-			}
-			description {
-				state: "show" 0.0;
-				visible: 1;
-				rel1.relative: 0.0 0.0;
-				rel2 {
-					relative: 1.0 0.0;
-					to_y: "end_btn_area";
-				}
-			}
-		}
-
 		part {
 			name: "end_btn_area";
 			type: RECT;
@@ -401,7 +362,6 @@ group {
 				color_class: "AO008";
 			}
 		}
-
 		part {
 			name: PART_END_BTN;
 			type: SWALLOW;
@@ -426,31 +386,12 @@ group {
 			source: "KEYPAD_BTN";
 			action: STATE_SET "hide" 0.0;
 			target: PART_SWALLOW_CALL_INFO;
-			after: "show_entry";
-			after: "show_keypad_animation";
 		}
-
 		program { name: "hide_keypad";
 			signal: "HIDE";
 			source: "KEYPAD_BTN";
 			action: STATE_SET "default" 0.0;
-			transition: LINEAR 0.25;
-			target: PART_SWALLOW_KEYPAD;
 			target: PART_SWALLOW_CALL_INFO;
-			target: PART_SWALLOW_TEXTBLOCK_AREA;
-		}
-
-		program {
-			name: "show_keypad_animation";
-			action: STATE_SET "show" 0.0;
-			transition: LINEAR 0.25;
-			target: PART_SWALLOW_KEYPAD;
-		}
-
-		program {
-			name: "show_entry";
-			action: STATE_SET "show" 0.0;
-			target: PART_SWALLOW_TEXTBLOCK_AREA;
 		}
 	}
 }
