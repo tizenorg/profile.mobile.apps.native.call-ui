@@ -15,7 +15,6 @@
  *
  */
 
-
 #include "callui.h"
 #include "callui-keypad.h"
 #include "callui-common.h"
@@ -25,66 +24,138 @@
 
 #define VC_KEYPAD_ENTRY_FONT "<font='Samsung Sans Num47:style=Light'>%s</>"
 #define VC_KEYAD_ENTRY_STYLE "DEFAULT='align=center color=#ffffffff font_size=76'"
-#define KEYPAD_ENTRY_DISP_DATA_SIZE		1024
 
-typedef struct _keypad_data_t {
-	Evas_Object *keypad_ly;
+int __callui_keypad_init(keypad_widget_h keypad, Evas_Object *parent, callui_app_data_t *appdata);
+void __callui_keypad_deinit(keypad_widget_h keypad);
+
+static void __back_button_click_cb(void *data, Evas_Object *obj, void *event_info);
+static Evas_Event_Flags __arrow_flick_gesture_event_cb(void *data, void *event_info);
+static void __arrow_mouse_down_event_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+static void __arrow_mouse_up_event_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+static int __create_gesture_layer(keypad_widget_h keypad);
+static void __on_key_down_click_event(void *data, Evas_Object *obj, const char *emission, const char *source);
+static void __on_key_up_click_event(void *data, Evas_Object *obj, const char *emission, const char *source);
+static Evas_Object *__create_single_line_scrolled_entry(Evas_Object *content);
+static int __create_entry(keypad_widget_h keypad);
+static void __clear_entry(keypad_widget_h keypad);
+static Eina_Bool __down_arrow_animation_timeout_cb(void *data);
+static void __hide_keypad(keypad_widget_h keypad, Eina_Bool is_immediately);
+static void __on_hide_completed(void *data, Evas_Object *obj, const char *emission, const char *source);
+
+struct _keypad_widget_data {
+
+	Evas_Object *main_layout;
+
+	Evas_Object *btns_layout;
 	Evas_Object *entry;
-	int data_len;
-	char entry_disp_data[KEYPAD_ENTRY_DISP_DATA_SIZE+1];
-	Eina_Bool bkeypad_show;
+	Evas_Object *parent;
+
+	Eina_Bool is_keypad_show;
 	Ecore_Timer *anim_timer;
 
-	Evas_Object *gesture_ly;
+	Evas_Object *gesture_layer;
 	int gesture_start_y;
 	int gesture_momentum_y;
-} keypad_data_t;
 
-static keypad_data_t *gkeypad_data;
+	callui_app_data_t *ad;
 
-static Evas_Object *__callui_keypad_create_contents(callui_app_data_t *ad, char *grp_name)
+	show_state_change_cd cb_func;
+	void *cb_data;
+};
+
+typedef struct _keypad_widget_data _keypad_widget_data_t;
+
+int __callui_keypad_init(keypad_widget_h keypad, Evas_Object *parent, callui_app_data_t *appdata)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(ad, NULL);
-	Evas_Object *eo = NULL;
+	keypad->ad = appdata;
+	keypad->parent = parent;
 
-	/* load edje */
-	eo = _callui_load_edj(ad->win, EDJ_NAME, grp_name);
-	if (eo == NULL)
-		return NULL;
+	keypad->main_layout = _callui_load_edj(parent, EDJ_NAME, "keypad_layout");
+	CALLUI_RETURN_VALUE_IF_FAIL(keypad->main_layout, CALLUI_RESULT_ALLOCATION_FAIL);
 
-	return eo;
+	elm_object_signal_callback_add(keypad->main_layout, "hide_completed", "*", __on_hide_completed, keypad);
+
+	keypad->btns_layout = _callui_load_edj(keypad->main_layout, EDJ_NAME, GRP_KEYPAD);
+	CALLUI_RETURN_VALUE_IF_FAIL(keypad->btns_layout, CALLUI_RESULT_ALLOCATION_FAIL);
+
+	elm_object_part_content_set(keypad->main_layout, PART_SWALLOW_KEYPAD, keypad->btns_layout);
+
+	int res = __create_gesture_layer(keypad);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+
+	res = __create_entry(keypad);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+
+	elm_object_part_content_set(keypad->ad->main_ly,
+			PART_SWALLOW_KEYPAD_LAYOUT_AREA,
+			keypad->main_layout);
+
+	return res;
 }
 
-static keypad_data_t *__callui_keypad_memory_alloc()
+void __callui_keypad_deinit(keypad_widget_h keypad)
 {
-	dbg("..");
-
-	CALLUI_RETURN_VALUE_IF_FAIL(gkeypad_data == NULL, gkeypad_data);
-
-	gkeypad_data = (keypad_data_t *) calloc(1, sizeof(keypad_data_t));
-	if (gkeypad_data == NULL) {
-		err("keydata structure not allocated");
-		return NULL;
+	if (keypad->anim_timer) {
+		ecore_timer_del(keypad->anim_timer);
 	}
-	memset(gkeypad_data, 0x00, sizeof(keypad_data_t));
-	gkeypad_data->bkeypad_show = EINA_FALSE;
 
-	return gkeypad_data;
+	if (keypad->main_layout) {
+		evas_object_del(keypad->btns_layout);
+	}
 }
 
-static void __callui_keypad_back_cb(void *data, Evas_Object *obj, void *event_info)
+keypad_widget_h _callui_keypad_create(Evas_Object *parent, void *appdata)
 {
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad);
+	CALLUI_RETURN_NULL_IF_FAIL(parent);
+	CALLUI_RETURN_NULL_IF_FAIL(appdata);
 
-	_callui_keypad_hide_layout(ad);
+	keypad_widget_h keypad = calloc(1, sizeof(_keypad_widget_data_t));
+	CALLUI_RETURN_NULL_IF_FAIL(keypad);
+
+	int res = __callui_keypad_init(keypad, parent, appdata);
+	if (res != CALLUI_RESULT_OK) {
+		err("Init keypad failed");
+		_callui_keypad_destroy(keypad);
+		keypad = NULL;
+	}
+
+	return keypad;
 }
 
-static Evas_Event_Flags __callui_keypad_arrow_flick_gesture_event_cb(void *data, void *event_info)
+void _callui_keypad_destroy(keypad_widget_h keypad)
 {
-	dbg("Flick_Gesture Move");
+	CALLUI_RETURN_IF_FAIL(keypad);
+
+	__callui_keypad_deinit(keypad);
+
+	free(keypad);
+}
+
+static void __clear_entry(keypad_widget_h keypad)
+{
+	elm_entry_entry_set(keypad->entry, "");
+	elm_entry_cursor_end_set(keypad->entry);
+}
+
+void _callui_keypad_clear_input(keypad_widget_h keypad)
+{
+	CALLUI_RETURN_IF_FAIL(keypad);
+
+	__clear_entry(keypad);
+}
+
+static void __back_button_click_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	__hide_keypad((keypad_widget_h)data, EINA_FALSE);
+}
+
+static Evas_Event_Flags __arrow_flick_gesture_event_cb(void *data, void *event_info)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(data, EVAS_EVENT_FLAG_NONE);
+	CALLUI_RETURN_VALUE_IF_FAIL(event_info, EVAS_EVENT_FLAG_NONE);
+
+	keypad_widget_h keypad_data = (keypad_widget_h)data;
 	Elm_Gesture_Line_Info *info = (Elm_Gesture_Line_Info *)event_info;
-	keypad_data_t *pkeypad_data = gkeypad_data;
 
 	dbg("*********************************************");
 	dbg("info->angle = %lf", info->angle);
@@ -95,95 +166,105 @@ static Evas_Event_Flags __callui_keypad_arrow_flick_gesture_event_cb(void *data,
 	dbg("info->momentum.y1 = %d, info->momentum.y2 = %d", info->momentum.y1, info->momentum.y2);
 	dbg("*********************************************");
 
-	pkeypad_data->gesture_momentum_y = info->momentum.my;
+	keypad_data->gesture_momentum_y = info->momentum.my;
+
 	return EVAS_EVENT_FLAG_NONE;
 }
 
-static void __callui_keypad_arrow_mouse_down_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __arrow_mouse_down_event_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
-	keypad_data_t *pkeypad_data = gkeypad_data;
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(event_info);
+
+	keypad_widget_h keypad_data = (keypad_widget_h)data;
 	Evas_Event_Mouse_Move *ev = event_info;
 
-	pkeypad_data->gesture_start_y = ev->cur.canvas.y;
-
-	return;
+	keypad_data->gesture_start_y = ev->cur.canvas.y;
 }
 
-static void __callui_keypad_arrow_mouse_up_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __arrow_mouse_up_event_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	keypad_data_t *pkeypad_data = gkeypad_data;
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(event_info);
+
+	keypad_widget_h keypad_data = (keypad_widget_h)data;
 	Evas_Event_Mouse_Move *ev = event_info;
 
-	if (((ev->cur.canvas.y-pkeypad_data->gesture_start_y) > 100) && (pkeypad_data->gesture_momentum_y > 500)) {
-		info("Hide keypad!!");
-		_callui_keypad_hide_layout(ad);
+	if (((ev->cur.canvas.y-keypad_data->gesture_start_y) > 100) && (keypad_data->gesture_momentum_y > 500)) {
+		__hide_keypad( keypad_data, EINA_FALSE);
 	}
-
-	return;
 }
 
-static int __callui_keypad_create_gesture_layer(callui_app_data_t *ad)
+static int __create_gesture_layer(keypad_widget_h keypad)
 {
-	keypad_data_t *pkeypad_data = gkeypad_data;
-	Evas_Object *sweep_area = NULL;
+	DELETE_EVAS_OBJECT(keypad->gesture_layer);
 
-	if (pkeypad_data->gesture_ly) {
-		DELETE_EVAS_OBJECT(pkeypad_data->gesture_ly);
-	}
+	Evas_Object *sweep_area = _callui_edje_object_part_get(keypad->btns_layout, "sweep_area");
 
-	sweep_area = _callui_edje_object_part_get(pkeypad_data->keypad_ly, "sweep_area");
-	pkeypad_data->gesture_ly = elm_gesture_layer_add(pkeypad_data->keypad_ly);
-	if (FALSE == elm_gesture_layer_attach(pkeypad_data->gesture_ly, sweep_area)) {
+	keypad->gesture_layer = elm_gesture_layer_add(keypad->btns_layout);
+	if (FALSE == elm_gesture_layer_attach(keypad->gesture_layer, sweep_area)) {
 		err("elm_gesture_layer_attach failed !!");
-		DELETE_EVAS_OBJECT(pkeypad_data->gesture_ly);
+		DELETE_EVAS_OBJECT(keypad->gesture_layer);
 		return CALLUI_RESULT_ALLOCATION_FAIL;
 	} else {
-		evas_object_event_callback_add(sweep_area, EVAS_CALLBACK_MOUSE_DOWN, __callui_keypad_arrow_mouse_down_cb, ad);
-		evas_object_event_callback_add(sweep_area, EVAS_CALLBACK_MOUSE_UP, __callui_keypad_arrow_mouse_up_cb, ad);
-		elm_gesture_layer_cb_set(pkeypad_data->gesture_ly, ELM_GESTURE_N_FLICKS, ELM_GESTURE_STATE_MOVE, __callui_keypad_arrow_flick_gesture_event_cb, ad);
+		evas_object_event_callback_add(sweep_area, EVAS_CALLBACK_MOUSE_DOWN,
+				__arrow_mouse_down_event_cb, keypad);
+
+		evas_object_event_callback_add(sweep_area, EVAS_CALLBACK_MOUSE_UP,
+				__arrow_mouse_up_event_cb, keypad);
+
+		elm_gesture_layer_cb_set(keypad->gesture_layer, ELM_GESTURE_N_FLICKS, ELM_GESTURE_STATE_MOVE,
+				__arrow_flick_gesture_event_cb, keypad);
 	}
 
 	return CALLUI_RESULT_OK;
 }
 
 
-Eina_Bool _callui_keypad_get_show_status(void)
+Eina_Bool _callui_keypad_get_show_status(keypad_widget_h keypad)
 {
-	keypad_data_t *pkeypad_data = gkeypad_data;
-	CALLUI_RETURN_VALUE_IF_FAIL(pkeypad_data != NULL, EINA_FALSE);
+	CALLUI_RETURN_VALUE_IF_FAIL(keypad, EINA_FALSE);
 
-	return pkeypad_data->bkeypad_show;
+	return keypad->is_keypad_show;
 }
 
-static void __callui_keypad_set_show_status(Eina_Bool bkeypad_status)
+static void __on_hide_completed(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
-	keypad_data_t *pkeypad_data = gkeypad_data;
+	CALLUI_RETURN_IF_FAIL(data);
 
-	CALLUI_RETURN_IF_FAIL(pkeypad_data != NULL);
+	keypad_widget_h keypad = (keypad_widget_h)data;
+	callui_app_data_t *ad = keypad->ad;
 
-	dbg("Set show status(%d)", bkeypad_status);
-	pkeypad_data->bkeypad_show = bkeypad_status;
+	_callui_lock_manager_start(ad->lock_handle);
+
+#ifdef _DBUS_DVC_LSD_TIMEOUT_
+	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
+#endif
+
+	eext_object_event_callback_del(keypad->parent, EEXT_CALLBACK_BACK,	__back_button_click_cb);
+
+	if (keypad->anim_timer) {
+		ecore_timer_del(keypad->anim_timer);
+		keypad->anim_timer = NULL;
+	}
+
+	if (keypad->cb_func) {
+		keypad->cb_func(keypad->cb_data, keypad->is_keypad_show);
+	}
 }
 
-static void __callui_keypad_on_key_down(void *data, Evas_Object *obj, const char *emission, const char *source)
+static void __on_key_down_click_event(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
-	dbg("__callui_keypad_on_key_down");
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(source);
+
+	keypad_widget_h keypad = (keypad_widget_h)data;
+	callui_app_data_t *ad = keypad->ad;
+
 	char *entry_dest = NULL;
 	char *keypad_source = NULL;
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad);
-	keypad_data_t *pkeypad_data = gkeypad_data;
-	CALLUI_RETURN_IF_FAIL(pkeypad_data != NULL);
 	char *entry_str = NULL;
 	char *disp_str = NULL;
-
-	if (source == NULL || strlen(source) == 0) {
-		err("Source value is not valid");
-		return;
-	}
 
 	if (strcmp(source, "star") == 0) {
 		keypad_source = "*";
@@ -195,7 +276,7 @@ static void __callui_keypad_on_key_down(void *data, Evas_Object *obj, const char
 
 	cm_start_dtmf(ad->cm_handle, keypad_source[0]);
 
-	const char *text = elm_entry_entry_get(pkeypad_data->entry);
+	const char *text = elm_entry_entry_get(keypad->entry);
 	disp_str = elm_entry_markup_to_utf8(text);
 
 	if (disp_str == NULL) {
@@ -224,10 +305,10 @@ static void __callui_keypad_on_key_down(void *data, Evas_Object *obj, const char
 
 	entry_str = g_strdup_printf(VC_KEYPAD_ENTRY_FONT, entry_dest);
 	if (entry_str) {
-		elm_object_text_set(pkeypad_data->entry, entry_str);
+		elm_object_text_set(keypad->entry, entry_str);
 		g_free(entry_str);
 	}
-	elm_entry_cursor_end_set(pkeypad_data->entry);
+	elm_entry_cursor_end_set(keypad->entry);
 
 	if (entry_dest) {
 		free(entry_dest);
@@ -235,25 +316,23 @@ static void __callui_keypad_on_key_down(void *data, Evas_Object *obj, const char
 	}
 }
 
-static void __callui_keypad_on_key_up(void *data, Evas_Object *obj, const char *emission, const char *source)
+static void __on_key_up_click_event(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
+	CALLUI_RETURN_IF_FAIL(data);
+
 	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad);
 
 	cm_stop_dtmf(ad->cm_handle);
 }
 
-static Evas_Object *__callui_keypad_create_single_line_scrolled_entry(void *content)
+static Evas_Object *__create_single_line_scrolled_entry(Evas_Object *content)
 {
-	Evas_Object *en;
+	CALLUI_RETURN_NULL_IF_FAIL(content);
+
 	Elm_Entry_Filter_Accept_Set digits_filter_data;
 
-	if (content == NULL) {
-		err("content is NULL!");
-		return NULL;
-	}
-
-	en = elm_entry_add(content);
+	Evas_Object *en = elm_entry_add(content);
+	CALLUI_RETURN_NULL_IF_FAIL(en);
 	elm_entry_editable_set(en, EINA_FALSE);
 	elm_entry_scrollable_set(en, EINA_TRUE);
 
@@ -281,61 +360,51 @@ static Evas_Object *__callui_keypad_create_single_line_scrolled_entry(void *cont
 	return en;
 }
 
-static int __callui_keypad_create_entry(callui_app_data_t *ad)
+static int __create_entry(keypad_widget_h keypad)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(gkeypad_data, CALLUI_RESULT_FAIL);
-
-	Evas_Object *current_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-	CALLUI_RETURN_VALUE_IF_FAIL(current_ly, CALLUI_RESULT_FAIL);
-
-	keypad_data_t *pkeypad_data = gkeypad_data;
-
-	if (!pkeypad_data->entry) {
-		pkeypad_data->entry = __callui_keypad_create_single_line_scrolled_entry(ad->win_conformant);
-		if (!pkeypad_data->entry) {
-			err("Create entry failed");
-			return CALLUI_RESULT_ALLOCATION_FAIL;
-		}
-		memset(pkeypad_data->entry_disp_data, 0x0, sizeof(pkeypad_data->entry_disp_data));
-		pkeypad_data->data_len = 0;
-
-		elm_object_signal_callback_add(pkeypad_data->keypad_ly, "pad_down", "*", __callui_keypad_on_key_down, ad);
-		elm_object_signal_callback_add(pkeypad_data->keypad_ly, "pad_up", "*", __callui_keypad_on_key_up, ad);
-		edje_object_part_swallow(_EDJ(current_ly), PART_SWALLOW_TEXTBLOCK_AREA, pkeypad_data->entry);
+	keypad->entry = __create_single_line_scrolled_entry(keypad->main_layout);
+	if (!keypad->entry) {
+		err("Create entry failed");
+		return CALLUI_RESULT_ALLOCATION_FAIL;
 	}
+
+	elm_object_signal_callback_add(keypad->btns_layout, "pad_down", "*", __on_key_down_click_event, keypad);
+	elm_object_signal_callback_add(keypad->btns_layout, "pad_up", "*", __on_key_up_click_event, keypad->ad);
+
+	__clear_entry(keypad);
+
+	elm_object_part_content_set(keypad->main_layout, PART_SWALLOW_TEXTBLOCK_AREA, keypad->entry);
 
 	return CALLUI_RESULT_OK;
 }
 
-static Eina_Bool __down_arrow_animation_timerout_cb(void *data)
+static Eina_Bool __down_arrow_animation_timeout_cb(void *data)
 {
-	keypad_data_t *pkeypad_data = (keypad_data_t *)data;
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
 
-	if (pkeypad_data->keypad_ly) {
-		elm_object_signal_emit(pkeypad_data->keypad_ly, "start_animation", "down_arrow");
+	keypad_widget_h keypad_data = (keypad_widget_h)data;
+
+	if (keypad_data->btns_layout) {
+		elm_object_signal_emit(keypad_data->btns_layout, "start_animation", "down_arrow");
 	}
 
 	return ECORE_CALLBACK_RENEW;
 }
 
-void _callui_keypad_show_layout(void *app_data)
+void _callui_keypad_show(keypad_widget_h keypad)
 {
-	dbg("..");
-	keypad_data_t *pkeypad_data = gkeypad_data;
-	CALLUI_RETURN_IF_FAIL(pkeypad_data);
-	callui_app_data_t *ad = (callui_app_data_t *)app_data;
-	CALLUI_RETURN_IF_FAIL(ad);
-	Evas_Object *view_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-	CALLUI_RETURN_IF_FAIL(view_ly);
+	CALLUI_RETURN_IF_FAIL(keypad);
+	callui_app_data_t *ad = keypad->ad;
 
-	elm_object_signal_emit(pkeypad_data->keypad_ly, "SHOW", "KEYPADBTN");
-	elm_object_signal_emit(view_ly, "SHOW", "KEYPAD_BTN");
+	elm_object_signal_emit(keypad->btns_layout, "SHOW", "KEYPADBTN");
 
-	/* Start animation */
-	elm_object_signal_emit(pkeypad_data->keypad_ly, "init", "down_arrow");
-	elm_object_signal_emit(pkeypad_data->keypad_ly, "start_animation", "down_arrow");
+	elm_object_signal_emit(keypad->btns_layout, "init", "down_arrow");
+	elm_object_signal_emit(keypad->btns_layout, "start_animation", "down_arrow");
 
-	__callui_keypad_set_show_status(EINA_TRUE);
+	elm_object_signal_emit(keypad->main_layout, "SHOW", "KEYPAD_BTN");
+
+	keypad->is_keypad_show = EINA_TRUE;
+
 	/* change LCD timeout duration */
 	_callui_lock_manager_stop(ad->lock_handle);
 
@@ -343,120 +412,51 @@ void _callui_keypad_show_layout(void *app_data)
 	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_KEYPAD_SET);
 #endif
 
-	eext_object_event_callback_add(view_ly, EEXT_CALLBACK_BACK, __callui_keypad_back_cb, ad);
+	eext_object_event_callback_add(keypad->parent, EEXT_CALLBACK_BACK, __back_button_click_cb, keypad);
 
-	if (pkeypad_data->anim_timer) {
-		ecore_timer_del(pkeypad_data->anim_timer);
-		pkeypad_data->anim_timer = NULL;
+	ecore_timer_del(keypad->anim_timer);
+	keypad->anim_timer = ecore_timer_add(2.0, __down_arrow_animation_timeout_cb, keypad);
+
+	if (keypad->cb_func) {
+		keypad->cb_func(keypad->cb_data, keypad->is_keypad_show);
 	}
-	pkeypad_data->anim_timer = ecore_timer_add(2.0, __down_arrow_animation_timerout_cb, pkeypad_data);
 }
 
-void _callui_keypad_hide_layout(void *app_data)
+static void __hide_keypad(keypad_widget_h keypad, Eina_Bool is_immediately)
 {
-	dbg("..");
-	keypad_data_t *pkeypad_data = gkeypad_data;
-	CALLUI_RETURN_IF_FAIL(pkeypad_data);
-	callui_app_data_t *ad = (callui_app_data_t *)app_data;
-	CALLUI_RETURN_IF_FAIL(ad);
-	Evas_Object *view_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-	CALLUI_RETURN_IF_FAIL(view_ly);
+	if (!keypad->is_keypad_show) {
+		return;
+	}
 
-	elm_object_signal_emit(pkeypad_data->keypad_ly, "HIDE", "KEYPADBTN");
-	elm_object_signal_emit(view_ly, "HIDE", "KEYPAD_BTN");
+	keypad->is_keypad_show = EINA_FALSE;
 
-	__callui_keypad_set_show_status(EINA_FALSE);
-	_callui_lock_manager_start(ad->lock_handle);
-
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
-#endif
-
-	eext_object_event_callback_del(view_ly, EEXT_CALLBACK_BACK,	__callui_keypad_back_cb);
-
-	if (pkeypad_data->anim_timer) {
-		ecore_timer_del(pkeypad_data->anim_timer);
-		pkeypad_data->anim_timer = NULL;
+	if (is_immediately) {
+		elm_object_signal_emit(keypad->main_layout, "QUICK_HIDE", "KEYPAD_BTN");
+	} else {
+		elm_object_signal_emit(keypad->main_layout, "HIDE", "KEYPAD_BTN");
 	}
 }
 
-int _callui_keypad_create_layout(void *appdata)
+void _callui_keypad_hide(keypad_widget_h keypad)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
-	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+	CALLUI_RETURN_IF_FAIL(keypad);
 
-	Evas_Object *parent_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-	CALLUI_RETURN_VALUE_IF_FAIL(parent_ly, CALLUI_RESULT_FAIL);
-
-	_callui_keypad_delete_layout(ad);
-	int res = CALLUI_RESULT_FAIL;
-
-	keypad_data_t *pkeypad_data = __callui_keypad_memory_alloc();
-	CALLUI_RETURN_VALUE_IF_FAIL(pkeypad_data, CALLUI_RESULT_ALLOCATION_FAIL);
-
-	if (!pkeypad_data->keypad_ly) {
-		dbg("..");
-		pkeypad_data->keypad_ly = __callui_keypad_create_contents(ad, GRP_KEYPAD);
-		if (!pkeypad_data->keypad_ly) {
-			err("Create keypad_ly failed");
-			_callui_keypad_delete_layout(ad);
-			return CALLUI_RESULT_ALLOCATION_FAIL;
-		}
-		res = __callui_keypad_create_gesture_layer(ad);
-		if (res != CALLUI_RESULT_OK) {
-			err("Create gesture_layer failed");
-			_callui_keypad_delete_layout(ad);
-			return CALLUI_RESULT_ALLOCATION_FAIL;
-		}
-		elm_object_part_content_set(parent_ly, PART_SWALLOW_KEYPAD, pkeypad_data->keypad_ly);
-	}
-
-	res = __callui_keypad_create_entry(ad);
-	if (res != CALLUI_RESULT_OK) {
-		err("Create entry failed");
-		_callui_keypad_delete_layout(ad);
-		return CALLUI_RESULT_ALLOCATION_FAIL;
-	}
-
-	memset(pkeypad_data->entry_disp_data, '\0', KEYPAD_ENTRY_DISP_DATA_SIZE + 1);
-	pkeypad_data->data_len = 0;
-	elm_entry_entry_set(pkeypad_data->entry, "");
-	elm_entry_cursor_end_set(pkeypad_data->entry);
-
-	return res;
+	__hide_keypad(keypad, EINA_FALSE);
 }
 
-void _callui_keypad_delete_layout(void *appdata)
+void _callui_keypad_hide_immediately(keypad_widget_h keypad)
 {
-	dbg("..");
-	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-	CALLUI_RETURN_IF_FAIL(ad);
-	keypad_data_t *pkeypad_data = gkeypad_data;
-	CALLUI_RETURN_IF_FAIL(pkeypad_data);
-	Evas_Object *parent_ly = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-	CALLUI_RETURN_IF_FAIL(parent_ly);
+	CALLUI_RETURN_IF_FAIL(keypad);
 
-	elm_object_signal_emit(parent_ly, "HIDE", "KEYPAD_AREA");
-
-	if (pkeypad_data->entry) {
-		edje_object_part_unswallow(_EDJ(pkeypad_data->keypad_ly), pkeypad_data->entry);
-		evas_object_del(pkeypad_data->entry);
-		pkeypad_data->entry = NULL;
-	}
-
-	if (pkeypad_data->anim_timer) {
-		ecore_timer_del(pkeypad_data->anim_timer);
-		pkeypad_data->anim_timer = NULL;
-	}
-
-	if (pkeypad_data->keypad_ly) {
-		edje_object_part_unswallow(_EDJ(parent_ly), pkeypad_data->keypad_ly);
-		evas_object_del(pkeypad_data->keypad_ly);
-		pkeypad_data->keypad_ly = NULL;
-	}
-
-	g_free(pkeypad_data);
-	pkeypad_data = NULL;
-	gkeypad_data = NULL;
+	__hide_keypad(keypad, EINA_TRUE);
 }
 
+void _callui_keypad_show_status_change_callback_set(keypad_widget_h keypad, show_state_change_cd cb_func, void *cb_data)
+{
+	CALLUI_RETURN_IF_FAIL(keypad);
+	CALLUI_RETURN_IF_FAIL(cb_func);
+	CALLUI_RETURN_IF_FAIL(cb_data);
+
+	keypad->cb_func = cb_func;
+	keypad->cb_data = cb_data;
+}

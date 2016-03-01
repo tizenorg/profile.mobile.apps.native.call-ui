@@ -52,5 +52,6 @@
 #define PART_SWALLOW_CALL_INFO				"swallow.call_info"
 #define PART_SWALLOW_TEXTBLOCK_AREA			"textblock/textarea"
 #define PART_SWALLOW_KEYPAD					"keypad_region"
+#define PART_SWALLOW_KEYPAD_LAYOUT_AREA		"keypad_layout_area"
 
 #endif //_CALLUI_VIEW_CALLER_INFO_DEFINES_H_

@@ -57,6 +57,7 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 static void __mng_callers_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *src);
 static void __merge_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *src);
 static void __swap_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *src);
+static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility);
 
 callui_view_mc_split_h _callui_view_multi_call_split_new()
 {
@@ -105,8 +106,12 @@ static int _callui_view_multi_call_split_ondestroy(call_view_data_base_t *view_d
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
 	callui_view_mc_split_h vd = (callui_view_mc_split_h)view_data;
+	callui_app_data_t *ad = vd->base_view.ad;
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
+
+	_callui_keypad_hide_immediately(ad->keypad);
+	_callui_keypad_show_status_change_callback_set(ad->keypad, NULL, NULL);
 
 	free(vd);
 
@@ -139,8 +144,8 @@ static int __create_main_content(callui_view_mc_split_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(btn_region, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->base_view.contents, PART_SWALLOW_BTN_REGION, btn_region);
 
-	res = _callui_keypad_create_layout(ad);
-	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+	_callui_keypad_clear_input(ad->keypad);
+	_callui_keypad_show_status_change_callback_set(ad->keypad, __keypad_show_state_change_cd, vd);
 
 	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_end_call_button(vd->base_view.contents,
 			__end_call_btn_click_cb, vd), CALLUI_RESULT_ALLOCATION_FAIL);
@@ -256,12 +261,18 @@ static int __update_displayed_data(callui_view_mc_split_h vd)
 	__update_hold_active_layout(vd->active_layout, ad->active);
 	__set_active_info(vd->caller_info, vd->active_layout, ad);
 
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_first_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_second_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_third_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_first_button_disabled(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_second_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_third_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_top_first_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_top_second_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_top_third_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_bottom_first_button_disabled(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_bottom_second_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_bottom_third_button(ad), CALLUI_RESULT_FAIL);
 
 	evas_object_show(vd->base_view.contents);
 
@@ -295,5 +306,16 @@ static void __swap_btn_click_cb(void *data, Evas_Object *obj, const char *emissi
 	int ret = cm_swap_call(ad->cm_handle);
 	if (ret != CM_ERROR_NONE) {
 		err("cm_swap_call() is failed");
+	}
+}
+
+static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility)
+{
+	callui_view_mc_split_h vd = (callui_view_mc_split_h)data;
+
+	if (visibility) {
+		elm_object_signal_emit(vd->base_view.contents, "SHOW", "KEYPAD_BTN");
+	} else {
+		elm_object_signal_emit(vd->base_view.contents, "HIDE", "KEYPAD_BTN");
 	}
 }
