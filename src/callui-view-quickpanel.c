@@ -647,11 +647,8 @@ void _callui_qp_mc_update_calltime_status(callui_qp_mc_h qp, char *call_timer)
 
 void _callui_qp_mc_update(callui_qp_mc_h qp)
 {
-	debug_enter();
-	int res;
-
 	if (!qp->is_activated) {
-		res = __callui_qp_mc_activate(qp);
+		int res = __callui_qp_mc_activate(qp);
 		CALLUI_RETURN_IF_FAIL(res == CALLUI_RESULT_OK);
 		qp->is_activated = true;
 	}

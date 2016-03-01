@@ -428,14 +428,7 @@ static Evas_Object *__callui_create_base_layout(callui_app_data_t *ad)
 	CALLUI_RETURN_VALUE_IF_FAIL(ad, NULL);
 	Evas_Object *ly = NULL;
 
-	ly = elm_layout_add(ad->win_conformant);
-	if (ly == NULL) {
-		err("ly is NULL");
-		return NULL;
-	}
-
-	elm_layout_theme_set(ly, "layout", "application", "default");
-	evas_object_size_hint_weight_set(ly, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	ly = _callui_load_edj(ad->win_conformant, EDJ_NAME,  "app_main_ly");
 	evas_object_show(ly);
 
 	return ly;
@@ -486,7 +479,10 @@ static bool _callui_app_create(void *data)
 		err("_callui_app_create_layout failed");
 		return FALSE;
 	}
+
 	ad->view_manager_handle = _callui_vm_create(ad);
+
+	ad->keypad = _callui_keypad_create(ad->main_ly, ad);
 
 	ad->lock_handle = _callui_lock_manager_create();
 
@@ -583,6 +579,11 @@ static void _callui_app_terminate(void *data)
 		ad->lock_handle = NULL;
 	}
 
+	if (ad->keypad) {
+		_callui_keypad_destroy(ad->keypad);
+		ad->keypad = NULL;
+	}
+
 	if (ad->main_ly) {
 		evas_object_del(ad->main_ly);
 		ad->main_ly = NULL;
@@ -591,6 +592,7 @@ static void _callui_app_terminate(void *data)
 	__callui_bt_deinit();
 
 	cm_unset_audio_state_changed_cb(ad->cm_handle);
+
 	cm_unset_call_event_cb(ad->cm_handle);
 }
 

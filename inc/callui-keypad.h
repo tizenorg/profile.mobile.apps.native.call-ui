@@ -21,47 +21,80 @@
 
 #include <Elementary.h>
 
-/**
- * @brief Get show keypad status
- *
- * @return show status
- *
- */
-Eina_Bool _callui_keypad_get_show_status(void);
+typedef struct _callui_keypad *callui_keypad_h;
 
-/**
- * @brief Show keypad layout
- *
- * @param[in]    appdata         Application data
- *
- */
-void _callui_keypad_show_layout(void *appdata);
-
-/**
- * @brief Hide keypad layout
- *
- * @param[in]    appdata         Application data
- *
- */
-void _callui_keypad_hide_layout(void *appdata);
+typedef void (*show_state_change_cd)(void *data, Eina_Bool visibility);
 
 /**
  * @brief Create keypad layout
  *
- * @param[in]    appdata         Application data
+ * @param[in]	parent		Parent evas object
+ * @param[in]	appdata		Application data
  *
- * @return CALLUI_RESULT_OK os success or error code otherwise
+ * @return CALLUI_RESULT_OK on success or error code otherwise
  *
  */
-int _callui_keypad_create_layout(void *appdata);
+callui_keypad_h _callui_keypad_create(Evas_Object *parent, void *appdata);
 
 /**
  * @brief Delete keypad layout
  *
- * @param[in]    appdata         Application data
+ * @param[in]	keypad		Keypad handler
  *
  */
-void _callui_keypad_delete_layout(void *appdata);
+void _callui_keypad_destroy(callui_keypad_h keypad);
 
+/**
+ * @brief Clear input keypad value
+ *
+ * @param[in]	keypad		Keypad handler
+ *
+ */
+void _callui_keypad_clear_input(callui_keypad_h keypad);
+
+/**
+ * @brief Get show keypad status
+ *
+ * @param[in]	keypad		Keypad handler
+ *
+ * @return show status
+ *
+ */
+Eina_Bool _callui_keypad_get_show_status(callui_keypad_h keypad);
+
+/**
+ * @brief Show keypad
+ *
+ * @param[in]	keypad		Keypad handler
+ *
+ */
+void _callui_keypad_show(callui_keypad_h keypad);
+
+/**
+ * @brief Hide keypad
+ *
+ * @param[in]	keypad		Keypad handler
+ *
+ */
+void _callui_keypad_hide(callui_keypad_h keypad);
+
+/**
+ * @brief Hide keypad without close animation
+ *
+ * @param[in]	keypad		Keypad handler
+ *
+ */
+void _callui_keypad_hide_immediately(callui_keypad_h keypad);
+
+/**
+ * @brief Add keypad show status change callback
+ *
+ * @param[in]	keypad		Keypad handler
+ * @param[in]	cb_func		Callback function
+ * @param[in]	cb_data		Callback data
+ */
+void _callui_keypad_show_status_change_callback_set(callui_keypad_h keypad,
+		show_state_change_cd cb_func,
+		void *cb_data);
 
 #endif	// _CALLUI_VIEW_KEYPAD_H_

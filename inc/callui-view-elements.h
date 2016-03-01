@@ -280,33 +280,6 @@ Evas_Object *_callui_show_caller_id(Evas_Object *contents, char *path);
 void _callui_load_more_option(void *data);
 
 /**
- * @brief Set an attached data pointer to an object with a given string key.
- *
- * @param[in]    obj          The object to attach the data pointer to
- * @param[in]    key          The string key for the data to access it
- * @param[in]    value        The pointer to the data to be attached
- *
- * @return @c 0 on success, otherwise a negative error value
- *
- * @see evas_object_data_set
- *
- */
-int _callui_set_object_data(Evas_Object *obj, char *key, void *value);
-
-/**
- * @brief Return an attached data pointer on an Evas object by its given string key.
- *
- * @param[in]    obj          The object to which the data was attached
- * @param[in]    key          The string key the data was stored under
- *
- * @return @c The data pointer stored, or NULL if none was stored
- *
- * @see evas_object_data_get
- *
- */
-void *_callui_get_object_data(Evas_Object *obj, char *key);
-
-/**
  * @brief Create popup after second call to choose needed action
  *
  * @param[in]    ad           Application data
@@ -391,15 +364,6 @@ void _callui_update_mute_btn(callui_app_data_t *ad, Eina_Bool is_on);
  *
  */
 void _callui_update_extra_vol_btn(callui_app_data_t *ad, Eina_Bool is_on);
-
-
-/**
- * @brief Create and set background layout
- *
- * @param[in]    parent       Parent object
- *
- */
-void _callui_set_background_layout(Evas_Object *parent);
 
 /**
  * @brief Create and set background layout

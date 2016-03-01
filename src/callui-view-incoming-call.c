@@ -91,8 +91,6 @@ static Evas_Object *__create_reject_msg_layout(callui_view_incoming_call_h vd);
 
 callui_view_incoming_call_h _callui_view_incoming_call_new()
 {
-	debug_enter();
-
 	callui_view_incoming_call_h incoming_lock_view = calloc(1, sizeof(_callui_view_incoming_call_t));
 	CALLUI_RETURN_NULL_IF_FAIL(incoming_lock_view);
 

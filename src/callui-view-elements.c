@@ -68,21 +68,16 @@ const int thumbnail_size[] = {
 
 Evas_Object *_callui_load_edj(Evas_Object *parent, const char *file, const char *group)
 {
-	Evas_Object *eo;
-	int ret;
-
-	eo = elm_layout_add(parent);
+	Evas_Object *eo = elm_layout_add(parent);
 	if (eo) {
-		ret = elm_layout_file_set(eo, file, group);
+		int ret = elm_layout_file_set(eo, file, group);
 		if (!ret) {
 			evas_object_del(eo);
 			err("ERROR!!");
 			return NULL;
 		}
-
 		evas_object_size_hint_weight_set(eo, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	}
-
 	return eo;
 }
 
@@ -98,7 +93,7 @@ Evas_Object *_callui_edje_object_part_get(Evas_Object *parent, const char *part)
 	return obj;
 }
 
-static Evas_Object *__callui_create_caller_info(void *data)
+static Evas_Object *__callui_get_caller_info_layout(void *data)
 {
 	Evas_Object *caller_info = NULL;
 	Evas_Object *layout = NULL;
@@ -307,14 +302,10 @@ static void __callui_keypad_btn_cb(void *data, Evas_Object *obj, void *event_inf
 	dbg("..");
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 
-	if (_callui_keypad_get_show_status() == EINA_FALSE) {	/*show keypad region*/
-		dbg("..");
-		/*Actual show with animation*/
-		_callui_keypad_show_layout(ad);
+	if (_callui_keypad_get_show_status(ad->keypad)) {
+		_callui_keypad_hide(ad->keypad);
 	} else {
-		dbg("..");
-		/*Hide animation on keypad*/
-		_callui_keypad_hide_layout(ad);
+		_callui_keypad_show(ad->keypad);
 	}
 }
 
@@ -602,7 +593,7 @@ void _callui_show_caller_info_name(void *data, const char *name)
 {
 	Evas_Object *layout = NULL;
 
-	layout = __callui_create_caller_info(data);
+	layout = __callui_get_caller_info_layout(data);
 	edje_object_part_text_set(_EDJ(layout), "txt_call_name", name);
 }
 
@@ -611,7 +602,7 @@ void _callui_show_caller_info_number(void *data, const char *number)
 {
 	Evas_Object *layout = NULL;
 
-	layout = __callui_create_caller_info(data);
+	layout = __callui_get_caller_info_layout(data);
 	edje_object_part_text_set(_EDJ(layout), "txt_phone_num", number);
 }
 
@@ -764,24 +755,6 @@ static void __callui_unload_more_option(callui_app_data_t *ad)
 		evas_object_del(ad->ctxpopup);
 		ad->ctxpopup = NULL;
 	}
-}
-
-int _callui_set_object_data(Evas_Object *obj, char *key, void *value)
-{
-	CALLUI_RETURN_VALUE_IF_FAIL(obj, -1);
-	CALLUI_RETURN_VALUE_IF_FAIL(key, -1);
-	CALLUI_RETURN_VALUE_IF_FAIL(value, -1);
-
-	evas_object_data_set(obj, key, value);
-	return 0;
-}
-
-void *_callui_get_object_data(Evas_Object *obj, char *key)
-{
-	CALLUI_RETURN_VALUE_IF_FAIL(obj, NULL);
-	CALLUI_RETURN_VALUE_IF_FAIL(key, NULL);
-
-	return evas_object_data_get(obj, key);
 }
 
 static void __callui_unload_second_call_popup(callui_app_data_t *ad)

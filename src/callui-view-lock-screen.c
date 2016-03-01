@@ -102,7 +102,7 @@ static void __callui_lock_screen_show_layout(lock_screen_data_t *lock_screen_pri
 		dbg("Speaker ON. Do not display lockscreen.");
 		return;
 	}
-	if (EINA_TRUE == _callui_keypad_get_show_status()) {
+	if (EINA_TRUE == _callui_keypad_get_show_status(ad->keypad)) {
 		dbg("Keypad is ON. Do not display lockscreen.");
 		return;
 	}

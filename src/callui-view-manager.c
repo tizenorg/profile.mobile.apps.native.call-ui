@@ -41,8 +41,6 @@ static int __callui_vm_create_update_view(callui_vm_h vm, callui_view_type_e typ
 
 static call_view_data_base_t *_allocate_view(callui_view_type_e view_type)
 {
-	debug_enter();
-
 	switch (view_type)
 	{
 	case VIEW_TYPE_DIALLING:
