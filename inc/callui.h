@@ -25,6 +25,7 @@
 #include "callui-view-manager.h"
 #include "callui-lock-manager.h"
 #include "callui-debug.h"
+#include "callui-keypad.h"
 
 #define ACTIVE_NOTIFICATION_AVAILABLE 1
 
@@ -168,6 +169,9 @@ struct appdata {
 	Ecore_Event_Handler *downkey_handler;
 	Ecore_Event_Handler *upkey_handler;
 	Ecore_Timer *earset_key_longpress_timer;
+
+
+	callui_keypad_h keypad;
 };
 
 callui_app_data_t *_callui_get_app_data();

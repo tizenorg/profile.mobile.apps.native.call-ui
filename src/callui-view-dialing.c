@@ -22,6 +22,7 @@
 #include "callui-view-elements.h"
 #include "callui-keypad.h"
 #include "callui-common.h"
+#include "callui-view-caller-info-defines.h"
 
 struct _callui_view_dialing {
 	call_view_data_base_t base_view;
@@ -38,6 +39,7 @@ static int __create_main_content(callui_view_dialing_h vd);
 
 static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 static int __update_displayed_data(callui_view_dialing_h vd);
+static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility);
 
 callui_view_dialing_h _callui_dialing_view_dialing_new()
 {
@@ -85,13 +87,13 @@ static int __create_main_content(callui_view_dialing_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->base_view.contents, "caller_info", vd->caller_info);
 
-	int res = _callui_keypad_create_layout(ad);
-	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+	_callui_keypad_clear_input(ad->keypad);
+	_callui_keypad_show_status_change_callback_set(ad->keypad, __keypad_show_state_change_cd, vd);
 
 	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_end_call_button(vd->base_view.contents, __end_call_btn_click_cb, vd),
 			CALLUI_RESULT_ALLOCATION_FAIL);
 
-	return res;
+	return CALLUI_RESULT_OK;
 }
 
 static int __callui_view_dialing_onupdate(call_view_data_base_t *view_data)
@@ -106,8 +108,10 @@ static int __callui_view_dialing_ondestroy(call_view_data_base_t *view_data)
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
 	callui_view_dialing_h vd = (callui_view_dialing_h)view_data;
+	callui_app_data_t *ad = vd->base_view.ad;
 
-	_callui_keypad_delete_layout(vd->base_view.ad);
+	_callui_keypad_hide_immediately(ad->keypad);
+	_callui_keypad_show_status_change_callback_set(ad->keypad, NULL, NULL);
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
 
@@ -166,12 +170,18 @@ static int __update_displayed_data(callui_view_dialing_h vd)
 
 	_callui_show_caller_info_status(ad, _("IDS_CALL_POP_DIALLING"));
 
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_first_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_second_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_top_third_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_first_button_disabled(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_second_button_disabled(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_create_bottom_third_button_disabled(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_top_first_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_top_second_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_top_third_button(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_bottom_first_button_disabled(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_bottom_second_button_disabled(ad), CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(
+			_callui_create_bottom_third_button_disabled(ad), CALLUI_RESULT_FAIL);
 
 	elm_object_signal_emit(vd->base_view.contents, "SHOW_EFFECT", "ALLBTN");
 
@@ -189,4 +199,15 @@ static int __update_displayed_data(callui_view_dialing_h vd)
 	evas_object_show(ad->main_ly);
 
 	return CALLUI_RESULT_OK;
+}
+
+static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility)
+{
+	callui_view_dialing_h vd = (callui_view_dialing_h)data;
+
+	if (visibility) {
+		elm_object_signal_emit(vd->base_view.contents, "SHOW", "KEYPAD_BTN");
+	} else {
+		elm_object_signal_emit(vd->base_view.contents, "HIDE", "KEYPAD_BTN");
+	}
 }
