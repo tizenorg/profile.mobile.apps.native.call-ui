@@ -29,7 +29,8 @@
 #include <system_settings.h>
 #include <efl_util.h>
 #include <app_common.h>
-#include <Ecore_Wayland.h>
+// TODO: needed for functionality of switch window types that currently does not work
+//#include <Ecore_Wayland.h>
 
 #include "callui-common.h"
 #include "callui-view-elements.h"
