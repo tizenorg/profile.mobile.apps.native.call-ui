@@ -20,6 +20,7 @@
 
 #include "callui-view-manager.h"
 #include "callui.h"
+#include "callui-common-types.h"
 
 #define CALLUI_KEY_BACK "XF86Back"
 #define CALLUI_KEY_MEDIA "XF86AudioMedia"
@@ -81,13 +82,6 @@ typedef enum {
    LCD_OFF_SLEEP_UNLOCK,
    LCD_OFF
 } callui_lcd_control_t;
-
-typedef enum {
-   CALLUI_RESULT_OK,
-   CALLUI_RESULT_FAIL,
-   CALLUI_RESULT_INVALID_PARAM,
-   CALLUI_RESULT_ALLOCATION_FAIL
-} callui_result_t;
 
 /**
  * @brief Set call duration
