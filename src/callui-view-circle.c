@@ -237,12 +237,16 @@ static void __callui_view_circle_accept_move(call_view_data_t *vd, callui_app_da
 
 		if (point_distance < outer_circle_radius) {
 			evas_object_move(circle_bg, accept_button_center_x-point_distance, button_center_y-point_distance);
-			evas_object_resize(circle_bg, point_distance*2, point_distance*2);
-			evas_object_image_fill_set(circle_bg, 0, 0, point_distance*2, point_distance*2);
+			evas_object_resize(circle_bg,
+					ELM_SCALE_SIZE(point_distance*2), ELM_SCALE_SIZE(point_distance*2));
+			evas_object_image_fill_set(circle_bg, 0, 0,
+					ELM_SCALE_SIZE(point_distance*2), ELM_SCALE_SIZE(point_distance*2));
 		} else {
 			evas_object_move(circle_bg, accept_outer_circle_x, outer_circle_y);
-			evas_object_resize(circle_bg, outer_circle_width, outer_circle_height);
-			evas_object_image_fill_set(circle_bg, 0, 0, outer_circle_width, outer_circle_height);
+			evas_object_resize(circle_bg,
+					ELM_SCALE_SIZE(outer_circle_width), ELM_SCALE_SIZE(outer_circle_height));
+			evas_object_image_fill_set(circle_bg, 0, 0,
+					ELM_SCALE_SIZE(outer_circle_width), ELM_SCALE_SIZE(outer_circle_height));
 		}
 	} else {
 		warn("Initial click is not in correct region");
@@ -290,8 +294,10 @@ static void __callui_view_circle_accept_up(call_view_data_t *vd, callui_app_data
 		point_distance = __callui_view_circle_get_distance(ad, accept_button_center_x, x, y);
 		if (point_distance >= outer_circle_radius) {
 			evas_object_move(circle_bg, accept_outer_circle_x, outer_circle_y);
-			evas_object_resize(circle_bg, outer_circle_width, outer_circle_height);
-			evas_object_image_fill_set(circle_bg, 0, 0, outer_circle_width, outer_circle_height);
+			evas_object_resize(circle_bg,
+					ELM_SCALE_SIZE(outer_circle_width), ELM_SCALE_SIZE(outer_circle_height));
+			evas_object_image_fill_set(circle_bg, 0, 0,
+					ELM_SCALE_SIZE(outer_circle_width), ELM_SCALE_SIZE(outer_circle_height));
 
 			dbg("__callui_view_circle_handle_accept");
 			__callui_view_circle_handle_accept(vd, ad);
@@ -372,12 +378,16 @@ static void __callui_view_circle_reject_move(call_view_data_t *vd, callui_app_da
 		point_distance = __callui_view_circle_get_distance(ad, reject_button_center_x, x, y);
 		if (point_distance < outer_circle_radius) {
 			evas_object_move(circle_bg, reject_button_center_x-point_distance, button_center_y-point_distance);
-			evas_object_resize(circle_bg, point_distance*2, point_distance*2);
-			evas_object_image_fill_set(circle_bg, 0, 0, point_distance*2, point_distance*2);
+			evas_object_resize(circle_bg,
+					ELM_SCALE_SIZE(point_distance*2), ELM_SCALE_SIZE(point_distance*2));
+			evas_object_image_fill_set(circle_bg, 0, 0,
+					ELM_SCALE_SIZE(point_distance*2), ELM_SCALE_SIZE(point_distance*2));
 		} else {
 			evas_object_move(circle_bg, reject_outer_circle_x, outer_circle_y);
-			evas_object_resize(circle_bg, outer_circle_width, outer_circle_height);
-			evas_object_image_fill_set(circle_bg, 0, 0, outer_circle_width, outer_circle_height);
+			evas_object_resize(circle_bg,
+					ELM_SCALE_SIZE(outer_circle_width), ELM_SCALE_SIZE(outer_circle_height));
+			evas_object_image_fill_set(circle_bg, 0, 0,
+					ELM_SCALE_SIZE(outer_circle_width), ELM_SCALE_SIZE(outer_circle_height));
 		}
 	} else {
 		warn("Initial click is not in correct region");
@@ -396,8 +406,10 @@ static void __callui_view_circle_reject_up(call_view_data_t *vd, callui_app_data
 		point_distance = __callui_view_circle_get_distance(ad, reject_button_center_x, x, y);
 		if (point_distance >= outer_circle_radius) {
 			evas_object_move(circle_bg, reject_outer_circle_x, outer_circle_y);
-			evas_object_resize(circle_bg, outer_circle_width, outer_circle_height);
-			evas_object_image_fill_set(circle_bg, 0, 0, outer_circle_width, outer_circle_height);
+			evas_object_resize(circle_bg,
+					ELM_SCALE_SIZE(outer_circle_width), ELM_SCALE_SIZE(outer_circle_height));
+			evas_object_image_fill_set(circle_bg, 0, 0,
+					ELM_SCALE_SIZE(outer_circle_width), ELM_SCALE_SIZE(outer_circle_height));
 			__callui_view_circle_handle_reject(vd, ad);
 		} else {
 			elm_object_signal_emit(lock_reject, "outer_circle,hide", "outer-circle");

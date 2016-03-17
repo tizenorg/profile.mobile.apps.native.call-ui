@@ -190,7 +190,6 @@ int _callui_view_active_incoming_call_oncreate(call_view_data_t *view_data, void
 			btn_ly = NULL;
 		}
 		evas_object_del(priv->contents);
-		elm_win_alpha_set(ad->win, EINA_TRUE);
 		priv->contents = NULL;
 	}
 	if (ad->main_ly) {
