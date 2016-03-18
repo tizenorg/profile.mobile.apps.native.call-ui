@@ -26,12 +26,4 @@ callui_qp_mc_h _callui_qp_mc_create(callui_app_data_t *ad);
 
 void _callui_qp_mc_destroy(callui_qp_mc_h qp);
 
-void _callui_qp_mc_update_mute_status(callui_qp_mc_h qp, Eina_Bool is_disable);
-
-void _callui_qp_mc_update_speaker_status(callui_qp_mc_h qp, Eina_Bool is_disable);
-
-void _callui_qp_mc_update_calltime_status(callui_qp_mc_h qp, char *call_timer);
-
-void _callui_qp_mc_update(callui_qp_mc_h qp);
-
 #endif	/*__UI_VIEW_QUICKPANEL_H_*/

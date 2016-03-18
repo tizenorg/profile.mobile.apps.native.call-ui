@@ -23,6 +23,7 @@
 
 #include "callui-view-incoming-call.h"
 #include "callui.h"
+#include "callui-common-types.h"
 
 /**
  * @brief Create reject layout
@@ -34,7 +35,7 @@
  * @return CALLUI_RESULT_OK on success or error code otherwise
  *
  */
-int _callui_view_circle_create_reject_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent);
+callui_result_e _callui_view_circle_create_reject_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent);
 
 /**
  * @brief Create accept layout
@@ -46,6 +47,6 @@ int _callui_view_circle_create_reject_layout(callui_app_data_t *ad, callui_view_
  * @return CALLUI_RESULT_OK on success or error code otherwise
  *
  */
-int _callui_view_circle_create_accept_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent);
+callui_result_e _callui_view_circle_create_accept_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent);
 
 #endif

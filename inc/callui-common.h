@@ -58,6 +58,15 @@
 		} \
 	} while (0)
 
+#undef DELETE_ECORE_TIMER
+#define DELETE_ECORE_TIMER(x) \
+	do { \
+		if (x != NULL) { \
+			ecore_timer_del(x); \
+			x = NULL; \
+		} \
+	} while (0)
+
 
 typedef enum {
 	LOCK_TYPE_UNLOCK = 1,
@@ -83,33 +92,7 @@ typedef enum {
    LCD_OFF
 } callui_lcd_control_t;
 
-/**
- * @brief Set call duration
- *
- * @param[in] time_dur       Time duration
- *
- */
-void _callui_common_set_call_duration(char *time_dur);
-
-/**
- * @brief Update begin timer
- *
- * @param[in] starttime       Start time
- *
- */
-void _callui_common_update_call_duration(long starttime);
-
-/**
- * @brief Create duration timer
- *
- */
-void _callui_common_create_duration_timer();
-
-/**
- * @brief Delete duration timer
- *
- */
-void _callui_common_delete_duration_timer();
+typedef void (*set_call_duration_time)(struct tm *cur_time, Evas_Object *obj, const char *part);
 
 /**
  * @brief create ending timer
@@ -122,16 +105,6 @@ void _callui_common_create_ending_timer(void *appdata);
  * @param[in] appdata        App data
  */
 void _callui_common_delete_ending_timer(void *appdata);
-
-/**
- * @brief Get sim name
- *
- * @param[in] appdata        App data
- *
- * @return sim name
- *
- */
-char * _callui_common_get_sim_name(void *appdata);
 
 /**
  * @brief State if headset is conected
@@ -158,13 +131,6 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void);
 int _callui_common_unlock_swipe_lock(void);
 
 /**
- * @brief Get uptime
- * @return uptime
- *
- */
-long _callui_common_get_uptime(void);
-
-/**
  * @brief Set notification type
  *
  * @param[in] person_id      Person id
@@ -172,15 +138,6 @@ long _callui_common_get_uptime(void);
  *
  */
 void _callui_common_win_set_noti_type(void *appdata, int bwin_noti);
-
-/**
- * @brief Get contact info
- *
- * @param[in] person_id      Person id
- * @param[out] ct_info       Contacts data
- *
- */
-void _callui_common_get_contact_info(int person_id, call_contact_data_t *ct_info);
 
 /**
  * @brief Launch contacts application
@@ -213,7 +170,7 @@ void _callui_common_launch_dialer(void *appdata);
  * @param[in] number         Phone number
  *
  */
-void _callui_common_launch_msg_composer(void *appdata, char *number);
+void _callui_common_launch_msg_composer(void *appdata, const char *number);
 
 /**
  * @brief Reset main layout text fields
@@ -236,10 +193,12 @@ void _callui_common_dvc_set_lcd_timeout(callui_lcd_timeout_t state);
 /**
  * @brief state is volume mode on
  *
+ * @param[in] data			Application data
+ *
  * @return state
  *
  */
-gboolean _callui_common_is_extra_volume_available(void);
+bool _callui_common_is_extra_volume_available(void *data);
 
 /**
  * @brief state is aswering mode on
@@ -336,5 +295,31 @@ bool _callui_is_on_handsfree_mode();
  * @return @c true when callui is on background, otherwise false
  */
 bool _callui_is_on_background();
+
+/**
+ * @brief Set call duration time into text part of Evas object
+ * @param[in] cur_time		source time data
+ * @param[in] func			Evas Object updater function
+ * @param[in] obj			Evas object to set call duration
+ * @param[in] part			Evas object text part name
+ */
+void _callui_common_set_call_duration_time(struct tm *cur_time,
+		Evas_Object *obj,
+		const char *part);
+
+/**
+ * @brief Update call duration data in EvasObjcet text part if it is needed
+ * @remark if updaet is needed @cur_time data will be replaced by @comp_time data
+ * @param[in] cur_time		current time data
+ * @param[in] comp_time		time data to compare
+ * @param[in] func			Evas Object part updater function
+ * @param[in] obj			Evas object to set call duration
+ * @param[in] part			Evas object text part name
+ */
+void _callui_common_try_update_call_duration_time(struct tm *cur_time,
+		struct tm *comp_time,
+		set_call_duration_time func,
+		Evas_Object *obj,
+		const char *part);
 
 #endif //__CALLUI_COMMON_H_
