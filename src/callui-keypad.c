@@ -15,12 +15,17 @@
  *
  */
 
+#include <linux/limits.h>
+#include <efl_extension.h>
+
 #include "callui.h"
+#include "callui-debug.h"
 #include "callui-keypad.h"
 #include "callui-common.h"
 #include "callui-view-elements.h"
 #include "callui-view-layout.h"
 #include "callui-view-caller-info-defines.h"
+#include "callui-sound-manager.h"
 
 #define VC_KEYPAD_ENTRY_FONT "<font='Samsung Sans Num47:style=Light'>%s</>"
 #define VC_KEYAD_ENTRY_STYLE "DEFAULT='align=center color=#ffffffff font_size=76'"
@@ -86,18 +91,14 @@ int __callui_keypad_init(callui_keypad_h keypad, Evas_Object *parent, callui_app
 	res = __create_entry(keypad);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
-	elm_object_part_content_set(keypad->ad->main_ly,
-			PART_SWALLOW_KEYPAD_LAYOUT_AREA,
-			keypad->main_layout);
+	evas_object_hide(keypad->main_layout);
 
 	return res;
 }
 
 void __callui_keypad_deinit(callui_keypad_h keypad)
 {
-	if (keypad->anim_timer) {
-		ecore_timer_del(keypad->anim_timer);
-	}
+	DELETE_ECORE_TIMER(keypad->anim_timer);
 
 	if (keypad->main_layout) {
 		evas_object_del(keypad->btns_layout);
@@ -204,7 +205,7 @@ static int __create_gesture_layer(callui_keypad_h keypad)
 	Evas_Object *sweep_area = _callui_edje_object_part_get(keypad->btns_layout, "sweep_area");
 
 	keypad->gesture_layer = elm_gesture_layer_add(keypad->btns_layout);
-	if (FALSE == elm_gesture_layer_attach(keypad->gesture_layer, sweep_area)) {
+	if (!elm_gesture_layer_attach(keypad->gesture_layer, sweep_area)) {
 		err("elm_gesture_layer_attach failed !!");
 		DELETE_EVAS_OBJECT(keypad->gesture_layer);
 		return CALLUI_RESULT_ALLOCATION_FAIL;
@@ -245,10 +246,12 @@ static void __on_hide_completed(void *data, Evas_Object *obj, const char *emissi
 
 	eext_object_event_callback_del(keypad->parent, EEXT_CALLBACK_BACK,	__back_button_click_cb);
 
-	if (keypad->anim_timer) {
-		ecore_timer_del(keypad->anim_timer);
-		keypad->anim_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(keypad->anim_timer);
+
+	keypad->main_layout = elm_object_part_content_unset(keypad->ad->main_ly,
+			PART_SWALLOW_KEYPAD_LAYOUT_AREA);
+
+	evas_object_hide(keypad->main_layout);
 
 	if (keypad->cb_func) {
 		keypad->cb_func(keypad->cb_data, keypad->is_keypad_show);
@@ -265,7 +268,6 @@ static void __on_key_down_click_event(void *data, Evas_Object *obj, const char *
 
 	char *entry_dest = NULL;
 	char *keypad_source = NULL;
-	char *entry_str = NULL;
 	char *disp_str = NULL;
 
 	if (strcmp(source, "star") == 0) {
@@ -276,7 +278,11 @@ static void __on_key_down_click_event(void *data, Evas_Object *obj, const char *
 		keypad_source = (char *)source;
 	}
 
-	cm_start_dtmf(ad->cm_handle, keypad_source[0]);
+	callui_result_e res = _callui_sdm_start_dtmf(ad->sound_manager, keypad_source[0]);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_sdm_start_dtmf() failed. res[%d]", res);
+		return;
+	}
 
 	const char *text = elm_entry_entry_get(keypad->entry);
 	disp_str = elm_entry_markup_to_utf8(text);
@@ -305,11 +311,11 @@ static void __on_key_down_click_event(void *data, Evas_Object *obj, const char *
 
 	free(disp_str);
 
-	entry_str = g_strdup_printf(VC_KEYPAD_ENTRY_FONT, entry_dest);
-	if (entry_str) {
-		elm_object_text_set(keypad->entry, entry_str);
-		g_free(entry_str);
-	}
+	char tmp[NAME_MAX] = { 0 };
+	snprintf(tmp, NAME_MAX, VC_KEYPAD_ENTRY_FONT, entry_dest);
+
+	elm_object_text_set(keypad->entry, tmp);
+
 	elm_entry_cursor_end_set(keypad->entry);
 
 	if (entry_dest) {
@@ -324,7 +330,10 @@ static void __on_key_up_click_event(void *data, Evas_Object *obj, const char *em
 
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 
-	cm_stop_dtmf(ad->cm_handle);
+	callui_result_e res = _callui_sdm_stop_dtmf(ad->sound_manager);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_sdm_stop_dtmf() failed. res[%d]", res);
+	}
 }
 
 static Evas_Object *__create_single_line_scrolled_entry(Evas_Object *content)
@@ -398,6 +407,9 @@ void _callui_keypad_show(callui_keypad_h keypad)
 	CALLUI_RETURN_IF_FAIL(keypad);
 	callui_app_data_t *ad = keypad->ad;
 
+	elm_object_part_content_set(keypad->ad->main_ly, PART_SWALLOW_KEYPAD_LAYOUT_AREA, keypad->main_layout);
+	evas_object_show(keypad->main_layout);
+
 	elm_object_signal_emit(keypad->btns_layout, "SHOW", "KEYPADBTN");
 
 	elm_object_signal_emit(keypad->btns_layout, "init", "down_arrow");
@@ -456,8 +468,6 @@ void _callui_keypad_hide_immediately(callui_keypad_h keypad)
 void _callui_keypad_show_status_change_callback_set(callui_keypad_h keypad, show_state_change_cd cb_func, void *cb_data)
 {
 	CALLUI_RETURN_IF_FAIL(keypad);
-	CALLUI_RETURN_IF_FAIL(cb_func);
-	CALLUI_RETURN_IF_FAIL(cb_data);
 
 	keypad->cb_func = cb_func;
 	keypad->cb_data = cb_data;

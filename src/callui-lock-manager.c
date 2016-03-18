@@ -16,6 +16,7 @@
  */
 
 #include "callui-lock-manager.h"
+#include "callui-debug.h"
 #include "callui-proximity-lock-manager.h"
 #include "callui-view-lock-screen.h"
 #include "callui-common.h"

@@ -19,6 +19,10 @@
 #define __CALLUI_VIEW_MANAGER_H__
 
 #include <Elementary.h>
+#include <Ecore.h>
+#include <time.h>
+
+#include "callui-common-types.h"
 
 typedef enum {
 	VIEW_TYPE_UNDEFINED = -1,
@@ -36,9 +40,9 @@ typedef enum {
 
 struct _view_data;
 
-typedef int (*create_cb)	(struct _view_data *view_data, void *appdata);
-typedef int (*update_cb)	(struct _view_data *view_data);
-typedef int (*destroy_cb)	(struct _view_data *view_data);
+typedef callui_result_e (*create_cb) (struct _view_data *view_data, void *appdata);
+typedef callui_result_e (*update_cb) (struct _view_data *view_data);
+typedef callui_result_e (*destroy_cb) (struct _view_data *view_data);
 
 typedef struct appdata callui_app_data_t;
 
@@ -46,8 +50,13 @@ struct _view_data {
 	create_cb onCreate;
 	update_cb onUpdate;
 	destroy_cb onDestroy;
+
 	callui_app_data_t *ad;
+
 	Evas_Object *contents;
+
+	Ecore_Timer *call_duration_timer;
+	struct tm *call_duration_tm;
 };
 typedef struct _view_data call_view_data_base_t;
 
@@ -75,7 +84,7 @@ void _callui_vm_destroy(callui_vm_h vm);
  *
  * @return result CALLUI_RESULT_OK on success
  */
-int _callui_vm_change_view(callui_vm_h vm, callui_view_type_e type);
+callui_result_e _callui_vm_change_view(callui_vm_h vm, callui_view_type_e type);
 
 /**
  * @brief Auto change view
@@ -84,7 +93,7 @@ int _callui_vm_change_view(callui_vm_h vm, callui_view_type_e type);
  *
  * @return result CALLUI_RESULT_OK on success
  */
-int _callui_vm_auto_change_view(callui_vm_h vm);
+callui_result_e _callui_vm_auto_change_view(callui_vm_h vm);
 
 /**
  * @brief Get top view type
