@@ -19,6 +19,7 @@
 #include <call-manager-extension.h>
 
 #include "callui-manager.h"
+#include "callui-debug.h"
 #include "callui-common.h"
 #include "callui-sound-manager-priv.h"
 #include "callui-state-provider-priv.h"
@@ -152,7 +153,6 @@ callui_result_e _callui_manager_dial_voice_call(callui_manager_h cm_handler, con
 callui_result_e _callui_manager_end_call(callui_manager_h cm_handler, unsigned int call_id, callui_call_release_type_e release_type)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(cm_handler, CALLUI_RESULT_INVALID_PARAM);
-	CALLUI_RETURN_VALUE_IF_FAIL(call_id <= 0, CALLUI_RESULT_INVALID_PARAM);
 
 	return _callui_utils_convert_cm_res(
 			cm_end_call(cm_handler->cm_handler, call_id, __convert_app_release_type(release_type)));
@@ -198,10 +198,17 @@ callui_result_e _callui_manager_reject_call(callui_manager_h cm_handler)
 			cm_reject_call(cm_handler->cm_handler));
 }
 
+callui_result_e _callui_manager_stop_alert(callui_manager_h cm_handler)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(cm_handler, CALLUI_RESULT_INVALID_PARAM);
+
+	return _callui_utils_convert_cm_res(
+			cm_stop_alert(cm_handler->cm_handler));
+}
+
 callui_result_e _callui_manager_split_call(callui_manager_h cm_handler, unsigned int call_id)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(cm_handler, CALLUI_RESULT_INVALID_PARAM);
-	CALLUI_RETURN_VALUE_IF_FAIL(call_id <= 0, CALLUI_RESULT_INVALID_PARAM);
 
 	return _callui_utils_convert_cm_res(
 			cm_split_call(cm_handler->cm_handler, call_id));

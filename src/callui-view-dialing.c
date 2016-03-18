@@ -18,11 +18,13 @@
 #include <Elementary.h>
 
 #include "callui-view-dialing.h"
+#include "callui-debug.h"
 #include "callui.h"
 #include "callui-view-elements.h"
 #include "callui-keypad.h"
 #include "callui-common.h"
 #include "callui-view-caller-info-defines.h"
+#include "callui-state-provider.h"
 
 struct _callui_view_dialing {
 	call_view_data_base_t base_view;
@@ -31,14 +33,14 @@ struct _callui_view_dialing {
 };
 typedef struct _callui_view_dialing _callui_view_dialing_t;
 
-static int __callui_view_dialing_oncreate(call_view_data_base_t *view_data, void *appdata);
-static int __callui_view_dialing_onupdate(call_view_data_base_t *view_data);
-static int __callui_view_dialing_ondestroy(call_view_data_base_t *view_data);
+static callui_result_e __callui_view_dialing_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e __callui_view_dialing_onupdate(call_view_data_base_t *view_data);
+static callui_result_e __callui_view_dialing_ondestroy(call_view_data_base_t *view_data);
 
-static int __create_main_content(callui_view_dialing_h vd);
+static callui_result_e __create_main_content(callui_view_dialing_h vd);
 
 static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
-static int __update_displayed_data(callui_view_dialing_h vd);
+static callui_result_e __update_displayed_data(callui_view_dialing_h vd);
 static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility);
 
 callui_view_dialing_h _callui_dialing_view_dialing_new()
@@ -53,7 +55,7 @@ callui_view_dialing_h _callui_dialing_view_dialing_new()
 	return dialing_view;
 }
 
-static int __callui_view_dialing_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e __callui_view_dialing_oncreate(call_view_data_base_t *view_data, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
@@ -63,7 +65,7 @@ static int __callui_view_dialing_oncreate(call_view_data_base_t *view_data, void
 
 	vd->base_view.ad = ad;
 
-	int res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, CALLUI_RESULT_FAIL);
 
 	_callui_lock_manager_start(ad->lock_handle);
@@ -71,7 +73,7 @@ static int __callui_view_dialing_oncreate(call_view_data_base_t *view_data, void
 	return __update_displayed_data(vd);
 }
 
-static int __create_main_content(callui_view_dialing_h vd)
+static callui_result_e __create_main_content(callui_view_dialing_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
@@ -96,14 +98,14 @@ static int __create_main_content(callui_view_dialing_h vd)
 	return CALLUI_RESULT_OK;
 }
 
-static int __callui_view_dialing_onupdate(call_view_data_base_t *view_data)
+static callui_result_e __callui_view_dialing_onupdate(call_view_data_base_t *view_data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
 	return __update_displayed_data((callui_view_dialing_h)view_data);
 }
 
-static int __callui_view_dialing_ondestroy(call_view_data_base_t *view_data)
+static callui_result_e __callui_view_dialing_ondestroy(call_view_data_base_t *view_data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
@@ -127,23 +129,28 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 	callui_view_dialing_h vd = (callui_view_dialing_h)data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	if (ad->active) {
-		int ret = cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_end_call() is failed");
+	const callui_call_state_data_t *call_state =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+
+	if (call_state) {
+		callui_result_e res = _callui_manager_end_call(ad->call_manager,
+				call_state->call_id, CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+		if (res != CALLUI_RESULT_OK) {
+			err("_callui_manager_end_call() failed. res[%d]", res);
 		}
 	}
 }
 
-static int __update_displayed_data(callui_view_dialing_h vd)
+static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
-	call_data_t *now_call_data = ad->active;
+	const callui_call_state_data_t *now_call_data = _callui_stp_get_call_data(ad->state_provider,
+			CALLUI_CALL_DATA_TYPE_ACTIVE);
 	CALLUI_RETURN_VALUE_IF_FAIL(now_call_data, CALLUI_RESULT_FAIL);
 
-	char *file_path = now_call_data->call_ct_info.caller_id_path;
-	char *call_name = now_call_data->call_ct_info.call_disp_name;
-	char *disp_number = NULL;
+	const char *file_path = now_call_data->call_ct_info.caller_id_path;
+	const char *call_name = now_call_data->call_ct_info.call_disp_name;
+	const char *disp_number = NULL;
 
 	if (strlen(now_call_data->call_disp_num) > 0) {
 		disp_number = now_call_data->call_disp_num;

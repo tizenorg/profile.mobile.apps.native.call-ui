@@ -18,13 +18,18 @@
 #include <vconf.h>
 #include <app_control.h>
 #include <Elementary.h>
+#include <efl_extension.h>
 
 #include "callui-view-incoming-call-noti.h"
+#include "callui-debug.h"
 #include "callui.h"
 #include "callui-view-manager.h"
 #include "callui-view-layout.h"
 #include "callui-view-elements.h"
 #include "callui-common.h"
+
+#include "callui-manager.h"
+#include "callui-state-provider.h"
 
 #define CALLUI_DURING_ICON	"call_button_icon_03.png"
 #define CALLUI_REJECT_ICON	"call_button_icon_04.png"
@@ -44,12 +49,12 @@ struct _callui_view_incoming_call_noti {
 
 typedef struct _callui_view_incoming_call_noti _callui_view_incoming_call_noti_t;
 
-static int __callui_view_incoming_call_noti_oncreate(call_view_data_base_t *view_data, void *appdata);
-static int __callui_view_incoming_call_noti_onupdate(call_view_data_base_t *view_data);
-static int __callui_view_incoming_call_noti_ondestroy(call_view_data_base_t *view_data);
+static callui_result_e __callui_view_incoming_call_noti_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e __callui_view_incoming_call_noti_onupdate(call_view_data_base_t *view_data);
+static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data_base_t *view_data);
 
-static int __create_main_content(callui_view_incoming_call_noti_h vd);
-static int __update_displayed_data(callui_view_incoming_call_noti_h vd);
+static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd);
+static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h vd);
 
 static void __reject_msg_genlist_item_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __reject_msg_layout_back_click_cb(void *data, Evas_Object *obj, void *event_info);
@@ -68,8 +73,8 @@ static void __create_reject_msg_content(callui_view_incoming_call_noti_h vd);
 
 static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 
-static int __create_main_content(callui_view_incoming_call_noti_h vd);
-static int __create_custom_button(char *icon_name, char *part, Evas_Object_Event_Cb func, void *data, void *data_bt_cb);
+static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd);
+static callui_result_e __create_custom_button(char *icon_name, char *part, Evas_Object_Event_Cb func, void *data, void *data_bt_cb);
 
 callui_view_incoming_call_noti_h _callui_view_incoming_call_noti_new()
 {
@@ -83,7 +88,7 @@ callui_view_incoming_call_noti_h _callui_view_incoming_call_noti_new()
 	return incoming_call_noti;
 }
 
-static int __callui_view_incoming_call_noti_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e __callui_view_incoming_call_noti_oncreate(call_view_data_base_t *view_data, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
@@ -101,20 +106,20 @@ static int __callui_view_incoming_call_noti_oncreate(call_view_data_base_t *view
 		dbg("KEY_SELECT key grab failed");
 	}
 
-	int res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	return __update_displayed_data(vd);
 }
 
-static int __callui_view_incoming_call_noti_onupdate(call_view_data_base_t *view_data)
+static callui_result_e __callui_view_incoming_call_noti_onupdate(call_view_data_base_t *view_data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
 	return __update_displayed_data((callui_view_incoming_call_noti_h)view_data);
 }
 
-static int __callui_view_incoming_call_noti_ondestroy(call_view_data_base_t *view_data)
+static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data_base_t *view_data)
 {
 	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)view_data;
 	callui_app_data_t *ad = vd->base_view.ad;
@@ -123,15 +128,11 @@ static int __callui_view_incoming_call_noti_ondestroy(call_view_data_base_t *vie
 #ifdef _DBUS_DVC_LSD_TIMEOUT_
 	/* Set LCD timeout for call state */
 	/* LCD is alwasy on during incoming call screen */
-	if (ad->speaker_status == EINA_TRUE) {
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+	if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
 		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
 	}
 #endif
-
-	if (ad->second_call_popup) {
-		evas_object_del(ad->second_call_popup);
-		ad->second_call_popup = NULL;
-	}
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
 
@@ -168,9 +169,9 @@ static void __reject_msg_genlist_item_click_cb(void *data, Evas_Object *obj, voi
 			free(ret_str);
 		}
 
-		int ret = cm_reject_call(ad->cm_handle);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_reject_call() is failed");
+		callui_result_e res = _callui_manager_reject_call(ad->call_manager);
+		if (res != CALLUI_RESULT_OK) {
+			err("cm_reject_call() is failed. res[%d]", res);
 		} else {
 			_callui_common_send_reject_msg(ad, vd->reject_msg);
 		}
@@ -376,14 +377,14 @@ static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void
 	app_control_destroy(app_control);
 }
 
-static int __create_main_content(callui_view_incoming_call_noti_h vd)
+static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME,  "main_active_noti_call");
 	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
 
-	int res = __create_custom_button(CALLUI_DURING_ICON, "swallow.call_button",
+	callui_result_e res = __create_custom_button(CALLUI_DURING_ICON, "swallow.call_button",
 			__launch_btn_click_cb, vd, (void *)APP_CONTROL_OPERATION_DURING_CALL);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
@@ -404,7 +405,7 @@ static int __create_main_content(callui_view_incoming_call_noti_h vd)
 	return res;
 }
 
-static int __create_custom_button(char *icon_name, char *part, Evas_Object_Event_Cb func, void * data, void * data_bt_cb)
+static callui_result_e __create_custom_button(char *icon_name, char *part, Evas_Object_Event_Cb func, void * data, void * data_bt_cb)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(data, CALLUI_RESULT_INVALID_PARAM);
 
@@ -427,23 +428,23 @@ static int __create_custom_button(char *icon_name, char *part, Evas_Object_Event
 	return CALLUI_RESULT_OK;
 }
 
-static int __update_displayed_data(callui_view_incoming_call_noti_h vd)
+static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->incom, CALLUI_RESULT_FAIL);
-	call_data_t *call_data = ad->incom;
+	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
 
 	elm_object_signal_emit(vd->base_view.contents, "small_main_ly", "main_active_noti_call");
 
-	char *call_name = call_data->call_ct_info.call_disp_name;
-	char *call_number = NULL;
+	const char *call_name = call_data->call_ct_info.call_disp_name;
+	const char *call_number = NULL;
 	if (call_data->call_disp_num[0] != '\0') {
 		call_number = call_data->call_disp_num;
 	} else {
 		call_number = call_data->call_num;
 	}
-	char *file_path = call_data->call_ct_info.caller_id_path;
+	const char *file_path = call_data->call_ct_info.caller_id_path;
 
 	if (!(call_name && call_name[0] != '\0') && !(call_number && call_number[0] != '\0')) {
 		elm_object_signal_emit(vd->base_view.contents, "big_buttons", "main_active_noti_call");

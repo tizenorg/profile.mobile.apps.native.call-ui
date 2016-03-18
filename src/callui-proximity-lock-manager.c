@@ -18,6 +18,7 @@
 #include <sensor.h>
 
 #include "callui-proximity-lock-manager.h"
+#include "callui-debug.h"
 #include "callui-common.h"
 
 #define SENSOR_INTERVAL 100
