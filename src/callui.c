@@ -32,39 +32,23 @@
 #include "callui-view-quickpanel.h"
 #include "callui-view-layout.h"
 
+#include "callui-sound-manager.h"
+#include "callui-state-provider.h"
+
 #define EARSET_KEY_LONG_PRESS_TIMEOUT			1.0
 
 static bool _callui_app_create_layout(void *data);
 static Eina_Bool __callui_app_win_hard_key_down_cb(void *data, int type, void *event);
 static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *event);
-static void __callui_app_terminate(void *data);
-static void __callui_app_terminate_or_view_change(callui_app_data_t *ad);
+static void __app_deinit(callui_app_data_t *ad);
+static void __audio_state_changed_cb(void *user_data,
+		callui_audio_state_type_e audio_state);
+static void __call_state_change_cb(void *user_data,
+		callui_call_event_type_e call_event_type,
+		unsigned int call_id,
+		callui_sim_slot_type_e sim_type);
 
 static callui_app_data_t g_ad;
-
-static call_data_t *__callui_call_data_new(char *number)
-{
-	dbg("__calldoc_call_data_new()");
-	call_data_t *call_data = NULL;
-	if (NULL == number) {
-		warn("number is NULL");
-	}
-
-	call_data = (call_data_t *)calloc(1, sizeof(call_data_t));
-	if (NULL == call_data) {
-		warn("failed to alloc memory");
-		return NULL;
-	}
-
-	call_data->call_id = NO_HANDLE;
-	call_data->member_count = 0;
-	if (number) {
-		g_strlcpy(call_data->call_num, number, CALLUI_PHONE_NUMBER_LENGTH_MAX);
-	}
-	call_data->call_ct_info.person_id = -1;
-
-	return call_data;
-}
 
 static void __callui_app_win_key_grab(callui_app_data_t *ad)
 {
@@ -88,255 +72,107 @@ static void __callui_app_win_key_grab(callui_app_data_t *ad)
 		ad->upkey_handler = ecore_event_handler_add(ECORE_EVENT_KEY_UP, __callui_app_win_hard_key_up_cb, ad);
 }
 
-static void __callui_update_call_data(call_data_t **call_data, cm_call_data_t* cm_call_data)
-{
-	dbg("__callui_update_call_data()");
-	call_data_t *tmp_call_data = NULL;
-	char *call_number = NULL;
-	int person_id = -1;
-	if (NULL == cm_call_data) {
-		warn("cm_call_data is NULL");
-		g_free(*call_data);
-		*call_data = NULL;
-		return;
-	}
-
-	cm_call_data_get_call_number(cm_call_data, &call_number);
-	tmp_call_data = __callui_call_data_new(call_number);
-	CALLUI_RETURN_IF_FAIL(tmp_call_data);
-
-	cm_call_data_get_call_id(cm_call_data, &tmp_call_data->call_id);
-	cm_call_data_get_call_member_count(cm_call_data, &tmp_call_data->member_count);
-	cm_call_data_get_call_direction(cm_call_data, &tmp_call_data->call_direction);
-	cm_call_data_get_call_domain(cm_call_data, &tmp_call_data->call_domain);
-	cm_call_data_get_call_state(cm_call_data, &tmp_call_data->call_state);
-	cm_call_data_get_call_type(cm_call_data, &tmp_call_data->call_type);
-	cm_call_data_is_emergency_call(cm_call_data, &tmp_call_data->is_emergency);
-	cm_call_data_get_start_time(cm_call_data, &tmp_call_data->start_time);
-
-	/* Check for Contact Index and accordingly update the contact information if the contact is saved */
-	cm_call_data_get_person_id(cm_call_data, &person_id);
-	if ((person_id != -1) && (tmp_call_data->call_ct_info.person_id == -1)) {
-		dbg("contact exists with index:[%d]", person_id);
-		_callui_common_get_contact_info(person_id, &tmp_call_data->call_ct_info);
-	}
-
-	if (strlen(tmp_call_data->call_ct_info.caller_id_path) <= 0) {
-		g_strlcpy(tmp_call_data->call_ct_info.caller_id_path, "default", CALLUI_IMAGE_PATH_LENGTH_MAX);
-	}
-
-	g_free(*call_data);
-	*call_data = tmp_call_data;
-
-	return;
-}
-
-static void __callui_update_all_call_data(callui_app_data_t *ad, cm_call_event_data_t* call_state_data)
-{
-	cm_call_data_t *call_data = NULL;
-	CALLUI_RETURN_IF_FAIL(ad);
-	CALLUI_RETURN_IF_FAIL(call_state_data);
-	dbg("doc_data active!");
-	cm_call_event_data_get_active_call(call_state_data, &call_data);
-	__callui_update_call_data(&(ad->active), call_data);
-	dbg("doc_data incom!");
-	cm_call_event_data_get_incom_call(call_state_data, &call_data);
-	__callui_update_call_data(&(ad->incom), call_data);
-	dbg("doc_data held!");
-	cm_call_event_data_get_held_call(call_state_data, &call_data);
-	__callui_update_call_data(&(ad->held), call_data);
-}
-
 static void __callui_process_incoming_call(callui_app_data_t *ad)
 {
-	dbg("..");
-	cm_call_data_t *cm_incom = NULL;
-
 	CALLUI_RETURN_IF_FAIL(ad);
 
-	cm_get_all_calldata(ad->cm_handle, &cm_incom, NULL, NULL);
-	CALLUI_RETURN_IF_FAIL(cm_incom);
-
-	__callui_update_call_data(&(ad->incom), cm_incom);
+	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->call_stp,
+					CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->call_stp,
+					CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->call_stp,
+					CALLUI_CALL_DATA_TYPE_HELD);
 
 	callui_view_type_e type = VIEW_TYPE_INCOMING_CALL;
-
 #ifdef ACTIVE_NOTIFICATION_AVAILABLE
+	callui_view_type_e view_type = _callui_vm_get_cur_view_type(ad->view_manager_handle);
 	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK &&
-			ad->active == NULL &&
-			ad->held == NULL &&
-			ad->incom != NULL &&
-			ad->incoming_noti == false) {
+			active == NULL &&
+			held == NULL &&
+			incom != NULL &&
+			(view_type == VIEW_TYPE_UNDEFINED || view_type == VIEW_TYPE_ENDCALL)) {
 		type = VIEW_TYPE_INCOMING_CALL_NOTI;
 	}
 #endif
 	_callui_vm_change_view(ad->view_manager_handle, type);
-
-	cm_call_data_free(cm_incom);
-	return;
 }
 
 static void __callui_process_outgoing_call(callui_app_data_t *ad, char *number)
 {
-	sec_dbg("number is (%s)", number);
+	dbg();
 	CALLUI_RETURN_IF_FAIL(ad);
+	sec_dbg("Number is (%s)", number);
+	dbg();
 
-	if (CM_ERROR_NONE != cm_dial_call(ad->cm_handle, number, CM_CALL_TYPE_VOICE, CM_SIM_SLOT_DEFAULT_E)) {
-		err("cm_dial_call failed!!");
-		__callui_app_terminate_or_view_change(ad);
-		return;
+	callui_result_e res = _callui_manager_dial_voice_call(ad->call_manager,
+			number, CALLUI_SIM_SLOT_DEFAULT);
+
+	if (CALLUI_RESULT_OK != res && _callui_stp_is_any_calls_available(ad->call_stp)) {
+		err("_callui_manager_dial_voice_call() failed. ret[%d]", res);
+		if (_callui_stp_is_any_calls_available(ad->call_stp)) {
+			dbg("No more calls available. Exit application");
+			_callui_common_exit_app();
+		}
+	} else {
+		ad->waiting_dialing = true;
 	}
-	ad->waiting_dialing = true;
-	ad->active = __callui_call_data_new(number);
-	return;
 }
 
-static void __callui_call_event_cb(cm_call_event_e call_event, cm_call_event_data_t *call_state_data, void *user_data)
+static void __audio_state_changed_cb(void *user_data, callui_audio_state_type_e audio_state)
 {
-	CALLUI_RETURN_IF_FAIL(call_state_data);
-	info("Call event changed!! %d", call_event);
-	callui_app_data_t *ad = (callui_app_data_t *)user_data;
-	CALLUI_RETURN_IF_FAIL(ad);
+	CALLUI_RETURN_IF_FAIL(user_data);
 
-	cm_call_event_data_get_sim_slot(call_state_data, &ad->sim_slot);
+	callui_app_data_t *ad = (callui_app_data_t *)user_data;
+
+	switch (audio_state) {
+		case CALLUI_AUDIO_STATE_SPEAKER:
+		case CALLUI_AUDIO_STATE_EARJACK:
+		case CALLUI_AUDIO_STATE_BT:
+			_callui_lock_manager_force_stop(ad->lock_handle);
+			break;
+		case CALLUI_AUDIO_STATE_RECEIVER:
+			_callui_lock_manager_start(ad->lock_handle);
+			break;
+		default:
+			break;
+	}
+}
+
+static void __call_state_change_cb(void *user_data,
+		callui_call_event_type_e call_event_type,
+		unsigned int call_id,
+		callui_sim_slot_type_e sim_type)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	callui_app_data_t *ad = user_data;
+
 	ad->waiting_dialing = false;
-	switch (call_event) {
-	case CM_CALL_EVENT_ACTIVE:
+
+	switch (call_event_type) {
+	case CALLUI_CALL_EVENT_TYPE_ACTIVE:
 		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 			_callui_common_dvc_control_lcd_state(LCD_UNLOCK);
 		} else {
 			_callui_common_dvc_control_lcd_state(LCD_ON_UNLOCK);
 		}
-		__callui_update_all_call_data(ad, call_state_data);
-		_callui_common_create_duration_timer();
-		_callui_vm_auto_change_view(ad->view_manager_handle);
-
 #ifdef _DBUS_DVC_LSD_TIMEOUT_
-		if (ad->speaker_status == EINA_TRUE) {
+		callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+		if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
 			_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
 		}
 #endif
 		break;
-	case CM_CALL_EVENT_IDLE:
-		{
-			unsigned int call_id = 0;
-			cm_call_data_t *incom_call = NULL;
-			cm_call_data_t *active_call = NULL;
-			cm_call_data_t *held_call = NULL;
-			if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
-				_callui_common_dvc_control_lcd_state(LCD_UNLOCK);
-			} else {
-				_callui_common_dvc_control_lcd_state(LCD_ON_UNLOCK);
-			}
-			cm_call_event_data_get_call_id(call_state_data, &call_id);
-			cm_call_event_data_get_active_call(call_state_data, &active_call);
-			cm_call_event_data_get_incom_call(call_state_data, &incom_call);
-			cm_call_event_data_get_held_call(call_state_data, &held_call);
-			if ((ad->incom) && (call_id == ad->incom->call_id)) {
-				__callui_update_all_call_data(ad, call_state_data);
-				__callui_app_terminate_or_view_change(ad);
-			} else if (incom_call == NULL && active_call == NULL && held_call == NULL) {
-				_callui_common_delete_duration_timer();
-				_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_ENDCALL);
-				_callui_lock_manager_stop(ad->lock_handle);
-				__callui_update_all_call_data(ad, call_state_data);
-			} else {
-				__callui_update_all_call_data(ad, call_state_data);
-				__callui_app_terminate_or_view_change(ad);
-			}
+	case CALLUI_CALL_EVENT_TYPE_END:
+		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
+			_callui_common_dvc_control_lcd_state(LCD_UNLOCK);
+		} else {
+			_callui_common_dvc_control_lcd_state(LCD_ON_UNLOCK);
 		}
-		break;
-	case CM_CALL_EVENT_INCOMING:
-		{
-			_callui_common_dvc_control_lcd_state(LCD_ON_LOCK);
-			__callui_update_all_call_data(ad, call_state_data);
-			_callui_vm_auto_change_view(ad->view_manager_handle);
-		}
-		break;
-	case CM_CALL_EVENT_DIALING:
-	case CM_CALL_EVENT_HELD:
-	case CM_CALL_EVENT_RETRIEVED:
-	case CM_CALL_EVENT_SWAPPED:
-	case CM_CALL_EVENT_JOIN:
-	case CM_CALL_EVENT_SPLIT:
-		__callui_update_all_call_data(ad, call_state_data);
-		_callui_vm_auto_change_view(ad->view_manager_handle);
 		break;
 	default:
 		break;
 	}
-
-	dbg("Call event changed cb done");
-	return;
-}
-
-static void __callui_audio_state_changed_cb(cm_audio_state_type_e audio_state, void *user_data)
-{
-	callui_app_data_t *ad = (callui_app_data_t *)user_data;
-	CALLUI_RETURN_IF_FAIL(ad);
-	dbg("__callui_audio_state_changed_cb, audio_state[%d]", audio_state);
-	switch (audio_state) {
-		case CM_AUDIO_STATE_SPEAKER_E:
-			_callui_update_speaker_btn(ad, EINA_TRUE);
-			_callui_update_headset_btn(ad, EINA_FALSE);
-			ad->earphone_status = EINA_FALSE;
-			if ((_callui_common_is_extra_volume_available() == EINA_TRUE) && (ad->extra_volume_status_force_stop == EINA_TRUE)) {
-				int retextravol = -1;
-				retextravol = cm_set_extra_vol(ad->cm_handle, TRUE);
-				if (retextravol == CM_ERROR_NONE) {
-					ad->extra_volume_status_force_stop = EINA_FALSE;
-					_callui_update_extra_vol_btn(ad, EINA_TRUE);
-				}
-			}
-			_callui_lock_manager_force_stop(ad->lock_handle);
-			break;
-		case CM_AUDIO_STATE_RECEIVER_E:
-			_callui_update_speaker_btn(ad, EINA_FALSE);
-			_callui_update_headset_btn(ad, EINA_FALSE);
-			ad->earphone_status = EINA_FALSE;
-			if ((_callui_common_is_extra_volume_available() == EINA_TRUE) && (ad->extra_volume_status_force_stop == EINA_TRUE)) {
-				int retextravol = -1;
-				retextravol = cm_set_extra_vol(ad->cm_handle, TRUE);
-				if (retextravol == CM_ERROR_NONE) {
-					ad->extra_volume_status_force_stop = EINA_FALSE;
-					_callui_update_extra_vol_btn(ad, EINA_TRUE);
-				}
-			}
-			_callui_lock_manager_start(ad->lock_handle);
-			break;
-		case CM_AUDIO_STATE_EARJACK_E:
-		{
-			ad->earphone_status = EINA_TRUE;
-			_callui_update_speaker_btn(ad, EINA_FALSE);
-			_callui_update_headset_btn(ad, EINA_FALSE);
-			if (ad->extra_volume_status == EINA_TRUE) {
-				dbg("Disable extra volume when earphone connected and speaker is turned off");
-				int ret = -1;
-				ret = cm_set_extra_vol(ad->cm_handle, FALSE);
-				if (ret == CM_ERROR_NONE) {
-					ad->extra_volume_status_force_stop = EINA_TRUE;
-					_callui_create_extravolume_notify_popup();
-					_callui_update_extra_vol_btn(ad, EINA_FALSE);
-				} else {
-					err("cm_set_extra_vol() is failed");
-				}
-			}
-			_callui_lock_manager_force_stop(ad->lock_handle);
-			break;
-		}
-		case CM_AUDIO_STATE_BT_E:
-			ad->earphone_status = EINA_FALSE;
-			_callui_update_speaker_btn(ad, EINA_FALSE);
-			_callui_update_headset_btn(ad, EINA_TRUE);
-			_callui_lock_manager_force_stop(ad->lock_handle);
-			break;
-		case CM_AUDIO_STATE_NONE_E:
-		default:
-			err("unhandled state[%d]", audio_state);
-			break;
-	}
-
-	return;
 }
 
 static void __callui_call_list_init(callui_app_data_t *ad)
@@ -344,10 +180,6 @@ static void __callui_call_list_init(callui_app_data_t *ad)
 	dbg("..");
 	CALLUI_RETURN_IF_FAIL(ad);
 
-	ad->active = NULL;
-	ad->incom = NULL;
-	ad->held = NULL;
-	ad->incoming_noti = false;
 	ad->multi_call_list_end_clicked = false;
 	ad->start_lock_manager_on_resume = false;
 	ad->on_background = false;
@@ -369,13 +201,6 @@ static void __callui_bt_init()
 static gboolean __callui_init_sys_api(callui_app_data_t *ad)
 {
 	dbg("..");
-
-	if (CM_ERROR_NONE != cm_init(&ad->cm_handle)) {
-		err("cm_init() err");
-		return false;
-	}
-	cm_set_call_event_cb(ad->cm_handle, __callui_call_event_cb, ad);
-	cm_set_audio_state_changed_cb(ad->cm_handle, __callui_audio_state_changed_cb, ad);
 
 	__callui_bt_init();
 
@@ -465,19 +290,33 @@ static bool _callui_app_create(void *data)
 
 	elm_app_base_scale_set(2.6);
 
-	elm_config_preferred_engine_set("opengl_x11");
+	elm_config_accel_preference_set("3d");
 
 	_callui_common_dvc_control_lcd_state(LCD_OFF_SLEEP_LOCK);
 
 	int ret = __callui_init_sys_api(ad);
 	if (!ret) {
 		err("__callui_init_sys_api failed");
-		return FALSE;
+		return false;
 	}
 
+	ad->call_manager = _callui_manager_create();
+	if (!ad->call_manager) {
+		err("_callui_manager_create() failed");
+		__app_deinit(ad);
+		return false;
+	}
+
+	ad->call_stp = _callui_manager_get_state_provider(ad->call_manager);
+	ad->call_sdm = _callui_manager_get_sound_manager(ad->call_manager);
+
+	_callui_stp_add_call_state_event_cb(ad->call_stp, __call_state_change_cb, ad);
+	_callui_sdm_add_audio_state_changed_cb(ad->call_sdm, __audio_state_changed_cb, ad);
+
 	if (!_callui_app_create_layout(ad)) {
-		err("_callui_app_create_layout failed");
-		return FALSE;
+		err("_callui_app_create_layout() failed");
+		__app_deinit(ad);
+		return false;
 	}
 
 	ad->view_manager_handle = _callui_vm_create(ad);
@@ -500,12 +339,12 @@ static bool _callui_app_create_layout(void *data)
 	ad->win = __callui_create_main_win(ad);
 	if (ad->win == NULL) {
 		err("__callui_create_main_win failed");
-		return FALSE;
+		return false;
 	}
 	ad->main_ly = __callui_create_base_layout(ad);
 	if (ad->main_ly == NULL) {
 		err("__callui_create_base_layout failed");
-		return FALSE;
+		return false;
 	}
 	elm_object_content_set(ad->win_conformant, ad->main_ly);
 
@@ -526,29 +365,33 @@ static void __callui_bt_deinit()
 	}
 }
 
-static void _callui_app_terminate(void *data)
+static void __app_deinit(callui_app_data_t *ad)
 {
-	callui_app_data_t *ad = data;
 	Evas_Object *contents = NULL;
 	Evas_Object *caller_info = NULL;
 	Evas_Object *btn_ly = NULL;
 
-	contents = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-	if (contents) {
-		caller_info = elm_object_part_content_get(contents, "caller_info");
-		if (caller_info) {
-			evas_object_del(caller_info);
-			caller_info = NULL;
-		}
+	_callui_stp_remove_call_state_event_cb(ad->call_stp, __call_state_change_cb, ad);
+	_callui_sdm_remove_audio_state_changed_cb(ad->call_sdm, __audio_state_changed_cb, ad);
 
-		btn_ly = elm_object_part_content_get(contents, "btn_region");
-		if (btn_ly) {
-			evas_object_del(btn_ly);
-			btn_ly = NULL;
-		}
+	if (ad->main_ly) {
+		contents = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
+		if (contents) {
+			caller_info = elm_object_part_content_get(contents, "caller_info");
+			if (caller_info) {
+				evas_object_del(caller_info);
+				caller_info = NULL;
+			}
 
-		evas_object_del(contents);
-		contents = NULL;
+			btn_ly = elm_object_part_content_get(contents, "btn_region");
+			if (btn_ly) {
+				evas_object_del(btn_ly);
+				btn_ly = NULL;
+			}
+
+			evas_object_del(contents);
+			contents = NULL;
+		}
 	}
 
 	if (ad->downkey_handler) {
@@ -590,10 +433,11 @@ static void _callui_app_terminate(void *data)
 	}
 
 	__callui_bt_deinit();
+}
 
-	cm_unset_audio_state_changed_cb(ad->cm_handle);
-
-	cm_unset_call_event_cb(ad->cm_handle);
+static void _callui_app_terminate(void *data)
+{
+	__app_deinit(data);
 }
 
 static void _callui_app_pause(void *data)
@@ -661,7 +505,8 @@ static void _callui_app_service(app_control_h app_control, void *data)
 			}
 			if (tmp) {
 				dbg("sim_slot: [%s]", tmp);
-				ad->sim_slot = atoi(tmp);
+				// TODO: Add functionality
+//				ad->sim_slot = atoi(tmp);
 				free(tmp);
 				tmp = NULL;
 			}
@@ -683,14 +528,18 @@ static void _callui_app_service(app_control_h app_control, void *data)
 		/* */
 		warn("Unsupported operation type");
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_DURING_CALL) == 0) {
-		if (CM_ERROR_NONE != cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_NORMAL)) {
-			err("cm_answer_call failed. ret[%d]", ret);
+		ret = _callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_TYPE_NORMAL);
+		if (CALLUI_RESULT_OK != ret) {
+			err("_callui_manager_answer_call() failed. ret[%d]", ret);
 		}
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_MESSAGE_REJECT) == 0) {
+
 		/* TODO Implement reject with message button functionality */
+
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_END_CALL) == 0) {
-		if (CM_ERROR_NONE != cm_reject_call(ad->cm_handle)) {
-			err("cm_reject_call failed. ret[%d]", ret);
+		ret = _callui_manager_reject_call(ad->call_manager);
+		if (CALLUI_RESULT_OK != ret) {
+			err("_callui_manager_reject_call() failed. ret[%d]", ret);
 		}
 	}
 
@@ -733,6 +582,7 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 	Ecore_Event_Key *ev = event;
+	const callui_call_state_data_t *call_data = NULL;
 
 	if (ev == NULL) {
 		err("ERROR!!! ========= Event is NULL!!!");
@@ -743,6 +593,13 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 
 	dbg("Top view(%d)", view_type);
 
+	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->call_stp,
+					CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->call_stp,
+					CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->call_stp,
+					CALLUI_CALL_DATA_TYPE_HELD);
+
 	/*power key case */
 	if (!strcmp(ev->keyname, CALLUI_KEY_POWER)) {
 		dbg("in keypower");
@@ -752,34 +609,52 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 		if (is_powerkey_enabled && !_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 
 			if (view_type == VIEW_TYPE_DIALLING) {
-				if (ad->active) {
-					cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+				if (active) {
+					call_data = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+					if (call_data) {
+						_callui_manager_end_call(ad->call_manager, call_data->call_id,
+								CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+					}
 				}
 			} else if (view_type == VIEW_TYPE_INCOMING_CALL ||
 					view_type == VIEW_TYPE_INCOMING_CALL_NOTI) {
-				if (ad->incom) {
-					cm_end_call(ad->cm_handle, ad->incom->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+				if (incom) {
+					call_data = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_INCOMING);
+					if (call_data) {
+						_callui_manager_end_call(ad->call_manager, call_data->call_id,
+								CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+					}
 				}
 			} else if (view_type == VIEW_TYPE_SINGLECALL ||
 					view_type == VIEW_TYPE_MULTICALL_CONF ||
 					view_type == VIEW_TYPE_MULTICALL_LIST) {
-				if (ad->active) {
-					cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_ALL_CALLS);
-				} else if (ad->held) {
-					cm_end_call(ad->cm_handle, ad->held->call_id, CALL_RELEASE_TYPE_ALL_CALLS);
+
+				call_data = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+				if (call_data) {
+					 _callui_manager_end_call(ad->call_manager, call_data->call_id,
+							CALLUI_CALL_RELEASE_TYPE_ALL_CALLS);
+				} else {
+					call_data = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_HELD);
+					if (call_data) {
+						_callui_manager_end_call(ad->call_manager, call_data->call_id,
+								CALLUI_CALL_RELEASE_TYPE_ALL_CALLS);
+					}
 				}
 			} else if (view_type == VIEW_TYPE_MULTICALL_SPLIT) {
-				if (ad->active) {
-					cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
+				call_data = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+				if (call_data) {
+					_callui_manager_end_call(ad->call_manager, call_data->call_id,
+							CALLUI_CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
 				}
 			}
 		} else {
-			if (ad->incom && !ad->active && !ad->held) {
+			if (incom && !active && !held) {
 				callui_view_type_e type = VIEW_TYPE_INCOMING_CALL;
 
 #ifdef ACTIVE_NOTIFICATION_AVAILABLE
+				callui_view_type_e view_type = _callui_vm_get_cur_view_type(ad->view_manager_handle);
 				if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK &&
-						ad->incoming_noti == false) {
+						(view_type == VIEW_TYPE_UNDEFINED || view_type == VIEW_TYPE_ENDCALL)) {
 					type = VIEW_TYPE_INCOMING_CALL_NOTI;
 				}
 #endif
@@ -791,8 +666,9 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 		dbg("in key-media");
 	} else if (!strcmp(ev->keyname, CALLUI_KEY_VOLUMEUP) || !strcmp(ev->keyname, CALLUI_KEY_VOLUMEDOWN)) {
 		dbg("Handle Volume Up or Down key");
-		if (ad->incom) {
-			cm_stop_alert(ad->cm_handle);
+		call_data = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_INCOMING);
+		if (call_data) {
+			_callui_manager_stop_alert(ad->call_manager);
 		}
 	} else if (!strcmp(ev->keyname,  CALLUI_KEY_SELECT) || !strcmp(ev->keyname,  CALLUI_KEY_HOME)) {
 		dbg("in KEY_SELECT");
@@ -810,13 +686,15 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 				dbg("Answering mode on and Home key pressed on MT screen");
 
 				int unhold_call_count = 0;
-				if (ad->active) {
-					unhold_call_count = ad->active->member_count;
+				if (active) {
+					unhold_call_count = active->conf_member_count;
 				}
 
 				if (unhold_call_count == 0) {
 					dbg("No Call Or Held call - Accept");
-					cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_NORMAL);
+
+					_callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_TYPE_NORMAL);
+
 					if (_callui_common_get_idle_lock_type() == LOCK_TYPE_SWIPE_LOCK) {
 						_callui_common_unlock_swipe_lock();
 					}
@@ -844,13 +722,7 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 		dbg("KEY_BACK section");
 	}
 
-
-	ad->b_earset_key_longpress = EINA_FALSE;
-
-	if (ad->earset_key_longpress_timer) {
-		ecore_timer_del(ad->earset_key_longpress_timer);
-		ad->earset_key_longpress_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(ad->earset_key_longpress_timer);
 
 	return EINA_FALSE;
 }
@@ -861,7 +733,6 @@ static Eina_Bool __callui_app_win_earset_key_longpress_timer_cb(void *data)
 
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 
-	ad->b_earset_key_longpress = EINA_TRUE;
 	ad->earset_key_longpress_timer = NULL;
 
 	return ECORE_CALLBACK_CANCEL;
@@ -891,24 +762,4 @@ static Eina_Bool __callui_app_win_hard_key_down_cb(void *data, int type, void *e
 	}
 	dbg("End..");
 	return EINA_FALSE;
-}
-
-static void __callui_app_terminate(void *data)
-{
-	_callui_common_exit_app();
-}
-
-static void __callui_app_terminate_or_view_change(callui_app_data_t *ad)
-{
-	CALLUI_RETURN_IF_FAIL(ad);
-
-	if ((NULL == ad->active) && (NULL == ad->incom) && (NULL == ad->held)) {
-		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
-			_callui_lock_manager_set_callback_on_unlock(ad->lock_handle, __callui_app_terminate, NULL);
-		} else {
-			__callui_app_terminate(ad->lock_handle);
-		}
-	} else {
-		_callui_vm_auto_change_view(ad->view_manager_handle);
-	}
 }

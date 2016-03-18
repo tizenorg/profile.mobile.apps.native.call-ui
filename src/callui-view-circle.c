@@ -19,6 +19,7 @@
 #include "callui-view-elements.h"
 #include "callui-view-layout.h"
 #include "callui-common.h"
+#include "callui-state-provider.h"
 
 #define CALLUI_CIRCLE_LAYOUT_DATA "VIEW_DATA"
 
@@ -60,13 +61,15 @@ static void __callui_view_circle_handle_accept(callui_app_data_t *ad)
 		_callui_common_unlock_swipe_lock();
 	}
 
-	if (ad->active == NULL) {
-		dbg("No Call Or Held call - Accept");
+	const callui_call_state_data_t *call_data =
+			_callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
 
-		int ret = cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_NORMAL);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_answer_call() is failed");
-			return;
+	if (!call_data) {
+		dbg("No Call Or Held call - Accept");
+		callui_result_e res = _callui_manager_answer_call(ad->call_manager,
+						CALLUI_CALL_ANSWER_TYPE_NORMAL);
+		if (res != CALLUI_RESULT_OK) {
+			err("_callui_manager_answer_call() failed. res[%d]", res);
 		}
 	} else {
 		dbg("Show popup - 2nd MT call - test volume popup");
@@ -76,10 +79,9 @@ static void __callui_view_circle_handle_accept(callui_app_data_t *ad)
 
 static void __callui_view_circle_handle_reject(callui_app_data_t *ad)
 {
-	dbg("..");
-	int ret = cm_reject_call(ad->cm_handle);
-	if (ret != CM_ERROR_NONE) {
-		err("cm_reject_call() is failed");
+	callui_result_e res = _callui_manager_reject_call(ad->call_manager);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_manager_reject_call() failed. res[%d]", res);
 	}
 }
 
@@ -340,7 +342,7 @@ static void __callui_view_circle_reject_up(callui_view_incoming_call_h vd, callu
 	}
 }
 
-int _callui_view_circle_create_reject_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent)
+callui_result_e _callui_view_circle_create_reject_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(ad, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, CALLUI_RESULT_INVALID_PARAM);
@@ -349,7 +351,7 @@ int _callui_view_circle_create_reject_layout(callui_app_data_t *ad, callui_view_
 	Evas_Object *lock_reject = _callui_view_incoming_call_get_reject_layout(vd);
 	Evas_Object *inner_circle = NULL;
 	Evas_Object *outer_circle = NULL;
-	int res = CALLUI_RESULT_FAIL;
+	callui_result_e res = CALLUI_RESULT_FAIL;
 	int x = 0;
 	int y = 0;
 	int width = 0;
@@ -397,7 +399,7 @@ int _callui_view_circle_create_reject_layout(callui_app_data_t *ad, callui_view_
 	return CALLUI_RESULT_OK;
 }
 
-int _callui_view_circle_create_accept_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent)
+callui_result_e _callui_view_circle_create_accept_layout(callui_app_data_t *ad, callui_view_incoming_call_h vd, Evas_Object *parent)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(ad, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, CALLUI_RESULT_INVALID_PARAM);
@@ -406,7 +408,7 @@ int _callui_view_circle_create_accept_layout(callui_app_data_t *ad, callui_view_
 	Evas_Object *lock_accept = _callui_view_incoming_call_get_accept_layout(vd);
 	Evas_Object *inner_circle = NULL;
 	Evas_Object *outer_circle = NULL;
-	int res = CALLUI_RESULT_FAIL;
+	callui_result_e res = CALLUI_RESULT_FAIL;
 	int x = 0;
 	int y = 0;
 	int width = 0;

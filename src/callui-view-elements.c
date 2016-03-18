@@ -34,6 +34,9 @@
 #include "callui-view-quickpanel.h"
 #include "callui-view-caller-info-defines.h"
 #include "callui-proximity-lock-manager.h"
+#include "callui-manager.h"
+#include "callui-sound-manager.h"
+#include "callui-state-provider.h"
 
 #define	POPUP_LIST_W		300
 #define	POPUP_LIST_ITEM_H 	120
@@ -114,12 +117,14 @@ static Evas_Object *__callui_create_button_style(void *data, Evas_Object **p_but
 	Evas_Object *sw = NULL;
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 	CALLUI_RETURN_VALUE_IF_FAIL(ad, NULL);
+
 	layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
 	CALLUI_RETURN_VALUE_IF_FAIL(layout, NULL);
+
 	btn_ly = elm_object_part_content_get(layout, "btn_region");
 	CALLUI_RETURN_VALUE_IF_FAIL(btn_ly, NULL);
 
-	sw = edje_object_part_swallow_get(_EDJ(btn_ly), part_name);
+	sw = elm_object_part_content_get(btn_ly, part_name);
 	if (sw) {
 		dbg("Object Already Exists, so Update Only");
 		*p_button = sw;
@@ -133,127 +138,115 @@ static Evas_Object *__callui_create_button_style(void *data, Evas_Object **p_but
 
 void _callui_spk_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
-	CALLUI_RETURN_IF_FAIL(data != NULL);
+	CALLUI_RETURN_IF_FAIL(data);
+
 	callui_app_data_t *ad = (callui_app_data_t *)data;
-	int ret = -1;
+	callui_result_e res = CALLUI_RESULT_FAIL;
 
-	if (ad->speaker_status == EINA_TRUE) {
-		ret = cm_speaker_off(ad->cm_handle);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_speaker_off() is failed. ret[%d]", ret);
-			return;
-		}
-	} else {
-		ret = cm_speaker_on(ad->cm_handle);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_speaker_on() is failed. ret[%d]", ret);
-			return;
-		}
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+	bool speaker_status = false;
+	if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
+		speaker_status = true;
 	}
-	_callui_update_speaker_btn(ad, !ad->speaker_status);
 
-	return;
+	res = _callui_sdm_set_speaker_state(ad->call_sdm, !speaker_status);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_sdm_set_speaker_state() failed. res[%d]", res);
+		return;
+	}
+
+//	// TODO: need to change on listening
+//	_callui_update_speaker_btn(ad, !speaker_status);
 }
 
 static void __callui_contacts_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
+	CALLUI_RETURN_IF_FAIL(data);
+
 	callui_app_data_t *ad = (callui_app_data_t *)data;
+
 	__callui_unload_more_option(ad);
 	_callui_common_launch_contacts(ad);
 }
 
-void _callui_update_speaker_btn(callui_app_data_t *ad, Eina_Bool is_on)
-{
-	dbg("..");
-	CALLUI_RETURN_IF_FAIL(ad);
+//void _callui_update_speaker_btn(callui_app_data_t *ad, Eina_Bool is_on)
+//{
+//	CALLUI_RETURN_IF_FAIL(ad);
+//
+//	/* Update Buttons */
+//	_callui_create_top_first_button(ad);
+//	_callui_qp_mc_update_speaker_status(ad->qp_minicontrol, EINA_FALSE);
+//
+//	return;
+//}
 
-	ad->speaker_status = is_on;
-
-	/* Update Buttons */
-	_callui_create_top_first_button(ad);
-	_callui_qp_mc_update_speaker_status(ad->qp_minicontrol, EINA_FALSE);
-
-	return;
-}
-
-void _callui_update_headset_btn(callui_app_data_t *ad, Eina_Bool is_on)
-{
-	dbg("..");
-	CALLUI_RETURN_IF_FAIL(ad);
-	ad->headset_status = is_on;
-
-	_callui_create_top_third_button(ad);
-
-	return;
-}
-
-void _callui_update_mute_btn(callui_app_data_t *ad, Eina_Bool is_on)
-{
-	dbg("..");
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
-
-	ad->mute_status = is_on;
-	_callui_create_bottom_second_button(ad);
-	_callui_qp_mc_update_mute_status(ad->qp_minicontrol, EINA_FALSE);
-
-	return;
-}
-
-void _callui_update_extra_vol_btn(callui_app_data_t *ad, Eina_Bool is_on)
-{
-	dbg("..");
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
-
-	ad->extra_volume_status = is_on;
-	_callui_create_bottom_third_button(ad);
-
-	return;
-}
+//void _callui_update_headset_btn(callui_app_data_t *ad, Eina_Bool is_on)
+//{
+//	CALLUI_RETURN_IF_FAIL(ad);
+//
+//	ad->headset_status = is_on;
+//
+//	_callui_create_top_third_button(ad);
+//
+//	return;
+//}
+//
+//void _callui_update_mute_btn(callui_app_data_t *ad, Eina_Bool is_on)
+//{
+//	CALLUI_RETURN_IF_FAIL(ad);
+//
+//	ad->mute_status = is_on;
+//	_callui_create_bottom_second_button(ad);
+//	_callui_qp_mc_update_mute_status(ad->qp_minicontrol, EINA_FALSE);
+//
+//	return;
+//}
+//
+//void _callui_update_extra_vol_btn(callui_app_data_t *ad, Eina_Bool is_on)
+//{
+//	CALLUI_RETURN_IF_FAIL(ad);
+//
+//	ad->extra_volume_status = is_on;
+//	_callui_create_bottom_third_button(ad);
+//
+//	return;
+//}
 
 void _callui_mute_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
+	CALLUI_RETURN_IF_FAIL(data);
+
 	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
-	int ret = -1;
-	gboolean is_mute_on = FALSE;
 
-	if (ad->mute_status == EINA_FALSE) {
-		is_mute_on = TRUE;
-	} else {
-		is_mute_on = FALSE;
-	}
-
-	ret = cm_set_mute_state(ad->cm_handle, is_mute_on);
-	if (ret != CM_ERROR_NONE) {
-		err("cm_set_mute_state() get failed with err[%d]", ret);
+	callui_result_e res = _callui_sdm_set_mute_state(ad->call_sdm,
+			!_callui_sdm_get_mute_state(ad->call_sdm));
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_sdm_set_mute_state() failed. res[%d]", res);
 		return;
 	}
-
-	_callui_update_mute_btn(ad, is_mute_on);
-	return;
+//	_callui_update_mute_btn(ad, _callui_sdm_get_mute_state(ad->call_sdm));
 }
 
 static void __callui_headset_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_app_data_t *ad = (callui_app_data_t *)data;
 	Eina_Bool bupdate_btn = EINA_FALSE;
 
-	if (ad->headset_status == EINA_TRUE) {
-		ad->headset_status = EINA_FALSE;
-		ad->speaker_status = EINA_FALSE;
-		cm_bluetooth_off(ad->cm_handle);
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+
+	switch (audio_state) {
+	case CALLUI_AUDIO_STATE_BT:
+		_callui_sdm_set_bluetooth_state(ad->call_sdm, false);
 		bupdate_btn = EINA_TRUE;
-	} else {
-		/* Check If SCO path exists, open if exists*/
-		if (EINA_TRUE == _callui_common_is_headset_conected()) {
-			ad->headset_status = EINA_TRUE;
-			ad->speaker_status = EINA_FALSE;
-			cm_bluetooth_on(ad->cm_handle);
+		break;
+	case CALLUI_AUDIO_STATE_NONE:
+		err("Invalid audio state");
+		return;
+	default:
+		if (_callui_common_is_headset_conected()) {
+			_callui_sdm_set_bluetooth_state(ad->call_sdm, true);
 			bupdate_btn = EINA_TRUE;
 		} else {
 			bt_adapter_state_e bt_state = BT_ADAPTER_DISABLED;
@@ -266,21 +259,13 @@ static void __callui_headset_btn_cb(void *data, Evas_Object *obj, void *event_in
 					_callui_common_launch_bt_app(ad);
 				}
 			} else {
-				err("fail to get vconf key: %d", ret_code);
+				err("Fail to get vconf key: %d", ret_code);
 			}
 			bupdate_btn = EINA_FALSE;
 		}
 	}
 
 	if (bupdate_btn) {
-		if (ad->extra_volume_status == EINA_TRUE) {
-			int ret = -1;
-			ret = cm_set_extra_vol(ad->cm_handle, EINA_FALSE);
-			if (ret != CM_ERROR_NONE) {
-				err("Fail cm_set_extra_vol");
-			}
-			ad->extra_volume_status = EINA_FALSE;
-		}
 		/* Update Headset/Speaker buttons */
 		_callui_create_top_first_button(ad);
 		_callui_create_top_third_button(ad);
@@ -290,16 +275,15 @@ static void __callui_headset_btn_cb(void *data, Evas_Object *obj, void *event_in
 
 static void __callui_addcall_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad != NULL);
+	CALLUI_RETURN_IF_FAIL(data);
 
-	_callui_common_launch_dialer(ad);
+	_callui_common_launch_dialer(data);
 }
 
 static void __callui_keypad_btn_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
+	CALLUI_RETURN_IF_FAIL(data);
+
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 
 	if (_callui_keypad_get_show_status(ad->keypad)) {
@@ -309,6 +293,26 @@ static void __callui_keypad_btn_cb(void *data, Evas_Object *obj, void *event_inf
 	}
 }
 
+static void __top_first_audio_st_changed_cb(void *user_data, callui_audio_state_type_e state)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	Evas_Object *btn = (Evas_Object *)user_data;
+	if (state == CALLUI_AUDIO_STATE_SPEAKER) {
+		elm_object_style_set(btn, "style_call_sixbtn_speaker_on");
+	} else {
+		elm_object_style_set(btn, "style_call_sixbtn_speaker");
+	}
+}
+
+static void __top_first_button_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_app_data_t *ad = (callui_app_data_t *)data;
+	_callui_sdm_remove_audio_state_changed_cb(ad->call_sdm, __top_first_audio_st_changed_cb, obj);
+}
+
 /* Speaker Button ENABLED */
 Evas_Object *_callui_create_top_first_button(callui_app_data_t *ad)
 {
@@ -316,14 +320,24 @@ Evas_Object *_callui_create_top_first_button(callui_app_data_t *ad)
 	CALLUI_RETURN_VALUE_IF_FAIL(ad != NULL, NULL);
 	__callui_create_button_style(ad, &btn, PART_TOP_FIRST_BTN);
 
-	evas_object_smart_callback_del(btn, "clicked", _callui_spk_btn_cb);
-	elm_object_text_set(btn, _("IDS_CALL_BUTTON_SPEAKER"));
-	evas_object_smart_callback_add(btn, "clicked", _callui_spk_btn_cb, ad);
-	if (ad->speaker_status == EINA_FALSE) {
-		elm_object_style_set(btn, "style_call_sixbtn_speaker");
-	} else {
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+	if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
 		elm_object_style_set(btn, "style_call_sixbtn_speaker_on");
+	} else {
+		elm_object_style_set(btn, "style_call_sixbtn_speaker");
 	}
+
+	elm_object_text_set(btn, _("IDS_CALL_BUTTON_SPEAKER"));
+
+	evas_object_smart_callback_del(btn, "clicked", _callui_spk_btn_cb);
+	evas_object_smart_callback_add(btn, "clicked", _callui_spk_btn_cb, ad);
+
+	// TODO: need to refactor
+	evas_object_event_callback_del_full(btn, EVAS_CALLBACK_DEL, __top_first_button_del_cb, ad);
+	evas_object_event_callback_add(btn, EVAS_CALLBACK_DEL, __top_first_button_del_cb, ad);
+
+	_callui_sdm_remove_audio_state_changed_cb(ad->call_sdm, __top_first_audio_st_changed_cb, btn);
+	_callui_sdm_add_audio_state_changed_cb(ad->call_sdm, __top_first_audio_st_changed_cb, btn);
 
 	elm_object_disabled_set(btn, EINA_FALSE);
 
@@ -337,9 +351,11 @@ Evas_Object *_callui_create_top_first_button_disabled(callui_app_data_t *ad)
 	CALLUI_RETURN_VALUE_IF_FAIL(ad != NULL, NULL);
 
 	__callui_create_button_style(ad, &btn, PART_TOP_FIRST_BTN);
+
 	elm_object_style_set(btn, "style_call_sixbtn_disabled_speaker");
 
 	elm_object_text_set(btn, _("IDS_CALL_BUTTON_SPEAKER"));
+
 	elm_object_disabled_set(btn, EINA_TRUE);
 
 	return btn;
@@ -352,11 +368,14 @@ Evas_Object *_callui_create_top_second_button(callui_app_data_t *ad)
 	CALLUI_RETURN_VALUE_IF_FAIL(ad != NULL, NULL);
 
 	__callui_create_button_style(ad, &btn, PART_TOP_SECOND_BTN);
+
 	elm_object_style_set(btn, "style_call_sixbtn_keypad");
 
-	evas_object_smart_callback_del(btn, "clicked", __callui_keypad_btn_cb);
+	elm_object_text_set(btn, _("IDS_CALL_SK3_KEYPAD"));
+
+	evas_object_smart_callback_del_full(btn, "clicked", __callui_keypad_btn_cb, ad);
 	evas_object_smart_callback_add(btn, "clicked", __callui_keypad_btn_cb, ad);
-	elm_object_text_set(btn, _("IDS_CALL_SK3_KEYPAD")); /* ToDo: Handle Keypad/Hide layout and text changes */
+
 	elm_object_disabled_set(btn, EINA_FALSE);
 
 	return btn;
@@ -369,12 +388,34 @@ Evas_Object *_callui_create_top_second_button_disabled(callui_app_data_t *ad)
 	Evas_Object *btn = NULL;
 
 	__callui_create_button_style(ad, &btn, PART_TOP_SECOND_BTN);
+
 	elm_object_style_set(btn, "style_call_sixbtn_disabled_keypad");
 
 	elm_object_text_set(btn, _("IDS_CALL_SK3_KEYPAD"));
+
 	elm_object_disabled_set(btn, EINA_TRUE);
 
 	return btn;
+}
+
+static void __top_third_audio_st_changed_cb(void *user_data, callui_audio_state_type_e state)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	Evas_Object *btn = (Evas_Object *)user_data;
+	if (state == CALLUI_AUDIO_STATE_BT) {
+		elm_object_style_set(btn, "style_call_sixbtn_headset_on");
+	} else {
+		elm_object_style_set(btn, "style_call_sixbtn_headset");
+	}
+}
+
+static void __top_third_button_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_app_data_t *ad = (callui_app_data_t *)data;
+	_callui_sdm_remove_audio_state_changed_cb(ad->call_sdm, __top_third_audio_st_changed_cb, obj);
 }
 
 /* HeadSet Button ENABLED */
@@ -385,14 +426,24 @@ Evas_Object *_callui_create_top_third_button(callui_app_data_t *ad)
 
 	__callui_create_button_style(ad, &btn, PART_TOP_THIRD_BTN);
 
-	if (ad->headset_status == EINA_FALSE) {
-		elm_object_style_set(btn, "style_call_sixbtn_headset");
-	} else {
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+	if (audio_state == CALLUI_AUDIO_STATE_BT) {
 		elm_object_style_set(btn, "style_call_sixbtn_headset_on");
+	} else {
+		elm_object_style_set(btn, "style_call_sixbtn_headset");
 	}
+
 	elm_object_text_set(btn, _("IDS_CALL_BUTTON_BLUETOOTH_ABB"));
+
 	evas_object_smart_callback_del(btn, "clicked", __callui_headset_btn_cb);
 	evas_object_smart_callback_add(btn, "clicked", __callui_headset_btn_cb, ad);
+
+	evas_object_event_callback_del_full(btn, EVAS_CALLBACK_DEL, __top_third_button_del_cb, ad);
+	evas_object_event_callback_add(btn, EVAS_CALLBACK_DEL, __top_third_button_del_cb, ad);
+
+	_callui_sdm_remove_audio_state_changed_cb(ad->call_sdm, __top_third_audio_st_changed_cb, btn);
+	_callui_sdm_add_audio_state_changed_cb(ad->call_sdm, __top_third_audio_st_changed_cb, btn);
+
 	elm_object_disabled_set(btn, EINA_FALSE);
 
 	return btn;
@@ -407,6 +458,7 @@ Evas_Object *_callui_create_top_third_button_disabled(callui_app_data_t *ad)
 	__callui_create_button_style(ad, &btn, PART_TOP_THIRD_BTN);
 
 	elm_object_style_set(btn, "style_call_sixbtn_disabled_headset");
+
 	elm_object_text_set(btn, _("IDS_CALL_BUTTON_BLUETOOTH_ABB"));
 
 	elm_object_disabled_set(btn, EINA_TRUE);
@@ -421,9 +473,12 @@ Evas_Object *_callui_create_bottom_first_button(callui_app_data_t *ad)
 	Evas_Object *btn = NULL;
 
 	__callui_create_button_style(ad, &btn, PART_BOTTOM_FIRST_BTN);
-	evas_object_smart_callback_del(btn, "clicked", __callui_addcall_btn_cb);
+
 	elm_object_style_set(btn, "style_call_sixbtn_add");
+
 	elm_object_text_set(btn, _("IDS_CALL_BUTTON_ADD_CALL"));
+
+	evas_object_smart_callback_del_full(btn, "clicked", __callui_addcall_btn_cb, ad);
 	evas_object_smart_callback_add(btn, "clicked", __callui_addcall_btn_cb, ad);
 
 	elm_object_disabled_set(btn, EINA_FALSE);
@@ -440,11 +495,32 @@ Evas_Object *_callui_create_bottom_first_button_disabled(callui_app_data_t *ad)
 	__callui_create_button_style(ad, &btn, PART_BOTTOM_FIRST_BTN);
 
 	elm_object_style_set(btn, "style_call_sixbtn_disabled_add");
+
 	elm_object_text_set(btn, _("IDS_CALL_BUTTON_ADD_CALL"));
 
 	elm_object_disabled_set(btn, EINA_TRUE);
 
 	return btn;
+}
+
+static void __bootom_second_mute_st_changed_cb(void *user_data, bool is_enable)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	Evas_Object *btn = (Evas_Object *)user_data;
+	if (is_enable) {
+		elm_object_style_set(btn, "style_call_sixbtn_mute_on");
+	} else {
+		elm_object_style_set(btn, "style_call_sixbtn_mute");
+	}
+}
+
+static void __bootom_second_button_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_app_data_t *ad = (callui_app_data_t *)data;
+	_callui_sdm_remove_mute_state_changed_cb(ad->call_sdm, __bootom_second_mute_st_changed_cb, obj);
 }
 
 /* Mute Button ENABLED */
@@ -454,16 +530,25 @@ Evas_Object *_callui_create_bottom_second_button(callui_app_data_t *ad)
 	CALLUI_RETURN_VALUE_IF_FAIL(ad != NULL, NULL);
 
 	__callui_create_button_style(ad, &btn, PART_BOTTOM_SECOND_BTN);
-	elm_object_text_set(btn, _("IDS_CALL_BUTTON_MUTE_ABB"));
-	if (ad->mute_status == EINA_FALSE) {
-		elm_object_style_set(btn, "style_call_sixbtn_mute");
-	} else {
-		elm_object_style_set(btn, "style_call_sixbtn_mute_on");
-	}
-	elm_object_disabled_set(btn, EINA_FALSE);
 
-	evas_object_smart_callback_del(btn, "clicked", _callui_mute_btn_cb);
+	if (_callui_sdm_get_mute_state(ad->call_sdm)) {
+		elm_object_style_set(btn, "style_call_sixbtn_mute_on");
+	} else {
+		elm_object_style_set(btn, "style_call_sixbtn_mute");
+	}
+
+	elm_object_text_set(btn, _("IDS_CALL_BUTTON_MUTE_ABB"));
+
+	evas_object_smart_callback_del_full(btn, "clicked", _callui_mute_btn_cb, ad);
 	evas_object_smart_callback_add(btn, "clicked", _callui_mute_btn_cb, ad);
+
+	evas_object_event_callback_del_full(btn, EVAS_CALLBACK_DEL, __bootom_second_button_del_cb, ad);
+	evas_object_event_callback_add(btn, EVAS_CALLBACK_DEL, __bootom_second_button_del_cb, ad);
+
+	_callui_sdm_remove_mute_state_changed_cb(ad->call_sdm, __bootom_second_mute_st_changed_cb, btn);
+	_callui_sdm_add_mute_state_changed_cb(ad->call_sdm, __bootom_second_mute_st_changed_cb, btn);
+
+	elm_object_disabled_set(btn, EINA_FALSE);
 
 	return btn;
 }
@@ -475,7 +560,9 @@ Evas_Object *_callui_create_bottom_second_button_disabled(callui_app_data_t *ad)
 	Evas_Object *btn = NULL;
 
 	__callui_create_button_style(ad, &btn, PART_BOTTOM_SECOND_BTN);
+
 	elm_object_style_set(btn, "style_call_sixbtn_disabled_mute");
+
 	elm_object_text_set(btn, _("IDS_CALL_BUTTON_MUTE_ABB"));
 
 	elm_object_disabled_set(btn, EINA_TRUE);
@@ -488,12 +575,17 @@ Evas_Object *_callui_create_bottom_third_button(callui_app_data_t *ad)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(ad != NULL, NULL);
 	Evas_Object *btn = NULL;
+
 	__callui_create_button_style(ad, &btn, PART_BOTTOM_THIRD_BTN);
-	elm_object_text_set(btn, _("IDS_CALL_BUTTON_CONTACTS"));
-	evas_object_smart_callback_del(btn, "clicked", __callui_contacts_btn_cb);
-	evas_object_smart_callback_add(btn, "clicked", __callui_contacts_btn_cb, ad);
-	elm_object_disabled_set(btn, EINA_FALSE);
+
 	elm_object_style_set(btn, "style_call_sixbtn_contacts");
+
+	elm_object_text_set(btn, _("IDS_CALL_BUTTON_CONTACTS"));
+
+	evas_object_smart_callback_del_full(btn, "clicked", __callui_contacts_btn_cb, ad);
+	evas_object_smart_callback_add(btn, "clicked", __callui_contacts_btn_cb, ad);
+
+	elm_object_disabled_set(btn, EINA_FALSE);
 
 	return btn;
 }
@@ -503,20 +595,15 @@ Evas_Object *_callui_create_bottom_third_button_disabled(callui_app_data_t *ad)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(ad != NULL, NULL);
 	Evas_Object *btn = NULL;
-#if 1
+
 	__callui_create_button_style(ad, &btn, PART_BOTTOM_THIRD_BTN);
+
 	elm_object_style_set(btn, "style_call_sixbtn_disabled_contacts");
 
 	elm_object_text_set(btn, _("IDS_CALL_BUTTON_CONTACTS"));
-	elm_object_disabled_set(btn, EINA_TRUE);
-
-#else
-	__callui_create_button_style(data, &btn, PART_BOTTOM_THIRD_BTN);
-	elm_object_style_set(btn, "style_call_sixbtn_disabled_contacts");
 
 	elm_object_disabled_set(btn, EINA_TRUE);
 
-#endif
 	return btn;
 }
 
@@ -618,7 +705,7 @@ Evas_Object *_callui_show_caller_info_status(void *data, const char *status)
 	return layout;
 }
 
-Evas_Object *_callui_show_caller_id(Evas_Object *contents, char *path)
+Evas_Object *_callui_show_caller_id(Evas_Object *contents, const char *path)
 {
 	dbg("..");
 	Evas_Object *layout = _callui_create_thumbnail(contents, path, THUMBNAIL_138);
@@ -638,11 +725,10 @@ static void __callui_hold_btn_cb(void *data, Evas_Object *obj, void *event_info)
 
 	__callui_unload_more_option(ad);
 
-/*	if (_vcui_keypad_get_show_status() == EINA_TRUE) {
-			_vcui_keypad_hide(vd);
+	callui_result_e res = _callui_manager_hold_call(ad->call_manager);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_manager_hold_call() failed. res[%d]", res);
 	}
-	*/
-	cm_hold_call(ad->cm_handle);
 }
 
 static void __callui_unhold_btn_cb(void *data, Evas_Object *obj, void *event_info)
@@ -652,7 +738,10 @@ static void __callui_unhold_btn_cb(void *data, Evas_Object *obj, void *event_inf
 
 	__callui_unload_more_option(ad);
 
-	cm_unhold_call(ad->cm_handle);
+	callui_result_e res = _callui_manager_unhold_call(ad->call_manager);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_manager_unhold_call() failed. res[%d]", res);
+	}
 }
 
 static void __callui_move_more_option(Evas_Object *ctxpopup)
@@ -725,7 +814,9 @@ void _callui_load_more_option(void *data)
 
 		/* Hold/Resume */
 		if (_callui_vm_get_cur_view_type(ad->view_manager_handle) != VIEW_TYPE_MULTICALL_SPLIT) {
-			if (ad->active != NULL) {
+			const callui_call_state_data_t *call_data =
+					_callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+			if (call_data) {
 				elm_ctxpopup_item_append(ctxpopup, _("IDS_CALL_BUTTON_HOLD"), NULL, __callui_hold_btn_cb, ad);
 			} else {
 				elm_ctxpopup_item_append(ctxpopup, _("IDS_CALL_BUTTON_RESUME_ABB"), NULL, __callui_unhold_btn_cb, ad);
@@ -791,13 +882,12 @@ static void __callui_gl_second_call_option_del_cb(void *data, Evas_Object *obj E
 
 static void __callui_gl_second_call_option_sel(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
+	CALLUI_RETURN_IF_FAIL(data);
+	CALLUI_RETURN_IF_FAIL(event_info);
+
 	Elm_Object_Item *item = (Elm_Object_Item *) event_info;
-	call_data_t *hold_call_data = NULL;
-	call_data_t *unhold_call_data = NULL;
 	second_call_popup_data_t *item_data = NULL;
 	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad);
 
 	__callui_unload_second_call_popup(ad);
 
@@ -806,30 +896,37 @@ static void __callui_gl_second_call_option_sel(void *data, Evas_Object *obj, voi
 		CALLUI_RETURN_IF_FAIL(item_data);
 		dbg("index: %d", item_data->index);
 
-		hold_call_data = ad->held;
-		unhold_call_data = ad->active;
+		const callui_call_state_data_t *hold_call_data =
+				_callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_HELD);
+		const callui_call_state_data_t *unhold_call_data =
+				_callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+
 		if ((unhold_call_data) && (hold_call_data == NULL)) {
 			dbg("1 active call OR 1 active conference call");
 			if (item_data->index == 0) {
-				cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_HOLD_ACTIVE_AND_ACCEPT);
+				_callui_manager_answer_call(ad->call_manager,
+						CALLUI_CALL_ANSWER_TYPE_HOLD_ACTIVE_AND_ACCEPT);
 			} else if (item_data->index == 1) {
-				cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT);
+				_callui_manager_answer_call(ad->call_manager,
+						CALLUI_CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT);
 			} else {
 				err("Wrong index.. Should never get here");
 			}
 		} else if (((unhold_call_data) && (hold_call_data))) {
 			dbg("1 active call + 1 held call OR 1 active conf call + 1 held call OR 1 active call + 1 held conf call");
 			if (item_data->index == 0) {
-				cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT);
+				_callui_manager_answer_call(ad->call_manager,
+						CALLUI_CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT);
 			} else if (item_data->index == 1) {
-				cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_RELEASE_HOLD_AND_ACCEPT);
+				_callui_manager_answer_call(ad->call_manager,
+						CALLUI_CALL_ANSWER_TYPE_RELEASE_HOLD_AND_ACCEPT);
 			} else if (item_data->index == 2) {
-				cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_RELEASE_ALL_AND_ACCEPT);
+				_callui_manager_answer_call(ad->call_manager,
+						CALLUI_CALL_ANSWER_TYPE_RELEASE_ALL_AND_ACCEPT);
 			} else {
 				err("Wrong index.. Should never get here");
 			}
 		}
-
 	}
 }
 
@@ -849,20 +946,20 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 	dbg("..");
 	CALLUI_RETURN_IF_FAIL(ad);
 	Evas_Object *box = NULL;
-	call_data_t *hold_call_data = NULL;
-	call_data_t *unhold_call_data = NULL;
-	char *hold_call_number = NULL;
-	char *hold_call_name = NULL;
-	char *unhold_call_number = NULL;
-	char *unhold_call_name = NULL;
+
+	const char *hold_call_number = NULL;
+	const char *hold_call_name = NULL;
+	const char *unhold_call_number = NULL;
+	const char *unhold_call_name = NULL;
+
 	const char *temp_str = NULL;
 	second_call_popup_data_t *item_data = NULL;
 	Elm_Genlist_Item_Class *itc = NULL;
 	Evas_Object *genlist = NULL;
 	CALLUI_RETURN_IF_FAIL(ad);
 
-	hold_call_data = ad->held;
-	unhold_call_data = ad->active;
+	const callui_call_state_data_t *hold_call_data = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_HELD);
+	const callui_call_state_data_t *unhold_call_data = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
 	if (unhold_call_data == NULL) {
 		err("active call data is null");
 		return;
@@ -908,7 +1005,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 			unhold_call_name = unhold_call_number;
 	}
 
-	if ((unhold_call_data) && (unhold_call_data->member_count == 1) && (hold_call_data == NULL)) {
+	if ((unhold_call_data) && (unhold_call_data->conf_member_count == 1) && (hold_call_data == NULL)) {
 		dbg("1 active call");
 		/* First option */
 		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
@@ -933,7 +1030,9 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		temp_str = _("IDS_CALL_OPT_END_CALL_WITH_PS");
 		snprintf(item_data->option_msg, 512, temp_str, unhold_call_name);
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
-	} else if ((unhold_call_data) && (unhold_call_data->member_count > 1) && (hold_call_data == NULL)) {
+	} else if ((unhold_call_data)
+			&& (unhold_call_data->conf_member_count > 1)
+			&& (hold_call_data == NULL)) {
 		dbg("1 active conference call");
 		/* First option */
 		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
@@ -956,7 +1055,9 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		memset(item_data->option_msg, 0x00, 512);
 		strncpy(item_data->option_msg, _("IDS_CALL_OPT_END_CONFERENCE_CALL"), 512-1);
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
-	} else if ((unhold_call_data) && (hold_call_data) && (unhold_call_data->member_count == 1) && (hold_call_data->member_count == 1)) {
+	} else if ((unhold_call_data)
+			&& (hold_call_data) && (unhold_call_data->conf_member_count == 1)
+			&& (hold_call_data->conf_member_count == 1)) {
 		dbg("1 active call + 1 held call");
 		/* First option */
 		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
@@ -992,7 +1093,9 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		memset(item_data->option_msg, 0x00, 512);
 		strncpy(item_data->option_msg, _("IDS_CALL_OPT_END_ALL_CURRENT_CALLS"), 512-1);
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
-	} else if ((unhold_call_data) && (hold_call_data) && (unhold_call_data->member_count > 1) && (hold_call_data->member_count == 1)) {
+	} else if ((unhold_call_data) && (hold_call_data)
+			&& (unhold_call_data->conf_member_count > 1)
+			&& (hold_call_data->conf_member_count == 1)) {
 		dbg("1 active conf call + 1 held call");
 		/* First option */
 		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
@@ -1027,7 +1130,9 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		memset(item_data->option_msg, 0x00, 512);
 		strncpy(item_data->option_msg, _("IDS_CALL_OPT_END_ALL_CURRENT_CALLS"), 512-1);
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
-	} else if ((unhold_call_data) && (hold_call_data) && (unhold_call_data->member_count == 1) && (hold_call_data->member_count > 1)) {
+	} else if ((unhold_call_data) && (hold_call_data)
+			&& (unhold_call_data->conf_member_count == 1)
+			&& (hold_call_data->conf_member_count > 1)) {
 		dbg("1 active call + 1 held conf call");
 		/* First option */
 		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
@@ -1154,27 +1259,24 @@ void _callui_create_extravolume_notify_popup()
 	callui_app_data_t *ad = _callui_get_app_data();
 	CALLUI_RETURN_IF_FAIL(ad != NULL);
 	char *text = NULL;
-	cm_audio_state_type_e snd_path = CM_AUDIO_STATE_NONE_E;
 
-	cm_get_audio_state(ad->cm_handle, &snd_path);
-	dbg("sound path : %d", snd_path);
-	switch (snd_path) {
-	case CM_AUDIO_STATE_BT_E:
-		{
-			text = _("IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED");
-		}
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+	dbg("sound path : %d", audio_state);
+	switch (audio_state) {
+	case CALLUI_AUDIO_STATE_BT:
+		text = _("IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED");
 		break;
-	case CM_AUDIO_STATE_EARJACK_E:
-		{
-			text = _("IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED");
-		}
+	case CALLUI_AUDIO_STATE_EARJACK:
+		text = _("IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED");
 		break;
+	case CALLUI_AUDIO_STATE_NONE:
+		err("Invalid audio state");
+		return;
 	default:
 		text = _("IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED");
 		break;
 	}
 	_callui_create_toast_message(text);
-
 }
 
 void _callui_create_toast_message(char *string)
@@ -1193,16 +1295,15 @@ static void __callui_create_new_msg_btn_click_cb(void *data, Evas_Object *obj, v
 
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 
-	CALLUI_RETURN_IF_FAIL(ad->incom);
 
-	call_data_t *call_data = ad->incom;
-	char *tel_number = call_data->call_num;
+	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_INCOMING);
+	CALLUI_RETURN_IF_FAIL(incom);
 
-	_callui_common_launch_msg_composer(ad, tel_number);
+	_callui_common_launch_msg_composer(ad, incom->call_num);
 
-	int ret = cm_reject_call(ad->cm_handle);
-	if (ret != CM_ERROR_NONE) {
-		err("cm_reject_call() is failed");
+	callui_result_e res = _callui_manager_reject_call(ad->call_manager);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_manager_reject_call() failed. res[%d]", res);
 	}
 }
 

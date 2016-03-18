@@ -26,6 +26,7 @@
 #include "callui-view-manager.h"
 #include "callui-view-elements.h"
 #include "callui-common.h"
+#include "callui-sound-manager.h"
 
 typedef struct _lock_sccreen_data {
 	Evas_Object *layout;
@@ -98,7 +99,9 @@ static void __callui_lock_screen_show_layout(lock_screen_data_t *lock_screen_pri
 	dbg("..");
 	CALLUI_RETURN_IF_FAIL(lock_screen_priv);
 	callui_app_data_t *ad = _callui_get_app_data();
-	if (ad->speaker_status == EINA_TRUE) {
+
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+	if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
 		dbg("Speaker ON. Do not display lockscreen.");
 		return;
 	}
@@ -184,11 +187,9 @@ static void __callui_lock_screen_user_action_cb(void *data, Evas *evas, Evas_Obj
 {
 	dbg("__callui_lock_screen_user_action_cb");
 	lock_screen_data_t *priv = (lock_screen_data_t *)data;
-	if (priv->no_lock_timer) {
-		ecore_timer_del(priv->no_lock_timer);
-		priv->no_lock_timer = NULL;
-		priv->no_lock_timer = ecore_timer_add(3.0, __lock_timeout_cb, priv);
-	}
+	DELETE_ECORE_TIMER(priv->no_lock_timer);
+	priv->no_lock_timer = ecore_timer_add(3.0, __lock_timeout_cb, priv);
+
 	return;
 }
 
@@ -234,10 +235,7 @@ static void __callui_lock_screen_start_timer(lock_screen_data_t *lock_screen_pri
 	dbg("..");
 	CALLUI_RETURN_IF_FAIL(lock_screen_priv);
 
-	if (lock_screen_priv->no_lock_timer) {
-		ecore_timer_del(lock_screen_priv->no_lock_timer);
-		lock_screen_priv->no_lock_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(lock_screen_priv->no_lock_timer);
 
 	lock_screen_priv->no_lock_timer = ecore_timer_add(3.0, __lock_timeout_cb, lock_screen_priv);
 	return;
@@ -245,13 +243,9 @@ static void __callui_lock_screen_start_timer(lock_screen_data_t *lock_screen_pri
 
 static void __callui_lock_screen_stop_timer(lock_screen_data_t *lock_screen_priv)
 {
-	dbg("..");
 	CALLUI_RETURN_IF_FAIL(lock_screen_priv);
 
-	if (lock_screen_priv->no_lock_timer) {
-		ecore_timer_del(lock_screen_priv->no_lock_timer);
-		lock_screen_priv->no_lock_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(lock_screen_priv->no_lock_timer);
 	return;
 }
 
@@ -262,10 +256,7 @@ static void __callui_lock_screen_delete_layout(void *lock_h)
 	lock_screen_data_t *lock_screen_handle = (lock_screen_data_t *)lock_h;
 	evas_object_del(lock_screen_handle->layout);
 	evas_object_del(lock_screen_handle->hit_rect);
-	if (lock_screen_handle->no_lock_timer) {
-		ecore_timer_del(lock_screen_handle->no_lock_timer);
-		lock_screen_handle->no_lock_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(lock_screen_handle->no_lock_timer);
 	free(lock_screen_handle);
 
 	return;
