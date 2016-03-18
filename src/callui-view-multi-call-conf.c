@@ -16,13 +16,16 @@
  */
 
 #include <Elementary.h>
+#include <efl_extension.h>
 
 #include "callui-view-multi-call-conf.h"
+#include "callui-debug.h"
 #include "callui.h"
 #include "callui-common.h"
 #include "callui-view-elements.h"
 #include "callui-view-layout.h"
 #include "callui-keypad.h"
+#include "callui-state-provider.h"
 
 #define CALLUI_BUF_MEMBER_SIZE 512
 #define CALLUI_BUF_STATUS_SIZE 129
@@ -37,17 +40,18 @@ struct _callui_view_mc_conf {
 
 typedef struct _callui_view_mc_conf _callui_view_mc_conf_t;
 
-static int __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, void *appdata);
-static int __callui_view_multi_call_conf_onupdate(call_view_data_base_t *view_data);
-static int __callui_view_multi_call_conf_ondestroy(call_view_data_base_t *view_data);
+static callui_result_e __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e __callui_view_multi_call_conf_onupdate(call_view_data_base_t *view_data);
+static callui_result_e __callui_view_multi_call_conf_ondestroy(call_view_data_base_t *view_data);
 
-static int __create_main_content(callui_view_mc_conf_h vd);
-static int __update_displayed_data(callui_view_mc_conf_h vd);
+static callui_result_e __create_main_content(callui_view_mc_conf_h vd);
+static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd);
 
 static void __manage_calls_btn_clicked_cb(void *data, Evas_Object *o, const char *emission, const char *source);
 static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __more_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility);
+static Eina_Bool __call_duration_timer_cb(void* data);
 
 callui_view_mc_conf_h _callui_view_multi_call_conf_new()
 {
@@ -61,7 +65,7 @@ callui_view_mc_conf_h _callui_view_multi_call_conf_new()
 	return mc_list_conf;
 }
 
-static int __create_main_content(callui_view_mc_conf_h vd)
+static callui_result_e __create_main_content(callui_view_mc_conf_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
@@ -98,7 +102,7 @@ static int __create_main_content(callui_view_mc_conf_h vd)
 	return CALLUI_RESULT_OK;
 }
 
-static int __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
@@ -106,51 +110,84 @@ static int __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_da
 	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)view_data;
 	view_data->ad = (callui_app_data_t *)appdata;
 
-	int res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	return __update_displayed_data(vd);
 }
 
-static int __callui_view_multi_call_conf_onupdate(call_view_data_base_t *view_data)
+static callui_result_e __callui_view_multi_call_conf_onupdate(call_view_data_base_t *view_data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
-	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)view_data;
-
-	return __update_displayed_data(vd);
+	return __update_displayed_data((callui_view_mc_conf_h)view_data);
 }
 
-static int __update_displayed_data(callui_view_mc_conf_h vd)
+static Eina_Bool __call_duration_timer_cb(void* data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+
+	callui_view_mc_conf_h vd = data;
+
+	struct tm *new_tm = _callui_stp_get_call_duration(vd->base_view.ad->state_provider,
+			CALLUI_CALL_DATA_TYPE_ACTIVE);
+	if (!new_tm) {
+		vd->base_view.call_duration_timer = NULL;
+		return ECORE_CALLBACK_CANCEL;
+	}
+
+	_callui_common_try_update_call_duration_time(vd->base_view.call_duration_tm,
+			new_tm,
+			_callui_common_set_call_duration_time,
+			vd->base_view.contents,
+			"call_txt_status");
+
+	free(new_tm);
+
+	return ECORE_CALLBACK_RENEW;
+}
+
+static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	char buf[CALLUI_BUF_MEMBER_SIZE] = { 0 };
 	char status_txt[CALLUI_BUF_STATUS_SIZE] = { 0 };
-	call_data_t *call_data = NULL;
-	Eina_Bool is_held;
 
-	if (ad->active) {
-		call_data = ad->active;
-		is_held = EINA_FALSE;
-	} else if (ad->held) {
-		call_data = ad->held;
+	Eina_Bool is_held = EINA_FALSE;
+
+	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	if (!call_data) {
+		call_data = _callui_stp_get_call_data(ad->state_provider,
+				CALLUI_CALL_DATA_TYPE_HELD);
 		is_held = EINA_TRUE;
 	}
 	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
+
+	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
+	FREE(vd->base_view.call_duration_tm);
 
 	if (is_held) {
 		snprintf(status_txt, sizeof(status_txt), _("IDS_CALL_BODY_ON_HOLD_ABB"));
 		_callui_show_caller_info_status(ad, status_txt);
 		elm_object_signal_emit(vd->caller_info, "set-hold-state", "call-screen");
+
 	} else {
 		elm_object_signal_emit(vd->caller_info, "set-unhold-state", "call-screen");
+
+		vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+		CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_tm, CALLUI_RESULT_ALLOCATION_FAIL);
+
+		_callui_common_set_call_duration_time(vd->base_view.call_duration_tm, vd->base_view.contents, "call_txt_status");
+
+		vd->base_view.call_duration_timer = ecore_timer_add(0.1, __call_duration_timer_cb, vd);
+		CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_timer, CALLUI_RESULT_ALLOCATION_FAIL);
 	}
 
 	elm_object_signal_emit(vd->caller_info, "set_conference_mode", "");
 	_callui_show_caller_info_name(ad, _("IDS_CALL_BODY_CONFERENCE"));
 	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
-	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->member_count);
+	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->conf_member_count);
 	_callui_show_caller_info_number(ad, buf);
 
 	if (is_held) {
@@ -187,12 +224,15 @@ static int __update_displayed_data(callui_view_mc_conf_h vd)
 	return CALLUI_RESULT_OK;
 }
 
-static int __callui_view_multi_call_conf_ondestroy(call_view_data_base_t *view_data)
+static callui_result_e __callui_view_multi_call_conf_ondestroy(call_view_data_base_t *view_data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
 	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)view_data;
 	callui_app_data_t *ad = vd->base_view.ad;
+
+	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
+	free(vd->base_view.call_duration_tm);
 
 	if (ad->ctxpopup) {
 		elm_ctxpopup_dismiss(ad->ctxpopup);
@@ -216,7 +256,7 @@ static void __manage_calls_btn_clicked_cb(void *data, Evas_Object *o, const char
 	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	_callui_vm_change_view(ad->view_manager_handle, VIEW_TYPE_MULTICALL_LIST);
+	_callui_vm_change_view(ad->view_manager, VIEW_TYPE_MULTICALL_LIST);
 	return;
 }
 
@@ -226,9 +266,10 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	int ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_CALLS);
-	if (ret != CM_ERROR_NONE) {
-		err("cm_end_call() is failed");
+	callui_result_e res = _callui_manager_end_call(ad->call_manager,
+			0, CALLUI_CALL_RELEASE_TYPE_ALL_CALLS);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_manager_end_call() failed. res[%d]", res);
 	}
 }
 
