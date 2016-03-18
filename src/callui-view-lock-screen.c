@@ -15,8 +15,9 @@
  *
  */
 
-#include "callui.h"
 #include "callui-view-lock-screen.h"
+#include "callui-debug.h"
+#include "callui.h"
 #include "callui-view-dialing.h"
 #include "callui-view-single-call.h"
 #include "callui-view-multi-call-conf.h"
@@ -26,6 +27,7 @@
 #include "callui-view-manager.h"
 #include "callui-view-elements.h"
 #include "callui-common.h"
+#include "callui-sound-manager.h"
 
 typedef struct _lock_sccreen_data {
 	Evas_Object *layout;
@@ -98,7 +100,9 @@ static void __callui_lock_screen_show_layout(lock_screen_data_t *lock_screen_pri
 	dbg("..");
 	CALLUI_RETURN_IF_FAIL(lock_screen_priv);
 	callui_app_data_t *ad = _callui_get_app_data();
-	if (ad->speaker_status == EINA_TRUE) {
+
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->sound_manager);
+	if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
 		dbg("Speaker ON. Do not display lockscreen.");
 		return;
 	}
@@ -111,7 +115,7 @@ static void __callui_lock_screen_show_layout(lock_screen_data_t *lock_screen_pri
 	evas_object_show(lock_screen_priv->layout);
 
 #ifdef _DBUS_DVC_LSD_TIMEOUT_
-	if (_callui_vm_get_cur_view_type(ad->view_manager_handle) != VIEW_TYPE_DIALLING) {
+	if (_callui_vm_get_cur_view_type(ad->view_manager) != VIEW_TYPE_DIALLING) {
 		dbg("lcd show");
 		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_LOCKSCREEN_SET);
 	}
@@ -132,7 +136,7 @@ static void __callui_lock_screen_hide_layout(lock_screen_data_t *lock_screen_pri
 	lock_screen_priv->is_locked = false;
 
 #ifdef _DBUS_DVC_LSD_TIMEOUT_
-	if (_callui_vm_get_cur_view_type(ad->view_manager_handle) != VIEW_TYPE_DIALLING) {
+	if (_callui_vm_get_cur_view_type(ad->view_manager) != VIEW_TYPE_DIALLING) {
 		dbg("lcd hide");
 		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
 	}
@@ -159,7 +163,7 @@ static Eina_Bool __lock_timeout_cb(void *data)
 
 	priv->no_lock_timer = NULL;
 
-	callui_view_type_e type = _callui_vm_get_cur_view_type(ad->view_manager_handle);
+	callui_view_type_e type = _callui_vm_get_cur_view_type(ad->view_manager);
 	if (type >= VIEW_TYPE_MULTICALL_LIST) {
 		return ECORE_CALLBACK_CANCEL;
 	} else if (type == VIEW_TYPE_INCOMING_CALL || type == VIEW_TYPE_INCOMING_CALL_NOTI) {
@@ -184,11 +188,9 @@ static void __callui_lock_screen_user_action_cb(void *data, Evas *evas, Evas_Obj
 {
 	dbg("__callui_lock_screen_user_action_cb");
 	lock_screen_data_t *priv = (lock_screen_data_t *)data;
-	if (priv->no_lock_timer) {
-		ecore_timer_del(priv->no_lock_timer);
-		priv->no_lock_timer = NULL;
-		priv->no_lock_timer = ecore_timer_add(3.0, __lock_timeout_cb, priv);
-	}
+	DELETE_ECORE_TIMER(priv->no_lock_timer);
+	priv->no_lock_timer = ecore_timer_add(3.0, __lock_timeout_cb, priv);
+
 	return;
 }
 
@@ -234,10 +236,7 @@ static void __callui_lock_screen_start_timer(lock_screen_data_t *lock_screen_pri
 	dbg("..");
 	CALLUI_RETURN_IF_FAIL(lock_screen_priv);
 
-	if (lock_screen_priv->no_lock_timer) {
-		ecore_timer_del(lock_screen_priv->no_lock_timer);
-		lock_screen_priv->no_lock_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(lock_screen_priv->no_lock_timer);
 
 	lock_screen_priv->no_lock_timer = ecore_timer_add(3.0, __lock_timeout_cb, lock_screen_priv);
 	return;
@@ -245,13 +244,9 @@ static void __callui_lock_screen_start_timer(lock_screen_data_t *lock_screen_pri
 
 static void __callui_lock_screen_stop_timer(lock_screen_data_t *lock_screen_priv)
 {
-	dbg("..");
 	CALLUI_RETURN_IF_FAIL(lock_screen_priv);
 
-	if (lock_screen_priv->no_lock_timer) {
-		ecore_timer_del(lock_screen_priv->no_lock_timer);
-		lock_screen_priv->no_lock_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(lock_screen_priv->no_lock_timer);
 	return;
 }
 
@@ -262,10 +257,7 @@ static void __callui_lock_screen_delete_layout(void *lock_h)
 	lock_screen_data_t *lock_screen_handle = (lock_screen_data_t *)lock_h;
 	evas_object_del(lock_screen_handle->layout);
 	evas_object_del(lock_screen_handle->hit_rect);
-	if (lock_screen_handle->no_lock_timer) {
-		ecore_timer_del(lock_screen_handle->no_lock_timer);
-		lock_screen_handle->no_lock_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(lock_screen_handle->no_lock_timer);
 	free(lock_screen_handle);
 
 	return;

@@ -35,6 +35,7 @@
 #include <Ecore_Wayland.h>
 
 #include "callui-common.h"
+#include "callui-debug.h"
 #include "callui-view-elements.h"
 #include "callui.h"
 #include "callui-view-dialing.h"
@@ -46,6 +47,8 @@
 #include "callui-view-multi-call-conf.h"
 #include "callui-view-quickpanel.h"
 #include "callui-view-caller-info-defines.h"
+#include "callui-sound-manager.h"
+#include "callui-state-provider.h"
 
 #define CONTACT_PKG			"org.tizen.contacts"
 #define PHONE_PKG			"org.tizen.phone"
@@ -73,66 +76,6 @@ struct dbus_byte {
 	int size;
 };
 
-static Eina_Bool __callui_common_duration_timer_cb(void *data)
-{
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad, ECORE_CALLBACK_CANCEL);
-
-	if ((ad->active) && (ad->incom == NULL) && (ad->active->call_state != CM_CALL_STATE_DIALING)) {
-		if (ad->held) {
-			_callui_common_update_call_duration(ad->held->start_time);
-		} else {
-			_callui_common_update_call_duration(ad->active->start_time);
-		}
-	}
-	return ECORE_CALLBACK_RENEW;
-}
-
-void _callui_common_set_call_duration(char *time_dur)
-{
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_IF_FAIL(ad);
-	Evas_Object *layout = NULL;
-	layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-	CALLUI_RETURN_IF_FAIL(layout);
-	if (_callui_vm_get_cur_view_type(ad->view_manager_handle) == VIEW_TYPE_MULTICALL_SPLIT) {
-		Evas_Object *one_hold_layout = elm_object_part_content_get(layout, PART_SWALLOW_CALL_INFO);
-		Evas_Object *active_layout = elm_object_part_content_get(one_hold_layout, PART_SWALLOW_ACTIVE_INFO);
-		elm_object_part_text_set(active_layout, PART_TEXT_STATUS, time_dur);
-	} else {
-		edje_object_part_text_set(_EDJ(layout), "call_txt_status", _(time_dur));
-	}
-
-	if (ad->qp_minicontrol) {
-		_callui_qp_mc_update_calltime_status(ad->qp_minicontrol, time_dur);
-	}
-}
-
-void _callui_common_update_call_duration(long starttime)
-{
-	callui_app_data_t *ad = _callui_get_app_data();
-	long curr_time = 0;
-	struct tm loctime;
-	long call_time;
-
-	curr_time = _callui_common_get_uptime();
-	call_time = curr_time - starttime;
-	gmtime_r((const time_t *)&call_time, &loctime);
-
-	ad->current_sec = loctime.tm_sec;
-	ad->current_min = loctime.tm_min;
-	ad->current_hour = loctime.tm_hour;
-
-	char dur[TIME_BUF_LEN];
-	if (ad->current_hour > 0) {
-		snprintf(dur, TIME_BUF_LEN, "%02d:%02d:%02d", ad->current_hour, ad->current_min, ad->current_sec);
-	} else {
-		snprintf(dur, TIME_BUF_LEN, "%02d:%02d", ad->current_min, ad->current_sec);
-	}
-
-	_callui_common_set_call_duration(dur);
-}
-
 Eina_Bool _callui_common_is_earjack_connected(void)
 {
 	int result = EINA_FALSE;
@@ -149,33 +92,6 @@ Eina_Bool _callui_common_is_earjack_connected(void)
 	}
 
 	return result;
-}
-
-void _callui_common_create_duration_timer()
-{
-	dbg("_callui_common_create_duration_timer..");
-	callui_app_data_t *ad = _callui_get_app_data();
-
-	if (ad->duration_timer) {
-		ecore_timer_del(ad->duration_timer);
-		ad->duration_timer = NULL;
-	}
-	CALLUI_RETURN_IF_FAIL(ad->active);
-
-	_callui_common_update_call_duration(ad->active->start_time);
-	ad->duration_timer = ecore_timer_add(1.0, __callui_common_duration_timer_cb, NULL);
-	if (ad->duration_timer == NULL) {
-		err("ecore_timer_add returned NULL");
-	}
-}
-
-void _callui_common_delete_duration_timer()
-{
-	callui_app_data_t *ad = _callui_get_app_data();
-	if (ad->duration_timer) {
-		ecore_timer_del(ad->duration_timer);
-		ad->duration_timer = NULL;
-	}
 }
 
 static Eina_Bool __callui_common_ending_timer_expired_cb(void *data)
@@ -205,10 +121,7 @@ static Eina_Bool __callui_common_ending_timer_blink_cb(void *data)
 	ad->blink_cnt++;
 	if (ad->blink_cnt == 5) {
 		/* Run a timer of 2secs for destroying the end selection menu */
-		if (ad->ending_timer) {
-			ecore_timer_del(ad->ending_timer);
-			ad->ending_timer = NULL;
-		}
+		DELETE_ECORE_TIMER(ad->ending_timer);
 		ad->ending_timer = ecore_timer_add(2, __callui_common_ending_timer_expired_cb, ad);
 
 		ad->blink_timer = NULL;
@@ -223,10 +136,7 @@ void _callui_common_create_ending_timer(void *appdata)
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 
 	ad->blink_cnt = 0;
-	if (ad->blink_timer) {
-		ecore_timer_del(ad->blink_timer);
-		ad->blink_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(ad->blink_timer);
 	ad->blink_timer = ecore_timer_add(0.5, __callui_common_ending_timer_blink_cb, ad);
 }
 
@@ -235,34 +145,9 @@ void _callui_common_delete_ending_timer(void *appdata)
 	CALLUI_RETURN_IF_FAIL(appdata);
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 
-	if (ad->ending_timer) {
-		ecore_timer_del(ad->ending_timer);
-		ad->ending_timer = NULL;
-	}
-
-	if (ad->blink_timer) {
-		ecore_timer_del(ad->blink_timer);
-		ad->blink_timer = NULL;
-	}
+	DELETE_ECORE_TIMER(ad->ending_timer);
+	DELETE_ECORE_TIMER(ad->blink_timer);
 }
-
-char *_callui_common_get_sim_name(void *appdata)
-{
-	CALLUI_RETURN_VALUE_IF_FAIL(appdata, NULL);
-	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-
-	char *sim_name = NULL;
-	if (ad->sim_slot == CM_SIM_SLOT_1_E) {
-		sim_name = vconf_get_str(VCONFKEY_SETAPPL_SIM1_NAME);
-	} else if (ad->sim_slot == CM_SIM_SLOT_2_E) {
-		sim_name = vconf_get_str(VCONFKEY_SETAPPL_SIM2_NAME);
-	} else {
-		err("Invalid option for sim slot reached !!!");
-	}
-	info("sim name is :  %s ", sim_name);
-	return sim_name;
-}
-
 
 static bool __callui_common_bt_device_connected_profile(bt_profile_e profile, void *user_data)
 {
@@ -286,10 +171,12 @@ static bool __callui_common_bt_adapter_bonded_device_cb(bt_device_info_s *device
 }
 
 
-Eina_Bool _callui_common_is_headset_conected(void)
+Eina_Bool _callui_common_is_headset_conected(void *appdata)
 {
+	CALLUI_RETURN_VALUE_IF_FAIL(appdata, EINA_FALSE);
+
+	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 	g_is_headset_connected = false;
-	callui_app_data_t *ad  = _callui_get_app_data();
 	bt_adapter_foreach_bonded_device(__callui_common_bt_adapter_bonded_device_cb, ad);
 
 	return g_is_headset_connected;
@@ -333,16 +220,6 @@ int _callui_common_unlock_swipe_lock(void)
 	return 0;
 }
 
-long _callui_common_get_uptime(void)
-{
-	struct sysinfo info;
-
-	if (sysinfo(&info) == 0) {
-		return info.uptime;
-	}
-	return 0;
-}
-
 void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
 {
 	dbg("_callui_common_win_set_noti_type START");
@@ -362,64 +239,6 @@ void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
 	}
 	dbg("_callui_common_win_set_noti_type END");
 
-	return;
-}
-
-void _callui_common_get_contact_info(int person_id, call_contact_data_t *ct_info)
-{
-	dbg("_callui_common_get_contact_info");
-	contacts_error_e err = CONTACTS_ERROR_NONE;
-	contacts_record_h person_record = NULL;
-
-	if (person_id == -1) {
-		err("Invalid contact index!!!");
-		return;
-	}
-
-	if (ct_info == NULL) {
-		err("Empty contact info!!!");
-		return;
-	}
-
-	err = contacts_connect();
-	if (CONTACTS_ERROR_NONE != err) {
-		err("contacts_connect is error : %d", err);
-		return;
-	}
-
-	ct_info->person_id = person_id;
-	err = contacts_db_get_record(_contacts_person._uri, person_id, &person_record);
-	if (CONTACTS_ERROR_NONE != err) {
-		err("contacts_db_get_record error %d", err);
-	} else {
-		char *name = NULL;
-		char *img_path = NULL;
-
-		/* Get display name */
-		err = contacts_record_get_str(person_record, _contacts_person.display_name, &name);
-		if (CONTACTS_ERROR_NONE != err) {
-			err("contacts_record_get_str(display name) error %d", err);
-		} else {
-			g_strlcpy(ct_info->call_disp_name, name, CALLUI_DISPLAY_NAME_LENGTH_MAX);
-			free(name);
-		}
-
-		/* Get caller id path */
-		err = contacts_record_get_str(person_record, _contacts_person.image_thumbnail_path, &img_path);
-		if (CONTACTS_ERROR_NONE != err) {
-			err("contacts_record_get_str(caller id path) error %d", err);
-		} else {
-			g_strlcpy(ct_info->caller_id_path, img_path, CALLUI_IMAGE_PATH_LENGTH_MAX);
-			free(img_path);
-		}
-		contacts_record_destroy(person_record, TRUE);
-	}
-
-	dbg("contact index:[%d]", ct_info->person_id);
-	dbg("display name:[%s]", ct_info->call_disp_name);
-	dbg("img path:[%s]", ct_info->caller_id_path);
-
-	contacts_disconnect();
 	return;
 }
 
@@ -521,7 +340,7 @@ void _callui_common_launch_dialer(void *appdata)
 	return;
 }
 
-void _callui_common_launch_msg_composer(void *appdata, char *number)
+void _callui_common_launch_msg_composer(void *appdata, const char *number)
 {
 	dbg("..");
 
@@ -815,21 +634,23 @@ void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
 	}
 }
 
-gboolean _callui_common_is_extra_volume_available(void)
+bool _callui_common_is_extra_volume_available(void *data)
 {
-	callui_app_data_t *ad = _callui_get_app_data();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad, EINA_TRUE);
-	cm_audio_state_type_e snd_path = CM_AUDIO_STATE_NONE_E;
+	CALLUI_RETURN_VALUE_IF_FAIL(data, true);
 
-	cm_get_audio_state(ad->cm_handle, &snd_path);
-	dbg("sound path : %d", snd_path);
+	callui_app_data_t *ad = (callui_app_data_t*)data;
 
-	if ((snd_path == CM_AUDIO_STATE_BT_E)
-		|| ((snd_path == CM_AUDIO_STATE_EARJACK_E)
+	callui_audio_state_type_e audio_state =
+			_callui_sdm_get_audio_state(ad->sound_manager);
+
+	dbg("sound path : %d", audio_state);
+
+	if ((audio_state == CALLUI_AUDIO_STATE_BT)
+		|| ((audio_state == CALLUI_AUDIO_STATE_EARJACK)
 				&& (_callui_common_is_earjack_connected() == EINA_TRUE))) {
-		return EINA_FALSE;
+		return false;
 	} else {
-		return EINA_TRUE;
+		return true;
 	}
 }
 
@@ -872,7 +693,7 @@ static void __callui_common_lock_state_cb (system_settings_key_e key, void *user
 	}
 }
 
-void _callui_common_set_lock_state_changed_cb()
+void _callui_common_set_lock_state_changed_cb(void *user_data)
 {
 	system_settings_set_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE, __callui_common_lock_state_cb, NULL);
 }
@@ -1031,9 +852,10 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 
 	int res = CALLUI_RESULT_FAIL;
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-	call_data_t *call_data = ad->incom;
 
-	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
+	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+
+	CALLUI_RETURN_VALUE_IF_FAIL(incom, CALLUI_RESULT_FAIL);
 
 	if (strlen(reject_msg) == 0) {
 		err("Is not reject with message case");
@@ -1061,7 +883,8 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 	/* Set message type to SMS reject*/
 	msg_set_int_value(msgInfo, MSG_MESSAGE_TYPE_INT, MSG_TYPE_SMS_REJECT);
 
-	int slot_id = ad->sim_slot;
+	// TODO: Need functionality
+	int slot_id = 1;
 	dbg("msg_sms_send_message() Sim slot [%d]", slot_id);
 	if (slot_id != -1) {
 		slot_id++;
@@ -1079,7 +902,7 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 		msg_struct_list_s *addr_list;
 		msg_get_list_handle(msgInfo, MSG_MESSAGE_ADDR_LIST_STRUCT, (void **)&addr_list);
 		msg_struct_t addr_info = addr_list->msg_struct_info[0];
-		char *call_number = call_data->call_num;
+		const char *call_number = incom->call_num;
 
 		/* Set message address */
 		msg_set_int_value(addr_info, MSG_ADDRESS_INFO_RECIPIENT_TYPE_INT, MSG_RECIPIENTS_TYPE_TO);
@@ -1110,11 +933,52 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 bool _callui_is_on_handsfree_mode()
 {
 	callui_app_data_t *ad = _callui_get_app_data();
-	return (ad->speaker_status || ad->headset_status || ad->earphone_status);
+	//return (ad->speaker_status || ad->headset_status || ad->earphone_status);
+
+	callui_audio_state_type_e type = _callui_sdm_get_audio_state(ad->sound_manager);
+	return (type != CALLUI_AUDIO_STATE_RECEIVER && type != CALLUI_AUDIO_STATE_NONE);
 }
 
 bool _callui_is_on_background()
 {
 	callui_app_data_t *ad = _callui_get_app_data();
 	return ad->on_background;
+}
+
+void _callui_common_set_call_duration_time(struct tm *cur_time,
+		Evas_Object *obj,
+		const char *part)
+{
+	CALLUI_RETURN_IF_FAIL(cur_time);
+	CALLUI_RETURN_IF_FAIL(obj);
+	CALLUI_RETURN_IF_FAIL(part);
+
+	char dur[TIME_BUF_LEN];
+	if (cur_time->tm_hour > 0) {
+		snprintf(dur, TIME_BUF_LEN, "%02d:%02d:%02d", cur_time->tm_hour, cur_time->tm_min, cur_time->tm_sec);
+	} else {
+		snprintf(dur, TIME_BUF_LEN, "%02d:%02d", cur_time->tm_min, cur_time->tm_sec);
+	}
+	elm_object_part_text_set(obj, part, _(dur));
+}
+
+void _callui_common_try_update_call_duration_time(
+		struct tm *cur_time,
+		struct tm *comp_time,
+		set_call_duration_time func,
+		Evas_Object *obj,
+		const char *part)
+{
+	CALLUI_RETURN_IF_FAIL(cur_time);
+	CALLUI_RETURN_IF_FAIL(comp_time);
+	CALLUI_RETURN_IF_FAIL(func);
+	CALLUI_RETURN_IF_FAIL(obj);
+	CALLUI_RETURN_IF_FAIL(part);
+
+	int sec_diff = comp_time->tm_sec - cur_time->tm_sec;
+
+	if (sec_diff != 0) {
+		memcpy(cur_time, comp_time, sizeof(struct tm));
+		func(cur_time, obj, part);
+	}
 }
