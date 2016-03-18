@@ -68,6 +68,8 @@ callui_result_e _callui_manager_join_call(callui_manager_h cm_handler);
 
 callui_result_e _callui_manager_reject_call(callui_manager_h cm_handler);
 
+callui_result_e _callui_manager_stop_alert(callui_manager_h cm_handler);
+
 callui_result_e _callui_manager_split_call(callui_manager_h cm_handler, unsigned int call_id);
 
 callui_result_e _callui_manager_answer_call(callui_manager_h cm_handler, callui_call_answer_type_e ans_type);

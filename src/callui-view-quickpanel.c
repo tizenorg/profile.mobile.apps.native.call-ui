@@ -25,10 +25,13 @@
 #include "callui-view-quickpanel.h"
 #include "callui-view-layout.h"
 #include "callui-common.h"
+#include "callui-sound-manager.h"
+#include "callui-state-provider.h"
 
 #define TXT_TIMER_BUF_LEN 26
 #define CALL_NUMBER_ONE 1
 #define QP_WIN_H 172
+#define TIME_BUF_LEN 16
 
 struct _callui_qp_mc {
 	Evas_Object *win_quickpanel;
@@ -37,11 +40,18 @@ struct _callui_qp_mc {
 	bool is_activated;
 	int rotate_angle;
 	callui_app_data_t *ad;
+
+	Ecore_Timer *call_duration_timer;
+	struct tm *call_duration_tm;
+
 	//Ecore_Event_Handler *client_msg_handler;
 };
 typedef struct _callui_qp_mc callui_qp_mc_t;
 
-static int  __callui_qp_mc_activate(callui_qp_mc_h qp);
+static callui_result_e __callui_qp_mc_init(callui_qp_mc_h qp, callui_app_data_t *ad);
+static void __callui_qp_mc_deinit(callui_qp_mc_h qp);
+
+static callui_result_e  __callui_qp_mc_activate(callui_qp_mc_h qp);
 static void __callui_qp_mc_deactivate(callui_qp_mc_h qp);
 static void __callui_qp_mc_refresh(callui_qp_mc_h qp);
 static void __callui_qp_mc_hide(callui_qp_mc_h qp);
@@ -57,31 +67,85 @@ static Evas_Object *__callui_qp_mc_create_resume_btn(callui_qp_mc_h qp);
 static Evas_Object *__callui_qp_mc_create_call_btn(callui_qp_mc_h qp);
 static Evas_Object *__callui_qp_mc_create_end_btn(callui_qp_mc_h qp);
 
-static void __callui_qp_mc_update_caller(Evas_Object *eo, call_data_t *call_data);
+static void __callui_qp_mc_update_caller(Evas_Object *eo, const callui_call_state_data_t *call_data);
 static void __callui_qp_mc_update_comp_status(callui_qp_mc_h qp,
 		Evas_Object *eo,
 		bool mute_state,
 		char *ls_part,
-		call_data_t *call_data);
+		const callui_call_state_data_t *call_data);
 
 static void __callui_qp_mc_draw_screen(callui_qp_mc_h qp);
 static void __callui_qp_mc_provider_cb(minicontrol_viewer_event_e event_type, bundle *event_arg);
 static Evas_Object *__callui_qp_mc_create_window();
 static Evas_Object *__callui_qp_mc_create_contents(callui_qp_mc_h qp, char *group);
 
+static void __callui_qp_set_split_call_duration_time(struct tm *time, Evas_Object *obj, const char *txt_part);
+
+static Eina_Bool __split_call_duration_timer_cb(void *data);
+static Eina_Bool __active_call_duration_timer_cb(void* data);
+
+static void __call_state_event_cb(void *user_data,
+		callui_call_event_type_e call_event_type,
+		unsigned int call_id,
+		callui_sim_slot_type_e sim_type);
+
 // TODO ecore x atom actions are not supported. Need to move on event from mini controller.
 //static Eina_Bool __callui_qp_mc_client_message_cb(void *data, int type, void *event);
+
+static void __call_state_event_cb(void *user_data,
+		callui_call_event_type_e call_event_type,
+		unsigned int call_id,
+		callui_sim_slot_type_e sim_type)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+	callui_qp_mc_h qp = (callui_qp_mc_h)user_data;
+
+	if (!_callui_stp_is_any_calls_available(qp->ad->call_stp)) {
+		__callui_qp_mc_deactivate(qp);
+		return;
+	}
+
+	if (!qp->is_activated) {
+		callui_result_e res = __callui_qp_mc_activate(qp);
+		CALLUI_RETURN_IF_FAIL(res == CALLUI_RESULT_OK);
+	} else {
+		__callui_qp_mc_refresh(qp);
+	}
+}
+
+static callui_result_e __callui_qp_mc_init(callui_qp_mc_h qp, callui_app_data_t *ad)
+{
+	qp->ad = ad;
+
+	callui_result_e res = _callui_stp_add_call_state_event_cb(ad->call_stp, __call_state_event_cb, qp);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+
+	if (_callui_stp_is_any_calls_available(ad->call_stp)) {
+		res = __callui_qp_mc_activate(qp);
+	}
+	return res;
+}
+
+static void __callui_qp_mc_deinit(callui_qp_mc_h qp)
+{
+	callui_app_data_t *ad = qp->ad;
+
+	__callui_qp_mc_deactivate(qp);
+
+	_callui_stp_remove_call_state_event_cb(ad->call_stp, __call_state_event_cb, qp);
+}
 
 callui_qp_mc_h _callui_qp_mc_create(callui_app_data_t *ad)
 {
 	CALLUI_RETURN_NULL_IF_FAIL(ad);
 
 	callui_qp_mc_h qp = calloc(1, sizeof(callui_qp_mc_t));
-
 	CALLUI_RETURN_NULL_IF_FAIL(qp);
 
-	qp->ad = ad;
-
+	callui_result_e res = __callui_qp_mc_init(qp, ad);
+	if (res != CALLUI_RESULT_OK) {
+		FREE(qp);
+	}
 	return qp;
 };
 
@@ -89,7 +153,7 @@ void _callui_qp_mc_destroy(callui_qp_mc_h qp)
 {
 	CALLUI_RETURN_IF_FAIL(qp);
 
-	__callui_qp_mc_deactivate(qp);
+	__callui_qp_mc_deinit(qp);
 
 	free(qp);
 }
@@ -127,13 +191,16 @@ static void __callui_qp_mc_caller_id_cb(void *data, Evas_Object *obj, void *even
 
 	__callui_qp_mc_hide(qp);
 
-	if (ad->incom) {
-		int ret = -1;
-		ret = cm_answer_call(ad->cm_handle, CALL_ANSWER_TYPE_NORMAL);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_end_call() is failed");
+	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->call_stp,
+					CALLUI_CALL_DATA_TYPE_INCOMING);
+
+	if (call_data) {
+		callui_result_e ret = _callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_TYPE_NORMAL);
+		if (ret != CALLUI_RESULT_OK) {
+			err("_callui_manager_answer_call() is failed");
 		}
 	}
+
 	/***to do***after lcd changes**/
 /*	if (ad->b_lcd_on == EINA_FALSE) {
 		return;
@@ -180,17 +247,19 @@ static void __callui_qp_mc_resume_btn_cb(void *data, Evas_Object *obj, void *eve
 	CALLUI_RETURN_IF_FAIL(qp->ad);
 	callui_app_data_t *ad = qp->ad;
 
-	int ret = -1;
+	const callui_call_state_data_t *call_data =
+			_callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_HELD);
 
-	if (ad->held != NULL) {
-		ret = cm_unhold_call(ad->cm_handle);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_unhold_call() is failed");
+	callui_result_e res = CALLUI_RESULT_FAIL;
+	if (call_data) {
+		res = _callui_manager_unhold_call(ad->call_manager);
+		if (res != CALLUI_RESULT_OK) {
+			err("_callui_manager_unhold_call() failed. res[%d]", res);
 		}
 	} else {
-		ret = cm_hold_call(ad->cm_handle);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_hold_call() is failed");
+		res = _callui_manager_hold_call(ad->call_manager);
+		if (res != CALLUI_RESULT_OK) {
+			err("_callui_manager_hold_call() failed. res[%d]", res);
 		}
 	}
 }
@@ -215,7 +284,8 @@ static Evas_Object *__callui_qp_mc_create_resume_btn(callui_qp_mc_h qp)
 		elm_object_part_content_set(layout, "swallow.resume_button", btn);
 	}
 
-	if (ad->held != NULL) {
+	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_HELD);
+	if (held) {
 		elm_object_style_set(btn, "style_call_icon_only_qp_resume");
 	} else {
 		elm_object_style_set(btn, "style_call_icon_only_qp_resume_on");
@@ -226,34 +296,59 @@ static Evas_Object *__callui_qp_mc_create_resume_btn(callui_qp_mc_h qp)
 	return btn;
 }
 
-void _callui_qp_mc_update_speaker_status(callui_qp_mc_h qp, Eina_Bool is_disable)
-{
-	CALLUI_RETURN_IF_FAIL(qp);
-	CALLUI_RETURN_IF_FAIL(qp->quickpanel_layout);
-	CALLUI_RETURN_IF_FAIL(qp->ad);
 
-	Evas_Object *btn, *layout, *sw;
-	layout = qp->quickpanel_layout;
+static void __speaker_btn_audio_st_changed_cb(void *user_data, callui_audio_state_type_e state)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	Evas_Object *btn = (Evas_Object *)user_data;
+	if (state == CALLUI_AUDIO_STATE_SPEAKER) {
+		elm_object_style_set(btn, "style_call_icon_only_qp_speaker_on");
+	} else {
+		elm_object_style_set(btn, "style_call_icon_only_qp_speaker");
+	}
+}
+
+static void __speaker_btn_button_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_app_data_t *ad = (callui_app_data_t *)data;
+	_callui_sdm_remove_audio_state_changed_cb(ad->call_sdm, __speaker_btn_audio_st_changed_cb, obj);
+}
+
+static void __callui_qp_mc_create_update_speaker_btn(callui_qp_mc_h qp, Eina_Bool is_disable)
+{
+	Evas_Object *btn = NULL;
+	Evas_Object *layout = qp->quickpanel_layout;
 	callui_app_data_t *ad = qp->ad;
 
-	sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.speaker_button");
+	Evas_Object *sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.speaker_button");
 	if (sw) {
 		sec_dbg("Object Already Exists, so Update Only");
 		btn = sw;
-		evas_object_smart_callback_del(btn, "clicked", _callui_spk_btn_cb);
 	} else {
 		sec_dbg("Object Doesn't Exists, so Re-Create");
 		btn = elm_button_add(layout);
 		elm_object_part_content_set(layout, "swallow.speaker_button", btn);
 	}
 
-	if (ad->speaker_status == EINA_FALSE) {
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+	if (audio_state != CALLUI_AUDIO_STATE_SPEAKER) {
 		elm_object_style_set(btn, "style_call_icon_only_qp_speaker");
-		evas_object_smart_callback_add(btn, "clicked", _callui_spk_btn_cb, ad);
 	} else {
 		elm_object_style_set(btn, "style_call_icon_only_qp_speaker_on");
-		evas_object_smart_callback_add(btn, "clicked", _callui_spk_btn_cb, ad);
 	}
+
+	evas_object_smart_callback_del_full(btn, "clicked", _callui_spk_btn_cb, ad);
+	evas_object_smart_callback_add(btn, "clicked", _callui_spk_btn_cb, ad);
+
+	evas_object_event_callback_del_full(btn, EVAS_CALLBACK_DEL, __speaker_btn_button_del_cb, ad);
+	evas_object_event_callback_add(btn, EVAS_CALLBACK_DEL, __speaker_btn_button_del_cb, ad);
+
+	_callui_sdm_remove_audio_state_changed_cb(ad->call_sdm, __speaker_btn_audio_st_changed_cb, btn);
+	_callui_sdm_add_audio_state_changed_cb(ad->call_sdm, __speaker_btn_audio_st_changed_cb, btn);
+
 	evas_object_propagate_events_set(btn, EINA_FALSE);
 
 	elm_object_disabled_set(btn, is_disable);
@@ -291,28 +386,32 @@ static void __callui_qp_mc_end_btn_cb(void *data, Evas_Object *obj, void *event_
 	CALLUI_RETURN_IF_FAIL(data);
 
 	callui_qp_mc_h qp = (callui_qp_mc_h)data;
-
-	CALLUI_RETURN_IF_FAIL(qp->ad);
-
 	callui_app_data_t *ad = qp->ad;
 
-	int ret = -1;
 	__callui_qp_mc_hide(qp);
 
-	if (ad->incom) {
-		ret = cm_reject_call(ad->cm_handle);
-	} else if (CM_CALL_STATE_DIALING == ad->active->call_state)/*(dialling_view)*/ {
-		ret = cm_end_call(ad->cm_handle, ad->active->call_id, CALL_RELEASE_TYPE_BY_CALL_HANDLE);
-	} else if ((ad->active) && (ad->held)) {
-		ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
-	} else if ((ad->active) || (ad->held)) {/*single call*/
-		ret = cm_end_call(ad->cm_handle, 0, CALL_RELEASE_TYPE_ALL_CALLS);
+	const callui_call_state_data_t *active =
+			_callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_state_data_t *held =
+			_callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_HELD);
+	const callui_call_state_data_t *incom =
+			_callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_INCOMING);
+
+	callui_result_e res = CALLUI_RESULT_FAIL;
+	if (incom) {
+		res = _callui_manager_reject_call(ad->call_manager);
+	} else if (active && active->is_dialing) {
+		res = _callui_manager_end_call(ad->call_manager, active->call_id, CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+	} else if (active && held) {
+		res = _callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
+	} else if (active || held) {/*single call*/
+		res = _callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_TYPE_ALL_CALLS);
 	} else {
 		err("invalid case!!!!");
 	}
-	if (ret != CM_ERROR_NONE) {
-		err("cm_end_call() is failed");
-		return;
+
+	if (res != CALLUI_RESULT_OK) {
+		err("__callui_qp_mc_end_btn_cb() failed. res[%d]", res);
 	}
 }
 
@@ -342,36 +441,59 @@ static Evas_Object *__callui_qp_mc_create_end_btn(callui_qp_mc_h qp)
 	return btn;
 }
 
-void _callui_qp_mc_update_mute_status(callui_qp_mc_h qp, Eina_Bool is_disable)
+static void __mute_btn_mute_st_changed_cb(void *user_data, bool is_enable)
 {
-	CALLUI_RETURN_IF_FAIL(qp);
-	CALLUI_RETURN_IF_FAIL(qp->quickpanel_layout);
-	CALLUI_RETURN_IF_FAIL(qp->ad);
+	CALLUI_RETURN_IF_FAIL(user_data);
 
-	Evas_Object *btn, *layout, *sw;
-	layout = qp->quickpanel_layout;
+	Evas_Object *btn = (Evas_Object *)user_data;
+	if (is_enable) {
+		elm_object_style_set(btn, "style_call_icon_only_qp_mute_on");
+	} else {
+		elm_object_style_set(btn, "style_call_icon_only_qp_mute");
+	}
+}
+
+static void __mute_btn_button_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_app_data_t *ad = (callui_app_data_t *)data;
+	_callui_sdm_remove_mute_state_changed_cb(ad->call_sdm, __mute_btn_mute_st_changed_cb, obj);
+}
+
+static void __callui_qp_mc_create_update_mute_btn(callui_qp_mc_h qp, Eina_Bool is_disable)
+{
+	Evas_Object *btn = NULL;
+	Evas_Object *layout = qp->quickpanel_layout;
 	callui_app_data_t *ad = qp->ad;
 
-	sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.mute_button");
+	Evas_Object *sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.mute_button");
 	if (sw) {
 		dbg("Object Already Exists, so Update Only");
 		btn = sw;
-		evas_object_smart_callback_del(btn, "clicked", _callui_mute_btn_cb);
 	} else {
 		dbg("Object Doesn't Exists, so Re-Create");
 		btn = elm_button_add(layout);
 		elm_object_part_content_set(layout, "swallow.mute_button", btn);
 	}
 
-	if (ad->mute_status == EINA_FALSE) {
-		elm_object_style_set(btn, "style_call_icon_only_qp_mute");
-		evas_object_smart_callback_add(btn, "clicked", _callui_mute_btn_cb, ad);
-	} else {
+	if (_callui_sdm_get_mute_state(ad->call_sdm)) {
 		elm_object_style_set(btn, "style_call_icon_only_qp_mute_on");
-		evas_object_smart_callback_add(btn, "clicked", _callui_mute_btn_cb, ad);
+	} else {
+		elm_object_style_set(btn, "style_call_icon_only_qp_mute");
 	}
 
+	evas_object_smart_callback_del_full(btn, "clicked", _callui_mute_btn_cb, ad);
+	evas_object_smart_callback_add(btn, "clicked", _callui_mute_btn_cb, ad);
+
+	evas_object_event_callback_del_full(btn, EVAS_CALLBACK_DEL, __mute_btn_button_del_cb, ad);
+	evas_object_event_callback_add(btn, EVAS_CALLBACK_DEL, __mute_btn_button_del_cb, ad);
+
+	_callui_sdm_remove_mute_state_changed_cb(ad->call_sdm, __mute_btn_mute_st_changed_cb, btn);
+	_callui_sdm_add_mute_state_changed_cb(ad->call_sdm, __mute_btn_mute_st_changed_cb, btn);
+
 	evas_object_propagate_events_set(btn, EINA_FALSE);
+
 	elm_object_disabled_set(btn, is_disable);
 }
 
@@ -380,15 +502,15 @@ static void __callui_qp_mc_hide(callui_qp_mc_h qp)
 	minicontrol_send_event(qp->win_quickpanel, MINICONTROL_PROVIDER_EVENT_REQUEST_HIDE, NULL);
 }
 
-static void __callui_qp_mc_update_caller(Evas_Object *eo, call_data_t *call_data)
+static void __callui_qp_mc_update_caller(Evas_Object *eo, const callui_call_state_data_t *call_data)
 {
 	CALLUI_RETURN_IF_FAIL(eo);
 	CALLUI_RETURN_IF_FAIL(call_data);
 
-	char *call_name = call_data->call_ct_info.call_disp_name;
-	char *file_path = call_data->call_ct_info.caller_id_path;
+	const char *call_name = call_data->call_ct_info.call_disp_name;
+	const char *file_path = call_data->call_ct_info.caller_id_path;
 
-	char *call_number = NULL;
+	const char *call_number = NULL;
 	if (strlen(call_data->call_disp_num) > 0) {
 		call_number = call_data->call_disp_num;
 	} else {
@@ -423,13 +545,76 @@ static void __callui_qp_mc_update_comp_status(callui_qp_mc_h qp,
 		Evas_Object *eo,
 		bool mute_state,
 		char *ls_part,
-		call_data_t *call_data)
+		const callui_call_state_data_t *call_data)
 {
 	CALLUI_RETURN_IF_FAIL(qp);
 
-	_callui_qp_mc_update_mute_status(qp, mute_state);
+	__callui_qp_mc_create_update_mute_btn(qp, mute_state);
 	__callui_qp_mc_update_caller(eo, call_data);
 	elm_object_signal_emit(eo, ls_part, "");
+}
+
+static void __callui_qp_set_split_call_duration_time(struct tm *time, Evas_Object *obj, const char *txt_part)
+{
+	char dur[TIME_BUF_LEN];
+	if (time->tm_hour > 0) {
+		snprintf(dur, TIME_BUF_LEN, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
+	} else {
+		snprintf(dur, TIME_BUF_LEN, "%02d:%02d", time->tm_min, time->tm_sec);
+	}
+
+	char buf[TXT_TIMER_BUF_LEN] = {0};
+	char buf_tmp[TXT_TIMER_BUF_LEN] = {0};
+	snprintf(buf_tmp, sizeof(buf_tmp), "%s / %s", dur, _("IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"));
+	snprintf(buf, sizeof(buf), buf_tmp, CALL_NUMBER_ONE);
+
+	elm_object_part_text_set(obj, txt_part, buf);
+}
+
+static Eina_Bool __split_call_duration_timer_cb(void *data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
+
+	struct tm *new_tm = _callui_stp_get_call_duration(qp->ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	if (!new_tm) {
+		qp->call_duration_timer = NULL;
+		return ECORE_CALLBACK_CANCEL;
+	}
+
+	_callui_common_try_update_call_duration_time(qp->call_duration_tm,
+			new_tm,
+			__callui_qp_set_split_call_duration_time,
+			qp->quickpanel_layout,
+			"call_txt_status");
+
+	free(new_tm);
+
+	return ECORE_CALLBACK_RENEW;
+}
+
+static Eina_Bool __active_call_duration_timer_cb(void* data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
+
+	struct tm *new_tm = _callui_stp_get_call_duration(qp->ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	if (!new_tm) {
+		qp->call_duration_timer = NULL;
+		return ECORE_CALLBACK_CANCEL;
+	}
+
+	_callui_common_try_update_call_duration_time(qp->call_duration_tm,
+			new_tm,
+			_callui_common_set_call_duration_time,
+			qp->quickpanel_layout,
+			"call_txt_status");
+
+	free(new_tm);
+
+	return ECORE_CALLBACK_RENEW;
 }
 
 static void __callui_qp_mc_draw_screen(callui_qp_mc_h qp)
@@ -438,49 +623,63 @@ static void __callui_qp_mc_draw_screen(callui_qp_mc_h qp)
 	CALLUI_RETURN_IF_FAIL(qp->quickpanel_layout);
 	CALLUI_RETURN_IF_FAIL(qp->ad);
 
-	call_data_t *call_data = NULL;
 	callui_app_data_t *ad = qp->ad;
 	Evas_Object *eo = qp->quickpanel_layout;
 
 	Evas_Object *call_btn = __callui_qp_mc_create_call_btn(qp);
 	elm_object_disabled_set(call_btn, EINA_TRUE);
-	_callui_qp_mc_update_speaker_status(qp, EINA_FALSE);
+	__callui_qp_mc_create_update_speaker_btn(qp, EINA_FALSE);
 
-	if (ad->incom) {
-		/**incoming call**/
+	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->call_stp,
+			CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->call_stp,
+			CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->call_stp,
+			CALLUI_CALL_DATA_TYPE_HELD);
 
-		call_data = ad->incom;
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "incoming_call", call_data);
+	DELETE_ECORE_TIMER(qp->call_duration_timer);
+	FREE(qp->call_duration_tm);
+
+	if (incom) {
+		/* Incoming call */
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "incoming_call", incom);
 		__callui_qp_mc_update_text(_("IDS_CALL_BODY_INCOMING_CALL"), 0, eo);
-		_callui_qp_mc_update_speaker_status(qp, EINA_TRUE);
+		__callui_qp_mc_create_update_speaker_btn(qp, EINA_TRUE);
 		elm_object_disabled_set(call_btn, EINA_FALSE);
-	} else if (ad->active && (CM_CALL_STATE_DIALING == ad->active->call_state)) {
-		/**dialling**/
-
-		call_data = ad->active;
+	} else if (active && active->is_dialing) {
+		/* Dialing call */
 		__callui_qp_mc_update_text(_("IDS_CALL_POP_DIALLING"), 0, eo);
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "outgoing_call", call_data);
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "outgoing_call", active);
 		elm_object_signal_emit(eo, "outgoing_call", "");
-	} else if ((ad->active) && (ad->held)) {
-		/**split call**/
+	} else if (active && held) {
+		/* Split call */
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_FALSE, "during_call", active);
+		__callui_qp_mc_update_text(NULL, active->conf_member_count, eo);
 
-		call_data = ad->active;
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_FALSE, "during_call", call_data);
-		__callui_qp_mc_update_text(NULL, ad->active->member_count, eo);
-	} else if ((ad->active)) {
-		/**active call**/
+		qp->call_duration_tm = _callui_stp_get_call_duration(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+		CALLUI_RETURN_IF_FAIL(qp->call_duration_tm);
 
-		call_data = ad->active;
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_FALSE, "during_call", call_data);
-		__callui_qp_mc_update_text(NULL, ad->active->member_count, eo);
-		_callui_common_update_call_duration(call_data->start_time);
-	} else if ((ad->held)) {
-		/**held call**/
+		__callui_qp_set_split_call_duration_time(qp->call_duration_tm, qp->quickpanel_layout, "txt_timer");
 
-		call_data = ad->held;
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "resume_call", call_data);
+		qp->call_duration_timer = ecore_timer_add(0.1, __split_call_duration_timer_cb, qp);
+		CALLUI_RETURN_IF_FAIL(qp->call_duration_timer);
+	} else if (active) {
+		/* Active call */
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_FALSE, "during_call", active);
+		__callui_qp_mc_update_text(NULL, active->conf_member_count, eo);
+
+		qp->call_duration_tm = _callui_stp_get_call_duration(ad->call_stp, CALLUI_CALL_DATA_TYPE_ACTIVE);
+		CALLUI_RETURN_IF_FAIL(qp->call_duration_tm);
+
+		_callui_common_set_call_duration_time(qp->call_duration_tm, qp->quickpanel_layout, "txt_timer");
+
+		qp->call_duration_timer = ecore_timer_add(0.1, __active_call_duration_timer_cb, qp);
+		CALLUI_RETURN_IF_FAIL(qp->call_duration_timer);
+	} else if (held) {
+		/* Held call */
+		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "resume_call", held);
 		__callui_qp_mc_create_resume_btn(qp);
-		__callui_qp_mc_update_text(_("IDS_CALL_BODY_ON_HOLD_ABB"), ad->held->member_count, eo);
+		__callui_qp_mc_update_text(_("IDS_CALL_BODY_ON_HOLD_ABB"), held->conf_member_count, eo);
 	} else {
 		dbg("incoming call. error!");
 	}
@@ -530,7 +729,7 @@ static Evas_Object *__callui_qp_mc_create_contents(callui_qp_mc_h qp, char *grou
 	return _callui_load_edj(qp->win_quickpanel, EDJ_NAME, group);
 }
 
-static int __callui_qp_mc_activate(callui_qp_mc_h qp)
+static callui_result_e __callui_qp_mc_activate(callui_qp_mc_h qp)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(qp, CALLUI_RESULT_INVALID_PARAM);
 
@@ -560,6 +759,8 @@ static int __callui_qp_mc_activate(callui_qp_mc_h qp)
 		*/
 
 	__callui_qp_mc_refresh(qp);
+
+	qp->is_activated = true;
 
 	return CALLUI_RESULT_OK;
 }
@@ -613,48 +814,9 @@ static void __callui_qp_mc_update_text(char *txt_status, int count, Evas_Object 
 	CALLUI_RETURN_IF_FAIL(eo);
 
 	if (txt_status != NULL) {
-		edje_object_part_text_set(_EDJ(eo), "txt_timer", txt_status);
+		elm_object_part_text_set(eo, "txt_timer", txt_status);
 	}
 	if (count > 1) {
-		edje_object_part_text_set(_EDJ(eo), "txt_call_name", _("IDS_CALL_OPT_CONFERENCE_CALL"));
+		elm_object_part_text_set(eo, "txt_call_name", _("IDS_CALL_OPT_CONFERENCE_CALL"));
 	}
 }
-
-void _callui_qp_mc_update_calltime_status(callui_qp_mc_h qp, char *call_timer)
-{
-	CALLUI_RETURN_IF_FAIL(qp);
-
-	callui_app_data_t *ad  = qp->ad;
-	Evas_Object *qp_layout = qp->quickpanel_layout;
-
-	if (!ad) {
-		dbg("ad is NULL!!!");
-		return;
-	}
-
-	if (ad->active) {
-		if (ad->held) {
-			char buf[TXT_TIMER_BUF_LEN] = {0};
-			char buf_tmp[TXT_TIMER_BUF_LEN] = {0};
-			snprintf(buf_tmp, sizeof(buf_tmp), "%s / %s", call_timer, _("IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"));
-			snprintf(buf, sizeof(buf), buf_tmp, CALL_NUMBER_ONE);
-			edje_object_part_text_set(_EDJ(qp_layout), "txt_timer", buf);
-		} else {
-			edje_object_part_text_set(_EDJ(qp_layout), "txt_timer", _(call_timer));
-		}
-	}
-}
-
-void _callui_qp_mc_update(callui_qp_mc_h qp)
-{
-	if (!qp->is_activated) {
-		int res = __callui_qp_mc_activate(qp);
-		CALLUI_RETURN_IF_FAIL(res == CALLUI_RESULT_OK);
-		qp->is_activated = true;
-	}
-
-	__callui_qp_mc_refresh(qp);
-
-	debug_leave();
-}
-

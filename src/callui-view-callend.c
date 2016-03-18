@@ -21,6 +21,8 @@
 #include "callui.h"
 #include "callui-view-elements.h"
 #include "callui-common.h"
+#include "callui-manager.h"
+#include "callui-state-provider.h"
 
 #define APP_CONTROL_MIME_CONTACT "application/vnd.tizen.contact"
 #define CONTACT_NUMBER_BUF_LEN 32
@@ -34,11 +36,11 @@ struct _callui_view_callend {
 };
 typedef struct _callui_view_callend _callui_view_callend_t;
 
-static int __callui_view_callend_oncreate(call_view_data_base_t *view_data, void *appdata);
-static int __callui_view_callend_ondestroy(call_view_data_base_t *view_data);
+static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e __callui_view_callend_ondestroy(call_view_data_base_t *view_data);
 
-static int __create_main_content(callui_view_callend_h vd);
-static int __update_displayed_data(callui_view_callend_h vd);
+static callui_result_e __create_main_content(callui_view_callend_h vd);
+static callui_result_e __update_displayed_data(callui_view_callend_h vd);
 
 static void __call_back_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 
@@ -62,7 +64,7 @@ callui_view_callend_h _callui_view_callend_new()
 	return callend_view;
 }
 
-static int __callui_view_callend_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *view_data, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
@@ -74,14 +76,13 @@ static int __callui_view_callend_oncreate(call_view_data_base_t *view_data, void
 
 	_callui_common_win_set_noti_type(vd->base_view.ad, EINA_TRUE);
 
-	int res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	return __update_displayed_data(vd);
 }
 
-
-static int __callui_view_callend_ondestroy(call_view_data_base_t *view_data)
+static callui_result_e __callui_view_callend_ondestroy(call_view_data_base_t *view_data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
@@ -97,7 +98,7 @@ static int __callui_view_callend_ondestroy(call_view_data_base_t *view_data)
 	return CALLUI_RESULT_OK;
 }
 
-static int __create_main_content(callui_view_callend_h vd)
+static callui_result_e __create_main_content(callui_view_callend_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
@@ -108,20 +109,15 @@ static int __create_main_content(callui_view_callend_h vd)
 	return CALLUI_RESULT_OK;
 }
 
-static int __update_displayed_data(callui_view_callend_h vd)
+static callui_result_e __update_displayed_data(callui_view_callend_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	call_data_t *call_data = NULL;
-	if (ad->active) {
-		call_data = ad->active;
-	} else {
-		call_data = ad->held;
-	}
+	const callui_call_state_data_t *call_data = _callui_stp_get_last_ended_call_data(ad->call_stp);
 	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
 
-	char *file_path = call_data->call_ct_info.caller_id_path;
-	char *call_name = call_data->call_ct_info.call_disp_name;
+	const char *file_path = call_data->call_ct_info.caller_id_path;
+	const char *call_name = call_data->call_ct_info.call_disp_name;
 
 	if (call_data->call_disp_num[0] != '\0') {
 		strncpy(vd->call_number, call_data->call_disp_num, sizeof(vd->call_number));
@@ -181,14 +177,10 @@ static void __call_back_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, v
 
 	_callui_common_delete_ending_timer(vd->base_view.ad);
 
-	vd->base_view.ad->speaker_status = EINA_FALSE;
-	vd->base_view.ad->mute_status = EINA_FALSE;
-	vd->base_view.ad->extra_volume_status = EINA_FALSE;
-
-	cm_dial_call(vd->base_view.ad->cm_handle,
-			vd->call_number,
-			CM_CALL_TYPE_VOICE,
-			vd->base_view.ad->sim_slot);
+	callui_result_e res = _callui_manager_dial_voice_call(vd->base_view.ad->call_manager, vd->call_number, CALLUI_SIM_SLOT_DEFAULT);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_manager_dial_voice_call() failed. res[%d]", res);
+	}
 }
 
 static char *__vcui_endcall_get_item_text(void *data, Evas_Object *obj, const char *part)

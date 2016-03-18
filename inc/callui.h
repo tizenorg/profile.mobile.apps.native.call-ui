@@ -26,6 +26,7 @@
 #include "callui-lock-manager.h"
 #include "callui-debug.h"
 #include "callui-keypad.h"
+#include "callui-manager.h"
 
 #define ACTIVE_NOTIFICATION_AVAILABLE 1
 
@@ -137,41 +138,23 @@ struct appdata {
 	int root_w;	/**<Width of a root window */
 	int root_h;	/**<Height of a root window */
 
-	Eina_Bool speaker_status;
-	Eina_Bool extra_volume_status;
-	Eina_Bool extra_volume_status_force_stop;
-	Eina_Bool headset_status;
-	Eina_Bool earphone_status;
-	Eina_Bool mute_status;
-	Eina_Bool b_earset_key_longpress;
-
-	cm_client_h cm_handle;		/**<Call manager client handle */
-	cm_multi_sim_slot_type_e sim_slot;
-
-	/*call list*/
-	call_data_t *incom;
-	call_data_t *active;
-	call_data_t *held;
-
-	bool incoming_noti;
-
 	bool waiting_dialing;
 
 	/*Call duration*/
 	Ecore_Timer *blink_timer;
 	Ecore_Timer *ending_timer;
-	Ecore_Timer *duration_timer;
+
 	int blink_cnt;
-	int current_sec;
-	int current_min;
-	int current_hour;
 
 	Ecore_Event_Handler *downkey_handler;
 	Ecore_Event_Handler *upkey_handler;
 	Ecore_Timer *earset_key_longpress_timer;
 
-
 	callui_keypad_h keypad;
+
+	callui_manager_h call_manager;
+	callui_state_provider_h call_stp;
+	callui_sound_manager_h call_sdm;
 };
 
 callui_app_data_t *_callui_get_app_data();
