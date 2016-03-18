@@ -25,6 +25,7 @@
 #include "callui-view-manager.h"
 #include "callui-view-circle.h"
 #include "callui-common.h"
+#include "callui-state-provider.h"
 
 #define CALLUI_REJ_MSG_GENLIST_DATA "reject_msg_genlist_data"
 #define CALLUI_REJ_MSG_LIST_OPEN_STATUS_KEY "list_open_status_key"
@@ -58,12 +59,12 @@ struct _callui_view_incoming_call {
 };
 typedef struct _callui_view_incoming_call _callui_view_incoming_call_t;
 
-static int __callui_view_incoming_call_oncreate(call_view_data_base_t *view_data, void *appdata);
-static int __callui_view_incoming_call_onupdate(call_view_data_base_t *view_data);
-static int __callui_view_incoming_call_ondestroy(call_view_data_base_t *view_data);
+static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e __callui_view_incoming_call_onupdate(call_view_data_base_t *view_data);
+static callui_result_e __callui_view_incoming_call_ondestroy(call_view_data_base_t *view_data);
 
-static int __create_main_content(callui_view_incoming_call_h vd);
-static int __update_displayed_data(callui_view_incoming_call_h vd);
+static callui_result_e __create_main_content(callui_view_incoming_call_h vd);
+static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd);
 
 static char *__callui_view_incoming_call_reject_msg_gl_label_get_msg(void *data, Evas_Object *obj, const char *part);
 static void __reject_msg_gl_sel_msg(void *data, Evas_Object *obj, void *event_info);
@@ -86,7 +87,7 @@ static void __reject_msg_bg_mouse_move_cb(void *data, Evas *evas, Evas_Object *o
 
 static void __reject_msg_list_height_update(callui_view_incoming_call_h vd);
 static void __reject_msg_create_genlist(callui_view_incoming_call_h vd);
-static Eina_Bool __reject_msg_check_tel_num(char *call_num);
+static Eina_Bool __reject_msg_check_tel_num(const char *call_num);
 static Evas_Object *__create_reject_msg_layout(callui_view_incoming_call_h vd);
 
 callui_view_incoming_call_h _callui_view_incoming_call_new()
@@ -101,7 +102,7 @@ callui_view_incoming_call_h _callui_view_incoming_call_new()
 	return incoming_lock_view;
 }
 
-static int __callui_view_incoming_call_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_t *view_data, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
@@ -111,33 +112,33 @@ static int __callui_view_incoming_call_oncreate(call_view_data_base_t *view_data
 
 	vd->base_view.ad = ad;
 
-	evas_object_pointer_mode_set(ad->win, EVAS_OBJECT_POINTER_MODE_NOGRAB);
-
 	if (_callui_lock_manager_is_started(ad->lock_handle)) {
 		_callui_lock_manager_force_stop(ad->lock_handle);
 	}
 
+	evas_object_resize(ad->win, ad->root_w,  ad->root_h);
+	_callui_common_win_set_noti_type(ad, EINA_TRUE);
+
+	evas_object_pointer_mode_set(ad->win, EVAS_OBJECT_POINTER_MODE_NOGRAB);
+
 	if (elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
 		dbg("KEY_SELECT key grab failed");
 	}
-	_callui_common_win_set_noti_type(ad, EINA_TRUE);
 
-	int res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	return __update_displayed_data(vd);
 }
 
-static int __callui_view_incoming_call_onupdate(call_view_data_base_t *view_data)
+static callui_result_e __callui_view_incoming_call_onupdate(call_view_data_base_t *view_data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
-	callui_view_incoming_call_h vd = (callui_view_incoming_call_h)view_data;
-
-	return __update_displayed_data(vd);
+	return __update_displayed_data((callui_view_incoming_call_h)view_data);
 }
 
-static int __callui_view_incoming_call_ondestroy(call_view_data_base_t *view_data)
+static callui_result_e __callui_view_incoming_call_ondestroy(call_view_data_base_t *view_data)
 {
 	callui_view_incoming_call_h vd = (callui_view_incoming_call_h)view_data;
 	callui_app_data_t *ad = vd->base_view.ad;
@@ -146,7 +147,8 @@ static int __callui_view_incoming_call_ondestroy(call_view_data_base_t *view_dat
 #ifdef _DBUS_DVC_LSD_TIMEOUT_
 	/* Set LCD timeout for call state */
 	/* LCD is alwasy on during incoming call screen */
-	if (ad->speaker_status == EINA_TRUE) {
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+	if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
 		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
 	}
 #endif
@@ -208,9 +210,9 @@ static void __reject_msg_gl_sel_msg(void *data, Evas_Object *obj, void *event_in
 			free(ret_str);
 		}
 
-		int ret = cm_reject_call(ad->cm_handle);
-		if (ret != CM_ERROR_NONE) {
-			err("cm_reject_call() is failed");
+		callui_result_e res = _callui_manager_reject_call(ad->call_manager);
+		if (res != CM_ERROR_NONE) {
+			err("cm_reject_call() is failed. res[%d]", res);
 		} else {
 			_callui_common_send_reject_msg(ad, vd->reject_msg);
 		}
@@ -293,7 +295,7 @@ Evas_Object *_callui_view_incoming_call_get_accept_layout(callui_view_incoming_c
 	return vd->lock_accept;
 }
 
-int _callui_view_incoming_call_set_accept_layout(callui_view_incoming_call_h vd, Evas_Object *layout)
+callui_result_e _callui_view_incoming_call_set_accept_layout(callui_view_incoming_call_h vd, Evas_Object *layout)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, CALLUI_RESULT_INVALID_PARAM);
 
@@ -307,7 +309,7 @@ Evas_Object *_callui_view_incoming_call_get_reject_layout(callui_view_incoming_c
 	return vd->lock_reject;
 }
 
-int _callui_view_incoming_call_set_reject_layout(callui_view_incoming_call_h vd, Evas_Object *layout)
+callui_result_e _callui_view_incoming_call_set_reject_layout(callui_view_incoming_call_h vd, Evas_Object *layout)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(vd, CALLUI_RESULT_INVALID_PARAM);
 
@@ -665,21 +667,21 @@ static void __reject_msg_create_genlist(callui_view_incoming_call_h vd)
 	elm_object_tree_focus_allow_set(vd->reject_msg_genlist, EINA_FALSE);
 }
 
-static int __update_displayed_data(callui_view_incoming_call_h vd)
+static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->incom, CALLUI_RESULT_FAIL);
+	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->call_stp, CALLUI_CALL_DATA_TYPE_INCOMING);
+	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
 
-	call_data_t *call_data = ad->incom;
-	char *file_path = call_data->call_ct_info.caller_id_path;
+	const char *file_path = call_data->call_ct_info.caller_id_path;
 
 	if (strcmp(file_path, "default") != 0) {
 		_callui_show_caller_id(vd->caller_info, file_path);
 	}
 
-	char *call_name = call_data->call_ct_info.call_disp_name;
-	char *call_number = NULL;
+	const char *call_name = call_data->call_ct_info.call_disp_name;
+	const char *call_number = NULL;
 	if (call_data->call_disp_num[0] != '\0') {
 		call_number = call_data->call_disp_num;
 	} else {
@@ -706,7 +708,7 @@ static int __update_displayed_data(callui_view_incoming_call_h vd)
 	return CALLUI_RESULT_OK;
 }
 
-static Eina_Bool __reject_msg_check_tel_num(char *call_num)
+static Eina_Bool __reject_msg_check_tel_num(const char *call_num)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(call_num, EINA_FALSE);
 
@@ -752,7 +754,7 @@ static Evas_Object *__create_reject_msg_layout(callui_view_incoming_call_h vd)
 	return vd->reject_msg_layout;
 }
 
-static int __create_main_content(callui_view_incoming_call_h vd)
+static callui_result_e __create_main_content(callui_view_incoming_call_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
@@ -766,7 +768,7 @@ static int __create_main_content(callui_view_incoming_call_h vd)
 
 	_callui_show_caller_info_status(ad, _("IDS_CALL_BODY_INCOMING_CALL"));
 
-	int res = _callui_view_circle_create_accept_layout(ad, vd, vd->base_view.contents);
+	callui_result_e res = _callui_view_circle_create_accept_layout(ad, vd, vd->base_view.contents);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 	res = _callui_view_circle_create_reject_layout(ad, vd, vd->base_view.contents);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);

@@ -269,7 +269,7 @@ Evas_Object *_callui_show_caller_info_status(void *data, const char *status);
  * @return layout
  *
  */
-Evas_Object *_callui_show_caller_id(Evas_Object *contents, char *path);
+Evas_Object *_callui_show_caller_id(Evas_Object *contents, const char *path);
 
 /**
  * @brief Create more popup
@@ -328,42 +328,6 @@ void _callui_spk_btn_cb(void *data, Evas_Object *obj, void *event_info);
  *
  */
 void _callui_mute_btn_cb(void *data, Evas_Object *obj, void *event_info);
-
-/**
- * @brief Update speaker button depending on the state
- *
- * @param[in]    data         Application data
- * @param[in]    is_on        Button state
- *
- */
-void _callui_update_speaker_btn(callui_app_data_t *ad, Eina_Bool is_on);
-
-/**
- * @brief Update headset button depending on the state
- *
- * @param[in]    data         Application data
- * @param[in]    is_on        Button state
- *
- */
-void _callui_update_headset_btn(callui_app_data_t *ad, Eina_Bool is_on);
-
-/**
- * @brief Update mute button depending on the state
- *
- * @param[in]    data         Application data
- * @param[in]    is_on        Button state
- *
- */
-void _callui_update_mute_btn(callui_app_data_t *ad, Eina_Bool is_on);
-
-/**
- * @brief Update extra volume button depending on the state
- *
- * @param[in]    data         Application data
- * @param[in]    is_on        Button state
- *
- */
-void _callui_update_extra_vol_btn(callui_app_data_t *ad, Eina_Bool is_on);
 
 /**
  * @brief Create and set background layout
