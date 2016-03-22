@@ -784,7 +784,7 @@ Evas_Object *_callui_create_view_contact_button(void *data, int ct_id)
 	elm_object_style_set(btn, "style_call_end_view_contact_button");
 	elm_object_text_set(btn, _("IDS_CALL_BUTTON_VIEW_CONTACT_DETAILS_ABB"));
 	char str[CONTACT_ID_BUF_LEN];
-	sprintf(str, "%d", ct_id);
+	snprintf(str, CONTACT_ID_BUF_LEN, "%d", ct_id);
 	evas_object_smart_callback_add(btn, "clicked", __vcui_view_contact_btn_cb, (void *)strdup(str));
 
 	return btn;
