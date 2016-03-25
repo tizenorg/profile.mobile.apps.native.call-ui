@@ -25,6 +25,7 @@
 #include "callui-keypad.h"
 #include "callui-manager.h"
 #include "callui-view-quickpanel.h"
+#include "callui-action-bar.h"
 
 struct appdata {
 	Evas_Object *win;
@@ -62,6 +63,7 @@ struct appdata {
 	Ecore_Timer *earset_key_longpress_timer;
 
 	callui_keypad_h keypad;
+	callui_action_bar_h action_bar;
 
 	callui_manager_h call_manager;
 	callui_state_provider_h state_provider;

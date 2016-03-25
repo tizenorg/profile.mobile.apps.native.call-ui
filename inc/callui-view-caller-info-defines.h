@@ -46,7 +46,6 @@
 #define PART_SWALLOW_MERGE					"swallow.merge"
 #define PART_SWALLOW_SWAP					"swallow.swap"
 #define PART_SWALLOW_ACTIVE_INFO			"swallow.active_info"
-#define PART_SWALLOW_BTN_REGION				"btn_region"
 
 #define GROUP_SPLIT							"split"
 #define PART_SWALLOW_CALL_INFO				"swallow.call_info"
