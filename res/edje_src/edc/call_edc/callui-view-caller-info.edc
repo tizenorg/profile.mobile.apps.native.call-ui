@@ -280,6 +280,7 @@ group{
 			scale: 1;
 			description {
 				state: "default" 0.0;
+				visible: 1;
 				rel1 { relative: MANAGE_BTN_L MANAGE_BTN_T; to: "background";}
 				rel2 { relative: MANAGE_BTN_R MANAGE_BTN_B; to: "background";}
 			}
@@ -416,6 +417,20 @@ group{
 				name: "dim_caller_id";
 				action: STATE_SET "dim" 0.0;
 				target: "caller_id_bg";
+			}
+			program {
+				name: "show_arrow";
+				signal: "show,arrow";
+				source: "";
+				action: STATE_SET "default" 0.0;
+				target: "manage_calls_icon_swallow";
+			}
+			program {
+				name: "hide_arrow";
+				signal: "hide,arrow";
+				source: "";
+				action: STATE_SET "hide" 0.0;
+				target: "manage_calls_icon_swallow";
 			}
 		}
 	}

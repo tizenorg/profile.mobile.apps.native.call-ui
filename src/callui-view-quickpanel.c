@@ -89,23 +89,23 @@ static void __update_speaker_btn(callui_qp_mc_h qp, Eina_Bool is_disable);
 static __btn_params_t btn_params[QP_MC_BTN_TYPE_MAX] = {
 		{
 				"swallow.call_button",__caller_btn_click_cb, __update_call_btn,
-				{"style_call_icon_only_qp_call", NULL}
+				{"callui_qp_btn_call", NULL}
 		},
 		{
 				"swallow.resume_button", __resume_btn_click_cb, __update_resume_btn,
-				{"style_call_icon_only_qp_resume", "style_call_icon_only_qp_resume_on"}
+				{"callui_qp_btn_resume", "callui_qp_btn_resume_on"}
 		},
 		{
 				"swallow.mute_button", __mute_btn_click_cb, __update_mute_btn,
-				{"style_call_icon_only_qp_mute", "style_call_icon_only_qp_mute_on"}
+				{"callui_qp_btn_mute", "callui_qp_btn_mute_on"}
 		},
 		{
 				"swallow.speaker_button", __speaker_btn_click_cb, __update_speaker_btn,
-				{"style_call_icon_only_qp_speaker", "style_call_icon_only_qp_speaker_on"}
+				{"callui_qp_btn_speaker", "callui_qp_btn_speaker_on"}
 		},
 		{
 				"swallow.end_button", __end_btn_click_cb, NULL,
-				{"style_call_icon_only_qp_end", NULL}
+				{"callui_qp_btn_end", NULL}
 		}
 };
 
