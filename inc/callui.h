@@ -19,6 +19,7 @@
 #define __CALLUI_H_
 
 #include <dlog.h>
+#include <dlog-internal.h>
 #include <efl_extension.h>
 #include <call-manager.h>
 #include <call-manager-extension.h>
