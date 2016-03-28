@@ -216,6 +216,7 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 {
 	dbg("Create window");
 	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_BASIC);
+	elm_win_aux_hint_add(eo, "wm.policy.win.user.geometry", "1");
 	elm_win_fullscreen_set(eo, EINA_FALSE);
 	elm_win_alpha_set(eo, EINA_TRUE);
 

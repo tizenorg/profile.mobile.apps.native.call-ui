@@ -32,7 +32,8 @@
 #include <app_common.h>
 #include <msg.h>
 #include <msg_transport.h>
-#include <Ecore_Wayland.h>
+// TODO: needed for functionality of switch window types that currently does not work
+//#include <Ecore_Wayland.h>
 
 #include "callui-common.h"
 #include "callui-debug.h"
@@ -222,24 +223,22 @@ int _callui_common_unlock_swipe_lock(void)
 
 void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
 {
-	dbg("_callui_common_win_set_noti_type START");
-	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-
-	Ecore_Wl_Window *win = elm_win_wl_window_get(ad->win);
-	if (bwin_noti == EINA_FALSE) {
-		dbg("window type: NORMAL");
-		/* Set Normal window */
-		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_TOPLEVEL);
-	} else {
-		dbg("window type: NOTI-HIGH");
-		/* Set Notification window */
-		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_NOTIFICATION);
-		/* Set Notification's priority to LEVEL_HIGH */
-		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
-	}
-	dbg("_callui_common_win_set_noti_type END");
-
-	return;
+	dbg("_callui_common_win_set_noti_type");
+	// TODO: commented until functionality of switch window types will be fixed
+//	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+//
+//	Ecore_Wl_Window *win = elm_win_wl_window_get(ad->win);
+//	if (bwin_noti == EINA_FALSE) {
+//		dbg("window type: NORMAL");
+//		/* Set Normal window */
+//		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_TOPLEVEL);
+//	} else {
+//		dbg("window type: NOTI-HIGH");
+//		/* Set Notification window */
+//		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_NOTIFICATION);
+//		/* Set Notification's priority to LEVEL_HIGH */
+//		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
+//	}
 }
 
 void _callui_common_launch_contacts(void *appdata)
