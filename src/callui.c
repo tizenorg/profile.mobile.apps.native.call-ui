@@ -387,6 +387,7 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 
 	dbg("Create window");
 	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_BASIC);
+	elm_win_aux_hint_add(eo, "wm.policy.win.user.geometry", "1");
 	elm_win_alpha_set(eo, EINA_TRUE);
 	elm_win_fullscreen_set(eo, EINA_FALSE);
 
@@ -395,7 +396,6 @@ static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 		evas_object_smart_callback_add(eo, "delete,request", __callui_win_delete_request_cb, NULL);
 		elm_win_screen_size_get(eo, NULL, NULL, &ad->root_w, &ad->root_h);
 
-		dbg("root_w = %d, root_h = %d..", ad->root_w, ad->root_h);
 		evas_object_resize(eo, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_CALL_HEIGHT));
 
 		elm_win_center(eo, EINA_FALSE, EINA_TRUE);
