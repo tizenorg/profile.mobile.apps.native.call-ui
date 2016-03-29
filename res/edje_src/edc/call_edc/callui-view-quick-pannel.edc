@@ -52,6 +52,7 @@ styles {
 			scale: 1; \
 			description { \
 				state: "default" 0.0; \
+				visible: 0; \
 				rel1 { \
 					relative: 0.0 1.0;  \
 					to_x: _from_right_part_name; \
@@ -63,7 +64,7 @@ styles {
 					to_y: "pad.btn.top"; \
 				} \
 				min: QP_BTN_SIZE; \
-				max: QP_BTN_SIZE; \
+				fixed: 1 1; \
 				align: 1.0 0.0; \
 			} \
 			description { \
@@ -93,7 +94,7 @@ styles {
 			description { state: "default" 0.0; \
 				fixed: 1 0; \
 				min: QP_BTN_GAP 0; \
-				max: QP_BTN_GAP -1; \
+				fixed: 1 0; \
 				rel1 { relative: 0 0; to_x: part_name; } \
 				rel2 { relative: 0 1; to_x: part_name; } \
 				align: 1 0.5; \
@@ -244,7 +245,6 @@ group {
 			description { state: "default" 0.0;
 				fixed: 1 0;
 				min: QP_TEXT_AREA_PAD_R 0;
-				max: QP_TEXT_AREA_PAD_R -1;
 				rel1 { relative: 0 0; to_x: "swallow.speaker_button"; }
 				rel2 { relative: 0 1; to_x: "swallow.speaker_button"; }
 				align: 1 0.5;
@@ -255,6 +255,7 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
+				visible: 0;
 				rel1 {
 					relative: 0.0 1.0;
 					to_x: "pad.swallow.end_button.left";
@@ -266,7 +267,7 @@ group {
 					to_y: "pad.btn.top";
 				}
 				min: QP_BTN_SIZE;
-				max: QP_BTN_SIZE;
+				fixed: 1 1;
 				align: 1.0 0.0;
 			}
 			description {
@@ -287,7 +288,7 @@ group {
 					to_y: "pad.btn.top";
 				}
 				min: QP_BTN_SIZE;
-				max: QP_BTN_SIZE;
+				fixed: 1 1;
 				align: 1.0 0.0;
 				visible: 1;
 			}
@@ -309,7 +310,7 @@ group {
 					to_y: "pad.btn.top";
 				}
 				min: QP_BTN_SIZE;
-				max: QP_BTN_SIZE;
+				fixed: 1 1;
 				align: 1.0 0.0;
 				visible: 1;
 			}
@@ -500,10 +501,10 @@ group {
 				visible: 0;
 			}
 		}
+		QP_SWALLOW_BTN_WITH_PAD_L("swallow.end_button", "pad.right", 1, 1, 1, 1);
 		QP_SWALLOW_BTN_WITH_PAD_L("swallow.mute_button", "pad.swallow.end_button.left", 0, 1, 0, 0);
 		QP_SWALLOW_BTN_WITH_PAD_L("swallow.resume_button", "pad.swallow.end_button.left", 0, 0, 0, 1);
 		QP_SWALLOW_BTN_WITH_PAD_L("swallow.call_button", "pad.swallow.end_button.left", 1, 0, 0, 0);
-		QP_SWALLOW_BTN_WITH_PAD_L("swallow.end_button", "pad.right", 1, 1, 1, 0);
 	}
 	programs{
 		program {
@@ -511,10 +512,11 @@ group {
 			signal: "resume_call";
 			source: "*";
 			action: STATE_SET "resume" 0.0;
+			target: "swallow.end_button";
 			target: "swallow.mute_button";
-			target: "swallow.speaker_button";
-			target: "swallow.call_button";
 			target: "swallow.resume_button";
+			target: "swallow.call_button";
+			target: "swallow.speaker_button";
 			target: "caller_id_img";
 			target: "caller_id_mask";
 			target: "caller_id";
@@ -525,10 +527,11 @@ group {
 			signal: "outgoing_call";
 			source: "*";
 			action: STATE_SET "outgoing" 0.0;
+			target: "swallow.end_button";
 			target: "swallow.mute_button";
-			target: "swallow.speaker_button";
-			target: "swallow.call_button";
 			target: "swallow.resume_button";
+			target: "swallow.call_button";
+			target: "swallow.speaker_button";
 			target: "txt_area";
 		}
 		program {
@@ -536,10 +539,11 @@ group {
 			signal: "incoming_call";
 			source: "*";
 			action: STATE_SET "incoming" 0.0;
+			target: "swallow.end_button";
 			target: "swallow.mute_button";
-			target: "swallow.speaker_button";
-			target: "swallow.call_button";
 			target: "swallow.resume_button";
+			target: "swallow.call_button";
+			target: "swallow.speaker_button";
 			target: "txt_area";
 		}
 		program {
@@ -547,10 +551,11 @@ group {
 			signal: "during_call";
 			source: "*";
 			action: STATE_SET "during" 0.0;
+			target: "swallow.end_button";
 			target: "swallow.mute_button";
-			target: "swallow.speaker_button";
-			target: "swallow.call_button";
 			target: "swallow.resume_button";
+			target: "swallow.call_button";
+			target: "swallow.speaker_button";
 			target: "caller_id_img";
 			target: "caller_id_mask";
 			target: "caller_id";
