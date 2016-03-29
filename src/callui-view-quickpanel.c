@@ -34,6 +34,15 @@
 #define QP_WIN_H 172
 #define TIME_BUF_LEN 16
 
+typedef enum {
+	QP_MC_BTN_TYPE_CALL = 0,
+	QP_MC_BTN_TYPE_RESUME,
+	QP_MC_BTN_TYPE_MUTE,
+	QP_MC_BTN_TYPE_SPEAKER,
+	QP_MC_BTN_TYPE_END,
+	QP_MC_BTN_TYPE_MAX
+} callui_qp_mc_btn_type_e;
+
 struct _callui_qp_mc {
 	Evas_Object *win_quickpanel;
 	Evas_Object *quickpanel_layout;
@@ -42,46 +51,92 @@ struct _callui_qp_mc {
 	int rotate_angle;
 	callui_app_data_t *ad;
 
+	Evas_Object *buttons[QP_MC_BTN_TYPE_MAX];
+	bool is_available[QP_MC_BTN_TYPE_MAX];
+
 	Ecore_Timer *call_duration_timer;
 	struct tm *call_duration_tm;
-
-	//Ecore_Event_Handler *client_msg_handler;
 };
 typedef struct _callui_qp_mc callui_qp_mc_t;
+
+struct __btn_style {
+	char *normal;
+	char *active;
+};
+typedef struct __btn_style __btn_style_t;
+
+typedef void (*btn_update_func)(callui_qp_mc_h qp);
+
+struct __btn_params {
+	char *part;
+	Evas_Smart_Cb click_cb_func;
+	btn_update_func update_func;
+	__btn_style_t style;
+};
+typedef struct __btn_params __btn_params_t;
+
+static void __caller_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
+static void __resume_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
+static void __mute_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
+static void __speaker_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
+static void __end_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
+
+static void __update_call_btn(callui_qp_mc_h qp);
+static void __update_resume_btn(callui_qp_mc_h qp);
+static void __update_mute_btn(callui_qp_mc_h qp);
+static void __update_speaker_btn(callui_qp_mc_h qp);
+
+static __btn_params_t btn_params[QP_MC_BTN_TYPE_MAX] = {
+		{
+				"swallow.call_button",__caller_btn_click_cb, __update_call_btn,
+				{"style_call_icon_only_qp_call", NULL}
+		},
+		{
+				"swallow.resume_button", __resume_btn_click_cb, __update_resume_btn,
+				{"style_call_icon_only_qp_resume", "style_call_icon_only_qp_resume_on"}
+		},
+		{
+				"swallow.mute_button", __mute_btn_click_cb, __update_mute_btn,
+				{"style_call_icon_only_qp_mute", "style_call_icon_only_qp_mute_on"}
+		},
+		{
+				"swallow.speaker_button", __speaker_btn_click_cb, __update_speaker_btn,
+				{"style_call_icon_only_qp_speaker", "style_call_icon_only_qp_speaker_on"}
+		},
+		{
+				"swallow.end_button", __end_btn_click_cb, NULL,
+				{"style_call_icon_only_qp_end", NULL}
+		}
+};
 
 static callui_result_e __callui_qp_mc_init(callui_qp_mc_h qp, callui_app_data_t *ad);
 static void __callui_qp_mc_deinit(callui_qp_mc_h qp);
 
-static callui_result_e  __callui_qp_mc_activate(callui_qp_mc_h qp);
-static void __callui_qp_mc_deactivate(callui_qp_mc_h qp);
-static void __callui_qp_mc_refresh(callui_qp_mc_h qp);
-static void __callui_qp_mc_hide(callui_qp_mc_h qp);
-static void __callui_qp_mc_update_text(char *txt_status, int count, Evas_Object *eo);
+static callui_result_e __activate(callui_qp_mc_h qp);
+static void __deactivate(callui_qp_mc_h qp);
 
-static void __callui_qp_mc_caller_id_cb(void *data, Evas_Object *obj, void *event_info);
-static void __callui_qp_mc_launch_top_view_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+static Evas_Object *__create_qp_btn(callui_qp_mc_h qp, callui_qp_mc_btn_type_e type);
 
-static void __callui_qp_mc_resume_btn_cb(void *data, Evas_Object *obj, void *event_info);
-static void __callui_qp_mc_end_btn_cb(void *data, Evas_Object *obj, void *event_info);
+static void __refresh_components(callui_qp_mc_h qp);
+static void __hide_minicontrol(callui_qp_mc_h qp);
+static void __update_text_components(char *txt_status, int count, Evas_Object *eo);
+static void __main_layout_mouse_up_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 
-static Evas_Object *__callui_qp_mc_create_resume_btn(callui_qp_mc_h qp);
-static Evas_Object *__callui_qp_mc_create_call_btn(callui_qp_mc_h qp);
-static Evas_Object *__callui_qp_mc_create_end_btn(callui_qp_mc_h qp);
-
-static void __callui_qp_mc_update_caller(Evas_Object *eo, const callui_call_state_data_t *call_data);
-static void __callui_qp_mc_update_comp_status(callui_qp_mc_h qp,
+static void __update_caller_info(Evas_Object *eo, const callui_call_state_data_t *call_data);
+static void __update_comp_status(callui_qp_mc_h qp,
 		Evas_Object *eo,
-		bool mute_state,
 		char *ls_part,
 		const callui_call_state_data_t *call_data);
 
-static void __callui_qp_mc_draw_screen(callui_qp_mc_h qp);
-static void __callui_qp_mc_provider_cb(minicontrol_viewer_event_e event_type, bundle *event_arg);
-static Evas_Object *__callui_qp_mc_create_window();
-static Evas_Object *__callui_qp_mc_create_contents(callui_qp_mc_h qp, char *group);
+static void __update_layout_components(callui_qp_mc_h qp);
+static void __minicontrol_provider_cb(minicontrol_viewer_event_e event_type, bundle *event_arg);
+static Evas_Object *__create_window(callui_app_data_t *ad);
 
-static void __callui_qp_set_split_call_duration_time(struct tm *time, Evas_Object *obj, const char *txt_part);
+static void __set_split_call_duration_time(struct tm *time, Evas_Object *obj, const char *txt_part);
 
+static void __init_split_call_duration_timer(callui_qp_mc_h qp);
+static void __init_active_call_duration_timer(callui_qp_mc_h qp);
+static void __deinit_call_duration_timer(callui_qp_mc_h qp);
 static Eina_Bool __split_call_duration_timer_cb(void *data);
 static Eina_Bool __active_call_duration_timer_cb(void* data);
 
@@ -89,9 +144,11 @@ static void __call_state_event_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
 		callui_sim_slot_type_e sim_type);
+static void __audio_state_changed_cb(void *user_data, callui_audio_state_type_e state);
+static void __mute_state_changed_cb(void *user_data, bool is_enable);
 
-// TODO ecore x atom actions are not supported. Need to move on event from mini controller.
-//static Eina_Bool __callui_qp_mc_client_message_cb(void *data, int type, void *event);
+static void __update_all_btns_state(callui_qp_mc_h qp);
+static void __update_all_btns(callui_qp_mc_h qp);
 
 static void __call_state_event_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
@@ -99,18 +156,41 @@ static void __call_state_event_cb(void *user_data,
 		callui_sim_slot_type_e sim_type)
 {
 	CALLUI_RETURN_IF_FAIL(user_data);
+
 	callui_qp_mc_h qp = (callui_qp_mc_h)user_data;
 
 	if (!_callui_stp_is_any_calls_available(qp->ad->state_provider)) {
-		__callui_qp_mc_deactivate(qp);
+		__deactivate(qp);
 		return;
 	}
 
 	if (!qp->is_activated) {
-		callui_result_e res = __callui_qp_mc_activate(qp);
+		callui_result_e res = __activate(qp);
 		CALLUI_RETURN_IF_FAIL(res == CALLUI_RESULT_OK);
 	} else {
-		__callui_qp_mc_refresh(qp);
+		__refresh_components(qp);
+	}
+}
+
+void __audio_state_changed_cb(void *user_data, callui_audio_state_type_e state)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	callui_qp_mc_h qp = (callui_qp_mc_h)user_data;
+
+	if (qp->is_activated) {
+		__update_speaker_btn(qp);
+	}
+}
+
+void __mute_state_changed_cb(void *user_data, bool is_enable)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	callui_qp_mc_h qp = (callui_qp_mc_h)user_data;
+
+	if (qp->is_activated) {
+		__update_mute_btn(qp);
 	}
 }
 
@@ -121,8 +201,14 @@ static callui_result_e __callui_qp_mc_init(callui_qp_mc_h qp, callui_app_data_t 
 	callui_result_e res = _callui_stp_add_call_state_event_cb(ad->state_provider, __call_state_event_cb, qp);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
+	res = _callui_sdm_add_mute_state_changed_cb(ad->sound_manager, __mute_state_changed_cb, qp);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+
+	res = _callui_sdm_add_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, qp);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+
 	if (_callui_stp_is_any_calls_available(ad->state_provider)) {
-		res = __callui_qp_mc_activate(qp);
+		res = __activate(qp);
 	}
 	return res;
 }
@@ -131,9 +217,11 @@ static void __callui_qp_mc_deinit(callui_qp_mc_h qp)
 {
 	callui_app_data_t *ad = qp->ad;
 
-	__callui_qp_mc_deactivate(qp);
+	__deactivate(qp);
 
 	_callui_stp_remove_call_state_event_cb(ad->state_provider, __call_state_event_cb, qp);
+	_callui_sdm_remove_mute_state_changed_cb(ad->sound_manager, __mute_state_changed_cb, qp);
+	_callui_sdm_remove_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, qp);
 }
 
 callui_qp_mc_h _callui_qp_mc_create(callui_app_data_t *ad)
@@ -159,38 +247,14 @@ void _callui_qp_mc_destroy(callui_qp_mc_h qp)
 	free(qp);
 }
 
-// TODO ecore x atom actions are not supported. Need to move on event from mini controller.
-/*
-static Eina_Bool __callui_qp_mc_client_message_cb(void *data, int type, void *event)
-{
-	dbg("__callui_qp_mc_client_message_cb");
-	int new_angle = 0;
-	Ecore_X_Event_Client_Message *ev = (Ecore_X_Event_Client_Message *) event;
-	callui_qp_mc_h qp = (callui_qp_mc_h)data;
-
-	if ((ev->message_type == ECORE_X_ATOM_E_ILLUME_ROTATE_WINDOW_ANGLE)
-		|| (ev->message_type == ECORE_X_ATOM_E_ILLUME_ROTATE_ROOT_ANGLE)) {
-		new_angle = ev->data.l[0];
-		dbg("ROTATION: %d", new_angle);
-		qp->rotate_angle = new_angle;
-		__callui_qp_mc_refresh(qp);
-	}
-
-	return ECORE_CALLBACK_RENEW;
-}
-*/
-
-static void __callui_qp_mc_caller_id_cb(void *data, Evas_Object *obj, void *event_info)
+static void __caller_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(data);
 
 	callui_qp_mc_h qp = (callui_qp_mc_h)data;
-
-	CALLUI_RETURN_IF_FAIL(qp->ad);
-
 	callui_app_data_t *ad = qp->ad;
 
-	__callui_qp_mc_hide(qp);
+	__hide_minicontrol(qp);
 
 	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->state_provider,
 					CALLUI_CALL_DATA_TYPE_INCOMING);
@@ -216,7 +280,7 @@ static void __callui_qp_mc_caller_id_cb(void *data, Evas_Object *obj, void *even
 	elm_win_activate(ad->win);
 }
 
-static void __callui_qp_mc_launch_top_view_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __main_layout_mouse_up_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(data);
 
@@ -225,7 +289,7 @@ static void __callui_qp_mc_launch_top_view_cb(void *data, Evas *evas, Evas_Objec
 	CALLUI_RETURN_IF_FAIL(qp->ad);
 
 	callui_app_data_t *ad = qp->ad;
-	__callui_qp_mc_hide(qp);
+	__hide_minicontrol(qp);
 
 	app_control_h request;
 	app_control_create(&request);
@@ -241,269 +305,12 @@ static void __callui_qp_mc_launch_top_view_cb(void *data, Evas *evas, Evas_Objec
 	_callui_lock_manager_start(ad->lock_handle);
 }
 
-static void __callui_qp_mc_resume_btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	CALLUI_RETURN_IF_FAIL(data);
-	callui_qp_mc_h qp = (callui_qp_mc_h)data;
-	CALLUI_RETURN_IF_FAIL(qp->ad);
-	callui_app_data_t *ad = qp->ad;
-
-	const callui_call_state_data_t *call_data =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
-
-	callui_result_e res = CALLUI_RESULT_FAIL;
-	if (call_data) {
-		res = _callui_manager_unhold_call(ad->call_manager);
-		if (res != CALLUI_RESULT_OK) {
-			err("_callui_manager_unhold_call() failed. res[%d]", res);
-		}
-	} else {
-		res = _callui_manager_hold_call(ad->call_manager);
-		if (res != CALLUI_RESULT_OK) {
-			err("_callui_manager_hold_call() failed. res[%d]", res);
-		}
-	}
-}
-
-static Evas_Object *__callui_qp_mc_create_resume_btn(callui_qp_mc_h qp)
-{
-	CALLUI_RETURN_NULL_IF_FAIL(qp);
-	CALLUI_RETURN_NULL_IF_FAIL(qp->quickpanel_layout);
-	CALLUI_RETURN_NULL_IF_FAIL(qp->ad);
-
-	Evas_Object *btn = NULL;
-	Evas_Object *layout = qp->quickpanel_layout;
-	callui_app_data_t *ad = qp->ad;
-
-	btn = edje_object_part_swallow_get(_EDJ(layout), "swallow.resume_button");
-	if (btn) {
-		sec_dbg("Object Already Exists, so Update Only");
-		evas_object_smart_callback_del(btn, "clicked", __callui_qp_mc_resume_btn_cb);
-	} else {
-		sec_dbg("Object Doesn't Exists, so Re-Create");
-		btn = elm_button_add(layout);
-		elm_object_part_content_set(layout, "swallow.resume_button", btn);
-	}
-
-	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
-	if (held) {
-		elm_object_style_set(btn, "style_call_icon_only_qp_resume");
-	} else {
-		elm_object_style_set(btn, "style_call_icon_only_qp_resume_on");
-	}
-	evas_object_smart_callback_add(btn, "clicked", __callui_qp_mc_resume_btn_cb, qp);
-	evas_object_propagate_events_set(btn, EINA_FALSE);
-
-	return btn;
-}
-
-
-static void __speaker_btn_audio_st_changed_cb(void *user_data, callui_audio_state_type_e state)
-{
-	CALLUI_RETURN_IF_FAIL(user_data);
-
-	Evas_Object *btn = (Evas_Object *)user_data;
-	if (state == CALLUI_AUDIO_STATE_SPEAKER) {
-		elm_object_style_set(btn, "style_call_icon_only_qp_speaker_on");
-	} else {
-		elm_object_style_set(btn, "style_call_icon_only_qp_speaker");
-	}
-}
-
-static void __speaker_btn_button_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
-{
-	CALLUI_RETURN_IF_FAIL(data);
-
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	_callui_sdm_remove_audio_state_changed_cb(ad->sound_manager, __speaker_btn_audio_st_changed_cb, obj);
-}
-
-static void __callui_qp_mc_create_update_speaker_btn(callui_qp_mc_h qp, Eina_Bool is_disable)
-{
-	Evas_Object *btn = NULL;
-	Evas_Object *layout = qp->quickpanel_layout;
-	callui_app_data_t *ad = qp->ad;
-
-	Evas_Object *sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.speaker_button");
-	if (sw) {
-		sec_dbg("Object Already Exists, so Update Only");
-		btn = sw;
-	} else {
-		sec_dbg("Object Doesn't Exists, so Re-Create");
-		btn = elm_button_add(layout);
-		elm_object_part_content_set(layout, "swallow.speaker_button", btn);
-	}
-
-	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->sound_manager);
-	if (audio_state != CALLUI_AUDIO_STATE_SPEAKER) {
-		elm_object_style_set(btn, "style_call_icon_only_qp_speaker");
-	} else {
-		elm_object_style_set(btn, "style_call_icon_only_qp_speaker_on");
-	}
-
-	evas_object_smart_callback_del_full(btn, "clicked", _callui_spk_btn_cb, ad);
-	evas_object_smart_callback_add(btn, "clicked", _callui_spk_btn_cb, ad);
-
-	evas_object_event_callback_del_full(btn, EVAS_CALLBACK_DEL, __speaker_btn_button_del_cb, ad);
-	evas_object_event_callback_add(btn, EVAS_CALLBACK_DEL, __speaker_btn_button_del_cb, ad);
-
-	_callui_sdm_remove_audio_state_changed_cb(ad->sound_manager, __speaker_btn_audio_st_changed_cb, btn);
-	_callui_sdm_add_audio_state_changed_cb(ad->sound_manager, __speaker_btn_audio_st_changed_cb, btn);
-
-	evas_object_propagate_events_set(btn, EINA_FALSE);
-
-	elm_object_disabled_set(btn, is_disable);
-}
-
-static Evas_Object *__callui_qp_mc_create_call_btn(callui_qp_mc_h qp)
-{
-	CALLUI_RETURN_NULL_IF_FAIL(qp);
-
-	Evas_Object *layout, *sw;
-	Evas_Object *btn = NULL;
-	layout = qp->quickpanel_layout;
-
-	sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.call_button");
-	if (sw) {
-		dbg("Object Already Exists, so Update Only");
-		btn = sw;
-		evas_object_smart_callback_del(btn, "clicked", __callui_qp_mc_caller_id_cb);
-	} else {
-		dbg("Object Doesn't Exists, so Re-Create");
-		btn = elm_button_add(layout);
-		elm_object_part_content_set(layout, "swallow.call_button", btn);
-	}
-
-	elm_object_style_set(btn, "style_call_icon_only_qp_call");
-
-	evas_object_smart_callback_add(btn, "clicked", __callui_qp_mc_caller_id_cb, qp);
-	evas_object_propagate_events_set(btn, EINA_FALSE);
-
-	return btn;
-}
-
-static void __callui_qp_mc_end_btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	CALLUI_RETURN_IF_FAIL(data);
-
-	callui_qp_mc_h qp = (callui_qp_mc_h)data;
-	callui_app_data_t *ad = qp->ad;
-
-	__callui_qp_mc_hide(qp);
-
-	const callui_call_state_data_t *active =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
-	const callui_call_state_data_t *held =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
-	const callui_call_state_data_t *incom =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
-
-	callui_result_e res = CALLUI_RESULT_FAIL;
-	if (incom) {
-		res = _callui_manager_reject_call(ad->call_manager);
-	} else if (active && active->is_dialing) {
-		res = _callui_manager_end_call(ad->call_manager, active->call_id, CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
-	} else if (active && held) {
-		res = _callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
-	} else if (active || held) {/*single call*/
-		res = _callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_TYPE_ALL_CALLS);
-	} else {
-		err("invalid case!!!!");
-	}
-
-	if (res != CALLUI_RESULT_OK) {
-		err("__callui_qp_mc_end_btn_cb() failed. res[%d]", res);
-	}
-}
-
-static Evas_Object *__callui_qp_mc_create_end_btn(callui_qp_mc_h qp)
-{
-	CALLUI_RETURN_NULL_IF_FAIL(qp);
-	CALLUI_RETURN_NULL_IF_FAIL(qp->quickpanel_layout);
-
-	Evas_Object *btn, *layout, *sw;
-	layout = qp->quickpanel_layout;
-
-	sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.end_button");
-	if (sw) {
-		dbg("Object Already Exists, so Update Only");
-		btn = sw;
-		evas_object_smart_callback_del(btn, "clicked", __callui_qp_mc_end_btn_cb);
-	} else {
-		dbg("Object Doesn't Exists, so Re-Create");
-		btn = elm_button_add(layout);
-		elm_object_part_content_set(layout, "swallow.end_button", btn);
-	}
-
-	elm_object_style_set(btn, "style_call_icon_only_qp_end");
-
-	evas_object_smart_callback_add(btn, "clicked", __callui_qp_mc_end_btn_cb, qp);
-	evas_object_propagate_events_set(btn, EINA_FALSE);
-	return btn;
-}
-
-static void __mute_btn_mute_st_changed_cb(void *user_data, bool is_enable)
-{
-	CALLUI_RETURN_IF_FAIL(user_data);
-
-	Evas_Object *btn = (Evas_Object *)user_data;
-	if (is_enable) {
-		elm_object_style_set(btn, "style_call_icon_only_qp_mute_on");
-	} else {
-		elm_object_style_set(btn, "style_call_icon_only_qp_mute");
-	}
-}
-
-static void __mute_btn_button_del_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
-{
-	CALLUI_RETURN_IF_FAIL(data);
-
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	_callui_sdm_remove_mute_state_changed_cb(ad->sound_manager, __mute_btn_mute_st_changed_cb, obj);
-}
-
-static void __callui_qp_mc_create_update_mute_btn(callui_qp_mc_h qp, Eina_Bool is_disable)
-{
-	Evas_Object *btn = NULL;
-	Evas_Object *layout = qp->quickpanel_layout;
-	callui_app_data_t *ad = qp->ad;
-
-	Evas_Object *sw = edje_object_part_swallow_get(_EDJ(layout), "swallow.mute_button");
-	if (sw) {
-		dbg("Object Already Exists, so Update Only");
-		btn = sw;
-	} else {
-		dbg("Object Doesn't Exists, so Re-Create");
-		btn = elm_button_add(layout);
-		elm_object_part_content_set(layout, "swallow.mute_button", btn);
-	}
-
-	if (_callui_sdm_get_mute_state(ad->sound_manager)) {
-		elm_object_style_set(btn, "style_call_icon_only_qp_mute_on");
-	} else {
-		elm_object_style_set(btn, "style_call_icon_only_qp_mute");
-	}
-
-	evas_object_smart_callback_del_full(btn, "clicked", _callui_mute_btn_cb, ad);
-	evas_object_smart_callback_add(btn, "clicked", _callui_mute_btn_cb, ad);
-
-	evas_object_event_callback_del_full(btn, EVAS_CALLBACK_DEL, __mute_btn_button_del_cb, ad);
-	evas_object_event_callback_add(btn, EVAS_CALLBACK_DEL, __mute_btn_button_del_cb, ad);
-
-	_callui_sdm_remove_mute_state_changed_cb(ad->sound_manager, __mute_btn_mute_st_changed_cb, btn);
-	_callui_sdm_add_mute_state_changed_cb(ad->sound_manager, __mute_btn_mute_st_changed_cb, btn);
-
-	evas_object_propagate_events_set(btn, EINA_FALSE);
-
-	elm_object_disabled_set(btn, is_disable);
-}
-
-static void __callui_qp_mc_hide(callui_qp_mc_h qp)
+static void __hide_minicontrol(callui_qp_mc_h qp)
 {
 	minicontrol_send_event(qp->win_quickpanel, MINICONTROL_PROVIDER_EVENT_REQUEST_HIDE, NULL);
 }
 
-static void __callui_qp_mc_update_caller(Evas_Object *eo, const callui_call_state_data_t *call_data)
+static void __update_caller_info(Evas_Object *eo, const callui_call_state_data_t *call_data)
 {
 	CALLUI_RETURN_IF_FAIL(eo);
 	CALLUI_RETURN_IF_FAIL(call_data);
@@ -542,20 +349,18 @@ static void __callui_qp_mc_update_caller(Evas_Object *eo, const callui_call_stat
 	}
 }
 
-static void __callui_qp_mc_update_comp_status(callui_qp_mc_h qp,
+static void __update_comp_status(callui_qp_mc_h qp,
 		Evas_Object *eo,
-		bool mute_state,
 		char *ls_part,
 		const callui_call_state_data_t *call_data)
 {
 	CALLUI_RETURN_IF_FAIL(qp);
 
-	__callui_qp_mc_create_update_mute_btn(qp, mute_state);
-	__callui_qp_mc_update_caller(eo, call_data);
+	__update_caller_info(eo, call_data);
 	elm_object_signal_emit(eo, ls_part, "");
 }
 
-static void __callui_qp_set_split_call_duration_time(struct tm *time, Evas_Object *obj, const char *txt_part)
+static void __set_split_call_duration_time(struct tm *time, Evas_Object *obj, const char *txt_part)
 {
 	char dur[TIME_BUF_LEN];
 	if (time->tm_hour > 0) {
@@ -586,9 +391,9 @@ static Eina_Bool __split_call_duration_timer_cb(void *data)
 
 	_callui_common_try_update_call_duration_time(qp->call_duration_tm,
 			new_tm,
-			__callui_qp_set_split_call_duration_time,
+			__set_split_call_duration_time,
 			qp->quickpanel_layout,
-			"call_txt_status");
+			"txt_timer");
 
 	free(new_tm);
 
@@ -611,25 +416,45 @@ static Eina_Bool __active_call_duration_timer_cb(void* data)
 			new_tm,
 			_callui_common_set_call_duration_time,
 			qp->quickpanel_layout,
-			"call_txt_status");
+			"txt_timer");
 
 	free(new_tm);
 
 	return ECORE_CALLBACK_RENEW;
 }
 
-static void __callui_qp_mc_draw_screen(callui_qp_mc_h qp)
+static void __init_split_call_duration_timer(callui_qp_mc_h qp)
 {
-	CALLUI_RETURN_IF_FAIL(qp);
-	CALLUI_RETURN_IF_FAIL(qp->quickpanel_layout);
-	CALLUI_RETURN_IF_FAIL(qp->ad);
+	DELETE_ECORE_TIMER(qp->call_duration_timer);
+	FREE(qp->call_duration_tm);
 
+	qp->call_duration_tm = _callui_stp_get_call_duration(qp->ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	CALLUI_RETURN_IF_FAIL(qp->call_duration_tm);
+	__set_split_call_duration_time(qp->call_duration_tm, qp->quickpanel_layout, "txt_timer");
+
+	qp->call_duration_timer = ecore_timer_add(0.1, __split_call_duration_timer_cb, qp);
+	CALLUI_RETURN_IF_FAIL(qp->call_duration_timer);
+}
+
+static void __deinit_call_duration_timer(callui_qp_mc_h qp)
+{
+	DELETE_ECORE_TIMER(qp->call_duration_timer);
+	FREE(qp->call_duration_tm);
+}
+
+static void __init_active_call_duration_timer(callui_qp_mc_h qp)
+{
+	qp->call_duration_tm = _callui_stp_get_call_duration(qp->ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	CALLUI_RETURN_IF_FAIL(qp->call_duration_tm);
+	_callui_common_set_call_duration_time(qp->call_duration_tm, qp->quickpanel_layout, "txt_timer");
+
+	qp->call_duration_timer = ecore_timer_add(0.1, __active_call_duration_timer_cb, qp);
+	CALLUI_RETURN_IF_FAIL(qp->call_duration_timer);
+}
+
+static void __update_all_btns_state(callui_qp_mc_h qp)
+{
 	callui_app_data_t *ad = qp->ad;
-	Evas_Object *eo = qp->quickpanel_layout;
-
-	Evas_Object *call_btn = __callui_qp_mc_create_call_btn(qp);
-	elm_object_disabled_set(call_btn, EINA_TRUE);
-	__callui_qp_mc_create_update_speaker_btn(qp, EINA_FALSE);
 
 	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider,
 			CALLUI_CALL_DATA_TYPE_INCOMING);
@@ -638,56 +463,75 @@ static void __callui_qp_mc_draw_screen(callui_qp_mc_h qp)
 	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->state_provider,
 			CALLUI_CALL_DATA_TYPE_HELD);
 
-	DELETE_ECORE_TIMER(qp->call_duration_timer);
-	FREE(qp->call_duration_tm);
+	qp->is_available[QP_MC_BTN_TYPE_CALL] = false;
+	qp->is_available[QP_MC_BTN_TYPE_SPEAKER] = true;
+	qp->is_available[QP_MC_BTN_TYPE_RESUME] = false;
+	qp->is_available[QP_MC_BTN_TYPE_MUTE] = false;
 
 	if (incom) {
+		qp->is_available[QP_MC_BTN_TYPE_CALL] = true;
+		qp->is_available[QP_MC_BTN_TYPE_SPEAKER] = false;
+	} else if (active && !active->is_dialing) {
+		qp->is_available[QP_MC_BTN_TYPE_MUTE] = true;
+	} else if (held) {
+		qp->is_available[QP_MC_BTN_TYPE_RESUME] = true;
+	}
+}
+
+static void __update_all_btns(callui_qp_mc_h qp)
+{
+	int i = 0;
+	for (; i < QP_MC_BTN_TYPE_MAX; i++) {
+		if (btn_params[i].update_func) {
+			btn_params[i].update_func(qp);
+		}
+	}
+}
+
+static void __update_layout_components(callui_qp_mc_h qp)
+{
+	callui_app_data_t *ad = qp->ad;
+	Evas_Object *eo = qp->quickpanel_layout;
+
+	__update_all_btns_state(qp);
+	__update_all_btns(qp);
+
+	__deinit_call_duration_timer(qp);
+
+	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider,
+			CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->state_provider,
+			CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->state_provider,
+			CALLUI_CALL_DATA_TYPE_HELD);
+	if (incom) {
 		/* Incoming call */
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "incoming_call", incom);
-		__callui_qp_mc_update_text(_("IDS_CALL_BODY_INCOMING_CALL"), 0, eo);
-		__callui_qp_mc_create_update_speaker_btn(qp, EINA_TRUE);
-		elm_object_disabled_set(call_btn, EINA_FALSE);
+		__update_comp_status(qp, eo, "incoming_call", incom);
+		__update_text_components(_("IDS_CALL_BODY_INCOMING_CALL"), 0, eo);
 	} else if (active && active->is_dialing) {
 		/* Dialing call */
-		__callui_qp_mc_update_text(_("IDS_CALL_POP_DIALLING"), 0, eo);
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "outgoing_call", active);
-		elm_object_signal_emit(eo, "outgoing_call", "");
+		__update_comp_status(qp, eo, "outgoing_call", active);
+		__update_text_components(_("IDS_CALL_POP_DIALLING"), 0, eo);
 	} else if (active && held) {
 		/* Split call */
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_FALSE, "during_call", active);
-		__callui_qp_mc_update_text(NULL, active->conf_member_count, eo);
-
-		qp->call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
-		CALLUI_RETURN_IF_FAIL(qp->call_duration_tm);
-
-		__callui_qp_set_split_call_duration_time(qp->call_duration_tm, qp->quickpanel_layout, "txt_timer");
-
-		qp->call_duration_timer = ecore_timer_add(0.1, __split_call_duration_timer_cb, qp);
-		CALLUI_RETURN_IF_FAIL(qp->call_duration_timer);
+		__update_comp_status(qp, eo, "during_call", active);
+		__update_text_components(NULL, active->conf_member_count, eo);
+		__init_split_call_duration_timer(qp);
 	} else if (active) {
 		/* Active call */
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_FALSE, "during_call", active);
-		__callui_qp_mc_update_text(NULL, active->conf_member_count, eo);
-
-		qp->call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
-		CALLUI_RETURN_IF_FAIL(qp->call_duration_tm);
-
-		_callui_common_set_call_duration_time(qp->call_duration_tm, qp->quickpanel_layout, "txt_timer");
-
-		qp->call_duration_timer = ecore_timer_add(0.1, __active_call_duration_timer_cb, qp);
-		CALLUI_RETURN_IF_FAIL(qp->call_duration_timer);
+		__update_comp_status(qp, eo, "during_call", active);
+		__update_text_components(NULL, active->conf_member_count, eo);
+		__init_active_call_duration_timer(qp);
 	} else if (held) {
 		/* Held call */
-		__callui_qp_mc_update_comp_status(qp, eo, EINA_TRUE, "resume_call", held);
-		__callui_qp_mc_create_resume_btn(qp);
-		__callui_qp_mc_update_text(_("IDS_CALL_BODY_ON_HOLD_ABB"), held->conf_member_count, eo);
+		__update_comp_status(qp, eo, "resume_call", held);
+		__update_text_components(_("IDS_CALL_BODY_ON_HOLD_ABB"), held->conf_member_count, eo);
 	} else {
 		dbg("incoming call. error!");
 	}
-	__callui_qp_mc_create_end_btn(qp);
 }
 
-static void __callui_qp_mc_provider_cb(minicontrol_viewer_event_e event_type, bundle *event_arg)
+static void __minicontrol_provider_cb(minicontrol_viewer_event_e event_type, bundle *event_arg)
 {
 	dbg("__callui_view_qp_viewer_cb %i", event_type);
 	char *angle = NULL;
@@ -702,83 +546,88 @@ static void __callui_qp_mc_provider_cb(minicontrol_viewer_event_e event_type, bu
 	if (angle && angle[0] != '\0') {
 		qp->rotate_angle = atoi(angle);
 	}
-	__callui_qp_mc_refresh(qp);
+	__refresh_components(qp);
 }
 
-static Evas_Object *__callui_qp_mc_create_window()
+static Evas_Object *__create_window(callui_app_data_t *ad)
 {
 	dbg("..");
 	Evas_Object *win = minicontrol_create_window("org.tizen.call-ui",
 			MINICONTROL_TARGET_VIEWER_QUICK_PANEL,
-			__callui_qp_mc_provider_cb);
+			__minicontrol_provider_cb);
 
-	evas_object_resize(win, ELM_SCALE_SIZE(MAIN_SCREEN_W), ELM_SCALE_SIZE(QP_WIN_H));
+	evas_object_resize(win, ad->root_w, ELM_SCALE_SIZE(QP_WIN_H));
 
 	if (elm_win_wm_rotation_supported_get(win)) {
 		int rotate_angles[3] = {0, 90, 270};
-		/*Set the required angles wherein the rotation has to be supported*/
 		elm_win_wm_rotation_available_rotations_set(win, rotate_angles, 3);
 	}
 
 	return win;
 }
 
-static Evas_Object *__callui_qp_mc_create_contents(callui_qp_mc_h qp, char *group)
+static Evas_Object *__create_qp_btn(callui_qp_mc_h qp, callui_qp_mc_btn_type_e type)
 {
-	CALLUI_RETURN_NULL_IF_FAIL(qp);
-
-	return _callui_load_edj(qp->win_quickpanel, EDJ_NAME, group);
+	Evas_Object *btn = elm_button_add(qp->quickpanel_layout);
+	CALLUI_RETURN_NULL_IF_FAIL(btn);
+	elm_object_style_set(btn, btn_params[type].style.normal);
+	elm_object_part_content_set(qp->quickpanel_layout,  btn_params[type].part, btn);
+	evas_object_smart_callback_add(btn, "clicked", btn_params[type].click_cb_func, qp);
+	evas_object_propagate_events_set(btn, EINA_FALSE);
+	return btn;
 }
 
-static callui_result_e __callui_qp_mc_activate(callui_qp_mc_h qp)
+static callui_result_e __activate(callui_qp_mc_h qp)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(qp, CALLUI_RESULT_INVALID_PARAM);
 
 	if (!qp->win_quickpanel) {
-		qp->win_quickpanel = __callui_qp_mc_create_window();
+		qp->win_quickpanel = __create_window(qp->ad);
 		if (qp->win_quickpanel == NULL) {
-			err("__callui_qp_mc_create_window FAILED!");
+			err("__create_window() FAILED!");
 			return CALLUI_RESULT_FAIL;
 		}
 
 		qp->rotate_angle = elm_win_rotation_get(qp->win_quickpanel);
 		dbg("current rotate angle(%d)", qp->rotate_angle);
 
-		qp->quickpanel_layout = __callui_qp_mc_create_contents(qp, GRP_QUICKPANEL);
+		qp->quickpanel_layout = _callui_load_edj(qp->win_quickpanel, EDJ_NAME, GRP_QUICKPANEL);
 		if (qp->quickpanel_layout == NULL) {
-			err("__callui_qp_mc_create_contents FAILED!");
+			err("__callui_qp_mc_create_contents() FAILED!");
 			return CALLUI_RESULT_FAIL;
 		}
 
 		elm_win_resize_object_add(qp->win_quickpanel, qp->quickpanel_layout);
-		evas_object_event_callback_add(qp->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_mc_launch_top_view_cb, qp);
+		evas_object_event_callback_add(qp->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP,
+				__main_layout_mouse_up_cb, qp);
+
+
+		int i = 0;
+		for (; i < QP_MC_BTN_TYPE_MAX; i++) {
+			qp->buttons[i] = __create_qp_btn(qp, i);
+			qp->is_available[i] = true;
+		}
 	}
-
-	//TODO Ecore x is not supported. Need to implement handling of rotation change events from qp
-	/*if (qp->client_msg_handler == NULL)
-		qp->client_msg_handler = ecore_event_handler_add(ECORE_X_EVENT_CLIENT_MESSAGE, __callui_qp_mc_client_message_cb, qp);
-		*/
-
-	__callui_qp_mc_refresh(qp);
-
 	qp->is_activated = true;
+
+	__refresh_components(qp);
 
 	return CALLUI_RESULT_OK;
 }
 
-static void __callui_qp_mc_refresh(callui_qp_mc_h qp)
+static void __refresh_components(callui_qp_mc_h qp)
 {
 	CALLUI_RETURN_IF_FAIL(qp);
 
 	if (qp->rotate_angle == 0 || qp->rotate_angle == 180) {
 		dbg("portrait mode layout");
-		evas_object_resize(qp->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_W), ELM_SCALE_SIZE(QP_WIN_H));
+		evas_object_resize(qp->win_quickpanel, qp->ad->root_w, ELM_SCALE_SIZE(QP_WIN_H));
 	} else if (qp->rotate_angle == 90 || qp->rotate_angle == 270) {
 		dbg("landscape mode layout");
-		evas_object_resize(qp->win_quickpanel, ELM_SCALE_SIZE(MAIN_SCREEN_H), ELM_SCALE_SIZE(QP_WIN_H));
+		evas_object_resize(qp->win_quickpanel, qp->ad->root_h, ELM_SCALE_SIZE(QP_WIN_H));
 	}
 
-	__callui_qp_mc_draw_screen(qp);
+	__update_layout_components(qp);
 
 	evas_object_show(qp->win_quickpanel);
 	evas_object_show(qp->quickpanel_layout);
@@ -787,19 +636,26 @@ static void __callui_qp_mc_refresh(callui_qp_mc_h qp)
 	minicontrol_send_event(qp->win_quickpanel, MINICONTROL_EVENT_REQUEST_LOCK, NULL);
 }
 
-static void __callui_qp_mc_deactivate(callui_qp_mc_h qp)
+static void __deactivate(callui_qp_mc_h qp)
 {
 	CALLUI_RETURN_IF_FAIL(qp);
 
-	if (qp != NULL) {
-		if (qp->caller_id) {
-			evas_object_del(qp->caller_id);
-		}
-		//ecore_event_handler_del(qp->client_msg_handler);
+	qp->is_activated = false;
+
+	int i = 0;
+	for (; i < QP_MC_BTN_TYPE_MAX; i++) {
+		evas_object_smart_callback_del_full(qp->buttons[i], "clicked", btn_params[i].click_cb_func, qp);
+		qp->buttons[i] = NULL;
+		qp->is_available[i] = true;
+	}
+
+	if (qp->caller_id) {
+		evas_object_del(qp->caller_id);
 	}
 
 	if (qp->quickpanel_layout) {
-		evas_object_event_callback_del_full(qp->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP, __callui_qp_mc_launch_top_view_cb, qp);
+		evas_object_event_callback_del_full(qp->quickpanel_layout, EVAS_CALLBACK_MOUSE_UP,
+				__main_layout_mouse_up_cb, qp);
 		evas_object_del(qp->quickpanel_layout);
 		qp->quickpanel_layout = NULL;
 	}
@@ -810,7 +666,7 @@ static void __callui_qp_mc_deactivate(callui_qp_mc_h qp)
 	}
 }
 
-static void __callui_qp_mc_update_text(char *txt_status, int count, Evas_Object *eo)
+static void __update_text_components(char *txt_status, int count, Evas_Object *eo)
 {
 	CALLUI_RETURN_IF_FAIL(eo);
 
@@ -819,5 +675,147 @@ static void __callui_qp_mc_update_text(char *txt_status, int count, Evas_Object 
 	}
 	if (count > 1) {
 		elm_object_part_text_set(eo, "txt_call_name", _("IDS_CALL_OPT_CONFERENCE_CALL"));
+	}
+}
+
+static void __update_call_btn(callui_qp_mc_h qp)
+{
+	Evas_Object *btn = qp->buttons[QP_MC_BTN_TYPE_CALL];
+	CALLUI_RETURN_IF_FAIL(btn);
+
+	elm_object_disabled_set(btn, !qp->is_available[QP_MC_BTN_TYPE_CALL]);
+}
+
+static void __update_resume_btn(callui_qp_mc_h qp)
+{
+	Evas_Object *btn = qp->buttons[QP_MC_BTN_TYPE_RESUME];
+	CALLUI_RETURN_IF_FAIL(btn);
+
+	const callui_call_state_data_t *held =
+			_callui_stp_get_call_data(qp->ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+	if (held) {
+		elm_object_style_set(btn, btn_params[QP_MC_BTN_TYPE_RESUME].style.normal);
+	} else {
+		elm_object_style_set(btn, btn_params[QP_MC_BTN_TYPE_RESUME].style.active);
+	}
+	elm_object_disabled_set(btn, !qp->is_available[QP_MC_BTN_TYPE_RESUME]);
+}
+
+static void __update_speaker_btn(callui_qp_mc_h qp)
+{
+	Evas_Object *btn = qp->buttons[QP_MC_BTN_TYPE_SPEAKER];
+	CALLUI_RETURN_IF_FAIL(btn);
+
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(qp->ad->sound_manager);
+	if (audio_state != CALLUI_AUDIO_STATE_SPEAKER) {
+		elm_object_style_set(btn, btn_params[QP_MC_BTN_TYPE_SPEAKER].style.normal);
+	} else {
+		elm_object_style_set(btn, btn_params[QP_MC_BTN_TYPE_SPEAKER].style.active);
+	}
+	elm_object_disabled_set(btn, !qp->is_available[QP_MC_BTN_TYPE_SPEAKER]);
+}
+
+static void __update_mute_btn(callui_qp_mc_h qp)
+{
+	Evas_Object *btn = qp->buttons[QP_MC_BTN_TYPE_MUTE];
+	CALLUI_RETURN_IF_FAIL(btn);
+
+	if (_callui_sdm_get_mute_state(qp->ad->sound_manager)) {
+		elm_object_style_set(btn, btn_params[QP_MC_BTN_TYPE_MUTE].style.active);
+	} else {
+		elm_object_style_set(btn, btn_params[QP_MC_BTN_TYPE_MUTE].style.normal);
+	}
+	elm_object_disabled_set(btn, !qp->is_available[QP_MC_BTN_TYPE_MUTE]);
+}
+
+static void __resume_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
+	callui_app_data_t *ad = qp->ad;
+
+	const callui_call_state_data_t *call_data =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+
+	callui_result_e res = CALLUI_RESULT_FAIL;
+	if (call_data) {
+		res = _callui_manager_unhold_call(ad->call_manager);
+		if (res != CALLUI_RESULT_OK) {
+			err("_callui_manager_unhold_call() failed. res[%d]", res);
+		}
+	} else {
+		res = _callui_manager_hold_call(ad->call_manager);
+		if (res != CALLUI_RESULT_OK) {
+			err("_callui_manager_hold_call() failed. res[%d]", res);
+		}
+	}
+}
+
+static void __speaker_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
+	callui_app_data_t *ad = qp->ad;
+
+	callui_result_e res = CALLUI_RESULT_FAIL;
+	callui_audio_state_type_e state = _callui_sdm_get_audio_state(ad->sound_manager);
+	if (state != CALLUI_AUDIO_STATE_SPEAKER) {
+		res = _callui_sdm_set_speaker_state(ad->sound_manager, true);
+	} else {
+		res = _callui_sdm_set_speaker_state(ad->sound_manager, false);
+	}
+	if (res == CALLUI_RESULT_OK) {
+		err("_callui_sdm_set_speaker_state() failed. res[%d]", res);
+	}
+}
+
+static void __mute_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
+	callui_app_data_t *ad = qp->ad;
+
+	callui_result_e res =
+			_callui_sdm_set_mute_state(ad->sound_manager, !_callui_sdm_get_mute_state(ad->sound_manager));
+	if (res == CALLUI_RESULT_OK) {
+		err("_callui_sdm_set_speaker_state() failed. res[%d]", res);
+	}
+}
+
+static void __end_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_qp_mc_h qp = (callui_qp_mc_h)data;
+	callui_app_data_t *ad = qp->ad;
+
+	__hide_minicontrol(qp);
+
+	const callui_call_state_data_t *active =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_state_data_t *held =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+	const callui_call_state_data_t *incom =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+
+	callui_result_e res = CALLUI_RESULT_FAIL;
+
+	if (incom) {
+		res = _callui_manager_reject_call(ad->call_manager);
+	} else if (active && active->is_dialing) {
+		res = _callui_manager_end_call(ad->call_manager, active->call_id, CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+	} else if (active && held) {
+		res = _callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
+	} else if (active || held) {
+		res = _callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_TYPE_ALL_CALLS);
+	} else {
+		err("invalid case!!!!");
+	}
+
+	if (res != CALLUI_RESULT_OK) {
+		err("__end_btn_click_cb() failed. res[%d]", res);
 	}
 }
