@@ -56,126 +56,6 @@ Evas_Object *_callui_load_edj(Evas_Object *parent, const char *file, const char 
 Evas_Object *_callui_edje_object_part_get(Evas_Object *parent, const char *part);
 
 /**
- * @brief Create top first button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_first_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled top first button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_first_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create top second button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_second_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled top second button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_second_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create top third button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_third_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled top third button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_third_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create bottom first button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_first_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled bottom first button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_first_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create bottom second button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_second_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled bottom second button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_second_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create bottom third button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_third_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled bottom third button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_third_button_disabled(callui_app_data_t *ad);
-
-/**
  * @brief Create end call button
  *
  * @param[in]    parent    Parent object
@@ -186,24 +66,6 @@ Evas_Object *_callui_create_bottom_third_button_disabled(callui_app_data_t *ad);
  *
  */
 Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb cb_func, void *data);
-
-/**
- * @brief Destroy end call button
- *
- * @param[in]    parent    Parent object
- *
- */
-void _callui_destroy_end_call_button(Evas_Object *parent);
-
-/**
- * @brief Create bg layout
- *
- * @param[in]    parent     Parent layout
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bg_layout(Evas_Object *parent);
 
 /**
  * @brief Create thumbnail
@@ -302,26 +164,6 @@ void _callui_load_bluetooth_popup(callui_app_data_t *ad);
  *
  */
 void _callui_create_toast_message(char *string);
-
-/**
- * @brief Speaker button callback
- *
- * @param[in]    data         Application data
- * @param[in]    obj          Parent object
- * @param[in]    event_info   The event's name string
- *
- */
-void _callui_spk_btn_cb(void *data, Evas_Object *obj, void *event_info);
-
-/**
- * @brief Mute button callback
- *
- * @param[in]    data         Application data
- * @param[in]    obj          Parent object
- * @param[in]    event_info   The event's name string
- *
- */
-void _callui_mute_btn_cb(void *data, Evas_Object *obj, void *event_info);
 
 /**
  * @brief Create and set background layout

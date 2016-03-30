@@ -89,23 +89,23 @@ static void __update_speaker_btn(callui_qp_mc_h qp);
 static __btn_params_t btn_params[QP_MC_BTN_TYPE_MAX] = {
 		{
 				"swallow.call_button",__caller_btn_click_cb, __update_call_btn,
-				{"style_call_icon_only_qp_call", NULL}
+				{"callui_qp_btn_call", NULL}
 		},
 		{
 				"swallow.resume_button", __resume_btn_click_cb, __update_resume_btn,
-				{"style_call_icon_only_qp_resume", "style_call_icon_only_qp_resume_on"}
+				{"callui_qp_btn_resume", "callui_qp_btn_resume_on"}
 		},
 		{
 				"swallow.mute_button", __mute_btn_click_cb, __update_mute_btn,
-				{"style_call_icon_only_qp_mute", "style_call_icon_only_qp_mute_on"}
+				{"callui_qp_btn_mute", "callui_qp_btn_mute_on"}
 		},
 		{
 				"swallow.speaker_button", __speaker_btn_click_cb, __update_speaker_btn,
-				{"style_call_icon_only_qp_speaker", "style_call_icon_only_qp_speaker_on"}
+				{"callui_qp_btn_speaker", "callui_qp_btn_speaker_on"}
 		},
 		{
 				"swallow.end_button", __end_btn_click_cb, NULL,
-				{"style_call_icon_only_qp_end", NULL}
+				{"callui_qp_btn_end", NULL}
 		}
 };
 
@@ -425,9 +425,6 @@ static Eina_Bool __active_call_duration_timer_cb(void* data)
 
 static void __init_split_call_duration_timer(callui_qp_mc_h qp)
 {
-	DELETE_ECORE_TIMER(qp->call_duration_timer);
-	FREE(qp->call_duration_tm);
-
 	qp->call_duration_tm = _callui_stp_get_call_duration(qp->ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
 	CALLUI_RETURN_IF_FAIL(qp->call_duration_tm);
 	__set_split_call_duration_time(qp->call_duration_tm, qp->quickpanel_layout, "txt_timer");

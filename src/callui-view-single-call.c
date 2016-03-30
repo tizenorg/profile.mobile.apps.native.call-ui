@@ -26,6 +26,7 @@
 #include "callui-common.h"
 #include "callui-view-caller-info-defines.h"
 #include "callui-state-provider.h"
+#include "callui-action-bar.h"
 
 #define	 VIEW_SINGLE_CALL_STATUS_TXT_LEN 129
 
@@ -92,11 +93,13 @@ static callui_result_e __callui_view_single_call_ondestroy(call_view_data_base_t
 	call_view_single_call_h vd = (call_view_single_call_h)view_data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
-	free(vd->base_view.call_duration_tm);
+	_callui_action_bar_hide(ad->action_bar);
 
 	_callui_keypad_hide_immediately(ad->keypad);
 	_callui_keypad_show_status_change_callback_set(ad->keypad, NULL, NULL);
+
+	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
+	free(vd->base_view.call_duration_tm);
 
 	eext_object_event_callback_del(vd->base_view.contents, EEXT_CALLBACK_MORE, __more_btn_click_cb);
 
@@ -165,8 +168,7 @@ static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->state_provider,
 					CALLUI_CALL_DATA_TYPE_ACTIVE);
 	if (!call_data) {
-		call_data = _callui_stp_get_call_data(ad->state_provider,
-				CALLUI_CALL_DATA_TYPE_HELD);
+		call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
 		is_held = EINA_TRUE;
 	}
 	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
@@ -223,27 +225,6 @@ static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 		elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
 	}
 
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_third_button(ad), CALLUI_RESULT_FAIL);
-	if (is_held) {
-		CALLUI_RETURN_VALUE_IF_FAIL(
-				_callui_create_top_second_button_disabled(ad), CALLUI_RESULT_FAIL);
-		CALLUI_RETURN_VALUE_IF_FAIL(
-				_callui_create_bottom_second_button_disabled(ad), CALLUI_RESULT_FAIL);
-
-	} else {
-		CALLUI_RETURN_VALUE_IF_FAIL(
-				_callui_create_top_second_button(ad), CALLUI_RESULT_FAIL);
-		CALLUI_RETURN_VALUE_IF_FAIL(
-				_callui_create_bottom_second_button(ad), CALLUI_RESULT_FAIL);
-	}
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_first_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_first_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_third_button(ad), CALLUI_RESULT_FAIL);
-
 	elm_object_signal_emit(vd->base_view.contents, "SHOW_EFFECT", "ALLBTN");
 
 	evas_object_show(vd->base_view.contents);
@@ -270,9 +251,7 @@ static callui_result_e __create_main_content(call_view_single_call_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->base_view.contents, "caller_info", vd->caller_info);
 
-	Evas_Object *btn_region = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_BUTTON_LAYOUT);
-	CALLUI_RETURN_VALUE_IF_FAIL(btn_region, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(vd->base_view.contents, "btn_region", btn_region);
+	_callui_action_bar_show(ad->action_bar);
 
 	_callui_keypad_clear_input(ad->keypad);
 	_callui_keypad_show_status_change_callback_set(ad->keypad, __keypad_show_state_change_cd, vd);

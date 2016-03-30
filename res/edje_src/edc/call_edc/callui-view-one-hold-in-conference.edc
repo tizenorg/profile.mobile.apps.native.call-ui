@@ -343,15 +343,6 @@ group {
 			}
 		}
 		part {
-			name: PART_SWALLOW_BTN_REGION;
-			type: SWALLOW;
-			description {
-				state: "default" 0.0;
-				rel1.relative: 0.0 SIX_BTN_LAYOUT_T;
-				rel2.relative: 1.0 SIX_BTN_LAYOUT_B;
-			}
-		}
-		part {
 			name: "end_btn_area";
 			type: RECT;
 			scale: 1;

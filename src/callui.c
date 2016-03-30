@@ -40,7 +40,7 @@
 static bool _callui_app_create_layout(void *data);
 static Eina_Bool __callui_app_win_hard_key_down_cb(void *data, int type, void *event);
 static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *event);
-static void __app_deinit(callui_app_data_t *ad);
+static bool __app_deinit(callui_app_data_t *ad);
 static void __audio_state_changed_cb(void *user_data,
 		callui_audio_state_type_e audio_state);
 static void __call_state_change_cb(void *user_data,
@@ -300,8 +300,7 @@ static bool _callui_app_create(void *data)
 	ad->call_manager = _callui_manager_create();
 	if (!ad->call_manager) {
 		err("_callui_manager_create() failed");
-		__app_deinit(ad);
-		return false;
+		return __app_deinit(ad);
 	}
 
 	ad->state_provider = _callui_manager_get_state_provider(ad->call_manager);
@@ -312,17 +311,38 @@ static bool _callui_app_create(void *data)
 
 	if (!_callui_app_create_layout(ad)) {
 		err("_callui_app_create_layout() failed");
-		__app_deinit(ad);
-		return false;
+		return __app_deinit(ad);
 	}
 
 	ad->view_manager = _callui_vm_create(ad);
+	if (!ad->view_manager) {
+		err("_callui_vm_create() failed");
+		return __app_deinit(ad);
+	}
 
-	ad->keypad = _callui_keypad_create(ad->main_ly, ad);
+	ad->action_bar = _callui_action_bar_create(ad);
+	if (!ad->action_bar) {
+		err("_callui_action_bar_create() failed");
+		return __app_deinit(ad);
+	}
+
+	ad->keypad = _callui_keypad_create(ad);
+	if (!ad->keypad) {
+		err("_callui_keypad_create() failed");
+		return __app_deinit(ad);
+	}
 
 	ad->lock_handle = _callui_lock_manager_create();
+	if (!ad->lock_handle) {
+		err("_callui_lock_manager_create() failed");
+		return __app_deinit(ad);
+	}
 
 	ad->qp_minicontrol =_callui_qp_mc_create(ad);
+	if (!ad->qp_minicontrol) {
+		err("_callui_qp_mc_create() failed");
+		return __app_deinit(ad);
+	}
 
 	elm_theme_extension_add(NULL, CALL_THEME);
 
@@ -362,34 +382,10 @@ static void __callui_bt_deinit()
 	}
 }
 
-static void __app_deinit(callui_app_data_t *ad)
+static bool __app_deinit(callui_app_data_t *ad)
 {
-	Evas_Object *contents = NULL;
-	Evas_Object *caller_info = NULL;
-	Evas_Object *btn_ly = NULL;
-
 	_callui_stp_remove_call_state_event_cb(ad->state_provider, __call_state_change_cb, ad);
 	_callui_sdm_remove_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, ad);
-
-	if (ad->main_ly) {
-		contents = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-		if (contents) {
-			caller_info = elm_object_part_content_get(contents, "caller_info");
-			if (caller_info) {
-				evas_object_del(caller_info);
-				caller_info = NULL;
-			}
-
-			btn_ly = elm_object_part_content_get(contents, "btn_region");
-			if (btn_ly) {
-				evas_object_del(btn_ly);
-				btn_ly = NULL;
-			}
-
-			evas_object_del(contents);
-			contents = NULL;
-		}
-	}
 
 	if (ad->downkey_handler) {
 		ecore_event_handler_del(ad->downkey_handler);
@@ -419,6 +415,11 @@ static void __app_deinit(callui_app_data_t *ad)
 		ad->lock_handle = NULL;
 	}
 
+	if (ad->action_bar) {
+		_callui_action_bar_destroy(ad->action_bar);
+		ad->action_bar = NULL;
+	}
+
 	if (ad->keypad) {
 		_callui_keypad_destroy(ad->keypad);
 		ad->keypad = NULL;
@@ -430,6 +431,8 @@ static void __app_deinit(callui_app_data_t *ad)
 	}
 
 	__callui_bt_deinit();
+
+	return false;
 }
 
 static void _callui_app_terminate(void *data)

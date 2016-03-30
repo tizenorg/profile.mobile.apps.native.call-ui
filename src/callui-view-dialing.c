@@ -81,13 +81,11 @@ static callui_result_e __create_main_content(callui_view_dialing_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
 
-	Evas_Object *btn_layout = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_BUTTON_LAYOUT);
-	CALLUI_RETURN_VALUE_IF_FAIL(btn_layout, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(vd->base_view.contents, "btn_region", btn_layout);
-
 	vd->caller_info = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_CALLER_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->base_view.contents, "caller_info", vd->caller_info);
+
+	_callui_action_bar_show(ad->action_bar);
 
 	_callui_keypad_clear_input(ad->keypad);
 	_callui_keypad_show_status_change_callback_set(ad->keypad, __keypad_show_state_change_cd, vd);
@@ -111,6 +109,8 @@ static callui_result_e __callui_view_dialing_ondestroy(call_view_data_base_t *vi
 
 	callui_view_dialing_h vd = (callui_view_dialing_h)view_data;
 	callui_app_data_t *ad = vd->base_view.ad;
+
+	_callui_action_bar_hide(ad->action_bar);
 
 	_callui_keypad_hide_immediately(ad->keypad);
 	_callui_keypad_show_status_change_callback_set(ad->keypad, NULL, NULL);
@@ -177,21 +177,6 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 
 	_callui_show_caller_info_status(ad, _("IDS_CALL_POP_DIALLING"));
 
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_first_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_second_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_third_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_first_button_disabled(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_second_button_disabled(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_third_button_disabled(ad), CALLUI_RESULT_FAIL);
-
-	elm_object_signal_emit(vd->base_view.contents, "SHOW_EFFECT", "ALLBTN");
-
 	if (now_call_data->is_emergency == EINA_TRUE) {
 		elm_object_signal_emit(vd->caller_info, "set_emergency_mode", "");
 	} else {
@@ -199,6 +184,8 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 			_callui_show_caller_id(vd->caller_info, file_path);
 		}
 	}
+
+	elm_object_signal_emit(vd->base_view.contents, "SHOW_EFFECT", "ALLBTN");
 
 	evas_object_show(vd->base_view.contents);
 

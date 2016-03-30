@@ -111,14 +111,16 @@ static callui_result_e _callui_view_multi_call_split_ondestroy(call_view_data_ba
 	callui_view_mc_split_h vd = (callui_view_mc_split_h)view_data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
+	_callui_action_bar_show(ad->action_bar);
+
+	_callui_keypad_hide_immediately(ad->keypad);
+	_callui_keypad_show_status_change_callback_set(ad->keypad, NULL, NULL);
+
 	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
 
 	free(vd->base_view.call_duration_tm);
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
-
-	_callui_keypad_hide_immediately(ad->keypad);
-	_callui_keypad_show_status_change_callback_set(ad->keypad, NULL, NULL);
 
 	free(vd);
 
@@ -147,9 +149,7 @@ static callui_result_e __create_main_content(callui_view_mc_split_h vd)
 	callui_result_e res = __create_merge_swap_btns(vd->caller_info, ad);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
-	Evas_Object *btn_region = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_BUTTON_LAYOUT);
-	CALLUI_RETURN_VALUE_IF_FAIL(btn_region, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(vd->base_view.contents, PART_SWALLOW_BTN_REGION, btn_region);
+	_callui_action_bar_show(ad->action_bar);
 
 	_callui_keypad_clear_input(ad->keypad);
 	_callui_keypad_show_status_change_callback_set(ad->keypad, __keypad_show_state_change_cd, vd);
@@ -311,20 +311,6 @@ static callui_result_e __update_displayed_data(callui_view_mc_split_h vd)
 	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
 	vd->base_view.call_duration_timer = ecore_timer_add(0.1, __call_duration_timer_cb, vd);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_timer, CALLUI_RESULT_ALLOCATION_FAIL);
-
-
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_first_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_second_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_third_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_first_button_disabled(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_second_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_third_button(ad), CALLUI_RESULT_FAIL);
 
 	evas_object_show(vd->base_view.contents);
 

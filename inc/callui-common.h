@@ -260,7 +260,6 @@ bool _callui_is_on_background();
 /**
  * @brief Set call duration time into text part of Evas object
  * @param[in] cur_time		source time data
- * @param[in] func			Evas Object updater function
  * @param[in] obj			Evas object to set call duration
  * @param[in] part			Evas object text part name
  */
