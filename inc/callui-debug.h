@@ -16,6 +16,7 @@
  */
 
 #include <dlog.h>
+#include <dlog-internal.h>
 
 #ifndef __CALLUI_DEBUG_H__
 #define __CALLUI_DEBUG_H__
