@@ -563,19 +563,7 @@ struct tm*_callui_stp_get_call_duration(callui_state_provider_h stp,
 			call_data_type < CALLUI_CALL_DATA_TYPE_MAX));
 	CALLUI_RETURN_NULL_IF_FAIL(stp->st_data_list[call_data_type]);
 
-	struct tm *time = calloc(1, sizeof (struct tm));
-	CALLUI_RETURN_NULL_IF_FAIL(time);
-
-	long curr_time = 0;
-	struct sysinfo info;
-	if (sysinfo(&info) == 0) {
-		curr_time = info.uptime;
-	}
-
-	long call_time = curr_time - stp->st_data_list[call_data_type]->start_time;
-	gmtime_r((const time_t *)&call_time, time);
-
-	return time;
+	return _callui_common_get_current_time_diff_in_tm(stp->st_data_list[call_data_type]->start_time);
 }
 
 const callui_call_state_data_t *_callui_stp_get_last_ended_call_data(callui_state_provider_h stp)

@@ -95,61 +95,6 @@ Eina_Bool _callui_common_is_earjack_connected(void)
 	return result;
 }
 
-static Eina_Bool __callui_common_ending_timer_expired_cb(void *data)
-{
-	dbg("__callui_common_ending_timer_expired_cb");
-	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-
-	ad->ending_timer = NULL;
-	_callui_common_exit_app();
-
-	return ECORE_CALLBACK_CANCEL;
-}
-
-static Eina_Bool __callui_common_ending_timer_blink_cb(void *data)
-{
-	dbg("__callui_common_ending_timer_blink_cb");
-	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-
-	if ((ad->blink_cnt % 2) == 0) {
-		_callui_show_caller_info_status(ad, _("IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"));
-	} else if ((ad->blink_cnt % 2) == 1) {
-		_callui_show_caller_info_status(ad, _(" "));
-	}
-
-	ad->blink_cnt++;
-	if (ad->blink_cnt == 5) {
-		/* Run a timer of 2secs for destroying the end selection menu */
-		DELETE_ECORE_TIMER(ad->ending_timer);
-		ad->ending_timer = ecore_timer_add(2, __callui_common_ending_timer_expired_cb, ad);
-
-		ad->blink_timer = NULL;
-		return ECORE_CALLBACK_CANCEL;
-	}
-	return ECORE_CALLBACK_RENEW;
-}
-
-void _callui_common_create_ending_timer(void *appdata)
-{
-	CALLUI_RETURN_IF_FAIL(appdata);
-	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-
-	ad->blink_cnt = 0;
-	DELETE_ECORE_TIMER(ad->blink_timer);
-	ad->blink_timer = ecore_timer_add(0.5, __callui_common_ending_timer_blink_cb, ad);
-}
-
-void _callui_common_delete_ending_timer(void *appdata)
-{
-	CALLUI_RETURN_IF_FAIL(appdata);
-	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-
-	DELETE_ECORE_TIMER(ad->ending_timer);
-	DELETE_ECORE_TIMER(ad->blink_timer);
-}
-
 static bool __callui_common_bt_device_connected_profile(bt_profile_e profile, void *user_data)
 {
 	dbg("..");
@@ -951,13 +896,21 @@ void _callui_common_set_call_duration_time(struct tm *cur_time,
 	CALLUI_RETURN_IF_FAIL(obj);
 	CALLUI_RETURN_IF_FAIL(part);
 
-	char dur[TIME_BUF_LEN];
-	if (cur_time->tm_hour > 0) {
-		snprintf(dur, TIME_BUF_LEN, "%02d:%02d:%02d", cur_time->tm_hour, cur_time->tm_min, cur_time->tm_sec);
+	char *tmp = _callui_common_get_time_string(cur_time);
+	elm_object_part_text_set(obj, part, _(tmp));
+	free(tmp);
+}
+
+char *_callui_common_get_time_string(struct tm *time)
+{
+	char *tm_string = calloc(1, TIME_BUF_LEN);
+
+	if (time->tm_hour > 0) {
+		snprintf(tm_string, TIME_BUF_LEN, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
 	} else {
-		snprintf(dur, TIME_BUF_LEN, "%02d:%02d", cur_time->tm_min, cur_time->tm_sec);
+		snprintf(tm_string, TIME_BUF_LEN, "%02d:%02d", time->tm_min, time->tm_sec);
 	}
-	elm_object_part_text_set(obj, part, _(dur));
+	return tm_string;
 }
 
 void _callui_common_try_update_call_duration_time(
@@ -979,4 +932,21 @@ void _callui_common_try_update_call_duration_time(
 		memcpy(cur_time, comp_time, sizeof(struct tm));
 		func(cur_time, obj, part);
 	}
+}
+
+struct tm *_callui_common_get_current_time_diff_in_tm(long time)
+{
+	struct tm *time_tm = calloc(1, sizeof (struct tm));
+	CALLUI_RETURN_NULL_IF_FAIL(time_tm);
+
+	long curr_time = 0;
+	struct sysinfo info;
+	if (sysinfo(&info) == 0) {
+		curr_time = info.uptime;
+	}
+
+	long call_time = curr_time - time;
+	gmtime_r((const time_t *)&call_time, time_tm);
+
+	return time_tm;
 }

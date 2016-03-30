@@ -28,6 +28,10 @@
 
 #define APP_CONTROL_MIME_CONTACT "application/vnd.tizen.contact"
 #define CONTACT_NUMBER_BUF_LEN 32
+#define OUTGOING_CALL_TIME_DURATION_STR "00:00"
+#define ENDING_TIMER_INTERVAL 2.0
+#define BLINKING_TIMER_INTERVAL 0.5
+#define BLINKING_MAX_COUNT 5
 
 struct _callui_view_callend {
 	call_view_data_base_t base_view;
@@ -35,6 +39,12 @@ struct _callui_view_callend {
 	Evas_Object *create_update_popup;
 
 	char call_number[CALLUI_PHONE_DISP_NUMBER_LENGTH_MAX];
+
+	Ecore_Timer *blink_timer;
+	Ecore_Timer *ending_timer;
+	char *time_string;
+
+	int blink_cnt;
 };
 typedef struct _callui_view_callend _callui_view_callend_t;
 
@@ -53,6 +63,11 @@ static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *ev
 static void __popup_back_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 static void __msg_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+
+static Eina_Bool __ending_timer_expired_cb(void *data);
+static Eina_Bool __ending_timer_blink_cb(void *data);
+static void __create_ending_timer(callui_view_callend_h vd);
+static void __delete_ending_timer(callui_view_callend_h vd);
 
 callui_view_callend_h _callui_view_callend_new()
 {
@@ -90,7 +105,9 @@ static callui_result_e __callui_view_callend_ondestroy(call_view_data_base_t *vi
 
 	callui_view_callend_h vd = (callui_view_callend_h)view_data;
 
-	_callui_common_delete_ending_timer(vd->base_view.ad);
+	__delete_ending_timer(vd);
+
+	free(vd->time_string);
 
 	DELETE_EVAS_OBJECT(vd->create_update_popup);
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
@@ -154,13 +171,22 @@ static callui_result_e __update_displayed_data(callui_view_callend_h vd)
 		elm_object_part_text_set(vd->base_view.contents, "contact_number", vd->call_number);
 	}
 
+	if (call_data->is_dialing) {
+		vd->time_string = strdup(OUTGOING_CALL_TIME_DURATION_STR);
+	} else {
+		struct tm *call_time = _callui_common_get_current_time_diff_in_tm(call_data->start_time);
+		CALLUI_RETURN_VALUE_IF_FAIL(call_time, CALLUI_RESULT_ALLOCATION_FAIL);
+		vd->time_string = _callui_common_get_time_string(call_time);
+		free(call_time);
+	}
+
 	if (strcmp(file_path, "default") != 0) {
 		_callui_show_caller_id(vd->base_view.contents, file_path);
 	} else {
 		elm_object_signal_emit(vd->base_view.contents, "show_image", "main_end_call");
 	}
 
-	_callui_common_create_ending_timer(vd->base_view.ad);
+	__create_ending_timer(vd);
 
 	evas_object_show(vd->base_view.contents);
 
@@ -177,7 +203,7 @@ static void __call_back_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, v
 
 	evas_object_event_callback_del(obj, EVAS_CALLBACK_MOUSE_UP, __call_back_btn_click_cb);
 
-	_callui_common_delete_ending_timer(vd->base_view.ad);
+	__delete_ending_timer(vd);
 
 	callui_result_e res = _callui_manager_dial_voice_call(vd->base_view.ad->call_manager, vd->call_number, CALLUI_SIM_SLOT_DEFAULT);
 	if (res != CALLUI_RESULT_OK) {
@@ -238,15 +264,16 @@ static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *ev
 
 static void __popup_back_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	dbg("..");
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	CALLUI_RETURN_IF_FAIL(ad);
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_view_callend_h vd = (callui_view_callend_h)data;
+
 	evas_object_del(obj);
 
-	if (ad->ending_timer) {
-		ecore_timer_thaw(ad->ending_timer);
-	} else if (ad->blink_timer) {
-		ecore_timer_thaw(ad->blink_timer);
+	if (vd->ending_timer) {
+		ecore_timer_thaw(vd->ending_timer);
+	} else if (vd->blink_timer) {
+		ecore_timer_thaw(vd->blink_timer);
 	}
 }
 
@@ -255,17 +282,17 @@ static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj,
 	CALLUI_RETURN_IF_FAIL(data);
 	callui_view_callend_h vd = (callui_view_callend_h)data;
 
-	if (vd->base_view.ad->ending_timer) {
-		ecore_timer_freeze(vd->base_view.ad->ending_timer);
-	} else if (vd->base_view.ad->blink_timer) {
-		ecore_timer_freeze(vd->base_view.ad->blink_timer);
+	if (vd->ending_timer) {
+		ecore_timer_freeze(vd->ending_timer);
+	} else if (vd->blink_timer) {
+		ecore_timer_freeze(vd->blink_timer);
 	}
 
 	Evas_Object *parent = elm_object_top_widget_get(obj);
 	CALLUI_RETURN_IF_FAIL(parent);
 
 	vd->create_update_popup = elm_popup_add(parent);
-	eext_object_event_callback_add(vd->create_update_popup, EEXT_CALLBACK_BACK, __popup_back_click_cb, vd->base_view.ad);
+	eext_object_event_callback_add(vd->create_update_popup, EEXT_CALLBACK_BACK, __popup_back_click_cb, vd);
 
 	elm_popup_align_set(vd->create_update_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	elm_object_part_text_set(vd->create_update_popup, "title,text",  vd->call_number);
@@ -310,4 +337,54 @@ static void __msg_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *e
 		err("app_control_send_launch_request() failed (%d)", result);
 	}
 	app_control_destroy(request);
+}
+
+static Eina_Bool __ending_timer_expired_cb(void *data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+
+	callui_view_callend_h vd = (callui_view_callend_h)data;
+
+	vd->ending_timer = NULL;
+	_callui_common_exit_app();
+
+	return ECORE_CALLBACK_CANCEL;
+}
+
+static Eina_Bool __ending_timer_blink_cb(void *data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+
+	callui_view_callend_h vd = (callui_view_callend_h)data;
+
+	if ((vd->blink_cnt % 2) == 0) {
+		_callui_show_caller_info_status(vd->base_view.ad, vd->time_string);
+	} else if ((vd->blink_cnt % 2) == 1) {
+		_callui_show_caller_info_status(vd->base_view.ad, "");
+	}
+
+	vd->blink_cnt++;
+	if (vd->blink_cnt == BLINKING_MAX_COUNT) {
+		/* Run a timer of 2secs for destroying the end selection menu */
+		DELETE_ECORE_TIMER(vd->ending_timer);
+		_callui_show_caller_info_status(vd->base_view.ad, _("IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"));
+		vd->ending_timer = ecore_timer_add(ENDING_TIMER_INTERVAL, __ending_timer_expired_cb, vd);
+
+		vd->blink_timer = NULL;
+		return ECORE_CALLBACK_CANCEL;
+	}
+	return ECORE_CALLBACK_RENEW;
+}
+
+static void __create_ending_timer(callui_view_callend_h vd)
+{
+	vd->blink_cnt = 0;
+	DELETE_ECORE_TIMER(vd->blink_timer);
+	vd->blink_timer = ecore_timer_add(BLINKING_TIMER_INTERVAL, __ending_timer_blink_cb, vd);
+}
+
+static void __delete_ending_timer(callui_view_callend_h vd)
+{
+	DELETE_ECORE_TIMER(vd->ending_timer);
+	DELETE_ECORE_TIMER(vd->blink_timer);
 }

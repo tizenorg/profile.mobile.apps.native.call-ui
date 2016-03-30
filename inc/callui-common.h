@@ -50,22 +50,6 @@ typedef enum {
 typedef void (*set_call_duration_time)(struct tm *cur_time, Evas_Object *obj, const char *part);
 
 /**
- * @brief create ending timer
- *
- * @param[in] appdata        App data
- *
- */
-void _callui_common_create_ending_timer(void *appdata);
-
-/**
- * @brief Delete ending timer
- *
- * @param[in] appdata        App data
- *
- */
-void _callui_common_delete_ending_timer(void *appdata);
-
-/**
  * @brief State if headset is conected
  *
  * @param[in] appdata        App data
@@ -281,5 +265,19 @@ void _callui_common_try_update_call_duration_time(struct tm *cur_time,
 		set_call_duration_time func,
 		Evas_Object *obj,
 		const char *part);
+
+/**
+ * @brief Get time string from time structure
+ * @param[in] time		time structure to process
+ * @return string with time (must be free internally)
+ */
+char *_callui_common_get_time_string(struct tm *time);
+
+/**
+ * @brief Gets difference between curent time and @time
+ * @param[in] time		time to calculate difference
+ * @return time stucture on success with time difference
+ */
+struct tm *_callui_common_get_current_time_diff_in_tm(long time);
 
 #endif //__CALLUI_COMMON_H_
