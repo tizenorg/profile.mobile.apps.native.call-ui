@@ -88,9 +88,7 @@ static callui_result_e __create_main_content(callui_view_mc_conf_h vd)
 	elm_object_part_content_set(vd->caller_info, "manage_calls_icon_swallow", manage_calls_ly);
 	edje_object_signal_callback_add(_EDJ(manage_calls_ly), "mouse,clicked,1", "btn", __manage_calls_btn_clicked_cb, vd);
 
-	Evas_Object *btn_layout = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_BUTTON_LAYOUT);
-	CALLUI_RETURN_VALUE_IF_FAIL(btn_layout, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(vd->base_view.contents, "btn_region", btn_layout);
+	_callui_action_bar_show(ad->action_bar);
 
 	_callui_keypad_clear_input(ad->keypad);
 	_callui_keypad_show_status_change_callback_set(ad->keypad, __keypad_show_state_change_cd, vd);
@@ -168,12 +166,13 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 	FREE(vd->base_view.call_duration_tm);
 
 	if (is_held) {
+		elm_object_signal_emit(vd->caller_info, "hide,arrow", "");
+
 		snprintf(status_txt, sizeof(status_txt), _("IDS_CALL_BODY_ON_HOLD_ABB"));
 		_callui_show_caller_info_status(ad, status_txt);
-		elm_object_signal_emit(vd->caller_info, "set-hold-state", "call-screen");
 
 	} else {
-		elm_object_signal_emit(vd->caller_info, "set-unhold-state", "call-screen");
+		elm_object_signal_emit(vd->caller_info, "show,arrow", "");
 
 		vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
 		CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_tm, CALLUI_RESULT_ALLOCATION_FAIL);
@@ -189,30 +188,6 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
 	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->conf_member_count);
 	_callui_show_caller_info_number(ad, buf);
-
-	if (is_held) {
-		CALLUI_RETURN_VALUE_IF_FAIL(
-				_callui_create_top_second_button_disabled(ad), CALLUI_RESULT_FAIL);
-		CALLUI_RETURN_VALUE_IF_FAIL(
-				_callui_create_bottom_second_button_disabled(ad), CALLUI_RESULT_FAIL);
-	} else {
-		if (_callui_keypad_get_show_status(vd->keypad)) {
-			_callui_keypad_hide(vd->keypad);
-		}
-		CALLUI_RETURN_VALUE_IF_FAIL(
-				_callui_create_top_second_button(ad), CALLUI_RESULT_FAIL);
-		CALLUI_RETURN_VALUE_IF_FAIL(
-				_callui_create_bottom_second_button(ad), CALLUI_RESULT_FAIL);
-	}
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_third_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_first_button(ad), CALLUI_RESULT_FAIL);
-
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_top_first_button(ad), CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(
-			_callui_create_bottom_third_button(ad), CALLUI_RESULT_FAIL);
 
 	elm_object_signal_emit(vd->base_view.contents, "SHOW_NO_EFFECT", "ALLBTN");
 
@@ -231,6 +206,11 @@ static callui_result_e __callui_view_multi_call_conf_ondestroy(call_view_data_ba
 	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)view_data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
+	_callui_action_bar_hide(ad->action_bar);
+
+	_callui_keypad_hide_immediately(ad->keypad);
+	_callui_keypad_show_status_change_callback_set(ad->keypad, NULL, NULL);
+
 	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
 	free(vd->base_view.call_duration_tm);
 
@@ -238,9 +218,6 @@ static callui_result_e __callui_view_multi_call_conf_ondestroy(call_view_data_ba
 		elm_ctxpopup_dismiss(ad->ctxpopup);
 		ad->ctxpopup = NULL;
 	}
-
-	_callui_keypad_hide_immediately(ad->keypad);
-	_callui_keypad_show_status_change_callback_set(ad->keypad, NULL, NULL);
 
 	eext_object_event_callback_del(vd->base_view.contents, EEXT_CALLBACK_MORE, __more_btn_click_cb);
 

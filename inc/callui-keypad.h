@@ -25,16 +25,16 @@ typedef struct _callui_keypad *callui_keypad_h;
 
 typedef void (*show_state_change_cd)(void *data, Eina_Bool visibility);
 
+typedef struct appdata callui_app_data_t;
 /**
  * @brief Create keypad layout
  *
- * @param[in]	parent		Parent evas object
  * @param[in]	appdata		Application data
  *
- * @return CALLUI_RESULT_OK on success or error code otherwise
+ * @return Keypad instance
  *
  */
-callui_keypad_h _callui_keypad_create(Evas_Object *parent, void *appdata);
+callui_keypad_h _callui_keypad_create(callui_app_data_t *appdata);
 
 /**
  * @brief Delete keypad layout

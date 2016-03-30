@@ -30,7 +30,7 @@
 #define VC_KEYPAD_ENTRY_FONT "<font='Samsung Sans Num47:style=Light'>%s</>"
 #define VC_KEYAD_ENTRY_STYLE "DEFAULT='align=center color=#ffffffff font_size=76'"
 
-int __callui_keypad_init(callui_keypad_h keypad, Evas_Object *parent, callui_app_data_t *appdata);
+int __callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appdata);
 void __callui_keypad_deinit(callui_keypad_h keypad);
 
 static void __back_button_click_cb(void *data, Evas_Object *obj, void *event_info);
@@ -53,7 +53,6 @@ struct _callui_keypad {
 
 	Evas_Object *btns_layout;
 	Evas_Object *entry;
-	Evas_Object *parent;
 
 	Eina_Bool is_keypad_show;
 	Ecore_Timer *anim_timer;
@@ -70,10 +69,10 @@ struct _callui_keypad {
 
 typedef struct _callui_keypad _callui_keypad_t;
 
-int __callui_keypad_init(callui_keypad_h keypad, Evas_Object *parent, callui_app_data_t *appdata)
+int __callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appdata)
 {
 	keypad->ad = appdata;
-	keypad->parent = parent;
+	Evas_Object *parent = appdata->main_ly;
 
 	keypad->main_layout = _callui_load_edj(parent, EDJ_NAME, "keypad_layout");
 	CALLUI_RETURN_VALUE_IF_FAIL(keypad->main_layout, CALLUI_RESULT_ALLOCATION_FAIL);
@@ -105,15 +104,14 @@ void __callui_keypad_deinit(callui_keypad_h keypad)
 	}
 }
 
-callui_keypad_h _callui_keypad_create(Evas_Object *parent, void *appdata)
+callui_keypad_h _callui_keypad_create(callui_app_data_t *appdata)
 {
-	CALLUI_RETURN_NULL_IF_FAIL(parent);
 	CALLUI_RETURN_NULL_IF_FAIL(appdata);
 
 	callui_keypad_h keypad = calloc(1, sizeof(_callui_keypad_t));
 	CALLUI_RETURN_NULL_IF_FAIL(keypad);
 
-	int res = __callui_keypad_init(keypad, parent, appdata);
+	int res = __callui_keypad_init(keypad, appdata);
 	if (res != CALLUI_RESULT_OK) {
 		err("Init keypad failed");
 		_callui_keypad_destroy(keypad);
@@ -244,7 +242,8 @@ static void __on_hide_completed(void *data, Evas_Object *obj, const char *emissi
 	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
 #endif
 
-	eext_object_event_callback_del(keypad->parent, EEXT_CALLBACK_BACK,	__back_button_click_cb);
+	Evas_Object *parent = ad->main_ly;
+	eext_object_event_callback_del(parent, EEXT_CALLBACK_BACK,	__back_button_click_cb);
 
 	DELETE_ECORE_TIMER(keypad->anim_timer);
 
@@ -425,8 +424,8 @@ void _callui_keypad_show(callui_keypad_h keypad)
 #ifdef _DBUS_DVC_LSD_TIMEOUT_
 	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_KEYPAD_SET);
 #endif
-
-	eext_object_event_callback_add(keypad->parent, EEXT_CALLBACK_BACK, __back_button_click_cb, keypad);
+	Evas_Object *parent = ad->main_ly;
+	eext_object_event_callback_add(parent, EEXT_CALLBACK_BACK, __back_button_click_cb, keypad);
 
 	ecore_timer_del(keypad->anim_timer);
 	keypad->anim_timer = ecore_timer_add(2.0, __down_arrow_animation_timeout_cb, keypad);

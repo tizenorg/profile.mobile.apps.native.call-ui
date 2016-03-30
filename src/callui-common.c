@@ -932,7 +932,6 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 bool _callui_is_on_handsfree_mode()
 {
 	callui_app_data_t *ad = _callui_get_app_data();
-	//return (ad->speaker_status || ad->headset_status || ad->earphone_status);
 
 	callui_audio_state_type_e type = _callui_sdm_get_audio_state(ad->sound_manager);
 	return (type != CALLUI_AUDIO_STATE_RECEIVER && type != CALLUI_AUDIO_STATE_NONE);
