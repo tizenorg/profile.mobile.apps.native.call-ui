@@ -48,7 +48,7 @@ styles {
 #define EC_CONTACT_IMAGE_SIZE		168
 #define EC_BOTTOM_BTN_T_PAD			44
 #define EC_BOTTOM_BTN_H				190
-#define EC_MAIN_BG_H				(INDICATOR_HEIGHT+EC_MAIN_TITLE_T_PAD+EC_MAIN_TITLE_H+EC_CONTACT_IMAGE_T_PAD+EC_CONTACT_IMAGE_SIZE+EC_BOTTOM_BTN_T_PAD+EC_BOTTOM_BTN_H)
+#define EC_MAIN_BG_H				(INDICATOR_HEIGHT+EC_MAIN_TITLE_T_PAD+EC_MAIN_TITLE_H+EC_CONTACT_IMAGE_T_PAD+EC_CONTACT_IMAGE_SIZE+EC_BOTTOM_BTN_T_PAD)
 
 #define EC_MAIN_TITLE_R_PAD			32
 
@@ -86,7 +86,8 @@ styles {
 #define EC_CONTACT_IMAGE_Y1		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_IMAGE_T_PAD+EC_CONTACT_IMAGE_SIZE)/EC_MAIN_BG_H)
 
 #define EC_RECT_BUTTON_X0		0.0
-#define EC_RECT_BUTTON_Y0		((EC_MAIN_BG_H-EC_BOTTOM_BTN_H)/EC_MAIN_BG_H)
+#define EC_RECT_BUTTON_Y0		(EC_MAIN_BG_H/EC_MAIN_BG_H)
+#define EC_RECT_BUTTON_Y1		((EC_MAIN_BG_H+EC_BOTTOM_BTN_H)/EC_MAIN_BG_H)
 
 #define EC_CONTACT_NAME_X0		(EC_CONTACT_IMAGE_X1+(EC_MAIN_TITLE_R_PAD/MAIN_WIDTH))
 #define EC_CONTACT_NAME_Y0		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD)/EC_MAIN_BG_H)
@@ -99,9 +100,9 @@ styles {
 #define EC_CONTACT_NUMBER_Y1	((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD+EC_CONTACT_NAME_H+EC_CONTACT_NUMBER_T_PAD+EC_CONTACT_NUMBER_H)/EC_MAIN_BG_H)
 
 #define EC_CREATE_CONTACT_X0	((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD-EC_ADD_BTN_ICON_SIZE)/MAIN_WIDTH)
-#define EC_CREATE_CONTACT_Y0	((EC_MAIN_BG_H-EC_BOTTOM_BTN_H-EC_ADD_BTN_ICON_B_PAD-EC_ADD_BTN_ICON_SIZE)/EC_MAIN_BG_H)
+#define EC_CREATE_CONTACT_Y0	((EC_MAIN_BG_H-EC_ADD_BTN_ICON_B_PAD-EC_ADD_BTN_ICON_SIZE)/EC_MAIN_BG_H)
 #define EC_CREATE_CONTACT_X1	((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD)/MAIN_WIDTH)
-#define EC_CREATE_CONTACT_Y1	((EC_MAIN_BG_H-EC_BOTTOM_BTN_H-EC_ADD_BTN_ICON_B_PAD)/EC_MAIN_BG_H)
+#define EC_CREATE_CONTACT_Y1	((EC_MAIN_BG_H-EC_ADD_BTN_ICON_B_PAD)/EC_MAIN_BG_H)
 
 #define EC_BUTTON_ICON_X0		(EC_BOTTOM_BTN_ICON_L_PAD/MAIN_WIDTH_TWO)
 #define EC_BUTTON_ICON_Y0		(EC_BOTTOM_BTN_ICON_T_PAD/EC_BOTTOM_BTN_H)
@@ -118,13 +119,22 @@ styles {
 #define EC_ADD_BTN_ICON_X1		((EC_ADD_BTN_ICON_SIZE + EC_ADD_BUTTON_R_PAD)/EC_ADD_BTN_SIZE)
 #define EC_ADD_BTN_ICON_Y1		((EC_ADD_BTN_ICON_SIZE + EC_ADD_BUTTON_R_PAD)/EC_ADD_BTN_SIZE)
 
-#define EC_MAIN_BG_Y1	(EC_MAIN_BG_H/MAIN_HEIGHT)
+#define EC_MAIN_BG_Y1			(EC_MAIN_BG_H/MAIN_HEIGHT)
+#define EC_EMERG_MAIN_BG_Y1		(EC_EMERG_MAIN_BG_H/MAIN_HEIGHT)
 
 #define END_BOTTOM_BUTTON(style_name, img_path) \
 group { \
 	name: style_name; \
 	parts { \
 		part { name: "bg"; \
+			type: RECT; \
+			scale: 1; \
+			description { \
+				state: "default" 0.0; \
+				color_class: "AO001"; \
+			} \
+		} \
+		part { name: "click_bg"; \
 			type: RECT; \
 			scale: 1; \
 			description { \
@@ -174,23 +184,30 @@ group { \
 		} \
 	} \
 	programs { \
-		program { \
-			name: "pressed"; \
+		program { name: "clicked"; \
+			signal: "mouse,clicked,1"; \
+			source: "*"; \
+			action: SIGNAL_EMIT "clicked" "edje"; \
+			after: "touch_snd"; \
+		} \
+		program { name: "pressed"; \
 			signal: "mouse,down,*"; \
 			source: "*"; \
 			action: STATE_SET "pressed" 0.0; \
-			target: "bg"; \
+			target: "click_bg"; \
 			target: "end_btn_icon"; \
 			target: "end_btn_text"; \
 		} \
-		program { \
-			name: "unpressed"; \
+		program { name: "unpressed"; \
 			signal: "mouse,up,*"; \
 			source: "*"; \
 			action: STATE_SET "default" 0.0; \
-			target: "bg"; \
+			target: "click_bg"; \
 			target: "end_btn_icon"; \
 			target: "end_btn_text"; \
+		} \
+		program { name: "touch_snd"; \
+			action: RUN_PLUGIN "touch_sound"; \
 		} \
 	} \
 } \
@@ -320,6 +337,15 @@ group {
 				inherit: "default" 0.0;
 				visible: 0;
 			}
+			description {
+				state: "emergency" 0.0;
+				inherit: "default" 0.0;
+				color_class: "AO036";
+			}
+			description {
+				state: "conference" 0.0;
+				inherit: "show" 0.0;
+			}
 		}
 
 		part {  name: "caller_id_img";
@@ -344,6 +370,25 @@ group {
 				state: "hide" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
+			}
+			description {
+				state: "emergency" 0.0;
+				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
+				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
+				image {
+					normal: IMG_SRC_DIR/"call_photo_id_emergency.png";
+				}
+				aspect_preference: SOURCE;
+			}
+			description {
+				state: "conference" 0.0;
+				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
+				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
+				image {
+					normal: IMG_SRC_DIR/"call_photo_id_conference.png";
+				}
+				color_class: "AO003L2";
+				aspect_preference: SOURCE;
 			}
 		}
 
@@ -421,7 +466,7 @@ group {
 			description {
 				state: "default" 0.0;
 				rel1 { relative: 0.0 EC_RECT_BUTTON_Y0; to: "contact_ly";}
-				rel2 { relative: 0.5 1.0; to: "contact_ly";}
+				rel2 { relative: 0.5 EC_RECT_BUTTON_Y1; to: "contact_ly";}
 			}
 		}
 
@@ -431,7 +476,7 @@ group {
 			description {
 				state: "default" 0.0;
 				rel1 { relative: 0.5 EC_RECT_BUTTON_Y0; to: "contact_ly";}
-				rel2 { relative: 1.0 1.0; to: "contact_ly";}
+				rel2 { relative: 1.0 EC_RECT_BUTTON_Y1; to: "contact_ly";}
 			}
 		}
 		part { name: "call_txt_status";
@@ -461,6 +506,22 @@ group {
 			action: STATE_SET "hide" 0.0;
 			target: "caller_id_mask";
 			target: "caller_id_img";
+		}
+		program {
+			name: "show_emergency_icon";
+			signal: "set_emergency_mode";
+			source: "main_end_call";
+			action: STATE_SET "emergency" 0.0;
+			target: "caller_id_mask";
+			target: "caller_id_img";
+		}
+		program {
+			name: "show_conference_icon";
+			signal: "set_conference_mode";
+			source: "main_end_call";
+			action: STATE_SET "conference" 0.0;
+			target: "caller_id_img";
+			target: "caller_id_mask";
 		}
 	}
 }

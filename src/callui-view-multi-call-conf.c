@@ -27,7 +27,6 @@
 #include "callui-keypad.h"
 #include "callui-state-provider.h"
 
-#define CALLUI_BUF_MEMBER_SIZE 512
 #define CALLUI_BUF_STATUS_SIZE 129
 
 struct _callui_view_mc_conf {
