@@ -32,7 +32,7 @@
 #define BUTTON_BOTTOM_ICON_OFFSET_L		(BUTTON_BOTTOM_ICON_OFFSET/BUTTON_BOTTOM_ICON_SIZE)
 #define BUTTON_BOTTOM_ICON_OFFSET_R		((BUTTON_BOTTOM_ICON_SIZE - BUTTON_BOTTOM_ICON_OFFSET)/BUTTON_BOTTOM_ICON_SIZE)
 
-#define STYLE_CALL_SIX_BUTTON(grp_name, img1, color_code, value, vis_value) \
+#define ACTION_BTN(grp_name, img1, color_code, value, vis_value) \
 	group { name: "elm/button/base/"grp_name; \
 		images { \
 			image: img1 COMP; \
@@ -233,7 +233,7 @@
 		} \
 	}
 
-#define STYLE_CALL_SIX_BUTTON_DISABLED(grp_name, img1, color_code, value, vis_value) \
+#define ACTION_BTN_DISABLED(grp_name, img1, color_code, value, vis_value) \
 	group { name: "elm/button/base/"grp_name; \
 		images { \
 			image: img1 COMP; \
@@ -420,7 +420,7 @@
 		} \
 	}
 
-#define STYLE_CALL_SIX_BUTTON_TOGGLE(grp_name, img1, color_code, value, vis_value) \
+#define ACTION_BTN_TOGGLE(grp_name, img1, color_code, value, vis_value) \
 	group { name: "elm/button/base/"grp_name; \
 		images { \
 			image: img1 COMP; \
@@ -635,7 +635,7 @@
 		} \
 	}
 
-#define STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED(grp_name, img1, color_code, value, vis_value) \
+#define ACTION_BTN_TOGGLE_PRESSED(grp_name, img1, color_code, value, vis_value) \
 	group { name: "elm/button/base/"grp_name; \
 		images { \
 			image: img1 COMP; \
@@ -850,7 +850,7 @@
 		} \
 	}
 
-#define STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED(grp_name, img1, color_code, value, vis_value) \
+#define ACTION_BTN_TOGGLE_DISABLED(grp_name, img1, color_code, value, vis_value) \
 	group { name: "elm/button/base/"grp_name; \
 		images { \
 			image: img1 COMP; \
@@ -1051,202 +1051,7 @@
 		} \
 	}
 
-#define STYLE_CALL_END_CONTACT_BUTTONS(grp_name, bg_image_color, pressed_bg_image_color, icon_top_pad, icon_height, icon_color, text_top_pad, text_height, text_color, button_height, img1) \
-	group { name: "elm/button/base/"grp_name; \
-		images { \
-			image: img1 COMP; \
-		} \
-		script { \
-			public button_state = 0; \
-		} \
-		parts { \
-			part { name: "button_image"; \
-				type: RECT; \
-				mouse_events: 1; \
-				scale: 1; \
-				description { state: "default" 0.0; \
-					visible: 1; \
-					color_class: bg_image_color; \
-				} \
-				description { state: "disabled" 0.0; \
-					inherit: "default" 0.0; \
-				} \
-				description { state: "focused" 0.0; \
-					inherit: "default" 0.0; \
-				} \
-			} \
-			part { name: "highlight"; \
-				type: RECT; \
-				mouse_events: 1; \
-				scale: 1; \
-				description { state: "default" 0.0; \
-					visible: 1; \
-					color: COLOR_BG_ALPHA; \
-				} \
-				description { state: "clicked" 0.0; \
-					visible: 1; \
-					color_class: AO010P; \
-				} \
-			} \
-			part { name: "content_image"; \
-				description { state: "default" 0.0; \
-					visible: 1; \
-					image { \
-						normal: img1; \
-					} \
-					align: 0.5 0.5; \
-					aspect: 0.5 1.0; \
-					rel1.relative: 0.0 (icon_top_pad/button_height); \
-					rel2.relative: 1.0 ((icon_top_pad+icon_height)/button_height); \
-					aspect_preference: VERTICAL; \
-					color_class: icon_color;\
-					visible: 1; \
-					min: icon_height icon_height; \
-					max: icon_height icon_height; \
-				} \
-			} \
-			part { name: "elm.text"; \
-				type: TEXT; \
-				mouse_events: 0; \
-				scale: 1; \
-				description { state: "default" 0.0; \
-					visible: 1; \
-					fixed: 1 1; \
-					rel1 { relative: 0.0 text_top_pad/button_height; to: "button_image";} \
-					rel2 { relative: 1.0 ((text_top_pad+text_height)/button_height); to: "button_image";} \
-					text { \
-						text_class: text_color; \
-						min: 0 1; \
-						align: 0.5 0.5; \
-					} \
-					color_class: text_color; \
-				} \
-				description { state: "visible" 0.0; \
-					inherit: "default" 0.0; \
-					visible: 1; \
-				} \
-				description { state: "clicked" 0.0; \
-					inherit: "default" 0.0; \
-					visible: 1; \
-				} \
-				description { state: "disabled" 0.0; \
-					inherit: "default" 0.0; \
-				} \
-				description { state: "disabled_visible" 0.0; \
-					inherit: "default" 0.0; \
-					visible: 1; \
-				} \
-				description { state: "focused" 0.0; \
-					inherit: "default" 0.0; \
-					visible: 1; \
-				} \
-			} \
-			part { name: "over2"; \
-				type: RECT; \
-				mouse_events: 1; \
-				repeat_events: 1; \
-				ignore_flags: ON_HOLD; \
-				description { state: "default" 0.0; \
-					color: COLOR_BG_ALPHA; \
-					rel1 { relative: 0 0; } \
-					rel2 { relative: 1 1; } \
-				} \
-			} \
-			part { name: "over3"; \
-				type: RECT; \
-				mouse_events: 1; \
-				repeat_events: 1; \
-				description { state: "default" 0.0; \
-					color: COLOR_BG_ALPHA; \
-					rel1 { relative: 0 0; } \
-					rel2 { relative: 1 1; } \
-				} \
-			} \
-			part { name: "disabler"; \
-				type: RECT; \
-				description { state: "default" 0.0; \
-					color: COLOR_BG_ALPHA; \
-					visible: 0; \
-				} \
-				description { state: "disabled" 0.0; \
-					inherit: "default" 0.0; \
-					visible: 1; \
-				} \
-			} \
-		} \
-		programs { \
-			program { name: "button_click"; \
-				signal: "mouse,down,1"; \
-				source: "over2"; \
-				action: SIGNAL_EMIT "elm,action,press" ""; \
-				after: "button_click_anim"; \
-			} \
-			program { name: "button_click_anim"; \
-				action: STATE_SET "clicked" 0.0; \
-				target: "highlight"; \
-				target: "elm.text"; \
-			} \
-			program { name: "button_double_click"; \
-				signal: "mouse,down,1,double"; \
-				source: "over2"; \
-				after: "button_click_anim"; \
-			} \
-			program { name: "button_unpress"; \
-				action: SIGNAL_EMIT "elm,action,unpress" ""; \
-			} \
-			program { name: "button_mouseout_clicked"; \
-				signal: "mouse,up,1"; \
-				source: "over3"; \
-				script { \
-					if (get_int(button_state) != 1) \
-						set_state(PART:"highlight", "default", 0.0); \
-						set_state(PART:"elm.text", "default", 0.0); \
-					} \
-				after: button_unpress; \
-			} \
-			program { name: "touch_snd"; \
-				signal: "mouse,clicked,1"; \
-				source: "over2"; \
-				action: RUN_PLUGIN "touch_sound"; \
-				after: button_unclick3; \
-			} \
-			program { name: "button_unclick3"; \
-				action: SIGNAL_EMIT "elm,action,click" ""; \
-			} \
-			program { name: "disable"; \
-				signal: "elm,state,disabled"; \
-				source: "elm"; \
-				action: STATE_SET "disabled" 0.0; \
-				target: "button_image"; \
-				target: "elm.text"; \
-				target: "disabler"; \
-			} \
-			program { name: "enable"; \
-				signal: "elm,state,enabled"; \
-				source: "elm"; \
-				action: STATE_SET "default" 0.0; \
-				target: "button_image"; \
-				target: "elm.text"; \
-				target: "disabler"; \
-			} \
-			program { name: "action_focus"; \
-				signal: "elm,action,focus_highlight,show"; \
-				source: "elm"; \
-				action: STATE_SET "focused" 0.0; \
-				target: "button_image"; \
-				target: "elm.text"; \
-			} \
-			program { name: "action_unfocus"; \
-				signal: "elm,action,focus_highlight,hide"; \
-				source: "elm"; \
-				action: STATE_SET "default" 0.0; \
-				target: "button_image"; \
-				target: "elm.text"; \
-			} \
-		} \
-	}
-
-#define STYLE_CALL_TOGGLE_BUTTON(grp_name, bg_cc, bg_cc_p, img, img_cc, img_cc_p) \
+#define TOGGLE_BTN(grp_name, bg_cc, bg_cc_p, img, img_cc, img_cc_p) \
 	group { name: "elm/button/base/"grp_name; \
 		data { \
 			item: "focus_highlight" "on"; \
@@ -1507,55 +1312,45 @@ collections {
 	    }
 	}
 
-////////////// elm/button/base/default -disabled  //////////////////////////////////////////////
-//////This is disabled effect for buttons of Six buttons layout and disabled effect is when making MO call////
-	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_add", ICON_IMG_PATH"/call_btn_addcall.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_keypad", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_keypad_hide", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_speaker", ICON_IMG_PATH"/call_btn_volume.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_mute", ICON_IMG_PATH"/call_btn_mute.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_DISABLED("style_call_sixbtn_disabled_headset", ICON_IMG_PATH"/call_btn_bluetooth.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_DISABLED("style_call_sixbtn_disabled_contacts", ICON_IMG_PATH"/call_btn_contacts.png", "AO008", 1, 1)
+/* elm/button/base/default - disabled*/
+/* This is disabled effect for buttons of Six buttons layout and disabled effect is when making MO call */
+	ACTION_BTN_DISABLED("callui_action_btn_add_disabled", ICON_IMG_PATH"/call_btn_addcall.png", "AO008", 1, 1)
+	ACTION_BTN_DISABLED("callui_action_btn_keypad_disabled", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
+	ACTION_BTN_TOGGLE_DISABLED("callui_action_btn_speaker_disabled", ICON_IMG_PATH"/call_btn_volume.png", "AO008", 1, 1)
+	ACTION_BTN_TOGGLE_DISABLED("callui_action_btn_mute_disabled", ICON_IMG_PATH"/call_btn_mute.png", "AO008", 1, 1)
+	ACTION_BTN_TOGGLE_DISABLED("callui_action_btn_headset_disabled", ICON_IMG_PATH"/call_btn_bluetooth.png", "AO008", 1, 1)
+	ACTION_BTN_DISABLED("callui_action_btn_contacts_disabled", ICON_IMG_PATH"/call_btn_contacts.png", "AO008", 1, 1)
 
-////////////// elm/button/base/default  //////////////////////////////////////////////
-//////This effect is for buttons of Six buttons layout when they are enabled//////
-	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_add", ICON_IMG_PATH"/call_btn_addcall.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_keypad", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_keypad_hide", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_speaker", ICON_IMG_PATH"/call_btn_volume.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_speaker_on", ICON_IMG_PATH"/call_btn_volume.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_mute", ICON_IMG_PATH"/call_btn_mute.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_mute_on", ICON_IMG_PATH"/call_btn_mute.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE("style_call_sixbtn_headset", ICON_IMG_PATH"/call_btn_bluetooth.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON_TOGGLE_PRESSED("style_call_sixbtn_headset_on", ICON_IMG_PATH"/call_btn_bluetooth.png", "AO008", 1, 1)
-	STYLE_CALL_SIX_BUTTON("style_call_sixbtn_contacts", ICON_IMG_PATH"/call_btn_contacts.png", "AO008", 1, 1)
+/* elm/button/base/default */
+/* This effect is for buttons of Six buttons layout when they are enabled */
+	ACTION_BTN("callui_action_btn_add", ICON_IMG_PATH"/call_btn_addcall.png", "AO008", 1, 1)
+	ACTION_BTN("callui_action_btn_keypad", ICON_IMG_PATH"/call_btn_keypad.png", "AO008", 1, 1)
+	ACTION_BTN_TOGGLE("callui_action_btn_speaker", ICON_IMG_PATH"/call_btn_volume.png", "AO008", 1, 1)
+	ACTION_BTN_TOGGLE_PRESSED("callui_action_btn_speaker_on", ICON_IMG_PATH"/call_btn_volume.png", "AO008", 1, 1)
+	ACTION_BTN_TOGGLE("callui_action_btn_mute", ICON_IMG_PATH"/call_btn_mute.png", "AO008", 1, 1)
+	ACTION_BTN_TOGGLE_PRESSED("callui_action_btn_mute_on", ICON_IMG_PATH"/call_btn_mute.png", "AO008", 1, 1)
+	ACTION_BTN_TOGGLE("callui_action_btn_headset", ICON_IMG_PATH"/call_btn_bluetooth.png", "AO008", 1, 1)
+	ACTION_BTN_TOGGLE_PRESSED("callui_action_btn_headset_on", ICON_IMG_PATH"/call_btn_bluetooth.png", "AO008", 1, 1)
+	ACTION_BTN("callui_action_btn_contacts", ICON_IMG_PATH"/call_btn_contacts.png", "AO008", 1, 1)
 
-////////////// elm/button/base/style_call_icon_only_end  //////////////////////////////////////////////
-/////////////This style is for End button in quickpanel view//////////////////////////////////////////////////////////
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_end, "AO013", "AO013P", ICON_IMG_PATH"/icon_end_call.png", "ATO017", "ATO017");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_call, "AO012P1", "AO012P", ICON_IMG_PATH"/icon_call.png", "ATO017", "ATO017");
+/* elm/button/base/style_call_icon_only_end */
+/* This style is for End button in quickpanel view */
+	TOGGLE_BTN(callui_qp_btn_end, "AO013", "AO013P", ICON_IMG_PATH"/icon_end_call.png", "ATO017", "ATO017");
+	TOGGLE_BTN(callui_qp_btn_call, "AO012P1", "AO012P", ICON_IMG_PATH"/icon_call.png", "ATO017", "ATO017");
 
-////////////// elm/button/base/style_call_icon_only_qp_mute //////////////////////////////////////////////
-/////////////This style is for mute/unhold button in quickpanel view//////////////////////////////////////////////////////////
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_mute, "AO001", "AO014P", ICON_IMG_PATH"/icon_mic.png", "AO019", "AO019P");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_mute_on, "AO001", "AO014P", ICON_IMG_PATH"/icon_mic.png", "AO018", "AO018P");
+/* elm/button/base/callui_qp_btn_mute */
+/* This style is for mute/unhold button in quickpanel view */
+	TOGGLE_BTN(callui_qp_btn_mute, "AO001", "AO014P", ICON_IMG_PATH"/icon_mic.png", "AO019", "AO019P");
+	TOGGLE_BTN(callui_qp_btn_mute_on, "AO001", "AO014P", ICON_IMG_PATH"/icon_mic.png", "AO018", "AO018P");
 
-////////////// elm/button/base/style_call_icon_only_qp_speaker //////////////////////////////////////////////
-/////////////This style is for speaker/unhold button in quickpanel view//////////////////////////////////////////////////////////
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_speaker, "AO001", "AO014P", ICON_IMG_PATH"/icon_speaker.png", "AO019", "AO019P");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_speaker_on, "AO001", "AO014P", ICON_IMG_PATH"/icon_speaker.png", "AO018", "AO018P");
+/* elm/button/base/callui_qp_btn_speaker */
+/* This style is for speaker/unhold button in quickpanel view */
+	TOGGLE_BTN(callui_qp_btn_speaker, "AO001", "AO014P", ICON_IMG_PATH"/icon_speaker.png", "AO019", "AO019P");
+	TOGGLE_BTN(callui_qp_btn_speaker_on, "AO001", "AO014P", ICON_IMG_PATH"/icon_speaker.png", "AO018", "AO018P");
 
-/////////////This style is for speaker/resume button in quickpanel view//////////////////////////////////////////////////////////
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_resume, "AO001", "AO014P", ICON_IMG_PATH"/call_btn_resume.png", "AO019", "AO019P");
-	STYLE_CALL_TOGGLE_BUTTON(style_call_icon_only_qp_resume_on, "AO001", "AO014P", ICON_IMG_PATH"/call_btn_resume.png", "AO018", "AO018P");
-
-////////////// elm/button/base/text_only/call_end_grey  //////////////////////////////////////////////
-///////////// This style is for add to contacts button in end call view//////////////////////////////
-	STYLE_CALL_END_CONTACT_BUTTONS("style_call_end_create_contact_button", "AO026L1", "AO026P", 15, 60, "AO049", 79, 30, "ATO008", 130, ICON_IMG_PATH"/call_btn_end_03.png")
-	STYLE_CALL_END_CONTACT_BUTTONS("style_call_end_update_contact_button", "AO026L2", "AO026P", 15, 60, "AO049", 79, 30, "ATO008", 130, ICON_IMG_PATH"/call_btn_end_02.png")
-	STYLE_CALL_END_CONTACT_BUTTONS("style_call_end_view_contact_button", "AO026L1", "AO026P", 15, 60, "AO049", 79, 30, "ATO008", 130, ICON_IMG_PATH"/call_btn_end_01.png")
-
-	//STYLE_CALL_END_CONTACT_BUTTONS("style_call_end_contact_button_ln", A026L1, ICON_IMG_PATH"/call_btn_end_01.png")
+/* This style is for speaker/resume button in quickpanel view */
+	TOGGLE_BTN(callui_qp_btn_resume, "AO001", "AO014P", ICON_IMG_PATH"/call_btn_resume.png", "AO019", "AO019P");
+	TOGGLE_BTN(callui_qp_btn_resume_on, "AO001", "AO014P", ICON_IMG_PATH"/call_btn_resume.png", "AO018", "AO018P");
 
 group { name: "elm/button/base/call_icon_only";
       script {
