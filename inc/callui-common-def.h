@@ -61,20 +61,22 @@
 #define GRP_ENDCALL_MSG_BTN "message_button"
 #define GRP_ENDCALL_CREATE_CONT_BTN "create_contact_button"
 
-#define	 CALLUI_DISPLAY_NAME_LENGTH_MAX			(255+1)			/**< Voiecall Display Name Max Length  */
-#define	 CALLUI_IMAGE_PATH_LENGTH_MAX			(255+1)			/**< Max File length for image */
-#define	 CALLUI_RINGTONE_PATH_LENGTH_MAX		(255+1)			/**< Max File length for Ringtone */
-#define	 CALLUI_VIB_PATH_LENGTH_MAX				(255+1)			/**< Max File length for Vibration */
-#define	 CALLUI_DATA_LENGTH_MAX					(255+1)			/**< Max data length for misc */
-#define	 CALLUI_PHONE_NUMBER_LENGTH_MAX			(82+1)			/**< Maximum length of a phone number  */
-#define	 CALLUI_FORMATTED_NUMBER_LENGTH_MAX		(164+1)			/**< Maximum length of a phone number  */
-#define	 CALLUI_PHONE_DISP_NUMBER_LENGTH_MAX	(82+10+1)		/**< Maximum length of a display phone number  */
-#define	 CALLUI_PHONE_NAME_LENGTH_MAX			(80+1)			/**< Maximum length of a calling name  */
-#define	 CALLUI_PHONE_SUBADDRESS_LENGTH_MAX		(40+1)			/**< Maximum length of a SUB address  */
-#define	 CALLUI_PHONE_USSD_LENGTH_MAX			(182+1)			/**< Maximum length of a phone number  */
-#define	 CALLUI_MAX_CALL_GROUP_MEMBER			5				/**< Maximum number of members in a group */
-#define	 CALLUI_MAX_CALL_MEMBER					8				/**< This is the maximum number of members possible */
-#define	 CALLUI_INVALID_CALL_ID					0				/**< This is the invalid entry for call ID */
+#define	CALLUI_DISPLAY_NAME_LENGTH_MAX			(255+1)			/**< Voiecall Display Name Max Length  */
+#define	CALLUI_IMAGE_PATH_LENGTH_MAX			(255+1)			/**< Max File length for image */
+#define	CALLUI_RINGTONE_PATH_LENGTH_MAX			(255+1)			/**< Max File length for Ringtone */
+#define	CALLUI_VIB_PATH_LENGTH_MAX				(255+1)			/**< Max File length for Vibration */
+#define	CALLUI_DATA_LENGTH_MAX					(255+1)			/**< Max data length for misc */
+#define	CALLUI_PHONE_NUMBER_LENGTH_MAX			(82+1)			/**< Maximum length of a phone number  */
+#define	CALLUI_FORMATTED_NUMBER_LENGTH_MAX		(164+1)			/**< Maximum length of a phone number  */
+#define	CALLUI_PHONE_DISP_NUMBER_LENGTH_MAX		(82+10+1)		/**< Maximum length of a display phone number  */
+#define	CALLUI_PHONE_NAME_LENGTH_MAX			(80+1)			/**< Maximum length of a calling name  */
+#define	CALLUI_PHONE_SUBADDRESS_LENGTH_MAX		(40+1)			/**< Maximum length of a SUB address  */
+#define	CALLUI_PHONE_USSD_LENGTH_MAX			(182+1)			/**< Maximum length of a phone number  */
+#define	CALLUI_MAX_CALL_GROUP_MEMBER			5				/**< Maximum number of members in a group */
+#define	CALLUI_MAX_CALL_MEMBER					8				/**< This is the maximum number of members possible */
+#define	CALLUI_INVALID_CALL_ID					0				/**< This is the invalid entry for call ID */
+
+#define	CALLUI_BUF_MEMBER_SIZE 512
 
 #define NO_HANDLE 0
 
