@@ -52,12 +52,6 @@ struct appdata {
 
 	bool waiting_dialing;
 
-	/*Call duration*/
-	Ecore_Timer *blink_timer;
-	Ecore_Timer *ending_timer;
-
-	int blink_cnt;
-
 	Ecore_Event_Handler *downkey_handler;
 	Ecore_Event_Handler *upkey_handler;
 	Ecore_Timer *earset_key_longpress_timer;
