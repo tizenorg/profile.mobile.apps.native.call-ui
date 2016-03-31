@@ -61,6 +61,7 @@ static void __merge_btn_click_cb(void *data, Evas_Object *obj, const char *emiss
 static void __swap_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *src);
 static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility);
 static Eina_Bool __call_duration_timer_cb(void* data);
+static callui_result_e __init_call_duration_timer(callui_view_mc_split_h vd);
 
 callui_view_mc_split_h _callui_view_multi_call_split_new()
 {
@@ -111,7 +112,7 @@ static callui_result_e _callui_view_multi_call_split_ondestroy(call_view_data_ba
 	callui_view_mc_split_h vd = (callui_view_mc_split_h)view_data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	_callui_action_bar_show(ad->action_bar);
+	_callui_action_bar_hide(ad->action_bar);
 
 	_callui_keypad_hide_immediately(ad->keypad);
 	_callui_keypad_show_status_change_callback_set(ad->keypad, NULL, NULL);
@@ -228,9 +229,14 @@ static void __set_active_info(Evas_Object *parent, Evas_Object *content, callui_
 	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->state_provider,
 			CALLUI_CALL_DATA_TYPE_ACTIVE);
 
-	if (active && active->conf_member_count > 1) {
-		elm_object_signal_emit(content, SIGNAL_SHOW_ARROW, "");
-		elm_object_signal_callback_add(content, "mouse,up,*", "arrow", __mng_callers_btn_click_cb, ad);
+	if (active) {
+		if (active->conf_member_count > 1) {
+			elm_object_signal_emit(content, SIGNAL_SHOW_ARROW, "");
+			elm_object_signal_callback_add(content, "mouse,up,*", "arrow", __mng_callers_btn_click_cb, ad);
+		} else {
+			elm_object_signal_emit(content, SIGNAL_HIDE_ARROW, "");
+			elm_object_signal_callback_del(content, "mouse,up,*", "arrow", __mng_callers_btn_click_cb);
+		}
 	}
 }
 
@@ -287,6 +293,24 @@ static Eina_Bool __call_duration_timer_cb(void* data)
 	return ECORE_CALLBACK_RENEW;
 }
 
+static callui_result_e __init_call_duration_timer(callui_view_mc_split_h vd)
+{
+	callui_app_data_t *ad = vd->base_view.ad;
+
+	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
+	FREE(vd->base_view.call_duration_tm);
+
+	vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_tm, CALLUI_RESULT_ALLOCATION_FAIL);
+
+	_callui_common_set_call_duration_time(vd->base_view.call_duration_tm, vd->active_layout, PART_TEXT_STATUS);
+
+	vd->base_view.call_duration_timer = ecore_timer_add(0.1, __call_duration_timer_cb, vd);
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_timer, CALLUI_RESULT_ALLOCATION_FAIL);
+
+	return CALLUI_RESULT_OK;
+}
+
 static callui_result_e __update_displayed_data(callui_view_mc_split_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
@@ -302,22 +326,15 @@ static callui_result_e __update_displayed_data(callui_view_mc_split_h vd)
 	__update_hold_active_layout(vd->active_layout, active);
 	__set_active_info(vd->caller_info, vd->active_layout, ad);
 
-	FREE(vd->base_view.call_duration_tm);
-	vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
-	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_tm, CALLUI_RESULT_ALLOCATION_FAIL);
-
-	_callui_common_set_call_duration_time(vd->base_view.call_duration_tm, vd->active_layout, PART_TEXT_STATUS);
-
-	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
-	vd->base_view.call_duration_timer = ecore_timer_add(0.1, __call_duration_timer_cb, vd);
-	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_timer, CALLUI_RESULT_ALLOCATION_FAIL);
+	callui_result_e res = __init_call_duration_timer(vd);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	evas_object_show(vd->base_view.contents);
 
 	evas_object_hide(ad->main_ly);
 	evas_object_show(ad->main_ly);
 
-	return CALLUI_RESULT_OK;
+	return res;
 }
 
 static void __mng_callers_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *src)
