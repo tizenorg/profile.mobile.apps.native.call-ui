@@ -249,11 +249,8 @@ group {
 			scale: 1;
 			description { state: "default" 0.0;
 				visible: 0;
-				aspect: 1 1;
-				aspect_preference: BOTH;
 				rel1 { relative: IAC_CONTACT_IMG_X0 IAC_CONTACT_IMG_Y0; to: "bg";}
 				rel2 { relative: IAC_CONTACT_IMG_X1 IAC_CONTACT_IMG_Y1; to: "bg";}
-				color: 255 255 0 255;
 			}
 			description { state: "show" 0.0;
 				inherit: "default" 0.0;
@@ -455,20 +452,32 @@ group {
 
 	programs{
 		program {
-			name: "show_image";
-			signal: "show_image";
+			name: "show_caller_id";
+			action: STATE_SET "show" 0.0;
+			target: "caller_id";
+		}
+		program {
+			name: "hide_caller_id";
+			action: STATE_SET "hide" 0.0;
+			target: "caller_id";
+		}
+		program {
+			name: "show_def_caller_id";
+			signal: "show_def_caller_id";
 			source: "main_active_noti_call";
 			action: STATE_SET "show" 0.0;
 			target: "caller_id_mask";
 			target: "caller_id_default";
+			after: "hide_caller_id";
 		}
 		program {
-			name: "hide_image";
-			signal: "hide_image";
+			name: "hide_def_caller_id";
+			signal: "hide_def_caller_id";
 			source: "main_active_noti_call";
 			action: STATE_SET "hide" 0.0;
 			target: "caller_id_mask";
 			target: "caller_id_default";
+			after: "show_caller_id";
 		}
 		program {
 			name: "small_main_ly";
