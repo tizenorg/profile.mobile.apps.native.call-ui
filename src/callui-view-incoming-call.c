@@ -154,10 +154,7 @@ static callui_result_e __callui_view_incoming_call_ondestroy(call_view_data_base
 	}
 #endif
 
-	if (ad->second_call_popup) {
-		evas_object_del(ad->second_call_popup);
-		ad->second_call_popup = NULL;
-	}
+	DELETE_EVAS_OBJECT(ad->second_call_popup);
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
 
@@ -222,10 +219,7 @@ static void __reject_msg_gl_sel_msg(void *data, Evas_Object *obj, void *event_in
 
 static void __reject_msg_genlist_create(callui_view_incoming_call_h vd)
 {
-	if (vd->reject_msg_genlist) {
-		evas_object_del(vd->reject_msg_genlist);
-		vd->reject_msg_genlist = NULL;
-	}
+	DELETE_EVAS_OBJECT(vd->reject_msg_genlist);
 
 	vd->reject_msg_genlist = elm_genlist_add(vd->reject_msg_layout);
 	elm_genlist_homogeneous_set(vd->reject_msg_genlist, EINA_TRUE);
@@ -672,21 +666,29 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
-	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
+	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	CALLUI_RETURN_VALUE_IF_FAIL(incom, CALLUI_RESULT_FAIL);
 
-	const char *file_path = call_data->call_ct_info.caller_id_path;
+	const callui_call_state_data_t *active =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_state_data_t *held =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+	if (ad->second_call_popup && (!active && !held)) {
+		DELETE_EVAS_OBJECT(ad->second_call_popup);
+	}
+
+	const char *file_path = incom->call_ct_info.caller_id_path;
 
 	if (strcmp(file_path, "default") != 0) {
 		_callui_show_caller_id(vd->caller_info, file_path);
 	}
 
-	const char *call_name = call_data->call_ct_info.call_disp_name;
+	const char *call_name = incom->call_ct_info.call_disp_name;
 	const char *call_number = NULL;
-	if (call_data->call_disp_num[0] != '\0') {
-		call_number = call_data->call_disp_num;
+	if (incom->call_disp_num[0] != '\0') {
+		call_number = incom->call_disp_num;
 	} else {
-		call_number = call_data->call_num;
+		call_number = incom->call_num;
 	}
 	if (strlen(call_name) == 0) {
 		_callui_show_caller_info_name(ad, call_number);
@@ -697,8 +699,10 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 		elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
 	}
 
-	if (__reject_msg_check_tel_num(call_number)) {
-		__create_reject_msg_layout(vd);
+	if (!__reject_msg_check_tel_num(call_number)) {
+		DELETE_EVAS_OBJECT(vd->reject_msg_layout);
+	} else {
+		__reject_msg_create_genlist(vd);
 	}
 
 	evas_object_show(vd->base_view.contents);
@@ -725,10 +729,6 @@ static Evas_Object *__create_reject_msg_layout(callui_view_incoming_call_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	if (vd->reject_msg_layout != NULL) {
-		evas_object_del(vd->reject_msg_layout);
-		vd->reject_msg_layout = NULL;
-	}
 	vd->reject_msg_layout = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_LOCK_REJECT_WITH_MSG);
 
 	evas_object_resize(vd->reject_msg_layout, ad->root_w, ad->root_h);
@@ -749,8 +749,6 @@ static Evas_Object *__create_reject_msg_layout(callui_view_incoming_call_h vd)
 	__reject_msg_list_param_reset(vd);
 
 	evas_object_show(vd->reject_msg_layout);
-
-	__reject_msg_create_genlist(vd);
 
 	return vd->reject_msg_layout;
 }
@@ -778,6 +776,8 @@ static callui_result_e __create_main_content(callui_view_incoming_call_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->dimming_ly, CALLUI_RESULT_ALLOCATION_FAIL);
 	evas_object_resize(vd->dimming_ly, ad->root_w, ad->root_h);
 	evas_object_move(vd->dimming_ly, 0, 0);
+
+	CALLUI_RETURN_VALUE_IF_FAIL(__create_reject_msg_layout(vd), CALLUI_RESULT_FAIL);
 
 	return res;
 }
