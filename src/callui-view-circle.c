@@ -239,9 +239,9 @@ static void __callui_view_circle_accept_up(callui_view_incoming_call_h vd, callu
 
 			dbg("__callui_view_circle_handle_accept");
 			__callui_view_circle_handle_accept(ad);
-		} else {
-			elm_object_signal_emit(lock_accept, "outer_circle,hide", "outer-circle");
 		}
+		elm_object_signal_emit(lock_accept, "outer_circle,hide", "outer-circle");
+		elm_object_signal_emit(lock_accept, "inner_circle,show", "inner-circle");
 	} else {
 		warn("Initial click is not in correct region");
 	}
@@ -346,10 +346,9 @@ static void __callui_view_circle_reject_up(callui_view_incoming_call_h vd, callu
 			evas_object_image_fill_set(circle_bg, 0, 0,
 					ELM_SCALE_SIZE(outer_circle_width), ELM_SCALE_SIZE(outer_circle_height));
 			__callui_view_circle_handle_reject(ad);
-		} else {
-			elm_object_signal_emit(lock_reject, "outer_circle,hide", "outer-circle");
-			elm_object_signal_emit(lock_reject, "inner_circle,show", "inner-circle");
 		}
+		elm_object_signal_emit(lock_reject, "outer_circle,hide", "outer-circle");
+		elm_object_signal_emit(lock_reject, "inner_circle,show", "inner-circle");
 	} else {
 		warn("Initial click is not in correct region");
 	}
