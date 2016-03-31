@@ -827,13 +827,10 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 	/* Set message type to SMS reject*/
 	msg_set_int_value(msgInfo, MSG_MESSAGE_TYPE_INT, MSG_TYPE_SMS_REJECT);
 
-	// TODO: Need functionality
-	int slot_id = 1;
+	int slot_id = CALLUI_SIM_SLOT_DEFAULT;
 	dbg("msg_sms_send_message() Sim slot [%d]", slot_id);
-	if (slot_id != -1) {
-		slot_id++;
-		msg_set_int_value(msgInfo, MSG_MESSAGE_SIM_INDEX_INT, slot_id);
-	}
+	slot_id++;
+	msg_set_int_value(msgInfo, MSG_MESSAGE_SIM_INDEX_INT, slot_id);
 
 	/* No setting send option */
 	msg_set_bool_value(sendOpt, MSG_SEND_OPT_SETTING_BOOL, FALSE);
