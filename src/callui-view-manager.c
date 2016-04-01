@@ -27,6 +27,7 @@
 #include "callui-view-multi-call-list.h"
 #include "callui-view-quickpanel.h"
 #include "callui-common.h"
+#include "callui-manager.h"
 #include "callui-state-provider.h"
 
 typedef call_view_data_base_t *(*new_view_data_cb) ();
@@ -35,6 +36,8 @@ struct _callui_vm {
 	call_view_data_base_t *cur_view;
 	callui_view_type_e cur_view_type;
 	callui_app_data_t *ad;
+
+	bool is_conf_call_ended;
 };
 typedef struct _callui_vm callui_vm_t;
 
@@ -45,11 +48,13 @@ static callui_result_e __destroy_cur_view(callui_vm_h vm);
 static callui_result_e __create_update_view(callui_vm_h vm, callui_view_type_e type);
 static call_view_data_base_t *__allocate_view(callui_view_type_e view_type);
 static callui_result_e __change_view(callui_vm_h vm, callui_view_type_e type);
-static callui_result_e __auto_change_view(callui_vm_h vm);
+static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_state_data_t *call_data);
 static void __call_state_event_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
-		callui_sim_slot_type_e sim_type);
+		callui_sim_slot_type_e sim_type,
+		void *event_info);
+static void __end_call_called_cb(void *user_data, unsigned int call_id, callui_call_release_type_e release_type);
 
 static call_view_data_base_t *__allocate_view(callui_view_type_e view_type)
 {
@@ -80,12 +85,17 @@ static call_view_data_base_t *__allocate_view(callui_view_type_e view_type)
 static void _lock_manager_unlock_cb(void *data)
 {
 	callui_app_data_t *ad = data;
-	_callui_vm_change_view(ad->view_manager, VIEW_TYPE_ENDCALL);
+
+	if (_callui_stp_is_any_calls_available(ad->state_provider)) {
+		return;
+	}
+	__change_view(ad->view_manager, VIEW_TYPE_ENDCALL);
 }
 
-static callui_result_e __auto_change_view(callui_vm_h vm)
+static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_state_data_t *call_data)
 {
 	callui_app_data_t *ad = vm->ad;
+	callui_result_e res = CALLUI_RESULT_FAIL;
 
 	const callui_call_state_data_t *active =
 			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
@@ -94,15 +104,25 @@ static callui_result_e __auto_change_view(callui_vm_h vm)
 	const callui_call_state_data_t *incom =
 			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
 
+	if (vm->is_conf_call_ended && call_data) {
+		if (!ad->end_call_data) {
+			ad->end_call_data = calloc(1, sizeof(callui_call_state_data_t));
+			CALLUI_RETURN_VALUE_IF_FAIL(ad->end_call_data, CALLUI_RESULT_ALLOCATION_FAIL);
+		}
+		memcpy(ad->end_call_data, call_data, sizeof(callui_call_state_data_t));
+		res = __change_view(vm, VIEW_TYPE_ENDCALL);
+		vm->is_conf_call_ended = false;
+		return res;
+	}
+
 	if (ad->multi_call_list_end_clicked) {
 		ad->multi_call_list_end_clicked = false;
 
 		if (active && active->conf_member_count > 1) {
-			return _callui_vm_change_view(vm, VIEW_TYPE_MULTICALL_LIST);
+			return __change_view(vm, VIEW_TYPE_MULTICALL_LIST);
 		}
 	}
 
-	callui_result_e res = CALLUI_RESULT_FAIL;
 	if (incom) {
 		callui_view_type_e type = VIEW_TYPE_INCOMING_CALL;
 		callui_view_type_e cur_type = _callui_vm_get_cur_view_type(ad->view_manager);
@@ -112,31 +132,37 @@ static callui_result_e __auto_change_view(callui_vm_h vm)
 				(cur_type == VIEW_TYPE_UNDEFINED || cur_type == VIEW_TYPE_ENDCALL)) {
 			type = VIEW_TYPE_INCOMING_CALL_NOTI;
 		}
-		res =_callui_vm_change_view(ad->view_manager, type);
+		res =__change_view(ad->view_manager, type);
 	} else if (active) {
 		if (active->is_dialing) {
-			res = _callui_vm_change_view(vm, VIEW_TYPE_DIALLING);
+			res = __change_view(vm, VIEW_TYPE_DIALLING);
 		} else if (held) {
-			res = _callui_vm_change_view(vm, VIEW_TYPE_MULTICALL_SPLIT);
+			res = __change_view(vm, VIEW_TYPE_MULTICALL_SPLIT);
 		} else if (active->conf_member_count > 1) {
-			res = _callui_vm_change_view(vm, VIEW_TYPE_MULTICALL_CONF);
+			res = __change_view(vm, VIEW_TYPE_MULTICALL_CONF);
 		} else {
-			res = _callui_vm_change_view(vm, VIEW_TYPE_SINGLECALL);
+			res = __change_view(vm, VIEW_TYPE_SINGLECALL);
 		}
 	} else if (held) {
 		if (held->conf_member_count > 1) {
-			res = _callui_vm_change_view(vm, VIEW_TYPE_MULTICALL_CONF);
+			res = __change_view(vm, VIEW_TYPE_MULTICALL_CONF);
 		} else {
-			res = _callui_vm_change_view(vm, VIEW_TYPE_SINGLECALL);
+			res = __change_view(vm, VIEW_TYPE_SINGLECALL);
 		}
 	} else {
-		const callui_call_state_data_t *last_call_data = _callui_stp_get_last_ended_call_data(ad->state_provider);
-		if (last_call_data && last_call_data->type != CALLUI_CALL_DATA_TYPE_INCOMING) {
+		if (call_data && call_data->type != CALLUI_CALL_DATA_TYPE_INCOMING) {
+
+			if (!ad->end_call_data) {
+				ad->end_call_data = calloc(1, sizeof(callui_call_state_data_t));
+				CALLUI_RETURN_VALUE_IF_FAIL(ad->end_call_data, CALLUI_RESULT_ALLOCATION_FAIL);
+			}
+			memcpy(ad->end_call_data, call_data, sizeof(callui_call_state_data_t));
+
 			if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 				_callui_lock_manager_set_callback_on_unlock(ad->lock_handle, _lock_manager_unlock_cb, ad);
 			} else {
 				_callui_lock_manager_stop(ad->lock_handle);
-				_callui_vm_change_view(vm, VIEW_TYPE_ENDCALL);
+				res = __change_view(vm, VIEW_TYPE_ENDCALL);
 			}
 		} else {
 			_callui_common_exit_app();
@@ -148,11 +174,40 @@ static callui_result_e __auto_change_view(callui_vm_h vm)
 static void __call_state_event_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
-		callui_sim_slot_type_e sim_type)
+		callui_sim_slot_type_e sim_type,
+		void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(user_data);
 
-	__auto_change_view(user_data);
+	callui_vm_h vm = user_data;
+
+	if (!(vm->cur_view_type == VIEW_TYPE_ENDCALL && call_event_type == CALLUI_CALL_EVENT_TYPE_END)) {
+		__auto_change_view(vm, event_info);
+	}
+}
+
+static void __end_call_called_cb(void *user_data, unsigned int call_id, callui_call_release_type_e release_type)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	if (release_type == CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE) {
+		return;
+	}
+	callui_vm_h vm = user_data;
+
+	callui_app_data_t *ad = vm->ad;
+
+	const callui_call_state_data_t *active =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_state_data_t *held =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+	const callui_call_state_data_t *incom =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+
+	if ((active && !held && !incom && (active->conf_member_count > 1)) ||
+			(held && !active && !incom && (held->conf_member_count > 1))) {
+		vm->is_conf_call_ended = true;
+	}
 }
 
 static callui_result_e __callui_vm_init(callui_vm_h vm, callui_app_data_t *ad)
@@ -160,8 +215,10 @@ static callui_result_e __callui_vm_init(callui_vm_h vm, callui_app_data_t *ad)
 	vm->cur_view_type = VIEW_TYPE_UNDEFINED;
 	vm->ad = ad;
 
-	callui_result_e res = _callui_stp_add_call_state_event_cb(ad->state_provider,
-			__call_state_event_cb, vm);
+	callui_result_e res = _callui_stp_add_call_state_event_cb(ad->state_provider, __call_state_event_cb, vm);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+
+	res = _callui_manager_add_end_call_called_cb(ad->call_manager, __end_call_called_cb, vm);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	return res;
@@ -172,6 +229,7 @@ static void __callui_vm_deinit(callui_vm_h vm)
 	callui_app_data_t *ad = vm->ad;
 
 	_callui_stp_remove_call_state_event_cb(ad->state_provider, __call_state_event_cb, vm);
+	_callui_manager_remove_end_call_called_cb(ad->call_manager, __end_call_called_cb, vm);
 
 	__destroy_cur_view(vm);
 }
@@ -313,5 +371,5 @@ callui_result_e _callui_vm_auto_change_view(callui_vm_h vm)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
 
-	return __auto_change_view(vm);
+	return __auto_change_view(vm, NULL);
 }
