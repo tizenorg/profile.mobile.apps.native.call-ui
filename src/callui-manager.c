@@ -24,12 +24,15 @@
 #include "callui-sound-manager-priv.h"
 #include "callui-state-provider-priv.h"
 #include "callui-model-utils-priv.h"
+#include "callui-listeners-collection.h"
 
 struct __callui_manager {
 	cm_client_h cm_handler;
 
 	callui_sound_manager_h sound_manager;
 	callui_state_provider_h state_provider;
+
+	_callui_listeners_coll_t end_call_lc;
 };
 typedef struct __callui_manager _callui_manager_t;
 
@@ -37,6 +40,7 @@ static callui_result_e __callui_manager_init(callui_manager_h cm_handler);
 static void __callui_manager_deinit(callui_manager_h cm_handler);
 static cm_call_release_type_e __convert_app_release_type(callui_call_release_type_e type);
 static cm_call_answer_type_e __convert_app_answer_type(callui_call_answer_type_e type);
+static void __end_call_called_handler_func(_callui_listener_t *listener, va_list args);
 
 static cm_call_release_type_e __convert_app_release_type(callui_call_release_type_e type)
 {
@@ -79,6 +83,8 @@ static callui_result_e __callui_manager_init(callui_manager_h cm_handler)
 	callui_result_e res = _callui_utils_convert_cm_res(cm_init(&cm_handler->cm_handler));
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
+	_callui_listeners_coll_init(&cm_handler->end_call_lc);
+
 	cm_handler->sound_manager = _callui_sdm_create(cm_handler->cm_handler);
 	CALLUI_RETURN_VALUE_IF_FAIL(cm_handler->sound_manager, CALLUI_RESULT_FAIL);
 
@@ -90,6 +96,8 @@ static callui_result_e __callui_manager_init(callui_manager_h cm_handler)
 
 static void __callui_manager_deinit(callui_manager_h cm_handler)
 {
+	_callui_listeners_coll_deinit(&cm_handler->end_call_lc);
+
 	if (cm_handler->state_provider) {
 		_callui_stp_destroy(cm_handler->state_provider);
 		cm_handler->state_provider = NULL;
@@ -154,8 +162,14 @@ callui_result_e _callui_manager_end_call(callui_manager_h cm_handler, unsigned i
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(cm_handler, CALLUI_RESULT_INVALID_PARAM);
 
-	return _callui_utils_convert_cm_res(
+	callui_result_e res = _callui_utils_convert_cm_res(
 			cm_end_call(cm_handler->cm_handler, call_id, __convert_app_release_type(release_type)));
+
+	if (res == CALLUI_RESULT_OK) {
+		_callui_listeners_coll_call_listeners(&cm_handler->end_call_lc, call_id, release_type);
+	}
+
+	return res;
 }
 
 callui_result_e _callui_manager_swap_call(callui_manager_h cm_handler)
@@ -236,3 +250,30 @@ callui_state_provider_h _callui_manager_get_state_provider(callui_manager_h cm_h
 
 	return cm_handler->state_provider;
 }
+
+static void __end_call_called_handler_func(_callui_listener_t *listener, va_list args)
+{
+	unsigned int call_id = va_arg(args, unsigned int);
+	callui_call_release_type_e release_type = va_arg(args, callui_call_release_type_e);
+	((callui_end_call_called_cb)(listener->cb_func))(listener->cb_data, call_id, release_type);
+}
+
+callui_result_e _callui_manager_add_end_call_called_cb(callui_manager_h cm_handler,
+		callui_end_call_called_cb cb_func, void *cb_data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(cm_handler, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(cb_func, CALLUI_RESULT_INVALID_PARAM);
+
+	return _callui_listeners_coll_add_listener(&cm_handler->end_call_lc,
+			__end_call_called_handler_func, cb_func, cb_data);
+}
+
+callui_result_e _callui_manager_remove_end_call_called_cb(callui_manager_h cm_handler,
+		callui_end_call_called_cb cb_func, void *cb_data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(cm_handler, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(cb_func, CALLUI_RESULT_INVALID_PARAM);
+
+	return _callui_listeners_coll_remove_listener(&cm_handler->end_call_lc, cb_func, cb_data);
+}
+

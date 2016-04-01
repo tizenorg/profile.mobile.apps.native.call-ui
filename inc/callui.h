@@ -24,6 +24,7 @@
 #include "callui-lock-manager.h"
 #include "callui-keypad.h"
 #include "callui-manager.h"
+#include "callui-state-provider.h"
 #include "callui-view-quickpanel.h"
 #include "callui-action-bar.h"
 
@@ -62,6 +63,8 @@ struct appdata {
 	callui_manager_h call_manager;
 	callui_state_provider_h state_provider;
 	callui_sound_manager_h sound_manager;
+
+	callui_call_state_data_t *end_call_data;
 };
 
 callui_app_data_t *_callui_get_app_data();

@@ -50,6 +50,11 @@ typedef struct __callui_manager *callui_manager_h;
 typedef struct __callui_state_provider *callui_state_provider_h;
 typedef struct __callui_sound_manager *callui_sound_manager_h;
 
+/* Callback prototype */
+typedef void (*callui_end_call_called_cb)(void *user_data,
+		unsigned int call_id,
+		callui_call_release_type_e release_type);
+
 callui_manager_h _callui_manager_create();
 
 void _callui_manager_destroy(callui_manager_h cm_handler);
@@ -78,5 +83,10 @@ callui_sound_manager_h _callui_manager_get_sound_manager(callui_manager_h cm_han
 
 callui_state_provider_h _callui_manager_get_state_provider(callui_manager_h cm_handler);
 
+callui_result_e _callui_manager_add_end_call_called_cb(callui_manager_h cm_handler,
+		callui_end_call_called_cb cb_func, void *cb_data);
+
+callui_result_e _callui_manager_remove_end_call_called_cb(callui_manager_h cm_handler,
+		callui_end_call_called_cb cb_func, void *cb_data);
 
 #endif /* __CALLUI_CALL_MANAGER_H__ */

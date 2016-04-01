@@ -46,7 +46,8 @@ static void __audio_state_changed_cb(void *user_data,
 static void __call_state_change_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
-		callui_sim_slot_type_e sim_type);
+		callui_sim_slot_type_e sim_type,
+		void *event_info);
 
 static callui_app_data_t g_ad;
 
@@ -137,7 +138,8 @@ static void __audio_state_changed_cb(void *user_data, callui_audio_state_type_e 
 static void __call_state_change_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
-		callui_sim_slot_type_e sim_type)
+		callui_sim_slot_type_e sim_type,
+		void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(user_data);
 
@@ -429,6 +431,8 @@ static bool __app_deinit(callui_app_data_t *ad)
 		evas_object_del(ad->main_ly);
 		ad->main_ly = NULL;
 	}
+
+	free(ad->end_call_data);
 
 	__callui_bt_deinit();
 

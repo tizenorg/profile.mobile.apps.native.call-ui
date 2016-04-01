@@ -143,7 +143,9 @@ static Eina_Bool __active_call_duration_timer_cb(void* data);
 static void __call_state_event_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
-		callui_sim_slot_type_e sim_type);
+		callui_sim_slot_type_e sim_type,
+		void *event_info);
+
 static void __audio_state_changed_cb(void *user_data, callui_audio_state_type_e state);
 static void __mute_state_changed_cb(void *user_data, bool is_enable);
 
@@ -153,7 +155,8 @@ static void __update_all_btns(callui_qp_mc_h qp);
 static void __call_state_event_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
-		callui_sim_slot_type_e sim_type)
+		callui_sim_slot_type_e sim_type,
+		void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(user_data);
 
