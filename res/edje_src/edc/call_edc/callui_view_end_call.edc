@@ -492,16 +492,16 @@ group {
 	}
 	programs{
 		program {
-			name: "show_image";
-			signal: "show_image";
+			name: "show_def_caller_id";
+			signal: "show_def_caller_id";
 			source: "main_end_call";
 			action: STATE_SET "show" 0.0;
 			target: "caller_id_mask";
 			target: "caller_id_img";
 		}
 		program {
-			name: "hide_image";
-			signal: "hide_image";
+			name: "hide_def_caller_id";
+			signal: "hide_def_caller_id";
 			source: "main_end_call";
 			action: STATE_SET "hide" 0.0;
 			target: "caller_id_mask";

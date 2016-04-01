@@ -84,7 +84,8 @@ typedef struct _callui_call_state_data_t callui_call_state_data_t;
 typedef void (*callui_call_state_event_cb)(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
-		callui_sim_slot_type_e sim_type);
+		callui_sim_slot_type_e sim_type,
+		void *event_info);
 
 const callui_call_state_data_t *_callui_stp_get_call_data(callui_state_provider_h stp,
 		callui_call_data_type_e call_data_type);
@@ -93,8 +94,6 @@ Eina_List *_callui_stp_get_conference_call_list(callui_state_provider_h stp);
 
 struct tm *_callui_stp_get_call_duration(callui_state_provider_h stp,
 		callui_call_data_type_e call_data_type);
-
-const callui_call_state_data_t *_callui_stp_get_last_ended_call_data(callui_state_provider_h stp);
 
 bool _callui_stp_is_any_calls_available(callui_state_provider_h stp);
 
