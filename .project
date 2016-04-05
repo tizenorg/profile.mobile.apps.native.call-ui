@@ -29,31 +29,9 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 		<nature>org.tizen.nativecore.apichecker.apicheckernature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>edje_src</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/res/edje_src</locationURI>
-		</link>
-		<link>
-			<name>inc</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/inc</locationURI>
-		</link>
-		<link>
-			<name>src</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src</locationURI>
-		</link>
-		<link>
-			<name>res/edje</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/res/edje</locationURI>
-		</link>
-	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>1453904759351</id>
+			<id>1459768642733</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -62,7 +40,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1453904759353</id>
+			<id>1459768642735</id>
 			<name></name>
 			<type>6</type>
 			<matcher>

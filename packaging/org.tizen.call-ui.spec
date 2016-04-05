@@ -50,12 +50,12 @@ export FFLAGS="${FFLAGS} -fvisibility-inlines-hidden -fvisibility=hidden"
 %define RESDIR      %{APPDIR}/res
 %define PACKAGESDIR %{TZ_SYS_RO_PACKAGES}
 
-%define _tmp_buld_dir TEMP_BUILD_DIR/%{_project}-%{_arch}
+%define _gbs_buld_dir GBS_BUILD_DIR/%{_project}-%{_arch}
 
-mkdir -p %{_tmp_buld_dir}
-cd %{_tmp_buld_dir}
+mkdir -p %{_gbs_buld_dir}
+cd %{_gbs_buld_dir}
 
-cmake ../../ -DCMAKE_PKG_NAME=%{name} \
+cmake ../../CMake/ -DCMAKE_PKG_NAME=%{name} \
         -DCMAKE_BIN_DIR=%{BINDIR} \
         -DCMAKE_RES_DIR=%{RESDIR} \
         -DCMAKE_SHARE_PACKAGES_DIR=%{PACKAGESDIR}
@@ -63,7 +63,7 @@ make %{?jobs:-j%jobs}
 
 %install
 rm -rf %{buildroot}
-cd %{_tmp_buld_dir}
+cd %{_gbs_buld_dir}
 
 %make_install
 

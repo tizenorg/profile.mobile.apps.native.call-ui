@@ -16,7 +16,7 @@
  */
 
 #include "../../inc/callui-view-layout.h"
-#include "../edje_src/edc/callui-color-classes.edc"
+#include "../../edje_src/edc/callui-color-classes.edc"
 
 #define IMG_SOURCE_DIR "call_theme"
 #define BG_IMG_PATH IMG_SOURCE_DIR"/bg"

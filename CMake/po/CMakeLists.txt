@@ -5,7 +5,7 @@ SET(POFILES ar.po az.po bg.po ca.po cs.po da.po de.po el_GR.po en.po en_PH.po en
 SET(MSGFMT "/usr/bin/msgfmt")
 
 FOREACH(pofile ${POFILES})
-	SET(pofile ${CMAKE_CURRENT_SOURCE_DIR}/${pofile})
+	SET(pofile ${PO_DIR}/${pofile})
 	MESSAGE("PO: ${pofile}")
 	GET_FILENAME_COMPONENT(absPofile ${pofile} ABSOLUTE)
 	GET_FILENAME_COMPONENT(lang ${absPofile} NAME_WE)

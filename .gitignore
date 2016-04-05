@@ -1,38 +1,11 @@
-### SDK IDE generated files and folder ###
-.buildpath
-.sdb.devicemap
+*~
 .package-stamp
+.rds_delta
+.sdk_delta.info
 .sign/
-SA_Report/
+.settings/
 Debug/
 Release/
-Makefile
-binaries
-build-stamp
-build_log
-
-### Build scripts ###
-build*
-deploy*
-
-### Etc ###
-*~
-packages
-*.edj
-*.log
-*.o
-*.os
-*.pyc
-*~
-CMakeCache.txt
-cmake_install.cmake
-cmake_tmp/
-configure-stamp
-debugfiles.list
-debuglinks.list
-debugsources.list
-documentation.list
-install_manifest.txt
-TEMP_BUILD_DIR
-
-
+SA_Report/
+crash-info/
+GBS_BUILD_DIR/

@@ -9,10 +9,10 @@ type = app
 profile = mobile-3.0
 
 # C Sources
-USER_SRCS = ../../src/*.c
+USER_SRCS = src/*.c
 
 # EDC Sources
-USER_EDCS = ../../res/edje/*.edc
+USER_EDCS = res/edje/*.edc
 
 # PO Sources
 USER_POS = res/po/*.po
@@ -34,7 +34,7 @@ USER_OBJS_ABS =
 
 # User Includes
 ## C Compiler
-USER_INC_DIRS = ../../inc 
+USER_INC_DIRS = inc 
 USER_INC_DIRS_ABS = 
 USER_INC_FILES = 
 USER_INC_FILES_ABS = 
@@ -49,7 +49,7 @@ USER_LIB_DIRS =
 USER_LIB_DIRS_ABS = 
 
 # EDC Resource Path
-USER_EDCS_IMAGE_DIRS = /../../res/edje_src/edc_images
+USER_EDCS_IMAGE_DIRS = edje_src/images
 USER_EDCS_IMAGE_DIRS_ABS = 
 USER_EDCS_SOUND_DIRS = 
 USER_EDCS_SOUND_DIRS_ABS = 
