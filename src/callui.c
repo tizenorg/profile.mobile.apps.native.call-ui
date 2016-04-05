@@ -702,7 +702,7 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 			//Ecore_X_Window focus_win = ecore_x_window_focus_get();
 			//if (ad->win != NULL && focus_win == elm_win_xwindow_get(ad->win)) {
 				/* ToDo: Use lock-screen interface to raise the home screen */
-				_callui_common_win_set_noti_type(ad, EINA_FALSE);
+				_callui_common_win_set_noti_type(ad, false);
 				_callui_lock_manager_stop(ad->lock_handle);
 				ad->on_background = true;
 			//}

@@ -100,7 +100,7 @@ static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *vie
 
 	vd->base_view.ad = ad;
 
-	_callui_common_win_set_noti_type(vd->base_view.ad, EINA_TRUE);
+	_callui_common_win_set_noti_type(vd->base_view.ad, true);
 
 	callui_result_e res = __create_main_content(vd);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);

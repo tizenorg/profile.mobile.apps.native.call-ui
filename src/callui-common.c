@@ -32,8 +32,6 @@
 #include <app_common.h>
 #include <msg.h>
 #include <msg_transport.h>
-// TODO: needed for functionality of switch window types that currently does not work
-//#include <Ecore_Wayland.h>
 
 #include "callui-common.h"
 #include "callui-debug.h"
@@ -166,24 +164,18 @@ int _callui_common_unlock_swipe_lock(void)
 	return 0;
 }
 
-void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
+void _callui_common_win_set_noti_type(void *appdata, bool win_noti)
 {
-	dbg("_callui_common_win_set_noti_type");
-	// TODO: commented until functionality of switch window types will be fixed
-//	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-//
-//	Ecore_Wl_Window *win = elm_win_wl_window_get(ad->win);
-//	if (bwin_noti == EINA_FALSE) {
-//		dbg("window type: NORMAL");
-//		/* Set Normal window */
-//		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_TOPLEVEL);
-//	} else {
-//		dbg("window type: NOTI-HIGH");
-//		/* Set Notification window */
-//		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_NOTIFICATION);
-//		/* Set Notification's priority to LEVEL_HIGH */
-//		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
-//	}
+	CALLUI_RETURN_IF_FAIL(appdata);
+
+	callui_app_data_t *ad = appdata;
+	if (win_noti) {
+		dbg("window type: NOTIFICATION");
+		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
+	} else {
+		dbg("window type: NORMAL");
+		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_NONE);
+	}
 }
 
 void _callui_common_launch_contacts(void *appdata)
@@ -194,7 +186,7 @@ void _callui_common_launch_contacts(void *appdata)
 	_callui_lock_manager_stop(ad->lock_handle);
 	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, EINA_FALSE);
+	_callui_common_win_set_noti_type(appdata, false);
 
 	int ret = app_control_create(&service);
 	if (ret < 0) {
@@ -221,7 +213,7 @@ void _callui_common_launch_bt_app(void *appdata)
 	_callui_lock_manager_stop(ad->lock_handle);
 	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, EINA_FALSE);
+	_callui_common_win_set_noti_type(appdata, false);
 
 	int ret = app_control_create(&service);
 	if (ret < 0) {
@@ -250,7 +242,7 @@ void _callui_common_launch_dialer(void *appdata)
 	_callui_lock_manager_stop(ad->lock_handle);
 	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, EINA_FALSE);
+	_callui_common_win_set_noti_type(appdata, false);
 
 	ret = app_control_create(&service);
 	if (ret < 0) {
@@ -295,7 +287,7 @@ void _callui_common_launch_msg_composer(void *appdata, const char *number)
 	_callui_lock_manager_stop(ad->lock_handle);
 	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, EINA_FALSE);
+	_callui_common_win_set_noti_type(appdata, false);
 
 	ret = app_control_create(&service);
 	if (ret != APP_CONTROL_ERROR_NONE) {
@@ -631,9 +623,9 @@ static void __callui_common_lock_state_cb (system_settings_key_e key, void *user
 {
 	callui_app_data_t *ad = _callui_get_app_data();
 	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK) {
-		_callui_common_win_set_noti_type(ad, EINA_FALSE);
+		_callui_common_win_set_noti_type(ad, false);
 	} else {
-		_callui_common_win_set_noti_type(ad, EINA_TRUE);
+		_callui_common_win_set_noti_type(ad, true);
 	}
 }
 

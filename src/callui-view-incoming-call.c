@@ -118,7 +118,7 @@ static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_
 	}
 
 	evas_object_resize(ad->win, ad->root_w,  ad->root_h);
-	_callui_common_win_set_noti_type(ad, EINA_TRUE);
+	_callui_common_win_set_noti_type(ad, true);
 
 	evas_object_pointer_mode_set(ad->win, EVAS_OBJECT_POINTER_MODE_NOGRAB);
 
@@ -158,7 +158,7 @@ static callui_result_e __callui_view_incoming_call_ondestroy(call_view_data_base
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
 
-	_callui_common_win_set_noti_type(ad, EINA_FALSE);
+	_callui_common_win_set_noti_type(ad, false);
 
 	elm_win_keygrab_unset(ad->win, CALLUI_KEY_SELECT, 0, 0);
 

@@ -100,7 +100,7 @@ static callui_result_e __callui_view_incoming_call_noti_oncreate(call_view_data_
 
 	// TODO: need to remove this logic from here
 	evas_object_resize(ad->win, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
-	_callui_common_win_set_noti_type(ad, EINA_TRUE);
+	_callui_common_win_set_noti_type(ad, true);
 
 	if (elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
 		dbg("KEY_SELECT key grab failed");
@@ -136,7 +136,7 @@ static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
 
-	_callui_common_win_set_noti_type(ad, EINA_FALSE);
+	_callui_common_win_set_noti_type(ad, false);
 
 	evas_object_resize(ad->win, ad->root_w, ad->root_h);
 
