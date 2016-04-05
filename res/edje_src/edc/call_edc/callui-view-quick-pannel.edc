@@ -15,8 +15,6 @@
  *
  */
 
-
-#define QP_H		172
 #define QP_BG_PAD_R	32
 #define QP_BG_PAD_L	32
 #define QP_BG_PAD_B	42
@@ -109,7 +107,7 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				min: 0 QP_H;
+				min: 0 QP_WIN_H;
 				fixed: 0 1;
 				color: 255 255 255 255;
 			}

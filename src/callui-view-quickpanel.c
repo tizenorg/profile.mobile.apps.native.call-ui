@@ -31,7 +31,6 @@
 
 #define TXT_TIMER_BUF_LEN 26
 #define CALL_NUMBER_ONE 1
-#define QP_WIN_H 172
 #define TIME_BUF_LEN 16
 
 typedef enum {
