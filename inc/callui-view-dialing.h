@@ -15,22 +15,16 @@
  *
  */
 
-#ifndef __CALLUI_DIALING_VIEW_H_
-#define __CALLUI_DIALING_VIEW_H_
+#ifndef __CALLUI_DIALING_VIEW_H__
+#define __CALLUI_DIALING_VIEW_H__
 
-#include "callui.h"
-#include "callui-view-manager.h"
-
-typedef struct callui_view_dialing_priv callui_view_dialing_priv_t;
+typedef struct _callui_view_dialing *callui_view_dialing_h;
 
 /**
- * @brief Create dialing view
+ * @brief Create dialing view instance
  *
- * @param[in]    ad     Application data
- *
- * @return New dialing view data
- *
+ * @return View data handler
  */
-call_view_data_t *_callui_dialing_view_dialing_new(callui_app_data_t *ad);
+callui_view_dialing_h _callui_dialing_view_dialing_new();
 
-#endif //__CALLUI_DIALING_VIEW_H_
+#endif /* __CALLUI_DIALING_VIEW_H__ */

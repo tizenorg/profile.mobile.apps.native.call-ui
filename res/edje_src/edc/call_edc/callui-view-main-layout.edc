@@ -16,6 +16,77 @@
  */
 
 group {
+    name: "app_main_ly";
+	parts {
+		part { name: "bg";
+			type: SPACER;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+			}
+		}
+		part { name: "pad.bottom";
+			type: SPACER;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.0 1.0;
+				min: 0 ENDCALL_BTN_BG_H;
+				fixed: 0 1;
+				align: 0 1;
+			}
+		}
+		part { name: "elm.swallow.content";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+			}
+		}
+		part { name: "action_bar";
+			type: SWALLOW;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1{ relative: ACTION_BAR_LAYOUT_L ACTION_BAR_LAYOUT_T; }
+				rel2{ relative: ACTION_BAR_LAYOUT_R ACTION_BAR_LAYOUT_B; }
+				align: 0.5 0.0;
+			}
+		}
+		part { name: "keypadarea.clipper";
+			type: RECT;
+			mouse_events: 0;
+			repeat_events: 1;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1.relative: 0.0 0.0;
+				rel2 {
+					relative: 1.0 0.0;
+					to: "pad.bottom";
+				}
+			}
+		}
+		part { name: PART_SWALLOW_KEYPAD_LAYOUT_AREA;
+			type: SWALLOW;
+			scale: 1;
+			clip_to: "keypadarea.clipper";
+			description {
+				state: "default" 0.0;
+				rel1 {
+					relative: 0.0 0.0;
+					to: "keypadarea.clipper";
+				}
+				rel2 {
+					relative: 1.0 1.0;
+					to: "keypadarea.clipper";
+				}
+			}
+		}
+	}
+}
+
+group {
     name: "main_ly";
 	parts {
 		part { name: "background";
@@ -25,27 +96,6 @@ group {
 				image.normal: IMG_SRC_DIR/"background.png";
 			}
 		}
-
-		part { name: PART_SWALLOW_TEXTBLOCK_AREA;
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel2.relative: 1.0 KEYPAD_TXT_B;
-				visible: 1;
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-		}
-
 		part { name: "call_txt_status";
 			type: TEXT;
 			scale: 1;
@@ -99,88 +149,11 @@ group {
 			scale: 1;
 			description {
 				state: "default" 0.0;
-				visible: 0;
 				rel1{ relative: 0.0 1.0; to: "caller_info_rect";}
 				rel2{ relative: 1.0 1.0;}
 				min: MTLOCK_ACCEPT_CIRCLE_RECT_WIDTH MTLOCK_ACCEPT_CIRCLE_RECT_HEIGHT;
 				color: 255 255 255 255;
 				align: 0.5 0.0;
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-		}
-
-		part { name: "btn_area";
-			type: RECT;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 1;
-				rel1{ relative: SIX_BTN_LAYOUT_L SIX_BTN_LAYOUT_T; to: "background";}
-				rel2{ relative: SIX_BTN_LAYOUT_R SIX_BTN_LAYOUT_B; to: "background";}
-				color: COLOR_BG_ALPHA;
-				align: 0.5 0.0;
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-		}
-
-		part { name: PART_SWALLOW_KEYPAD;
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1.relative: 0.0 1.0;
-				rel2.relative: 1.0 2.0;
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-				rel1.relative: 0.0 0.0;
-				rel2 {
-					relative: 1.0 0.0;
-					to_y: "end_btn_area";
-				}
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-		}
-
-		part { name: "btn_region";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1 { relative: 0.0 0.0; to: "btn_area";}
-				rel2 { relative: 1.0 1.0; to: "btn_area";}
-				align: 0.5 0.0;
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
 			}
 		}
 
@@ -213,80 +186,17 @@ group {
  	}
 
 	programs {
-		program { name: "show_effect_allbtn";
-			signal: "SHOW_EFFECT";
-			source: "ALLBTN";
-			action: STATE_SET "show" 0.0;
-			transition: DECELERATE 0.5; //LINEAR 1.0;
-			target: "btn_region";
-		}
-		program { name: "show_no_effect_allbtn";
-			signal: "SHOW_NO_EFFECT";
-			source: "ALLBTN";
-			action: STATE_SET "show" 0.0;
-			target: "btn_region";
-		}
-		program { name: "hide_btn_ly";
-			signal: "HIDE_BTN_LY";
-			source: "ALLBTN";
-			action: STATE_SET "hide" 0.0;
-			target: "btn_region";
-		}
-
-		program { name: "show_keypadbtn";
-			action: STATE_SET "show" 0.0;
-			transition: LINEAR 0.25;
-			target: PART_SWALLOW_KEYPAD;
-		}
 		program { name: "show_keypadbtn_no_effect";
 			signal: "SHOW";
 			source: "KEYPAD_BTN";
 			action: STATE_SET "hide" 0.0;
 			target: "caller_info";
-			target: "btn_region";
-			after: "show_entry";
-			after: "show_keypadbtn";
 		}
-
-		program {
-			name: "show_entry";
-			action: STATE_SET "show" 0.0;
-			target: PART_SWALLOW_TEXTBLOCK_AREA;
-		}
-
-		program { name: "hide_keypadarea";
-			signal: "HIDE";
-			source: "KEYPAD_AREA";
-			action: STATE_SET "hide" 0.0;
-			target: PART_SWALLOW_KEYPAD;
-			after: "show_caller_info";
-		}
-
 		program { name: "hide_keypadbtn";
 			signal: "HIDE";
 			source: "KEYPAD_BTN";
 			action: STATE_SET "default" 0.0;
-			transition: LINEAR 0.25;
-			target: PART_SWALLOW_KEYPAD;
-			after: "show_six_btns";
-			after: "show_caller_info";
-		}
-		program { name: "show_six_btns";
-			action: STATE_SET "show" 0.0;
-			target: "btn_region";
-		}
-
-		program {
-			name: "show_caller_info";
-			action: STATE_SET "default" 0.0;
 			target: "caller_info";
-			after: "hide_entry";
-		}
-
-		program {
-			name: "hide_entry";
-			action: STATE_SET "hide" 0.0;
-			target: PART_SWALLOW_TEXTBLOCK_AREA;
 		}
 
 		program {
@@ -297,22 +207,6 @@ group {
 			action: STATE_SET "default" 0.0;
 			target: "background";
 			target: "caller_info";
-			target: "btn_region";
-			target: PART_SWALLOW_KEYPAD;
-		}
-
-		program { name: "show_mt_circle_bg";
-			signal: "mt_circle_bg_show";
-			source: "mt_view";
-			action: STATE_SET "show" 0.0;
-			target: "circle_btn_area";
-		}
-
-		program { name: "hide_mt_circle_bg";
-			signal: "mt_circle_bg_hide";
-			source: "mt_view";
-			action: STATE_SET "default" 0.0;
-			target: "circle_btn_area";
 		}
 	}
 }

@@ -15,19 +15,23 @@
  *
  */
 
+#ifndef __CALLUI_COMMON_TYPES_H__
+#define __CALLUI_COMMON_TYPES_H__
 
-#ifndef __CALLUI_VIEW_MULTI_CALL_CONF_H__
-#define __CALLUI_VIEW_MULTI_CALL_CONF_H__
+typedef enum {
 
-typedef struct _callui_view_mc_conf *callui_view_mc_conf_h;
+   CALLUI_RESULT_OK,
 
-/**
- * @brief Creates Multicall conference view instance
- *
- * @return View data handler
- *
- */
-callui_view_mc_conf_h _callui_view_multi_call_conf_new();
+   CALLUI_RESULT_FAIL,
+   CALLUI_RESULT_INVALID_PARAM,
+   CALLUI_RESULT_ALLOCATION_FAIL,
+   CALLUI_RESULT_PERMISSION_DENIED,
+   CALLUI_RESULT_NOT_SUPPORTED,
+   CALLUI_RESULT_NOT_REGISTERED,
+   CALLUI_RESULT_ALREADY_REGISTERED,
 
-#endif	/* __CALLUI_VIEW_MULTI_CALL_CONF_H__ */
+   CALLUI_RESULT_UNKNOWN_ERROR
 
+} callui_result_e;
+
+#endif /* __CALLUI_COMMON_TYPES_H__ */

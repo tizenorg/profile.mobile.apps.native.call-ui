@@ -15,19 +15,13 @@
  *
  */
 
+#ifndef __CALLUI_MODEL_UTILS_PRIV_H__
+#define __CALLUI_MODEL_UTILS_PRIV_H__
 
-#ifndef __CALLUI_VIEW_MULTI_CALL_CONF_H__
-#define __CALLUI_VIEW_MULTI_CALL_CONF_H__
+#include <call-manager.h>
 
-typedef struct _callui_view_mc_conf *callui_view_mc_conf_h;
+#include "callui-common-types.h"
 
-/**
- * @brief Creates Multicall conference view instance
- *
- * @return View data handler
- *
- */
-callui_view_mc_conf_h _callui_view_multi_call_conf_new();
+callui_result_e _callui_utils_convert_cm_res(cm_error_e cm_res);
 
-#endif	/* __CALLUI_VIEW_MULTI_CALL_CONF_H__ */
-
+#endif /* __CALLUI_MODEL_UTILS_PRIV_H__ */

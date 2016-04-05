@@ -15,19 +15,15 @@
  *
  */
 
+#ifndef __CALLUI_STATE_PROVIDER_PRIV_H__
+#define __CALLUI_STATE_PROVIDER_PRIV_H__
 
-#ifndef __CALLUI_VIEW_MULTI_CALL_CONF_H__
-#define __CALLUI_VIEW_MULTI_CALL_CONF_H__
+#include <call-manager.h>
 
-typedef struct _callui_view_mc_conf *callui_view_mc_conf_h;
+typedef struct __callui_state_provider *callui_state_provider_h;
 
-/**
- * @brief Creates Multicall conference view instance
- *
- * @return View data handler
- *
- */
-callui_view_mc_conf_h _callui_view_multi_call_conf_new();
+callui_state_provider_h _callui_stp_create(cm_client_h cm_client);
 
-#endif	/* __CALLUI_VIEW_MULTI_CALL_CONF_H__ */
+void _callui_stp_destroy(callui_state_provider_h sp_handler);
 
+#endif /* __CALLUI_CALL_STATE_PROVIDER_PRIV_H__ */

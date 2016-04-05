@@ -15,75 +15,17 @@
  *
  */
 
+#ifndef __UI_VIEW_QUICKPANEL_H_
+#define __UI_VIEW_QUICKPANEL_H_
 
-#ifndef __VCUI_VIEW_QUICKPANEL_H_
-#define __VCUI_VIEW_QUICKPANEL_H_
+#include <Eina.h>
 
-typedef struct callui_view_qp_priv callui_view_qp_priv_t;
+typedef struct _callui_qp_mc *callui_qp_mc_h;
 
-/**
- * @brief Create quickpanel view
- *
- * @param[in]    ad                Application data
- *
- * @return quickpanel view
- *
- */
-call_view_data_t *_callui_view_qp_new(callui_app_data_t * ad);
+typedef struct appdata callui_app_data_t;
 
-/**
- * @brief Hide quick panel
- *
- * @param[in] ad                  Application data
- *
- */
-void _callui_view_qp_hide(callui_app_data_t *ad);
+callui_qp_mc_h _callui_qp_mc_create(callui_app_data_t *ad);
 
-/**
- * @brief Update text
- *
- * @param[in] txt_status          The status text
- * @param[in] count               The number of active calls
- * @param[in] eo                  Quick panel layout
- *
- */
-void _callui_view_qp_update_text(char *txt_status, int count, Evas_Object *eo);
+void _callui_qp_mc_destroy(callui_qp_mc_h qp);
 
-/**
- * @brief Create quick panel mute button
- *
- * @param[in] data                Application data
- * @param[in] bdisable            Disable state
- *
- * @return button
- *
- */
-Evas_Object *_callui_create_quickpanel_mute_button(void *data, Eina_Bool bdisable);
-
-/**
- * @brief Create quick panel speaker button
- *
- * @param[in] data               Application data
- * @param[in] bdisable           Speaker state
- *
- * @return button
- *
- */
-Evas_Object *_callui_create_quickpanel_speaker_button(void *data, Eina_Bool bdisable);
-
-/**
- * @brief Create quick panel if it not exist or update.
- *
- */
-void _callui_view_quickpanel_change();
-
-/**
- * @brief Set call timer
- *
- * @param[in] qp_layout          Quick panel layout
- * @param[in] pcall_timer        Timer
- *
- */
-void _callui_view_qp_set_call_timer(Evas_Object *qp_layout, char *pcall_timer);
-
-#endif				/*__VCUI_VIEW_QUICKPANEL_H_*/
+#endif	/*__UI_VIEW_QUICKPANEL_H_*/

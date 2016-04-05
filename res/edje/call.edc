@@ -73,6 +73,13 @@ images {
 }
 
 collections {
+	plugins {
+		plugin { name: "touch_sound";
+			source: "feedback";
+			param: "FEEDBACK_TYPE_SOUND FEEDBACK_PATTERN_TAP";
+		}
+	}
+
 	base_scale: 2.6;
 
 	RESOURCE_IMAGE("call_button_add.png", IMG_SRC_DIR/"call_button_add.png");

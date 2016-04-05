@@ -56,228 +56,16 @@ Evas_Object *_callui_load_edj(Evas_Object *parent, const char *file, const char 
 Evas_Object *_callui_edje_object_part_get(Evas_Object *parent, const char *part);
 
 /**
- * @brief Create top first button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_first_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled top first button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_first_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create top second button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_second_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled top second button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_second_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create top third button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_third_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled top third button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_top_third_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create bottom first button
- *
- * @param[in]    ad       App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_first_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled bottom first button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_first_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create bottom second button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_second_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled bottom second button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_second_button_disabled(callui_app_data_t *ad);
-
-/**
- * @brief Create bottom third button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_third_button(callui_app_data_t *ad);
-
-/**
- * @brief Create disabled bottom third button
- *
- * @param[in]    ad        App data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bottom_third_button_disabled(callui_app_data_t *ad);
-
-/**
  * @brief Create end call button
  *
  * @param[in]    parent    Parent object
+ * @param[in]    cb_func   Callback function
  * @param[in]    data      App data
  *
  * @return layout
  *
  */
-Evas_Object *_callui_create_end_call_button(Evas_Object *parent, void *data);
-
-/**
- * @brief Destroy end call button
- *
- * @param[in]    parent    Parent object
- *
- */
-void _callui_destroy_end_call_button(Evas_Object *parent);
-
-/**
- * @brief Create disabled voice call button
- *
- * @param[in]    data      View data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_voicecall_button_disabled(void *data);
-
-/**
- * @brief Create disabled message button
- *
- * @param[in]    data      View data
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_message_button_disabled(void *data);
-
-/**
- * @brief Create view contact button
- *
- * @param[in]    data       View data
- * @param[in]    ct_id      Contact id
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_view_contact_button(void *data, int ct_id);
-
-/**
- * @brief Create contact button
- *
- * @param[in]    data       View data
- * @param[in]    number     Contact number
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_create_contacts_button(void *data, char *number);
-
-/**
- * @brief Update existing contact button
- *
- * @param[in]    data       View data
- * @param[in]    number     Contact number
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_update_existing_contact_button(void *data, char *number);
-
-/**
- * @brief Create voice call button
- *
- * @param[in]    data       View data
- * @param[in]    number     Contact number
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_voicecall_button(void *data, char *number);
-
-/**
- * @brief Create message button
- *
- * @param[in]    data       View data
- * @param[in]    number     Contact number
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_message_button(void *data, char *number);
-
-/**
- * @brief Create bg layout
- *
- * @param[in]    parent     Parent layout
- *
- * @return layout
- *
- */
-Evas_Object *_callui_create_bg_layout(Evas_Object *parent);
+Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb cb_func, void *data);
 
 /**
  * @brief Create thumbnail
@@ -343,7 +131,7 @@ Evas_Object *_callui_show_caller_info_status(void *data, const char *status);
  * @return layout
  *
  */
-Evas_Object *_callui_show_caller_id(Evas_Object *contents, char *path);
+Evas_Object *_callui_show_caller_id(Evas_Object *contents, const char *path);
 
 /**
  * @brief Create more popup
@@ -352,33 +140,6 @@ Evas_Object *_callui_show_caller_id(Evas_Object *contents, char *path);
  *
  */
 void _callui_load_more_option(void *data);
-
-/**
- * @brief Set an attached data pointer to an object with a given string key.
- *
- * @param[in]    obj          The object to attach the data pointer to
- * @param[in]    key          The string key for the data to access it
- * @param[in]    value        The pointer to the data to be attached
- *
- * @return @c 0 on success, otherwise a negative error value
- *
- * @see evas_object_data_set
- *
- */
-int _callui_set_object_data(Evas_Object *obj, char *key, void *value);
-
-/**
- * @brief Return an attached data pointer on an Evas object by its given string key.
- *
- * @param[in]    obj          The object to which the data was attached
- * @param[in]    key          The string key the data was stored under
- *
- * @return @c The data pointer stored, or NULL if none was stored
- *
- * @see evas_object_data_get
- *
- */
-void *_callui_get_object_data(Evas_Object *obj, char *key);
 
 /**
  * @brief Create popup after second call to choose needed action
@@ -397,12 +158,6 @@ void _callui_load_second_call_popup(callui_app_data_t *ad);
 void _callui_load_bluetooth_popup(callui_app_data_t *ad);
 
 /**
- * @brief Create extra volume notification popup
- *
- */
-void _callui_create_extravolume_notify_popup(void);
-
-/**
  * @brief Create toast message
  *
  * @param[in]    string       The messages to be posted
@@ -411,74 +166,13 @@ void _callui_create_extravolume_notify_popup(void);
 void _callui_create_toast_message(char *string);
 
 /**
- * @brief Mute button callback
- *
- * @param[in]    data         Application data
- * @param[in]    obj          Parent object
- * @param[in]    event_info   The event's name string
- *
- */
-void _callui_mute_btn_cb(void *data, Evas_Object *obj, void *event_info);
-
-/**
- * @brief Update speaker button depending on the state
- *
- * @param[in]    data         Application data
- * @param[in]    is_on        Button state
- *
- */
-void _callui_update_speaker_btn(callui_app_data_t *ad, Eina_Bool is_on);
-
-/**
- * @brief Update headset button depending on the state
- *
- * @param[in]    data         Application data
- * @param[in]    is_on        Button state
- *
- */
-void _callui_update_headset_btn(callui_app_data_t *ad, Eina_Bool is_on);
-
-/**
- * @brief Update mute button depending on the state
- *
- * @param[in]    data         Application data
- * @param[in]    is_on        Button state
- *
- */
-void _callui_update_mute_btn(callui_app_data_t *ad, Eina_Bool is_on);
-
-/**
- * @brief Update extra volume button depending on the state
- *
- * @param[in]    data         Application data
- * @param[in]    is_on        Button state
- *
- */
-void _callui_update_extra_vol_btn(callui_app_data_t *ad, Eina_Bool is_on);
-
-
-/**
  * @brief Create and set background layout
  *
- * @param[in]    parent       Parent object
+ * @param[in]    app_data		Application data pointer
+ * @param[in]    parent       	Parent object
+ * @param[in]    part       	Part name in parent to be set reject message button
  *
  */
-void _callui_set_background_layout(Evas_Object *parent);
-
-/**
- * @brief Gets audio mode
- *
- * @return @c true when callui is on handsfree mode, otherwise false
- *
- */
-bool _callui_is_on_handsfree_mode();
-
-/**
- * @brief Gets background state
- *
- * @return @c true when callui is on background, otherwise false
- *
- */
-bool _callui_is_on_background();
+int _callui_create_reject_msg_button(void *app_data, Evas_Object *parent, const char *part);
 
 #endif //__CALLUI_VIEW_ELEMENTS_H_
