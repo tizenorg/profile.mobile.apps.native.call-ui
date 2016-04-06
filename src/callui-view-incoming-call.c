@@ -80,16 +80,21 @@ static void __reject_msg_list_param_reset(callui_view_incoming_call_h vd);
 static void __reject_screen_transit_complete_cb(void *data, Elm_Transit *transit);
 static Eina_Bool __reject_msg_show_sliding_effect(void *data);
 static Evas_Event_Flags __reject_msg_flick_gesture_move_event_cb(void *data, void *event_info);
-static void __reject_msg_create_gesture_layer(callui_view_incoming_call_h vd);
 
 static void __reject_msg_bg_mouse_up_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 static void __reject_msg_bg_mouse_down_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 static void __reject_msg_bg_mouse_move_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 
 static void __reject_msg_list_height_update(callui_view_incoming_call_h vd);
-static void __reject_msg_create_genlist(callui_view_incoming_call_h vd);
 static Eina_Bool __reject_msg_check_tel_num(const char *call_num);
-static Evas_Object *__create_reject_msg_layout(callui_view_incoming_call_h vd);
+
+static void __create_reject_msg_genlist(callui_view_incoming_call_h vd);
+
+static void __create_reject_msg_layout(callui_view_incoming_call_h vd);
+static void __destroy_reject_msg_layout(callui_view_incoming_call_h vd);
+
+static void __create_reject_msg_gesture_layer(callui_view_incoming_call_h vd);
+static void __destroy_reject_msg_gesture_layer(callui_view_incoming_call_h vd);
 
 callui_view_incoming_call_h _callui_view_incoming_call_new()
 {
@@ -540,13 +545,20 @@ static Evas_Event_Flags __reject_msg_flick_gesture_move_event_cb(void *data, voi
 	return EVAS_EVENT_FLAG_NONE;
 }
 
-static void __reject_msg_create_gesture_layer(callui_view_incoming_call_h vd)
+static void __destroy_reject_msg_gesture_layer(callui_view_incoming_call_h vd)
+{
+	if (vd->reject_msg_glayer) {
+		elm_gesture_layer_cb_del(vd->reject_msg_glayer,
+				ELM_GESTURE_N_FLICKS, ELM_GESTURE_STATE_MOVE,
+				__reject_msg_flick_gesture_move_event_cb, vd);
+
+		DELETE_EVAS_OBJECT(vd->reject_msg_glayer);
+	}
+}
+
+static void __create_reject_msg_gesture_layer(callui_view_incoming_call_h vd)
 {
 	Evas_Object *reject_msg_bg = _callui_edje_object_part_get(vd->reject_msg_layout, "reject_msg_bg");
-	if (vd->reject_msg_glayer) {
-		evas_object_del(vd->reject_msg_glayer);
-		vd->reject_msg_glayer = NULL;
-	}
 
 	vd->reject_msg_glayer = elm_gesture_layer_add(vd->reject_msg_layout);
 	if (!elm_gesture_layer_attach(vd->reject_msg_glayer, reject_msg_bg)) {
@@ -554,7 +566,9 @@ static void __reject_msg_create_gesture_layer(callui_view_incoming_call_h vd)
 		evas_object_del(vd->reject_msg_glayer);
 		vd->reject_msg_glayer = NULL;
 	} else {
-		elm_gesture_layer_cb_set(vd->reject_msg_glayer, ELM_GESTURE_N_FLICKS, ELM_GESTURE_STATE_MOVE, __reject_msg_flick_gesture_move_event_cb, vd);
+		elm_gesture_layer_cb_set(vd->reject_msg_glayer,
+				ELM_GESTURE_N_FLICKS, ELM_GESTURE_STATE_MOVE,
+				__reject_msg_flick_gesture_move_event_cb, vd);
 	}
 }
 
@@ -638,7 +652,7 @@ static void __reject_msg_list_height_update(callui_view_incoming_call_h vd)
 	}
 }
 
-static void __reject_msg_create_genlist(callui_view_incoming_call_h vd)
+static void __create_reject_msg_genlist(callui_view_incoming_call_h vd)
 {
 	int msg_cnt = 0;
 	callui_app_data_t *ad = vd->base_view.ad;
@@ -700,9 +714,9 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 	}
 
 	if (!__reject_msg_check_tel_num(call_number)) {
-		DELETE_EVAS_OBJECT(vd->reject_msg_layout);
+		__destroy_reject_msg_layout(vd);
 	} else {
-		__reject_msg_create_genlist(vd);
+		__create_reject_msg_genlist(vd);
 	}
 
 	evas_object_show(vd->base_view.contents);
@@ -725,7 +739,13 @@ static Eina_Bool __reject_msg_check_tel_num(const char *call_num)
 	return EINA_TRUE;
 }
 
-static Evas_Object *__create_reject_msg_layout(callui_view_incoming_call_h vd)
+static void __destroy_reject_msg_layout(callui_view_incoming_call_h vd)
+{
+	__destroy_reject_msg_gesture_layer(vd);
+	DELETE_EVAS_OBJECT(vd->reject_msg_layout);
+}
+
+static void __create_reject_msg_layout(callui_view_incoming_call_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
@@ -733,7 +753,7 @@ static Evas_Object *__create_reject_msg_layout(callui_view_incoming_call_h vd)
 
 	evas_object_resize(vd->reject_msg_layout, ad->root_w, ad->root_h);
 
-	__reject_msg_create_gesture_layer(vd);
+	__create_reject_msg_gesture_layer(vd);
 
 	Evas_Object *reject_msg_bg = _callui_edje_object_part_get(vd->reject_msg_layout, "reject_msg_bg");
 	evas_object_event_callback_add(reject_msg_bg, EVAS_CALLBACK_MOUSE_DOWN, __reject_msg_bg_mouse_down_cb, vd);
@@ -749,8 +769,6 @@ static Evas_Object *__create_reject_msg_layout(callui_view_incoming_call_h vd)
 	__reject_msg_list_param_reset(vd);
 
 	evas_object_show(vd->reject_msg_layout);
-
-	return vd->reject_msg_layout;
 }
 
 static callui_result_e __create_main_content(callui_view_incoming_call_h vd)
@@ -777,7 +795,7 @@ static callui_result_e __create_main_content(callui_view_incoming_call_h vd)
 	evas_object_resize(vd->dimming_ly, ad->root_w, ad->root_h);
 	evas_object_move(vd->dimming_ly, 0, 0);
 
-	CALLUI_RETURN_VALUE_IF_FAIL(__create_reject_msg_layout(vd), CALLUI_RESULT_FAIL);
+	__create_reject_msg_layout(vd);
 
 	return res;
 }

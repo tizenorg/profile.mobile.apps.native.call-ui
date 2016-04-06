@@ -78,6 +78,8 @@ static callui_result_e __create_single_contact_info(callui_view_callend_h vd, co
 static void __set_emergency_call_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data);
 static void __set_conference_call_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data);
 
+static void __bg_mouse_down_cb(void *data, Evas_Object *o, const char *emission, const char *source);
+
 callui_view_callend_h _callui_view_callend_new()
 {
 	callui_view_callend_h callend_view = calloc(1, sizeof(_callui_view_callend_t));
@@ -108,6 +110,13 @@ static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *vie
 	return __update_displayed_data(vd);
 }
 
+static void __bg_mouse_down_cb(void *data, Evas_Object *o, const char *emission, const char *source)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	_callui_common_exit_app();
+}
+
 static callui_result_e __callui_view_callend_ondestroy(call_view_data_base_t *view_data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
@@ -117,6 +126,8 @@ static callui_result_e __callui_view_callend_ondestroy(call_view_data_base_t *vi
 	__delete_ending_timer(vd);
 
 	free(vd->time_string);
+
+	edje_object_signal_callback_del_full(_EDJ(vd->base_view.contents), "mouse,down,*", "background", __bg_mouse_down_cb, vd);
 
 	DELETE_EVAS_OBJECT(vd->create_update_popup);
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
@@ -133,6 +144,8 @@ static callui_result_e __create_main_content(callui_view_callend_h vd)
 	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_ENDCALL_MAIN_LAYOUT);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
+
+	edje_object_signal_callback_add(_EDJ(vd->base_view.contents), "mouse,down,*", "background", __bg_mouse_down_cb, vd);
 
 	return CALLUI_RESULT_OK;
 }
