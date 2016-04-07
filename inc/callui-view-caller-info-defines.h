@@ -20,15 +20,14 @@
 
 #define GROUP_MERGE_BTN						"merge_btn"
 #define GROUP_SWAP_BTN						"swap_btn"
-#define PART_TEXT_MERGE_SWAP_BTN			"text"
+#define GROUP_ACTIVE_INFO					"split_active_info"
+#define GROUP_HOLD_INFO						"split_hold_info"
 
-#define GROUP_ACTIVE_HOLD_INFO				"active_hold_info"
+#define MERGE_SWAP_BTN_PART_TEXT			"text"
 #define PART_TEXT_STATUS					"text.status"
 #define PART_SWALLOW_CALLER_ID				"swallow.caller_id"
 #define PART_TEXT_MAIN						"text.main"
 #define PART_TEXT_SUB						"text.sub"
-#define SIGNAL_SET_TRANSPARENT_BACKGROUND	"set,transparent,background"
-#define SIGNAL_SET_BLURRED_BACKGROUND		"set,blurred,background"
 #define SIGNAL_SHOW_ARROW					"show,arrow"
 #define SIGNAL_HIDE_ARROW					"hide,arrow"
 
@@ -49,6 +48,7 @@
 
 #define GROUP_SPLIT							"split"
 #define PART_SWALLOW_CALL_INFO				"swallow.call_info"
+#define PART_TEXT_CALL_DURATION				"call.duration"
 #define PART_SWALLOW_TEXTBLOCK_AREA			"textblock/textarea"
 #define PART_SWALLOW_KEYPAD					"keypad_region"
 #define PART_SWALLOW_KEYPAD_LAYOUT_AREA		"keypad_layout_area"

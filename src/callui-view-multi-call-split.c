@@ -62,6 +62,7 @@ static void __swap_btn_click_cb(void *data, Evas_Object *obj, const char *emissi
 static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility);
 static Eina_Bool __call_duration_timer_cb(void* data);
 static callui_result_e __init_call_duration_timer(callui_view_mc_split_h vd);
+static void __update_call_duration_time(callui_view_mc_split_h vd, struct tm *comp_time);
 
 callui_view_mc_split_h _callui_view_multi_call_split_new()
 {
@@ -141,10 +142,10 @@ static callui_result_e __create_main_content(callui_view_mc_split_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->base_view.contents, PART_SWALLOW_CALL_INFO, vd->caller_info);
 
-	vd->hold_layout = _callui_load_edj(vd->caller_info, EDJ_NAME, GROUP_ACTIVE_HOLD_INFO);
+	vd->hold_layout = _callui_load_edj(vd->caller_info, EDJ_NAME, GROUP_HOLD_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->hold_layout, CALLUI_RESULT_ALLOCATION_FAIL);
 
-	vd->active_layout = _callui_load_edj(vd->caller_info, EDJ_NAME, GROUP_ACTIVE_HOLD_INFO);
+	vd->active_layout = _callui_load_edj(vd->caller_info, EDJ_NAME, GROUP_ACTIVE_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->active_layout, CALLUI_RESULT_ALLOCATION_FAIL);
 
 	callui_result_e res = __create_merge_swap_btns(vd->caller_info, ad);
@@ -166,7 +167,7 @@ static Evas_Object *__create_merge_swap_btn(Evas_Object *parent, const char *nam
 	Evas_Object *layout = elm_layout_add(parent);
 	elm_layout_file_set(layout, EDJ_NAME, name);
 
-	elm_object_part_text_set(layout, PART_TEXT_MERGE_SWAP_BTN, text);
+	elm_object_part_text_set(layout, MERGE_SWAP_BTN_PART_TEXT, text);
 
 	return layout;
 }
@@ -216,7 +217,6 @@ static void __set_hold_info(Evas_Object *parent, Evas_Object *content)
 	elm_object_part_text_set(content, PART_TEXT_STATUS, _("IDS_CALL_BODY_ON_HOLD_ABB"));
 
 	elm_object_part_content_set(parent, PART_SWALLOW_HOLD_INFO, content);
-	elm_object_signal_emit(content, SIGNAL_SET_BLURRED_BACKGROUND, "");
 }
 
 static void __set_active_info(Evas_Object *parent, Evas_Object *content, callui_app_data_t *ad)
@@ -224,7 +224,6 @@ static void __set_active_info(Evas_Object *parent, Evas_Object *content, callui_
 	elm_object_part_text_set(content, PART_TEXT_STATUS, _("IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"));
 
 	elm_object_part_content_set(parent, PART_SWALLOW_ACTIVE_INFO, content);
-	elm_object_signal_emit(content, SIGNAL_SET_TRANSPARENT_BACKGROUND, "");
 
 	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->state_provider,
 			CALLUI_CALL_DATA_TYPE_ACTIVE);
@@ -269,6 +268,23 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 	}
 }
 
+static void __update_call_duration_time(callui_view_mc_split_h vd, struct tm *comp_time)
+{
+	struct tm *cur_time = vd->base_view.call_duration_tm;
+	int sec_diff = comp_time->tm_sec - cur_time->tm_sec;
+
+	if (sec_diff != 0) {
+		memcpy(cur_time, comp_time, sizeof(struct tm));
+
+		char *tmp = _callui_common_get_time_string(cur_time);
+
+		elm_object_part_text_set(vd->active_layout, PART_TEXT_STATUS, tmp);
+		elm_object_part_text_set(vd->base_view.contents, PART_TEXT_CALL_DURATION, tmp);
+
+		free(tmp);
+	}
+}
+
 static Eina_Bool __call_duration_timer_cb(void* data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
@@ -282,11 +298,7 @@ static Eina_Bool __call_duration_timer_cb(void* data)
 		return ECORE_CALLBACK_CANCEL;
 	}
 
-	_callui_common_try_update_call_duration_time(vd->base_view.call_duration_tm,
-			new_tm,
-			_callui_common_set_call_duration_time,
-			vd->active_layout,
-			PART_TEXT_STATUS);
+	__update_call_duration_time(vd, new_tm);
 
 	free(new_tm);
 
