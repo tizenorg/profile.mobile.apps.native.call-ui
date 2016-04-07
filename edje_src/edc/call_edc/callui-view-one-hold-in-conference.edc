@@ -15,6 +15,25 @@
  *
  */
 
+#define BG_PADDING_LEFT_MIN_X			22
+#define BG_WITH_ARROW_PAD_RIGHT_W		(12+50+32)
+#define BG_WITHOUT_ARROW_PAD_RIGHT_W	22
+#define STATUS_TXT_MIN_HEIGHT			54
+#define CALLER_ID_SIZE					138 138
+#define CALLER_ID_PAD_LEFT_W			32
+#define TXT_MAIN_H						76
+#define TXT_MAIN_PAD_BOTTOM_H			6
+#define TXT_SUB_MIN_H					46
+#define MANAGE_ARROW_PADDING_LEFT		32
+#define MANAGE_ARROW_PADDING_BOTTOM		98
+#define MANAGE_ARROW_SIZE				50 50
+
+#define ACTIVE_INFO_PADDING_TOP_MIN_H				18
+#define ACTIVE_INFO_STATUS_TXT_PADDING_BOTTOM_H		48
+
+#define HOLD_INFO_PADDING_TOP_MIN_H					10
+#define HOLD_INFO_STATUS_TXT_PADDING_BOTTOM_H		16
+
 images {
 	image: IMG_SRC_DIR/"call_multi_ic_arrow.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_hold_bg.png" COMP;
@@ -35,6 +54,10 @@ styles {
 	style {
 		name: "ATO008";
 		base: "font="VC_FONT_REGULAR" font_size=27 color=#FFFAFAFF align=center";
+	}
+	style {
+		name: "ATO011";
+		base: "font="VC_FONT_REGULAR" font_size=40 color=#FFFAFAFF ellipsis=1.0";
 	}
 }
 
@@ -70,7 +93,7 @@ styles {
 				} \
 			} \
 			part { \
-				name: PART_TEXT_MERGE_SWAP_BTN; \
+				name: MERGE_SWAP_BTN_PART_TEXT; \
 				type: TEXTBLOCK; \
 				scale: 1; \
 				description { \
@@ -104,152 +127,280 @@ styles {
 		} \
 	}
 
-group {
-	name: GROUP_ACTIVE_HOLD_INFO;
-	parts {
-		part {
-			name: "background";
-			type: IMAGE;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				image.normal: IMG_SRC_DIR/"call_multi_hold_bg.png";
-				color: 0 0 0 200;
-			}
-			description {
-				state: "transparent" 0.0;
-				image.normal: IMG_SRC_DIR/"call_multi_hold_bg.png";
-				color: COLOR_BG_ALPHA;
-			}
-		}
+#define BG_PART_IMAGE \
+	part { name: "bg"; \
+		type: IMAGE; \
+		scale: 1; \
+		description { state: "default" 0.0; \
+			image.normal: IMG_SRC_DIR/"call_multi_hold_bg.png"; \
+			color: 0 0 0 200; \
+		} \
+	} \
+	
+#define BG_PART_SPACER \
+	part { name: "bg"; \
+		type: SPACER; \
+		scale: 1; \
+		description { state: "default" 0.0; } \
+	} \
+	
+#define SPLIT_CALL_LAYOUT(_name, _bg_part, _status_pad_top, _status_pad_bottom) \
+group { \
+	name: _name; \
+	parts { \
+		_bg_part \
+		part { name: "pad.top"; \
+			type: SPACER; \
+			scale: 1; \
+			description { \
+				state: "default" 0.0; \
+				min: 0 _status_pad_top; \
+				fixed: 0 1; \
+				rel2.relative: 1.0 0.0; \
+				align: 0.0 0.0; \
+			} \
+		} \
+		part { name: "pad.left"; \
+			type: SPACER; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				min: BG_PADDING_LEFT_MIN_X 0; \
+				fixed: 1 0; \
+				rel2.relative: 0.0 1.0; \
+				align: 0.0 0.0; \
+			} \
+		} \
+		part { name: "pad.right"; \
+			type: SPACER; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				min: BG_WITHOUT_ARROW_PAD_RIGHT_W 0; \
+				fixed: 1 0; \
+				rel1.relative: 1.0 0.0; \
+				align: 1.0 0.0; \
+			} \
+			description { state: "show_arrow" 0.0; \
+				inherit: "default" 0.0; \
+				min: BG_WITH_ARROW_PAD_RIGHT_W 0; \
+				fixed: 1 0; \
+				rel1.relative: 1.0 0.0; \
+				align: 1.0 0.0; \
+			} \
+			description { state: "hide_arrow" 0.0; \
+				inherit: "default" 0.0; \
+			} \
+		} \
+		part { name: PART_TEXT_STATUS; \
+			type: TEXTBLOCK; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				min: 0 STATUS_TXT_MIN_HEIGHT; \
+				max: -1 STATUS_TXT_MIN_HEIGHT; \
+				fixed: 0 1; \
+				rel1 { \
+					relative: 1.0 1.0; \
+					to_x: "pad.left"; \
+					to_y: "pad.top"; \
+				} \
+				rel2 { relative: 0.0 1.0; to_x: "pad.right"; } \
+				text { \
+					align: 0.0 0.0; \
+					style: "ATO011"; \
+				} \
+				align: 0.0 0.0; \
+			} \
+		} \
+		part { name: "text.status.pad.bottom"; \
+			type: SPACER; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				fixed: 0 1; \
+				min: 0 _status_pad_bottom; \
+				rel1 { relative: 0.0 1.0; to: PART_TEXT_STATUS; } \
+				rel2 { relative: 1.0 1.0; to: PART_TEXT_STATUS; } \
+				align: 0.5 0.0; \
+			} \
+		} \
+		part { name: PART_SWALLOW_CALLER_ID; \
+			type: SWALLOW; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				min: CALLER_ID_SIZE; \
+				max: CALLER_ID_SIZE; \
+				fixed: 1 1; \
+				rel1 { relative: 1.0 1.0; \
+					to_x: "pad.left"; \
+					to_y: "text.status.pad.bottom"; \
+				} \
+				rel2 { relative: 1.0 1.0; \
+					to_x: "pad.left"; \
+					to_y: "text.status.pad.bottom"; \
+				} \
+				align: 0.0 0.0; \
+			} \
+		} \
+		part { name: "swallow.caller_id.pad.left"; \
+			type: SPACER; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				min: CALLER_ID_PAD_LEFT_W 0; \
+				fixed: 1 0; \
+				rel1 { relative: 1.0 0.0; to_x: PART_SWALLOW_CALLER_ID; } \
+				rel2 { relative: 1.0 1.0; to_x: PART_SWALLOW_CALLER_ID; } \
+				align: 0.0 0.5; \
+			} \
+		} \
+		part { name: PART_TEXT_MAIN; \
+			type: TEXTBLOCK; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				min: 0 TXT_MAIN_H; \
+				max: -1 TXT_MAIN_H; \
+				fixed: 0 1; \
+				rel1 { \
+					relative: 1.0 1.0; \
+					to_x: "swallow.caller_id.pad.left"; \
+					to_y: "text.status.pad.bottom"; \
+				} \
+				rel2 { relative: 0.0 1.0; to_x: "pad.right"; } \
+				text { \
+					align: 0.0 0.0; \
+					style: "ATO006"; \
+				} \
+				align: 0.0 0.0; \
+			} \
+		} \
+		part { name: "text.main.pad.bottom"; \
+			type: SPACER; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				fixed: 0 1; \
+				min: 0 TXT_MAIN_PAD_BOTTOM_H; \
+				rel1 { relative: 0.0 1.0; to: PART_TEXT_MAIN; } \
+				rel2 { relative: 1.0 1.0; to: PART_TEXT_MAIN; } \
+				align: 0.5 0.0; \
+			} \
+		} \
+		part { name: PART_TEXT_SUB; \
+			type: TEXTBLOCK; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				min: 0 TXT_SUB_MIN_H; \
+				max: -1 TXT_SUB_MIN_H; \
+				fixed: 0 1; \
+				rel1 { \
+					relative: 1.0 1.0; \
+					to_x: "swallow.caller_id.pad.left"; \
+					to_y: "text.main.pad.bottom"; \
+				} \
+				rel2 { relative: 0.0 1.0; to_x: "pad.right"; } \
+				text { \
+					align: 0.0 0.0; \
+					style: "ATO007"; \
+				} \
+				align: 0.0 0.0; \
+			} \
+		} \
+		part { name: "arrow.padding.left"; \
+			type: SPACER; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				fixed: 1 0; \
+				min: MANAGE_ARROW_PADDING_LEFT 0; \
+				max: MANAGE_ARROW_PADDING_LEFT -1; \
+				rel1 { relative: 0 0; to_x: "pad.right"; } \
+				rel2 { relative: 0 1; to_x: "pad.right"; } \
+				align: 0.0 0.5; \
+			} \
+		} \
+		part { name: "arrow.padding.bottom"; \
+			type: SPACER; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				min: 0 MANAGE_ARROW_PADDING_BOTTOM; \
+				fixed: 0 1; \
+				rel1.relative: 0.0 1.0; \
+				align: 0.0 1.0; \
+			} \
+		} \
+		part { name: "arrow"; \
+			type: IMAGE; \
+			scale: 1; \
+			description { state: "default" 0.0; \
+				visible: 0; \
+				rel1 { \
+					relative: 1.0 0.0; \
+					to_x: "arrow.padding.left"; \
+					to_y: "arrow.padding.bottom"; \
+				} \
+				rel2 { \
+					relative: 1.0 0.0; \
+					to_x: "arrow.padding.left"; \
+					to_y: "arrow.padding.bottom"; \
+				} \
+				min: MANAGE_ARROW_SIZE; \
+				max: MANAGE_ARROW_SIZE; \
+				fixed: 1 1; \
+				image.normal: IMG_SRC_DIR/"call_multi_ic_arrow.png"; \
+				align: 0.0 1.0; \
+			} \
+			description { state: "show" 0.0; \
+				inherit: "default" 0.0; \
+				visible: 1; \
+			} \
+			description { state: "hide" 0.0; \
+				inherit: "default" 0.0; \
+			} \
+			description { state: "pressed" 0.0; \
+				inherit: "show" 0.0; \
+				color_class: "pressed"; \
+			} \
+		} \
+	} \
+	programs{ \
+		program { \
+			name: "max_pad_right"; \
+			action: STATE_SET "show_arrow" 0.0; \
+			target: "pad.right"; \
+		} \
+		program { \
+			name: "min_pad_right"; \
+			action: STATE_SET "hide_arrow" 0.0; \
+			target: "pad.right"; \
+		} \
+		program { \
+			name: "show_arrow"; \
+			signal: SIGNAL_SHOW_ARROW; \
+			action: STATE_SET "show" 0.0; \
+			target: "arrow"; \
+			after: "max_pad_right"; \
+		} \
+		program { \
+			name: "hide_arrow"; \
+			signal: SIGNAL_HIDE_ARROW; \
+			action: STATE_SET "hide" 0.0; \
+			target: "arrow"; \
+			after: "min_pad_right"; \
+		} \
+		program { \
+			name: "arrow_pressed"; \
+			signal: "mouse,down,*"; \
+			source: "arrow"; \
+			action: STATE_SET "pressed" 0.0; \
+			target: "arrow"; \
+		} \
+		program { \
+			name: "arrow_unpressed"; \
+			signal: "mouse,up,*"; \
+			source: "arrow"; \
+			action: STATE_SET "default" 0.0; \
+			target: "arrow"; \
+		} \
+	} \
+} \
 
-		part {
-			name: PART_TEXT_STATUS;
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1.relative: CALLER_INF_L CALLER_INF_STATUS_T;
-				rel2.relative: CALLER_INF_STATUS_R CALLER_INF_STATUS_B;
-				text {
-					align: 0.0 0.0;
-					style: "ATO007";
-				}
-			}
-		}
-
-		part {
-			name: PART_SWALLOW_CALLER_ID;
-			type: SWALLOW;
-			description {
-				state: "default" 0.0;
-				align: 0.0 0.0;
-				rel1.relative: CALLER_INF_L CALLER_INF_ID_T;
-				rel2.relative: CALLER_INF_ID_R CALLER_INF_ID_B;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-		}
-
-		part {
-			name: PART_TEXT_MAIN;
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1.relative: CALLER_INF_TEXT_L CALLER_INF_ID_T;
-				text {
-					align: 0.0 0.0;
-					style: "ATO006";
-				}
-			}
-		}
-
-		part {
-			name: PART_TEXT_SUB;
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1.relative: CALLER_INF_TEXT_L CALLER_INF_SUBTEXT_T;
-				text {
-					align: 0.0 0.0;
-					style: "ATO007";
-				}
-			}
-		}
-
-		part {
-			name: "arrow";
-			type: IMAGE;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1.relative: ARROW_L ARROW_T;
-				rel2.relative: ARROW_R ARROW_B;
-				image.normal: IMG_SRC_DIR/"call_multi_ic_arrow.png";
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-			}
-			description {
-				state: "pressed" 0.0;
-				inherit: "show" 0.0;
-				color_class: "pressed";
-			}
-		}
-	}
-	programs{
-		program {
-			name: "set_transparent_background";
-			signal: SIGNAL_SET_TRANSPARENT_BACKGROUND;
-			action: STATE_SET "transparent" 0.0;
-			target: "background";
-		}
-		program {
-			name: "set_blurred_background";
-			signal: SIGNAL_SET_BLURRED_BACKGROUND;
-			action: STATE_SET "default" 0.0;
-			target: "background";
-		}
-		program {
-			name: "show_arrow";
-			signal: SIGNAL_SHOW_ARROW;
-			action: STATE_SET "show" 0.0;
-			target: "arrow";
-		}
-		program {
-			name: "hide_arrow";
-			signal: SIGNAL_HIDE_ARROW;
-			action: STATE_SET "hide" 0.0;
-			target: "arrow";
-		}
-		program {
-			name: "arrow_pressed";
-			signal: "mouse,down,*";
-			source: "arrow";
-			action: STATE_SET "pressed" 0.0;
-			target: "arrow";
-		}
-		program {
-			name: "arrow_unpressed";
-			signal: "mouse,up,*";
-			source: "arrow";
-			action: STATE_SET "default" 0.0;
-			target: "arrow";
-		}
-	}
-}
+SPLIT_CALL_LAYOUT(GROUP_HOLD_INFO, BG_PART_IMAGE, HOLD_INFO_PADDING_TOP_MIN_H, HOLD_INFO_STATUS_TXT_PADDING_BOTTOM_H)
+SPLIT_CALL_LAYOUT(GROUP_ACTIVE_INFO, BG_PART_SPACER, ACTIVE_INFO_PADDING_TOP_MIN_H, ACTIVE_INFO_STATUS_TXT_PADDING_BOTTOM_H)
 
 MERGE_SWAP_BTN(GROUP_MERGE_BTN,
 	IMG_SRC_DIR/"call_multi_hold_btn_merge_bg.png",
@@ -342,6 +493,28 @@ group {
 				visible: 0;
 			}
 		}
+		part { name: PART_TEXT_CALL_DURATION;
+			type: TEXT;
+			scale: 1;
+			description {
+				state: "default" 0.0;
+				rel1 { relative: CALLER_INFO_STATUS_L CALLER_INFO_STATUS_T; to: "background"; }
+				rel2 { relative: CALLER_INFO_STATUS_R CALLER_INFO_STATUS_B; to: "background"; }
+				fixed: 1 1;
+				text {
+					align: 0 0.5;
+					text_class: "ATO001";
+				}
+				align: 0 0.5;
+				color_class: "ATO001";
+				visible: 0;
+			}
+			description {
+				state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+		}
 		part {
 			name: "end_btn_area";
 			type: RECT;
@@ -372,17 +545,29 @@ group {
 	}
 	programs {
 		program {
+			name: "hide_call_duration";
+			action: STATE_SET "default" 0.0;
+			target: PART_TEXT_CALL_DURATION;
+		}
+		program {
+			name: "show_call_duration";
+			action: STATE_SET "show" 0.0;
+			target: PART_TEXT_CALL_DURATION;
+		}
+		program {
 			name: "show_keypad";
 			signal: "SHOW";
 			source: "KEYPAD_BTN";
 			action: STATE_SET "hide" 0.0;
 			target: PART_SWALLOW_CALL_INFO;
+			after: "show_call_duration";
 		}
 		program { name: "hide_keypad";
 			signal: "HIDE";
 			source: "KEYPAD_BTN";
 			action: STATE_SET "default" 0.0;
 			target: PART_SWALLOW_CALL_INFO;
+			after: "hide_call_duration";
 		}
 	}
 }
