@@ -64,7 +64,7 @@ static void __callui_app_win_key_grab(callui_app_data_t *ad)
 		result = elm_win_keygrab_set(ad->win, CALLUI_KEY_POWER, 0, 0, 0, ELM_WIN_KEYGRAB_SHARED);
 	}
 	if (result) {
-		dbg("KEY_POWER key grab failed");
+		dbg("KEY_POWER key grab failed. res[%d]", result);
 	}
 
 	if (ad->downkey_handler == NULL)
