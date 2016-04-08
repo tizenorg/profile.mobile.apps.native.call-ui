@@ -48,9 +48,9 @@ callui_view_dialing_h _callui_dialing_view_dialing_new()
 	callui_view_dialing_h dialing_view = calloc(1, sizeof(_callui_view_dialing_t));
 	CALLUI_RETURN_NULL_IF_FAIL(dialing_view);
 
-	dialing_view->base_view.onCreate = __callui_view_dialing_oncreate;
-	dialing_view->base_view.onUpdate = __callui_view_dialing_onupdate;
-	dialing_view->base_view.onDestroy = __callui_view_dialing_ondestroy;
+	dialing_view->base_view.create = __callui_view_dialing_oncreate;
+	dialing_view->base_view.update = __callui_view_dialing_onupdate;
+	dialing_view->base_view.destroy = __callui_view_dialing_ondestroy;
 
 	return dialing_view;
 }
@@ -159,7 +159,7 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 	}
 
 	if (now_call_data->is_emergency) {
-		call_name = _("IDS_COM_BODY_EMERGENCY_NUMBER");
+		call_name = "IDS_COM_BODY_EMERGENCY_NUMBER";
 		disp_number = "";
 	}
 
@@ -175,7 +175,7 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 		elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
 	}
 
-	_callui_show_caller_info_status(ad, _("IDS_CALL_POP_DIALLING"));
+	_callui_show_caller_info_status(ad, "IDS_CALL_POP_DIALLING");
 
 	if (now_call_data->is_emergency == EINA_TRUE) {
 		elm_object_signal_emit(vd->caller_info, "set_emergency_mode", "");

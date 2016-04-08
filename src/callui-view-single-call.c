@@ -54,9 +54,9 @@ call_view_single_call_h _callui_view_single_call_new()
 	call_view_single_call_h single_call_view = calloc(1, sizeof(_call_view_single_call_t));
 	CALLUI_RETURN_NULL_IF_FAIL(single_call_view);
 
-	single_call_view->base_view.onCreate = __callui_view_single_call_oncreate;
-	single_call_view->base_view.onUpdate = __callui_view_single_call_onupdate;
-	single_call_view->base_view.onDestroy = __callui_view_single_call_ondestroy;
+	single_call_view->base_view.create = __callui_view_single_call_oncreate;
+	single_call_view->base_view.update = __callui_view_single_call_onupdate;
+	single_call_view->base_view.destroy = __callui_view_single_call_ondestroy;
 
 	return single_call_view;
 }
@@ -161,7 +161,6 @@ static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 	const char *file_path = NULL;
-	char status_txt[VIEW_SINGLE_CALL_STATUS_TXT_LEN] = { 0 };
 
 	Eina_Bool is_held = EINA_FALSE;
 
@@ -187,8 +186,7 @@ static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 	}
 
 	if (is_held) {
-		snprintf(status_txt, sizeof(status_txt), _("IDS_CALL_BODY_ON_HOLD_ABB"));
-		_callui_show_caller_info_status(ad, status_txt);
+		_callui_show_caller_info_status(ad, "IDS_CALL_BODY_ON_HOLD_ABB");
 	} else {
 		vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
 		CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_tm, CALLUI_RESULT_ALLOCATION_FAIL);

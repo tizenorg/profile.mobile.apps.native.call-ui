@@ -101,9 +101,9 @@ callui_view_incoming_call_h _callui_view_incoming_call_new()
 	callui_view_incoming_call_h incoming_lock_view = calloc(1, sizeof(_callui_view_incoming_call_t));
 	CALLUI_RETURN_NULL_IF_FAIL(incoming_lock_view);
 
-	incoming_lock_view->base_view.onCreate = __callui_view_incoming_call_oncreate;
-	incoming_lock_view->base_view.onUpdate = __callui_view_incoming_call_onupdate;
-	incoming_lock_view->base_view.onDestroy = __callui_view_incoming_call_ondestroy;
+	incoming_lock_view->base_view.create = __callui_view_incoming_call_oncreate;
+	incoming_lock_view->base_view.update = __callui_view_incoming_call_onupdate;
+	incoming_lock_view->base_view.destroy = __callui_view_incoming_call_ondestroy;
 
 	return incoming_lock_view;
 }
@@ -760,7 +760,8 @@ static void __create_reject_msg_layout(callui_view_incoming_call_h vd)
 	evas_object_event_callback_add(reject_msg_bg, EVAS_CALLBACK_MOUSE_MOVE, __reject_msg_bg_mouse_move_cb, vd);
 	evas_object_event_callback_add(reject_msg_bg, EVAS_CALLBACK_MOUSE_UP, __reject_msg_bg_mouse_up_cb, vd);
 
-	elm_object_part_text_set(vd->reject_msg_layout, "reject_msg_text", _("IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"));
+	_callui_common_eo_txt_part_set_translatable_text(vd->reject_msg_layout,
+			"reject_msg_text", "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE");
 
 	elm_object_signal_emit(vd->reject_msg_layout, "show-up-arrow", "reject_msg");
 	evas_object_data_set(vd->reject_msg_layout, CALLUI_REJ_MSG_LIST_OPEN_STATUS_KEY, (const void *)EINA_FALSE);
@@ -783,7 +784,7 @@ static callui_result_e __create_main_content(callui_view_incoming_call_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->base_view.contents, "caller_info", vd->caller_info);
 
-	_callui_show_caller_info_status(ad, _("IDS_CALL_BODY_INCOMING_CALL"));
+	_callui_show_caller_info_status(ad, "IDS_CALL_BODY_INCOMING_CALL");
 
 	callui_result_e res = _callui_view_circle_create_accept_layout(ad, vd, vd->base_view.contents);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);

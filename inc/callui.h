@@ -19,6 +19,7 @@
 #define __CALLUI_H_
 
 #include <Elementary.h>
+#include <app_common.h>
 
 #include "callui-view-manager.h"
 #include "callui-lock-manager.h"
@@ -28,10 +29,10 @@
 #include "callui-view-quickpanel.h"
 #include "callui-action-bar.h"
 
+#define APP_HANDLERS_COUNT 1
+
 struct appdata {
 	Evas_Object *win;
-	Evas_Object *win_conformant;
-	Evas_Object *nf;
 	Evas_Object *main_ly;
 
 	callui_qp_mc_h qp_minicontrol;
@@ -65,6 +66,9 @@ struct appdata {
 	callui_sound_manager_h sound_manager;
 
 	callui_call_state_data_t *end_call_data;
+
+	app_event_handler_h app_event_handlers[APP_HANDLERS_COUNT];
+
 };
 
 callui_app_data_t *_callui_get_app_data();
