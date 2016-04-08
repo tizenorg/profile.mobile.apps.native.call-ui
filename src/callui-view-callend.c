@@ -85,9 +85,8 @@ callui_view_callend_h _callui_view_callend_new()
 	callui_view_callend_h callend_view = calloc(1, sizeof(_callui_view_callend_t));
 	CALLUI_RETURN_NULL_IF_FAIL(callend_view);
 
-	callend_view->base_view.onCreate = __callui_view_callend_oncreate;
-	callend_view->base_view.onUpdate = NULL;
-	callend_view->base_view.onDestroy = __callui_view_callend_ondestroy;
+	callend_view->base_view.create = __callui_view_callend_oncreate;
+	callend_view->base_view.destroy = __callui_view_callend_ondestroy;
 
 	return callend_view;
 }

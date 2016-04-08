@@ -406,7 +406,7 @@ static Evas_Object *__create_action_button(
 		CALLUI_RETURN_NULL_IF_FAIL(res == CALLUI_RESULT_OK);
 	}
 
-	elm_object_domain_translatable_text_set(btn, CALLUI_TEXT_DOMAIN, btn_params[type].txt);
+	_callui_common_eo_set_translatable_text(btn, btn_params[type].txt);
 	evas_object_smart_callback_add(btn, "clicked", btn_params[type].click_cb_func, action_bar->ad);
 	elm_object_part_content_set(parent, btn_params[type].part, btn);
 	evas_object_show(btn);
@@ -553,12 +553,21 @@ void _callui_action_bar_destroy(callui_action_bar_h action_bar)
 	free(action_bar);
 }
 
+static void __update_btns_txt(callui_action_bar_h action_bar)
+{
+	int i = 0;
+	for (; i < ACTION_BTN_TYPE_MAX; i++) {
+		_callui_common_eo_set_translatable_text(action_bar->buttons[i], btn_params[i].txt);
+	}
+}
+
 void _callui_action_bar_show(callui_action_bar_h action_bar)
 {
 	CALLUI_RETURN_IF_FAIL(action_bar);
 
 	Evas_Object *parent = action_bar->ad->main_ly;
 
+	__update_btns_txt(action_bar);
 	elm_object_part_content_set(parent, PART_SWALLOW_ACTION_BAR, action_bar->main_layout);
 	evas_object_show(action_bar->main_layout);
 }

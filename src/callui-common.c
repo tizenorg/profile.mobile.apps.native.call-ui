@@ -563,13 +563,13 @@ void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
 	CALLUI_RETURN_IF_FAIL(contents);
 	Evas_Object *caller_info = NULL;
 
-	edje_object_part_text_set(_EDJ(contents), "call_txt_status", "");
-	edje_object_part_text_set(_EDJ(contents), "txt_timer", "");
+	elm_object_part_text_set(contents, "call_txt_status", "");
+	elm_object_part_text_set(contents, "txt_timer", "");
 
 	caller_info = elm_object_part_content_get(contents, "caller_info");
 	if (caller_info) {
-		edje_object_part_text_set(_EDJ(caller_info), "txt_call_name", "");
-		edje_object_part_text_set(_EDJ(caller_info), "txt_phone_num", "");
+		elm_object_part_text_set(caller_info, "txt_call_name", "");
+		elm_object_part_text_set(caller_info, "txt_phone_num", "");
 	}
 }
 
@@ -889,7 +889,7 @@ void _callui_common_set_call_duration_time(struct tm *cur_time,
 	CALLUI_RETURN_IF_FAIL(part);
 
 	char *tmp = _callui_common_get_time_string(cur_time);
-	elm_object_part_text_set(obj, part, _(tmp));
+	elm_object_part_text_set(obj, part, tmp);
 	free(tmp);
 }
 
@@ -952,4 +952,13 @@ void _callui_common_eo_txt_part_set_translatable_text(Evas_Object *obj,
 	CALLUI_RETURN_IF_FAIL(ids_string);
 
 	elm_object_domain_translatable_part_text_set(obj, part, CALLUI_TEXT_DOMAIN, ids_string);
+}
+
+void _callui_common_eo_set_translatable_text(Evas_Object *obj, const char *ids_string)
+{
+	CALLUI_RETURN_IF_FAIL(obj);
+	CALLUI_RETURN_IF_FAIL(ids_string);
+
+	elm_object_domain_translatable_text_set(obj, CALLUI_TEXT_DOMAIN, ids_string);
+
 }

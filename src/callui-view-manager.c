@@ -38,6 +38,7 @@ struct _callui_vm {
 	callui_app_data_t *ad;
 
 	bool is_conf_call_ended;
+	bool is_paused;
 };
 typedef struct _callui_vm callui_vm_t;
 
@@ -48,6 +49,7 @@ static callui_result_e __destroy_cur_view(callui_vm_h vm);
 static callui_result_e __create_update_view(callui_vm_h vm, callui_view_type_e type);
 static call_view_data_base_t *__allocate_view(callui_view_type_e view_type);
 static callui_result_e __change_view(callui_vm_h vm, callui_view_type_e type);
+static void __update_cur_view(callui_vm_h vm);
 static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_state_data_t *call_data);
 static void __call_state_event_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
@@ -245,6 +247,7 @@ callui_vm_h _callui_vm_create(callui_app_data_t *ad)
 	if (res != CALLUI_RESULT_OK) {
 		FREE(vm);
 	}
+
 	return vm;
 }
 
@@ -273,10 +276,10 @@ static callui_result_e __destroy_cur_view(callui_vm_h vm)
 	call_view_data_base_t *view = vm->cur_view;
 
 	CALLUI_RETURN_VALUE_IF_FAIL(view, CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(view->onDestroy, CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(view->destroy, CALLUI_RESULT_FAIL);
 
-	if (view->onDestroy) {
-		res = view->onDestroy(view);
+	if (view->destroy) {
+		res = view->destroy(view);
 	}
 
 	vm->cur_view = NULL;
@@ -296,25 +299,26 @@ static callui_result_e __create_update_view(callui_vm_h vm, callui_view_type_e t
 		view = __allocate_view(type);
 		CALLUI_RETURN_VALUE_IF_FAIL(view, CALLUI_RESULT_FAIL);
 
-		if (!view->onCreate) {
-			err("Create callback is NULL");
+		if (!view->create) {
+			err("create() is NULL");
 			free(view);
 			return CALLUI_RESULT_FAIL;
 		}
 
-		res = view->onCreate(view, vm->ad);
+		res = view->create(view, vm->ad);
 
 		if (res != CALLUI_RESULT_OK) {
-			err("onCreate callback failed! res[%d]", res);
+			err("create() failed! res[%d]", res);
 			free(view);
 			return CALLUI_RESULT_FAIL;
 		}
 		vm->cur_view = view;
 
 	} else {
-		dbg("Try update view [%d]", type);
-		CALLUI_RETURN_VALUE_IF_FAIL(view->onUpdate, CALLUI_RESULT_OK);
-		view->onUpdate(view);
+		vm->cur_view->update_flags |= CALLUI_UF_DATA_REFRESH;
+		if (!vm->is_paused) {
+			__update_cur_view(vm);
+		}
 	}
 	return CALLUI_RESULT_OK;
 }
@@ -327,7 +331,6 @@ static callui_result_e __change_view(callui_vm_h vm, callui_view_type_e type)
 		err("Invalid view type [%d]", type);
 		return CALLUI_RESULT_INVALID_PARAM;
 	}
-
 	info("Change view: [%d] -> [%d]", vm->cur_view_type, type);
 
 	callui_result_e res;
@@ -372,4 +375,62 @@ callui_result_e _callui_vm_auto_change_view(callui_vm_h vm)
 	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
 
 	return __auto_change_view(vm, NULL);
+}
+
+static void __update_cur_view(callui_vm_h vm)
+{
+	call_view_data_base_t *cur_view = vm->cur_view;
+
+	if (cur_view->update && cur_view->update_flags) {
+		cur_view->update(vm->cur_view);
+		cur_view->update_flags = 0;
+	}
+}
+
+callui_result_e _callui_vm_pause(callui_vm_h vm)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(!vm->is_paused, CALLUI_RESULT_FAIL);
+
+	vm->is_paused = true;
+
+	call_view_data_base_t *cur_view = vm->cur_view;
+
+	if (cur_view && cur_view->pause) {
+		cur_view->pause(vm->cur_view);
+	}
+
+	return CALLUI_RESULT_OK;
+}
+
+callui_result_e _callui_vm_resume(callui_vm_h vm)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(vm->is_paused, CALLUI_RESULT_FAIL);
+
+	vm->is_paused = false;
+
+	call_view_data_base_t *cur_view = vm->cur_view;
+	if (cur_view && cur_view->resume) {
+		cur_view->resume(vm->cur_view);
+	}
+	__update_cur_view(vm);
+
+	return CALLUI_RESULT_OK;
+}
+
+callui_result_e _callui_vm_update_language(callui_vm_h vm)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
+
+	call_view_data_base_t *cur_view = vm->cur_view;
+
+	if (cur_view) {
+		cur_view->update_flags |= CALLUI_UF_LANG_CHANGE;
+		if (!vm->is_paused) {
+			__update_cur_view(vm);
+		}
+	}
+
+	return CALLUI_RESULT_OK;
 }
