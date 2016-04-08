@@ -329,14 +329,15 @@ static void __update_caller_info(Evas_Object *eo, const callui_call_state_data_t
 
 	if (strlen(call_name) == 0) {
 		if (strlen(call_number) == 0) {
-			edje_object_part_text_set(_EDJ(eo), "txt_call_name", _("IDS_CALL_BODY_UNKNOWN"));
+			_callui_common_eo_txt_part_set_translatable_text(eo,
+					"txt_call_name", "IDS_CALL_BODY_UNKNOWN");
 		} else {
-			edje_object_part_text_set(_EDJ(eo), "txt_call_name", call_number);
+			elm_object_part_text_set(eo, "txt_call_name", call_number);
 		}
 	} else {
 		char *convert_text = evas_textblock_text_utf8_to_markup(NULL, call_name);
 		if (convert_text) {
-			edje_object_part_text_set(_EDJ(eo), "txt_call_name", convert_text);
+			elm_object_part_text_set(eo, "txt_call_name", convert_text);
 			free(convert_text);
 			convert_text = NULL;
 		} else {
@@ -673,7 +674,8 @@ static void __update_text_components(char *txt_status, int count, Evas_Object *e
 		elm_object_part_text_set(eo, "txt_timer", txt_status);
 	}
 	if (count > 1) {
-		elm_object_part_text_set(eo, "txt_call_name", _("IDS_CALL_OPT_CONFERENCE_CALL"));
+		_callui_common_eo_txt_part_set_translatable_text(eo,
+				"txt_call_name", "IDS_CALL_OPT_CONFERENCE_CALL");
 	}
 }
 

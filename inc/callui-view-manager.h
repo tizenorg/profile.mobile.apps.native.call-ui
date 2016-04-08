@@ -38,25 +38,26 @@ typedef enum {
 	VIEW_TYPE_MAX					/**< Max view count*/
 } callui_view_type_e;
 
+typedef enum {
+	CALLUI_UF_LANG_CHANGE	= 0x01,
+	CALLUI_UF_DATA_REFRESH	= 0x02
+} callui_update_type_e;
+
 struct _view_data;
-
-typedef callui_result_e (*create_cb) (struct _view_data *view_data, void *appdata);
-typedef callui_result_e (*update_cb) (struct _view_data *view_data);
-typedef callui_result_e (*destroy_cb) (struct _view_data *view_data);
-
 typedef struct appdata callui_app_data_t;
 
 struct _view_data {
-	create_cb onCreate;
-	update_cb onUpdate;
-	destroy_cb onDestroy;
+	callui_result_e (*create) (struct _view_data *view_data, void *appdata);
+	callui_result_e (*update) (struct _view_data *view_data);
+	callui_result_e (*destroy) (struct _view_data *view_data);
+	callui_result_e (*pause) (struct _view_data *view_data);
+	callui_result_e (*resume) (struct _view_data *view_data);
 
 	callui_app_data_t *ad;
-
 	Evas_Object *contents;
-
 	Ecore_Timer *call_duration_timer;
 	struct tm *call_duration_tm;
+	int update_flags;
 };
 typedef struct _view_data call_view_data_base_t;
 
@@ -103,5 +104,15 @@ callui_result_e _callui_vm_auto_change_view(callui_vm_h vm);
  * @return view type
  */
 callui_view_type_e _callui_vm_get_cur_view_type(callui_vm_h vm);
+
+/**
+ * @brief Pause view manager
+ *
+ */
+callui_result_e _callui_vm_pause(callui_vm_h vm);
+
+callui_result_e _callui_vm_resume(callui_vm_h vm);
+
+callui_result_e _callui_vm_update_language(callui_vm_h vm);
 
 #endif /* __CALLUI_VIEW_MANAGER_H__ */

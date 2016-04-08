@@ -57,9 +57,9 @@ callui_view_mc_conf_h _callui_view_multi_call_conf_new()
 	callui_view_mc_conf_h mc_list_conf = calloc(1, sizeof(_callui_view_mc_conf_t));
 	CALLUI_RETURN_NULL_IF_FAIL(mc_list_conf);
 
-	mc_list_conf->base_view.onCreate = __callui_view_multi_call_conf_oncreate;
-	mc_list_conf->base_view.onUpdate = __callui_view_multi_call_conf_onupdate;
-	mc_list_conf->base_view.onDestroy = __callui_view_multi_call_conf_ondestroy;
+	mc_list_conf->base_view.create = __callui_view_multi_call_conf_oncreate;
+	mc_list_conf->base_view.update = __callui_view_multi_call_conf_onupdate;
+	mc_list_conf->base_view.destroy = __callui_view_multi_call_conf_ondestroy;
 
 	return mc_list_conf;
 }
@@ -113,11 +113,37 @@ static callui_result_e __callui_view_multi_call_conf_oncreate(call_view_data_bas
 	return __update_displayed_data(vd);
 }
 
+static callui_result_e __update_nonetranslatable_elements(callui_view_mc_conf_h vd)
+{
+	char buf[CALLUI_BUF_MEMBER_SIZE] = { 0 };
+	callui_app_data_t *ad = vd->base_view.ad;
+
+	const callui_call_state_data_t *call_data =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	if (!call_data) {
+		call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+	}
+	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
+
+	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
+	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->conf_member_count);
+	_callui_show_caller_info_number(ad, buf);
+
+	return CALLUI_RESULT_OK;
+}
+
 static callui_result_e __callui_view_multi_call_conf_onupdate(call_view_data_base_t *view_data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
-	return __update_displayed_data((callui_view_mc_conf_h)view_data);
+	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)view_data;
+	callui_result_e res = CALLUI_RESULT_FAIL;
+	if (vd->base_view.update_flags & CALLUI_UF_DATA_REFRESH) {
+		res = __update_displayed_data(vd);
+	} else if (vd->base_view.update_flags & CALLUI_UF_LANG_CHANGE) {
+		res = __update_nonetranslatable_elements(vd);
+	}
+	return res;
 }
 
 static Eina_Bool __call_duration_timer_cb(void* data)
@@ -149,7 +175,6 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	char buf[CALLUI_BUF_MEMBER_SIZE] = { 0 };
-	char status_txt[CALLUI_BUF_STATUS_SIZE] = { 0 };
 
 	Eina_Bool is_held = EINA_FALSE;
 
@@ -166,9 +191,7 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 
 	if (is_held) {
 		elm_object_signal_emit(vd->caller_info, "hide,arrow", "");
-
-		snprintf(status_txt, sizeof(status_txt), _("IDS_CALL_BODY_ON_HOLD_ABB"));
-		_callui_show_caller_info_status(ad, status_txt);
+		_callui_show_caller_info_status(ad, "IDS_CALL_BODY_ON_HOLD_ABB");
 
 	} else {
 		elm_object_signal_emit(vd->caller_info, "show,arrow", "");
@@ -183,7 +206,8 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 	}
 
 	elm_object_signal_emit(vd->caller_info, "set_conference_mode", "");
-	_callui_show_caller_info_name(ad, _("IDS_CALL_BODY_CONFERENCE"));
+	_callui_show_caller_info_name(ad, "IDS_CALL_BODY_CONFERENCE");
+
 	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
 	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->conf_member_count);
 	_callui_show_caller_info_number(ad, buf);

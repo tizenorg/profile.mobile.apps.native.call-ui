@@ -81,9 +81,9 @@ callui_view_incoming_call_noti_h _callui_view_incoming_call_noti_new()
 	callui_view_incoming_call_noti_h incoming_call_noti = calloc(1, sizeof(_callui_view_incoming_call_noti_t));
 	CALLUI_RETURN_NULL_IF_FAIL(incoming_call_noti);
 
-	incoming_call_noti->base_view.onCreate = __callui_view_incoming_call_noti_oncreate;
-	incoming_call_noti->base_view.onUpdate = __callui_view_incoming_call_noti_onupdate;
-	incoming_call_noti->base_view.onDestroy = __callui_view_incoming_call_noti_ondestroy;
+	incoming_call_noti->base_view.create = __callui_view_incoming_call_noti_oncreate;
+	incoming_call_noti->base_view.update = __callui_view_incoming_call_noti_onupdate;
+	incoming_call_noti->base_view.destroy = __callui_view_incoming_call_noti_ondestroy;
 
 	return incoming_call_noti;
 }
@@ -448,7 +448,8 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 
 	if (!(call_name && call_name[0] != '\0') && !(call_number && call_number[0] != '\0')) {
 		elm_object_signal_emit(vd->base_view.contents, "big_buttons", "main_active_noti_call");
-		elm_object_part_text_set(vd->base_view.contents, "text.contact_name", _("IDS_CALL_BODY_UNKNOWN"));
+		_callui_common_eo_txt_part_set_translatable_text(vd->base_view.contents,
+				"text.contact_name", "IDS_CALL_BODY_UNKNOWN");
 	} else if (!(call_name && call_name[0] != '\0')) {
 		elm_object_signal_emit(vd->base_view.contents, "small_buttons", "main_active_noti_call");
 		elm_object_part_text_set(vd->base_view.contents, "text.contact_name", call_number);

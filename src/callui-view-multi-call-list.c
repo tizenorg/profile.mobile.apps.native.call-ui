@@ -65,9 +65,9 @@ callui_view_mc_list_h _callui_view_multi_call_list_new()
 	callui_view_mc_list_h mc_list_view = calloc(1, sizeof(_callui_view_mc_list_t));
 	CALLUI_RETURN_NULL_IF_FAIL(mc_list_view);
 
-	mc_list_view->base_view.onCreate = __callui_view_multi_call_list_oncreate;
-	mc_list_view->base_view.onUpdate = __callui_view_multi_call_list_onupdate;
-	mc_list_view->base_view.onDestroy = __callui_view_multi_call_list_ondestroy;
+	mc_list_view->base_view.create = __callui_view_multi_call_list_oncreate;
+	mc_list_view->base_view.update = __callui_view_multi_call_list_onupdate;
+	mc_list_view->base_view.destroy = __callui_view_multi_call_list_ondestroy;
 
 	return mc_list_view;
 }
@@ -193,7 +193,7 @@ static callui_result_e __create_main_content(callui_view_mc_list_h vd)
 	Evas_Object *back_btn = elm_button_add(vd->base_view.contents);
 	CALLUI_RETURN_VALUE_IF_FAIL(back_btn, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_style_set(back_btn, "bottom");
-	elm_object_text_set(back_btn, _("IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"));
+	_callui_common_eo_set_translatable_text(back_btn, "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB");
 	elm_object_part_content_set(vd->base_view.contents, "bottom_btn", back_btn);
 	evas_object_smart_callback_add(back_btn, "clicked", __back_btn_click_cb, ad);
 	evas_object_show(back_btn);
