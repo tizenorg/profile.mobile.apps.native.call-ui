@@ -55,7 +55,7 @@ static void __callui_app_win_key_grab(callui_app_data_t *ad)
 {
 	int result = 0;
 	result = elm_win_keygrab_set(ad->win, CALLUI_KEY_MEDIA, 0, 0, 0, ELM_WIN_KEYGRAB_EXCLUSIVE);
-	if (result)
+	if (!result)
 		dbg("KEY_MEDIA key grab failed");
 
 	if (_callui_common_is_powerkey_mode_on()) {
@@ -63,7 +63,7 @@ static void __callui_app_win_key_grab(callui_app_data_t *ad)
 	} else {
 		result = elm_win_keygrab_set(ad->win, CALLUI_KEY_POWER, 0, 0, 0, ELM_WIN_KEYGRAB_SHARED);
 	}
-	if (result) {
+	if (!result) {
 		dbg("KEY_POWER key grab failed");
 	}
 
@@ -217,7 +217,7 @@ static void __callui_win_delete_request_cb(void *data, Evas_Object *obj, void *e
 static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 {
 	dbg("Create window");
-	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_BASIC);
+	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_NOTIFICATION);
 	elm_win_aux_hint_add(eo, "wm.policy.win.user.geometry", "1");
 	elm_win_fullscreen_set(eo, EINA_FALSE);
 	elm_win_alpha_set(eo, EINA_TRUE);
@@ -664,7 +664,7 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 		dbg("in KEY_SELECT");
 		int result = 0;
 		result = elm_win_keygrab_unset(ad->win, CALLUI_KEY_SELECT, 0, 0);
-		if (result) {
+		if (!result) {
 			dbg("KEY_SELECT key ungrab failed");
 		} else {
 			dbg("KEY_SELECT key ungrab success");
@@ -693,7 +693,7 @@ static Eina_Bool __callui_app_win_hard_key_up_cb(void *data, int type, void *eve
 					_callui_load_second_call_popup(ad);
 				}
 			} else {
-				if (elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
+				if (!elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
 					dbg("KEY_SELECT key ungrab failed");
 				}
 			}

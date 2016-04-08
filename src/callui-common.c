@@ -160,7 +160,10 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void)
 
 int _callui_common_unlock_swipe_lock(void)
 {
-	vconf_set_int(VCONFKEY_IDLE_LOCK_STATE, VCONFKEY_IDLE_UNLOCK);
+	int res = vconf_set_int(VCONFKEY_IDLE_LOCK_STATE, VCONFKEY_IDLE_UNLOCK);
+	if (res != 0) {
+		err("Set flag IDLE_UNLOCK failed");
+	}
 	return 0;
 }
 

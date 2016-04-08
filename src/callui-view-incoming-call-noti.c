@@ -102,7 +102,7 @@ static callui_result_e __callui_view_incoming_call_noti_oncreate(call_view_data_
 	evas_object_resize(ad->win, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
 	_callui_common_win_set_noti_type(ad, true);
 
-	if (elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
+	if (!elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
 		dbg("KEY_SELECT key grab failed");
 	}
 

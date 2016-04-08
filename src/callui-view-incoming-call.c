@@ -127,7 +127,7 @@ static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_
 
 	evas_object_pointer_mode_set(ad->win, EVAS_OBJECT_POINTER_MODE_NOGRAB);
 
-	if (elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
+	if (!elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
 		dbg("KEY_SELECT key grab failed");
 	}
 
