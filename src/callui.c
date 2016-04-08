@@ -217,7 +217,7 @@ static void __callui_win_delete_request_cb(void *data, Evas_Object *obj, void *e
 static Evas_Object *__callui_create_main_win(callui_app_data_t *ad)
 {
 	dbg("Create window");
-	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_BASIC);
+	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_NOTIFICATION);
 	elm_win_aux_hint_add(eo, "wm.policy.win.user.geometry", "1");
 	elm_win_fullscreen_set(eo, EINA_FALSE);
 	elm_win_alpha_set(eo, EINA_TRUE);
