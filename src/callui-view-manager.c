@@ -273,14 +273,17 @@ callui_view_type_e _callui_vm_get_cur_view_type(callui_vm_h vm)
 static callui_result_e __destroy_cur_view(callui_vm_h vm)
 {
 	callui_result_e res = CALLUI_RESULT_FAIL;
-
 	call_view_data_base_t *view = vm->cur_view;
 
-	CALLUI_RETURN_VALUE_IF_FAIL(view, CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(view->destroy, CALLUI_RESULT_FAIL);
+	if (!view) {
+		dbg("Current view is NULL");
+		return CALLUI_RESULT_OK;
+	}
 
 	if (view->destroy) {
 		res = view->destroy(view);
+	} else {
+		warn("destroy() is not set! Possible memory leak");
 	}
 
 	vm->cur_view = NULL;

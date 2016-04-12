@@ -151,9 +151,9 @@ static void __process_outgoing_call(callui_app_data_t *ad, const char *number)
 	callui_result_e res = _callui_manager_dial_voice_call(ad->call_manager,
 			number, CALLUI_SIM_SLOT_DEFAULT);
 
-	if (CALLUI_RESULT_OK != res && _callui_stp_is_any_calls_available(ad->state_provider)) {
+	if (CALLUI_RESULT_OK != res) {
 		err("_callui_manager_dial_voice_call() failed. ret[%d]", res);
-		if (_callui_stp_is_any_calls_available(ad->state_provider)) {
+		if (!_callui_stp_is_any_calls_available(ad->state_provider)) {
 			dbg("No more calls available. Exit application");
 			_callui_common_exit_app();
 		}
@@ -222,7 +222,6 @@ static void __call_state_change_cb(void *user_data,
 
 static void __reset_state_params(callui_app_data_t *ad)
 {
-	dbg("..");
 	CALLUI_RETURN_IF_FAIL(ad);
 
 	ad->multi_call_list_end_clicked = false;
@@ -292,6 +291,23 @@ static void __init_app_event_handlers(callui_app_data_t *ad)
 	}
 }
 
+static void __dial_status_cb(void *user_data, callui_dial_status_e dial_status)
+{
+	debug_enter();
+
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	callui_app_data_t *ad = user_data;
+
+	if (dial_status != CALLUI_DIAL_SUCCESS) {
+		if (!_callui_stp_is_any_calls_available(ad->state_provider)) {
+			dbg("No more calls available. Exit application");
+			_callui_common_exit_app();
+		}
+		ad->waiting_dialing = false;
+	}
+}
+
 static bool __app_init(callui_app_data_t *ad)
 {
 	_callui_common_dvc_control_lcd_state(LCD_OFF_SLEEP_LOCK);
@@ -306,6 +322,7 @@ static bool __app_init(callui_app_data_t *ad)
 	ad->state_provider = _callui_manager_get_state_provider(ad->call_manager);
 	ad->sound_manager = _callui_manager_get_sound_manager(ad->call_manager);
 
+	_callui_manager_add_dial_status_cb(ad->call_manager, __dial_status_cb, ad);
 	_callui_stp_add_call_state_event_cb(ad->state_provider, __call_state_change_cb, ad);
 	_callui_sdm_add_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, ad);
 
@@ -431,6 +448,8 @@ static bool __create_main_gui_elem(callui_app_data_t *ad)
 
 static bool __app_deinit(callui_app_data_t *ad)
 {
+	debug_enter();
+
 	_callui_stp_remove_call_state_event_cb(ad->state_provider, __call_state_change_cb, ad);
 	_callui_sdm_remove_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, ad);
 
@@ -472,12 +491,18 @@ static bool __app_deinit(callui_app_data_t *ad)
 
 	__bt_deinit();
 
+	debug_leave();
+
 	return false;
 }
 
 static void __app_terminate(void *data)
 {
+	debug_enter();
+
 	__app_deinit(data);
+
+	debug_leave();
 }
 
 static void __app_pause(void *data)

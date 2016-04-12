@@ -38,6 +38,15 @@ typedef enum {
 } callui_call_release_type_e;
 
 typedef enum {
+	CALLUI_DIAL_SUCCESS = 0,
+	CALLUI_DIAL_CANCEL,
+	CALLUI_DIAL_FAIL,
+	CALLUI_DIAL_FAIL_SS,
+	CALLUI_DIAL_FAIL_FDN,
+	CALLUI_DIAL_FAIL_FLIGHT_MODE,
+} callui_dial_status_e;
+
+typedef enum {
 	CALLUI_SIM_SLOT_1 = 0,
 	CALLUI_SIM_SLOT_2,
 	CALLUI_SIM_SLOT_DEFAULT,
@@ -54,6 +63,8 @@ typedef struct __callui_sound_manager *callui_sound_manager_h;
 typedef void (*callui_end_call_called_cb)(void *user_data,
 		unsigned int call_id,
 		callui_call_release_type_e release_type);
+typedef void (*callui_dial_status_cb)(void *user_data, callui_dial_status_e dial_status);
+
 
 callui_manager_h _callui_manager_create();
 
@@ -88,5 +99,11 @@ callui_result_e _callui_manager_add_end_call_called_cb(callui_manager_h cm_handl
 
 callui_result_e _callui_manager_remove_end_call_called_cb(callui_manager_h cm_handler,
 		callui_end_call_called_cb cb_func, void *cb_data);
+
+callui_result_e _callui_manager_add_dial_status_cb(callui_manager_h cm_handler,
+		callui_dial_status_cb cb_func, void *cb_data);
+
+callui_result_e _callui_manager_remove_dial_status_cb(callui_manager_h cm_handler,
+		callui_dial_status_cb cb_func, void *cb_data);
 
 #endif /* __CALLUI_CALL_MANAGER_H__ */
