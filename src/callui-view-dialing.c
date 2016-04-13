@@ -129,12 +129,12 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 	callui_view_dialing_h vd = (callui_view_dialing_h)data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	const callui_call_state_data_t *call_state =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *call_state =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 
 	if (call_state) {
 		callui_result_e res = _callui_manager_end_call(ad->call_manager,
-				call_state->call_id, CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+				call_state->call_id, CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
 		if (res != CALLUI_RESULT_OK) {
 			err("_callui_manager_end_call() failed. res[%d]", res);
 		}
@@ -144,8 +144,8 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
-	const callui_call_state_data_t *now_call_data = _callui_stp_get_call_data(ad->state_provider,
-			CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *now_call_data = _callui_stp_get_call_data(ad->state_provider,
+			CALLUI_CALL_DATA_ACTIVE);
 	CALLUI_RETURN_VALUE_IF_FAIL(now_call_data, CALLUI_RESULT_FAIL);
 
 	const char *file_path = now_call_data->call_ct_info.caller_id_path;

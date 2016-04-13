@@ -51,13 +51,13 @@ static void __dial_status_cb(cm_dial_status_e dial_status, void *user_data);
 static cm_call_release_type_e __convert_app_release_type(callui_call_release_type_e type)
 {
 	switch (type) {
-	case CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE:
+	case CALLUI_CALL_RELEASE_BY_CALL_HANDLE:
 		return CALL_RELEASE_TYPE_BY_CALL_HANDLE;
-	case CALLUI_CALL_RELEASE_TYPE_ALL_CALLS:
+	case CALLUI_CALL_RELEASE_ALL:
 		return CALL_RELEASE_TYPE_ALL_CALLS;
-	case CALLUI_CALL_RELEASE_TYPE_ALL_HOLD_CALLS:
+	case CALLUI_CALL_RELEASE_ALL_HOLD:
 		return CALL_RELEASE_TYPE_ALL_HOLD_CALLS;
-	case CALLUI_CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS:
+	case CALLUI_CALL_RELEASE_ALL_ACTIVE:
 		return CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS;
 	default:
 		err("undefined call release type [%d]", type);
@@ -68,15 +68,15 @@ static cm_call_release_type_e __convert_app_release_type(callui_call_release_typ
 static cm_call_answer_type_e __convert_app_answer_type(callui_call_answer_type_e type)
 {
 	switch (type) {
-	case CALLUI_CALL_ANSWER_TYPE_NORMAL:
+	case CALLUI_CALL_ANSWER_NORMAL:
 		return CALL_ANSWER_TYPE_NORMAL;
-	case CALLUI_CALL_ANSWER_TYPE_HOLD_ACTIVE_AND_ACCEPT:
+	case CALLUI_CALL_ANSWER_HOLD_ACTIVE_AND_ACCEPT:
 		return CALL_ANSWER_TYPE_HOLD_ACTIVE_AND_ACCEPT;
-	case CALLUI_CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT:
+	case CALLUI_CALL_ANSWER_RELEASE_ACTIVE_AND_ACCEPT:
 		return CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT;
-	case CALLUI_CALL_ANSWER_TYPE_RELEASE_HOLD_AND_ACCEPT:
+	case CALLUI_CALL_ANSWER_RELEASE_HOLD_AND_ACCEPT:
 		return CALL_ANSWER_TYPE_RELEASE_HOLD_AND_ACCEPT;
-	case CALLUI_CALL_ANSWER_TYPE_RELEASE_ALL_AND_ACCEPT:
+	case CALLUI_CALL_ANSWER_RELEASE_ALL_AND_ACCEPT:
 		return CALL_ANSWER_TYPE_RELEASE_ALL_AND_ACCEPT;
 	default:
 		err("undefined call answer type [%d]", type);

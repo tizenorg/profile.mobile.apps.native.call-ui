@@ -103,7 +103,8 @@ static callui_result_e __callui_view_single_call_ondestroy(call_view_data_base_t
 
 	eext_object_event_callback_del(vd->base_view.contents, EEXT_CALLBACK_MORE, __more_btn_click_cb);
 
-	DELETE_EVAS_OBJECT(ad->ctxpopup);
+	evas_object_del(ad->ctxpopup);
+
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
 
 	free(vd);
@@ -126,7 +127,7 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	callui_result_e res = _callui_manager_end_call(ad->call_manager,
-			0, CALLUI_CALL_RELEASE_TYPE_ALL_CALLS);
+			0, CALLUI_CALL_RELEASE_ALL);
 	if (res != CALLUI_RESULT_OK) {
 		err("_callui_manager_end_call() is failed. res[%d]", res);
 	}
@@ -139,7 +140,7 @@ static Eina_Bool __call_duration_timer_cb(void* data)
 	call_view_single_call_h vd = data;
 
 	struct tm *new_tm = _callui_stp_get_call_duration(vd->base_view.ad->state_provider,
-			CALLUI_CALL_DATA_TYPE_ACTIVE);
+			CALLUI_CALL_DATA_ACTIVE);
 	if (!new_tm) {
 		vd->base_view.call_duration_timer = NULL;
 		return ECORE_CALLBACK_CANCEL;
@@ -164,10 +165,10 @@ static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 
 	Eina_Bool is_held = EINA_FALSE;
 
-	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->state_provider,
-					CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *call_data = _callui_stp_get_call_data(ad->state_provider,
+					CALLUI_CALL_DATA_ACTIVE);
 	if (!call_data) {
-		call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+		call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
 		is_held = EINA_TRUE;
 	}
 	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
@@ -188,7 +189,7 @@ static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 	if (is_held) {
 		_callui_show_caller_info_status(ad, "IDS_CALL_BODY_ON_HOLD_ABB");
 	} else {
-		vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+		vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 		CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_tm, CALLUI_RESULT_ALLOCATION_FAIL);
 
 		_callui_common_set_call_duration_time(vd->base_view.call_duration_tm, vd->base_view.contents, "call_txt_status");

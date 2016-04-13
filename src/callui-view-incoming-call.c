@@ -680,13 +680,13 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 	CALLUI_RETURN_VALUE_IF_FAIL(incom, CALLUI_RESULT_FAIL);
 
-	const callui_call_state_data_t *active =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
-	const callui_call_state_data_t *held =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+	const callui_call_data_t *active =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
+	const callui_call_data_t *held =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
 	if (ad->second_call_popup && (!active && !held)) {
 		DELETE_EVAS_OBJECT(ad->second_call_popup);
 	}

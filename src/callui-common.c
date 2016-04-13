@@ -67,9 +67,6 @@
 
 static bool g_is_headset_connected;
 
-#define CALL_EDJ_NAME		"/edje/call.edj"
-#define CALL_THEME_EDJ_NAME	"/edje/call_theme.edj"
-
 struct dbus_byte {
 	const char *data;
 	int size;
@@ -792,7 +789,7 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 	int res = CALLUI_RESULT_FAIL;
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 
-	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 
 	CALLUI_RETURN_VALUE_IF_FAIL(incom, CALLUI_RESULT_FAIL);
 

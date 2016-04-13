@@ -43,8 +43,6 @@ struct appdata {
 
 	callui_vm_h view_manager;
 
-	bool multi_call_list_end_clicked;
-
 	lock_data_t *lock_handle;
 	bool start_lock_manager_on_resume;
 	bool on_background;
@@ -65,7 +63,7 @@ struct appdata {
 	callui_state_provider_h state_provider;
 	callui_sound_manager_h sound_manager;
 
-	callui_call_state_data_t *end_call_data;
+	callui_call_data_t *end_call_data;
 
 	app_event_handler_h app_event_handlers[APP_HANDLERS_COUNT];
 

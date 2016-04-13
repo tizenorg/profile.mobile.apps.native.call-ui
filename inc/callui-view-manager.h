@@ -25,17 +25,17 @@
 #include "callui-common-types.h"
 
 typedef enum {
-	VIEW_TYPE_UNDEFINED = -1,
-	VIEW_TYPE_DIALLING,				/**< Dialling view*/
-	VIEW_TYPE_INCOMING_CALL_NOTI,	/**< Incoming active notification view*/
-	VIEW_TYPE_INCOMING_CALL,		/**< Incoming lock view*/
-	VIEW_TYPE_SINGLECALL,			/**< Incoming single call view*/
-	VIEW_TYPE_MULTICALL_SPLIT,		/**< Multicall split view */
-	VIEW_TYPE_MULTICALL_CONF,		/**< Multicall conference view */
-	VIEW_TYPE_MULTICALL_LIST,		/**< Multicall list view */
-	VIEW_TYPE_ENDCALL,				/**< End call view */
-	VIEW_TYPE_QUICKPANEL,			/**< Quick panel view */
-	VIEW_TYPE_MAX					/**< Max view count*/
+	CALLUI_VIEW_UNDEFINED = -1,
+	CALLUI_VIEW_DIALLING,			/**< Dialling view*/
+	CALLUI_VIEW_INCOMING_CALL_NOTI,	/**< Incoming active notification view*/
+	CALLUI_VIEW_INCOMING_CALL,		/**< Incoming lock view*/
+	CALLUI_VIEW_SINGLECALL,			/**< Incoming single call view*/
+	CALLUI_VIEW_MULTICALL_SPLIT,	/**< Multicall split view */
+	CALLUI_VIEW_MULTICALL_CONF,		/**< Multicall conference view */
+	CALLUI_VIEW_MULTICALL_LIST,		/**< Multicall list view */
+	CALLUI_VIEW_ENDCALL,			/**< End call view */
+	CALLUI_VIEW_QUICKPANEL,			/**< Quick panel view */
+	CALLUI_VIEW_COUNT				/**< View count*/
 } callui_view_type_e;
 
 typedef enum {

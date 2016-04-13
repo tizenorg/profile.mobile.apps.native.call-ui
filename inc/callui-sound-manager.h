@@ -23,10 +23,10 @@
 #include "callui-common-types.h"
 
 typedef enum {
-	CALLUI_AUDIO_STATE_NONE,		/**< none */
+	CALLUI_AUDIO_STATE_NONE,		/**< None */
 	CALLUI_AUDIO_STATE_SPEAKER,		/**< System LoudSpeaker path */
-	CALLUI_AUDIO_STATE_RECEIVER,	/**< System Receiver*/
-	CALLUI_AUDIO_STATE_EARJACK,		/**< Earjack path*/
+	CALLUI_AUDIO_STATE_RECEIVER,	/**< System Receiver */
+	CALLUI_AUDIO_STATE_EARJACK,		/**< Earjack path */
 	CALLUI_AUDIO_STATE_BT			/**< System BT Headset path */
 } callui_audio_state_type_e;
 

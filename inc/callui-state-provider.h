@@ -30,25 +30,25 @@
 #define CALLUI_PHONE_DISP_NUMBER_LENGTH_MAX	(82+10+1)
 
 typedef enum {
-	CALLUI_CALL_DATA_TYPE_ACTIVE = 0,		/**< Active call data*/
-	CALLUI_CALL_DATA_TYPE_HELD,				/**< Held call data*/
-	CALLUI_CALL_DATA_TYPE_INCOMING,			/**< Incoming call data*/
-	CALLUI_CALL_DATA_TYPE_MAX
+	CALLUI_CALL_DATA_ACTIVE = 0,		/**< Active call data*/
+	CALLUI_CALL_DATA_HELD,				/**< Held call data*/
+	CALLUI_CALL_DATA_INCOMING,			/**< Incoming call data*/
+	CALLUI_CALL_DATA_COUNT
 } callui_call_data_type_e;
 
 typedef enum {
-	CALLUI_CALL_EVENT_TYPE_END = 0,
-	CALLUI_CALL_EVENT_TYPE_DIALING,
-	CALLUI_CALL_EVENT_TYPE_ACTIVE,
-	CALLUI_CALL_EVENT_TYPE_HELD,
-	CALLUI_CALL_EVENT_TYPE_ALERT,
-	CALLUI_CALL_EVENT_TYPE_INCOMING,
-	CALLUI_CALL_EVENT_TYPE_WAITING,
-	CALLUI_CALL_EVENT_TYPE_JOIN,
-	CALLUI_CALL_EVENT_TYPE_SPLIT,
-	CALLUI_CALL_EVENT_TYPE_SWAPPED,
-	CALLUI_CALL_EVENT_TYPE_RETRIEVED,
-	CALLUI_CALL_EVENT_TYPE_SAT_CALL_CONTROL,
+	CALLUI_CALL_EVENT_END = 0,
+	CALLUI_CALL_EVENT_DIALING,
+	CALLUI_CALL_EVENT_ACTIVE,
+	CALLUI_CALL_EVENT_HELD,
+	CALLUI_CALL_EVENT_ALERT,
+	CALLUI_CALL_EVENT_INCOMING,
+	CALLUI_CALL_EVENT_WAITING,
+	CALLUI_CALL_EVENT_JOIN,
+	CALLUI_CALL_EVENT_SPLIT,
+	CALLUI_CALL_EVENT_SWAPPED,
+	CALLUI_CALL_EVENT_RETRIEVED,
+	CALLUI_CALL_EVENT_SAT_CALL_CONTROL,
 } callui_call_event_type_e;
 
 typedef struct __callui_state_provider *callui_state_provider_h;
@@ -67,7 +67,7 @@ struct _callui_conf_call_data_t {
 };
 typedef struct _callui_conf_call_data_t callui_conf_call_data_t;
 
-struct _callui_call_state_data_t {
+struct _callui_call_data_t {
 	callui_call_data_type_e type;
 	unsigned int call_id;
 	char call_num[CALLUI_PHONE_NUMBER_LENGTH_MAX];
@@ -78,7 +78,7 @@ struct _callui_call_state_data_t {
 	callui_contact_data_t call_ct_info;
 	int conf_member_count;
 };
-typedef struct _callui_call_state_data_t callui_call_state_data_t;
+typedef struct _callui_call_data_t callui_call_data_t;
 
 /* Callback functions prototypes */
 typedef void (*callui_call_state_event_cb)(void *user_data,
@@ -87,7 +87,7 @@ typedef void (*callui_call_state_event_cb)(void *user_data,
 		callui_sim_slot_type_e sim_type,
 		void *event_info);
 
-const callui_call_state_data_t *_callui_stp_get_call_data(callui_state_provider_h stp,
+const callui_call_data_t *_callui_stp_get_call_data(callui_state_provider_h stp,
 		callui_call_data_type_e call_data_type);
 
 Eina_List *_callui_stp_get_conference_call_list(callui_state_provider_h stp);
