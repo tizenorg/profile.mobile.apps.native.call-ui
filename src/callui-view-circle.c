@@ -62,13 +62,13 @@ static void __callui_view_circle_handle_accept(callui_app_data_t *ad)
 		_callui_common_unlock_swipe_lock();
 	}
 
-	const callui_call_state_data_t *call_data =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *call_data =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 
 	if (!call_data) {
 		dbg("No Call Or Held call - Accept");
 		callui_result_e res = _callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_NORMAL);
+						CALLUI_CALL_ANSWER_NORMAL);
 		if (res != CALLUI_RESULT_OK) {
 			err("_callui_manager_answer_call() failed. res[%d]", res);
 		}

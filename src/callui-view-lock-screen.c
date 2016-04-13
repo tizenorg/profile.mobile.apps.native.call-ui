@@ -115,7 +115,7 @@ static void __callui_lock_screen_show_layout(lock_screen_data_t *lock_screen_pri
 	evas_object_show(lock_screen_priv->layout);
 
 #ifdef _DBUS_DVC_LSD_TIMEOUT_
-	if (_callui_vm_get_cur_view_type(ad->view_manager) != VIEW_TYPE_DIALLING) {
+	if (_callui_vm_get_cur_view_type(ad->view_manager) != CALLUI_VIEW_DIALLING) {
 		dbg("lcd show");
 		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_LOCKSCREEN_SET);
 	}
@@ -136,7 +136,7 @@ static void __callui_lock_screen_hide_layout(lock_screen_data_t *lock_screen_pri
 	lock_screen_priv->is_locked = false;
 
 #ifdef _DBUS_DVC_LSD_TIMEOUT_
-	if (_callui_vm_get_cur_view_type(ad->view_manager) != VIEW_TYPE_DIALLING) {
+	if (_callui_vm_get_cur_view_type(ad->view_manager) != CALLUI_VIEW_DIALLING) {
 		dbg("lcd hide");
 		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
 	}
@@ -164,9 +164,9 @@ static Eina_Bool __lock_timeout_cb(void *data)
 	priv->no_lock_timer = NULL;
 
 	callui_view_type_e type = _callui_vm_get_cur_view_type(ad->view_manager);
-	if (type >= VIEW_TYPE_MULTICALL_LIST) {
+	if (type >= CALLUI_VIEW_MULTICALL_LIST) {
 		return ECORE_CALLBACK_CANCEL;
-	} else if (type == VIEW_TYPE_INCOMING_CALL || type == VIEW_TYPE_INCOMING_CALL_NOTI) {
+	} else if (type == CALLUI_VIEW_INCOMING_CALL || type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
 		return ECORE_CALLBACK_RENEW;
 	}
 

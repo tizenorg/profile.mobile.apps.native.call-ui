@@ -158,14 +158,6 @@ void _callui_load_second_call_popup(callui_app_data_t *ad);
 void _callui_load_bluetooth_popup(callui_app_data_t *ad);
 
 /**
- * @brief Create toast message
- *
- * @param[in]    string       The messages to be posted
- *
- */
-void _callui_create_toast_message(char *string);
-
-/**
  * @brief Create and set background layout
  *
  * @param[in]    app_data		Application data pointer

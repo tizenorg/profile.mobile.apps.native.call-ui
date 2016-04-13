@@ -432,7 +432,7 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_data_t *call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
 
 	elm_object_signal_emit(vd->base_view.contents, "small_main_ly", "main_active_noti_call");

@@ -284,7 +284,7 @@ void _callui_load_more_option(void *data)
 	}
 
 	if (is_lcd_locked) {
-		dbg( "Lock screen active. Do not show popup.");
+		dbg("Lock screen active. Do not show popup.");
 		return;
 	}
 
@@ -298,9 +298,9 @@ void _callui_load_more_option(void *data)
 		eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
 
 		/* Hold/Resume */
-		if (_callui_vm_get_cur_view_type(ad->view_manager) != VIEW_TYPE_MULTICALL_SPLIT) {
-			const callui_call_state_data_t *call_data =
-					_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+		if (_callui_vm_get_cur_view_type(ad->view_manager) != CALLUI_VIEW_MULTICALL_SPLIT) {
+			const callui_call_data_t *call_data =
+					_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 			if (call_data) {
 				elm_ctxpopup_item_append(ctxpopup, _("IDS_CALL_BUTTON_HOLD"), NULL, __callui_hold_btn_cb, ad);
 			} else {
@@ -381,19 +381,19 @@ static void __callui_gl_second_call_option_sel(void *data, Evas_Object *obj, voi
 		CALLUI_RETURN_IF_FAIL(item_data);
 		dbg("index: %d", item_data->index);
 
-		const callui_call_state_data_t *hold_call_data =
-				_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
-		const callui_call_state_data_t *unhold_call_data =
-				_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+		const callui_call_data_t *hold_call_data =
+				_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
+		const callui_call_data_t *unhold_call_data =
+				_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 
 		if ((unhold_call_data) && (hold_call_data == NULL)) {
 			dbg("1 active call OR 1 active conference call");
 			if (item_data->index == 0) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_HOLD_ACTIVE_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_HOLD_ACTIVE_AND_ACCEPT);
 			} else if (item_data->index == 1) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_RELEASE_ACTIVE_AND_ACCEPT);
 			} else {
 				err("Wrong index.. Should never get here");
 			}
@@ -401,13 +401,13 @@ static void __callui_gl_second_call_option_sel(void *data, Evas_Object *obj, voi
 			dbg("1 active call + 1 held call OR 1 active conf call + 1 held call OR 1 active call + 1 held conf call");
 			if (item_data->index == 0) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_RELEASE_ACTIVE_AND_ACCEPT);
 			} else if (item_data->index == 1) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_RELEASE_HOLD_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_RELEASE_HOLD_AND_ACCEPT);
 			} else if (item_data->index == 2) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_RELEASE_ALL_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_RELEASE_ALL_AND_ACCEPT);
 			} else {
 				err("Wrong index.. Should never get here");
 			}
@@ -421,7 +421,7 @@ static void __callui_second_call_cancel_btn_response_cb(void *data, Evas_Object 
 
 	callui_app_data_t *ad = (callui_app_data_t*) data;
 	__callui_unload_second_call_popup(ad);
-	_callui_vm_change_view(ad->view_manager, VIEW_TYPE_INCOMING_CALL);
+	_callui_vm_change_view(ad->view_manager, CALLUI_VIEW_INCOMING_CALL);
 
 	return;
 }
@@ -443,8 +443,8 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 	Evas_Object *genlist = NULL;
 	CALLUI_RETURN_IF_FAIL(ad);
 
-	const callui_call_state_data_t *hold_call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
-	const callui_call_state_data_t *unhold_call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *hold_call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
+	const callui_call_data_t *unhold_call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 	if (unhold_call_data == NULL) {
 		err("active call data is null");
 		return;
@@ -739,16 +739,6 @@ void _callui_load_bluetooth_popup(callui_app_data_t *ad)
 	return;
 }
 
-void _callui_create_toast_message(char *string)
-{
-	dbg("$$$$$$ Noti-String : %s", string);
-
-	if (string) {
-		notification_status_message_post(string);
-	}
-	return;
-}
-
 static void __callui_create_new_msg_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(data);
@@ -756,7 +746,7 @@ static void __callui_create_new_msg_btn_click_cb(void *data, Evas_Object *obj, v
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 
 
-	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 	CALLUI_RETURN_IF_FAIL(incom);
 
 	_callui_common_launch_msg_composer(ad, incom->call_num);

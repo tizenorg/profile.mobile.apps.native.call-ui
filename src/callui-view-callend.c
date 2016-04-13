@@ -69,14 +69,14 @@ static Eina_Bool __ending_timer_blink_cb(void *data);
 static callui_result_e __create_ending_timer(callui_view_callend_h vd);
 static void __delete_ending_timer(callui_view_callend_h vd);
 
-static callui_result_e __set_single_call_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data);
+static callui_result_e __set_single_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data);
 
 static callui_result_e __create_call_back_btn(callui_view_callend_h vd);
 static callui_result_e __create_message_btn(callui_view_callend_h vd);
-static callui_result_e __create_single_contact_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data);
+static callui_result_e __create_single_contact_info(callui_view_callend_h vd, const callui_call_data_t *call_data);
 
-static void __set_emergency_call_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data);
-static void __set_conference_call_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data);
+static void __set_emergency_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data);
+static void __set_conference_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data);
 
 static void __bg_mouse_down_cb(void *data, Evas_Object *o, const char *emission, const char *source);
 
@@ -173,7 +173,7 @@ static callui_result_e __create_message_btn(callui_view_callend_h vd)
 	return CALLUI_RESULT_OK;
 }
 
-static callui_result_e __create_single_contact_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data)
+static callui_result_e __create_single_contact_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
 	const char *call_name = call_data->call_ct_info.call_disp_name;
 
@@ -193,7 +193,7 @@ static callui_result_e __create_single_contact_info(callui_view_callend_h vd, co
 	return CALLUI_RESULT_OK;
 }
 
-static callui_result_e __set_single_call_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data)
+static callui_result_e __set_single_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
 	const char *file_path = call_data->call_ct_info.caller_id_path;
 	const char *call_name = call_data->call_ct_info.call_disp_name;
@@ -233,13 +233,13 @@ static callui_result_e __set_single_call_info(callui_view_callend_h vd, const ca
 	return res;
 }
 
-static void __set_emergency_call_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data)
+static void __set_emergency_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
 	elm_object_signal_emit(vd->base_view.contents, "set_emergency_mode", "main_end_call");
 	_callui_common_eo_txt_part_set_translatable_text(vd->base_view.contents, "contact_name", "IDS_COM_BODY_EMERGENCY_NUMBER");
 }
 
-static void __set_conference_call_info(callui_view_callend_h vd, const callui_call_state_data_t *call_data)
+static void __set_conference_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
 	elm_object_signal_emit(vd->base_view.contents, "set_conference_mode", "main_end_call");
 	_callui_common_eo_txt_part_set_translatable_text(vd->base_view.contents,
@@ -251,7 +251,7 @@ static void __set_conference_call_info(callui_view_callend_h vd, const callui_ca
 	elm_object_part_text_set(vd->base_view.contents, "contact_number", buf);
 }
 
-static callui_result_e __set_ended_call_duration_sting(callui_view_callend_h vd, callui_call_state_data_t *call_data)
+static callui_result_e __set_ended_call_duration_sting(callui_view_callend_h vd, callui_call_data_t *call_data)
 {
 	if (call_data->is_dialing) {
 		vd->time_string = strdup(OUTGOING_CALL_TIME_DURATION_STR);
@@ -268,7 +268,7 @@ static callui_result_e __update_displayed_data(callui_view_callend_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	callui_call_state_data_t *call_data = ad->end_call_data;
+	callui_call_data_t *call_data = ad->end_call_data;
 	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
 	callui_result_e res = CALLUI_RESULT_FAIL;
 

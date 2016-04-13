@@ -76,10 +76,10 @@ static callui_app_data_t g_ad;
 
 static void __set_main_win_key_grab(callui_app_data_t *ad)
 {
-	int result = 0;
-	result = elm_win_keygrab_set(ad->win, CALLUI_KEY_MEDIA, 0, 0, 0, ELM_WIN_KEYGRAB_EXCLUSIVE);
-	if (!result)
+	int result = elm_win_keygrab_set(ad->win, CALLUI_KEY_MEDIA, 0, 0, 0, ELM_WIN_KEYGRAB_EXCLUSIVE);
+	if (!result) {
 		dbg("KEY_MEDIA key grab failed");
+	}
 
 	if (_callui_common_is_powerkey_mode_on()) {
 		result = elm_win_keygrab_set(ad->win, CALLUI_KEY_POWER, 0, 0, 0, ELM_WIN_KEYGRAB_EXCLUSIVE);
@@ -124,21 +124,21 @@ static void __process_incoming_call(callui_app_data_t *ad)
 {
 	CALLUI_RETURN_IF_FAIL(ad);
 
-	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider,
-					CALLUI_CALL_DATA_TYPE_INCOMING);
-	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->state_provider,
-					CALLUI_CALL_DATA_TYPE_ACTIVE);
-	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->state_provider,
-					CALLUI_CALL_DATA_TYPE_HELD);
+	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider,
+					CALLUI_CALL_DATA_INCOMING);
+	const callui_call_data_t *active = _callui_stp_get_call_data(ad->state_provider,
+					CALLUI_CALL_DATA_ACTIVE);
+	const callui_call_data_t *held = _callui_stp_get_call_data(ad->state_provider,
+					CALLUI_CALL_DATA_HELD);
 
-	callui_view_type_e type = VIEW_TYPE_INCOMING_CALL;
+	callui_view_type_e type = CALLUI_VIEW_INCOMING_CALL;
 	callui_view_type_e cur_type = _callui_vm_get_cur_view_type(ad->view_manager);
 	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK &&
 			active == NULL &&
 			held == NULL &&
 			incom != NULL &&
-			(cur_type == VIEW_TYPE_UNDEFINED || cur_type == VIEW_TYPE_ENDCALL)) {
-		type = VIEW_TYPE_INCOMING_CALL_NOTI;
+			(cur_type == CALLUI_VIEW_UNDEFINED || cur_type == CALLUI_VIEW_ENDCALL)) {
+		type = CALLUI_VIEW_INCOMING_CALL_NOTI;
 	}
 	_callui_vm_change_view(ad->view_manager, type);
 }
@@ -195,7 +195,7 @@ static void __call_state_change_cb(void *user_data,
 	ad->waiting_dialing = false;
 
 	switch (call_event_type) {
-	case CALLUI_CALL_EVENT_TYPE_ACTIVE:
+	case CALLUI_CALL_EVENT_ACTIVE:
 		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 			_callui_common_dvc_control_lcd_state(LCD_UNLOCK);
 		} else {
@@ -208,7 +208,7 @@ static void __call_state_change_cb(void *user_data,
 		}
 #endif
 		break;
-	case CALLUI_CALL_EVENT_TYPE_END:
+	case CALLUI_CALL_EVENT_END:
 		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 			_callui_common_dvc_control_lcd_state(LCD_UNLOCK);
 		} else {
@@ -224,13 +224,11 @@ static void __reset_state_params(callui_app_data_t *ad)
 {
 	CALLUI_RETURN_IF_FAIL(ad);
 
-	ad->multi_call_list_end_clicked = false;
 	ad->start_lock_manager_on_resume = false;
 	ad->on_background = false;
 
 	return;
 }
-
 
 static void __bt_init()
 {
@@ -541,9 +539,9 @@ static void __app_service(app_control_h app_control, void *data)
 	char *uri_bundle = NULL;
 	char *operation = NULL;
 
-	if (_callui_vm_get_cur_view_type(ad->view_manager) == VIEW_TYPE_UNDEFINED
+	if (_callui_vm_get_cur_view_type(ad->view_manager) == CALLUI_VIEW_UNDEFINED
 			&& !ad->waiting_dialing) {
-		err("VIEW_TYPE_UNDEFINED. Clear data");
+		err("CALLUI_VIEW_UNDEFINED. Clear data");
 		__reset_state_params(ad);
 		_callui_common_dvc_control_lcd_state(LCD_OFF_SLEEP_LOCK);
 	}
@@ -589,10 +587,9 @@ static void __app_service(app_control_h app_control, void *data)
 			}
 		}
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_DEFAULT) == 0) {
-		/* */
 		warn("Unsupported operation type");
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_DURING_CALL) == 0) {
-		ret = _callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_TYPE_NORMAL);
+		ret = _callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_NORMAL);
 		if (CALLUI_RESULT_OK != ret) {
 			err("_callui_manager_answer_call() failed. ret[%d]", ret);
 		}
@@ -617,7 +614,7 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 	Ecore_Event_Key *ev = event;
-	const callui_call_state_data_t *call_data = NULL;
+	const callui_call_data_t *call_data = NULL;
 
 	if (ev == NULL) {
 		err("ERROR!!! ========= Event is NULL!!!");
@@ -628,12 +625,12 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 
 	dbg("Top view(%d)", view_type);
 
-	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider,
-					CALLUI_CALL_DATA_TYPE_INCOMING);
-	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->state_provider,
-					CALLUI_CALL_DATA_TYPE_ACTIVE);
-	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->state_provider,
-					CALLUI_CALL_DATA_TYPE_HELD);
+	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider,
+					CALLUI_CALL_DATA_INCOMING);
+	const callui_call_data_t *active = _callui_stp_get_call_data(ad->state_provider,
+					CALLUI_CALL_DATA_ACTIVE);
+	const callui_call_data_t *held = _callui_stp_get_call_data(ad->state_provider,
+					CALLUI_CALL_DATA_HELD);
 
 	/*power key case */
 	if (!strcmp(ev->keyname, CALLUI_KEY_POWER)) {
@@ -643,52 +640,52 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 
 		if (is_powerkey_enabled && !_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 
-			if (view_type == VIEW_TYPE_DIALLING) {
+			if (view_type == CALLUI_VIEW_DIALLING) {
 				if (active) {
-					call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+					call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 					if (call_data) {
 						_callui_manager_end_call(ad->call_manager, call_data->call_id,
-								CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+								CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
 					}
 				}
-			} else if (view_type == VIEW_TYPE_INCOMING_CALL ||
-					view_type == VIEW_TYPE_INCOMING_CALL_NOTI) {
+			} else if (view_type == CALLUI_VIEW_INCOMING_CALL ||
+					view_type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
 				if (incom) {
-					call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+					call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 					if (call_data) {
 						_callui_manager_end_call(ad->call_manager, call_data->call_id,
-								CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+								CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
 					}
 				}
-			} else if (view_type == VIEW_TYPE_SINGLECALL ||
-					view_type == VIEW_TYPE_MULTICALL_CONF ||
-					view_type == VIEW_TYPE_MULTICALL_LIST) {
+			} else if (view_type == CALLUI_VIEW_SINGLECALL ||
+					view_type == CALLUI_VIEW_MULTICALL_CONF ||
+					view_type == CALLUI_VIEW_MULTICALL_LIST) {
 
-				call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+				call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 				if (call_data) {
 					 _callui_manager_end_call(ad->call_manager, call_data->call_id,
-							CALLUI_CALL_RELEASE_TYPE_ALL_CALLS);
+							CALLUI_CALL_RELEASE_ALL);
 				} else {
-					call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+					call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
 					if (call_data) {
 						_callui_manager_end_call(ad->call_manager, call_data->call_id,
-								CALLUI_CALL_RELEASE_TYPE_ALL_CALLS);
+								CALLUI_CALL_RELEASE_ALL);
 					}
 				}
-			} else if (view_type == VIEW_TYPE_MULTICALL_SPLIT) {
-				call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+			} else if (view_type == CALLUI_VIEW_MULTICALL_SPLIT) {
+				call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 				if (call_data) {
 					_callui_manager_end_call(ad->call_manager, call_data->call_id,
-							CALLUI_CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
+							CALLUI_CALL_RELEASE_ALL_ACTIVE);
 				}
 			}
 		} else {
 			if (incom && !active && !held) {
-				callui_view_type_e type = VIEW_TYPE_INCOMING_CALL;
+				callui_view_type_e type = CALLUI_VIEW_INCOMING_CALL;
 				callui_view_type_e cur_type = _callui_vm_get_cur_view_type(ad->view_manager);
 				if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK &&
-						(cur_type == VIEW_TYPE_UNDEFINED || cur_type == VIEW_TYPE_ENDCALL)) {
-					type = VIEW_TYPE_INCOMING_CALL_NOTI;
+						(cur_type == CALLUI_VIEW_UNDEFINED || cur_type == CALLUI_VIEW_ENDCALL)) {
+					type = CALLUI_VIEW_INCOMING_CALL_NOTI;
 				}
 				_callui_vm_change_view(ad->view_manager, type);
 			}
@@ -698,7 +695,7 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 		dbg("in key-media");
 	} else if (!strcmp(ev->keyname, CALLUI_KEY_VOLUMEUP) || !strcmp(ev->keyname, CALLUI_KEY_VOLUMEDOWN)) {
 		dbg("Handle Volume Up or Down key");
-		call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+		call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 		if (call_data) {
 			_callui_manager_stop_alert(ad->call_manager);
 		}
@@ -711,8 +708,8 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 		} else {
 			dbg("KEY_SELECT key ungrab success");
 		}
-		if (view_type == VIEW_TYPE_INCOMING_CALL ||
-				view_type == VIEW_TYPE_INCOMING_CALL_NOTI) {
+		if (view_type == CALLUI_VIEW_INCOMING_CALL ||
+				view_type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
 
 			if (_callui_common_is_answering_mode_on()) {
 				dbg("Answering mode on and Home key pressed on MT screen");
@@ -725,7 +722,7 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 				if (unhold_call_count == 0) {
 					dbg("No Call Or Held call - Accept");
 
-					_callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_TYPE_NORMAL);
+					_callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_NORMAL);
 
 					if (_callui_common_get_idle_lock_type() == LOCK_TYPE_SWIPE_LOCK) {
 						_callui_common_unlock_swipe_lock();
@@ -782,7 +779,7 @@ static Eina_Bool __hard_key_down_cb(void *data, int type, void *event)
 		return EINA_FALSE;
 	}
 
-	if (_callui_vm_get_cur_view_type(ad->view_manager) == VIEW_TYPE_UNDEFINED) {
+	if (_callui_vm_get_cur_view_type(ad->view_manager) == CALLUI_VIEW_UNDEFINED) {
 		dbg("ad->view_top is UNDEFINED");
 		return EINA_FALSE;
 	}

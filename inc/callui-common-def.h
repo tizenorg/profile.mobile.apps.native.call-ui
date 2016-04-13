@@ -22,9 +22,12 @@
 #define CALLUI_EXPORT_API __attribute__ ((visibility("default")))
 #endif
 
-#define MSG_PKG		"org.tizen.message"
+#define PACKAGE	"org.tizen.call-ui"
 
-#define PACKAGE		"org.tizen.call-ui"
+#define CALLUI_TEXT_DOMAIN	"call-ui"
+
+#define CALL_EDJ_NAME		"/edje/call.edj"
+#define CALL_THEME_EDJ_NAME	"/edje/call_theme.edj"
 
 #define EDJ_NAME	_callui_common_get_call_edj_path()
 #define CALL_THEME	_callui_common_get_call_theme_path()
@@ -33,7 +36,7 @@
 #define _EDJ(obj) elm_layout_edje_get(obj)
 #endif
 
-#define CALLUI_TEXT_DOMAIN "call-ui"
+#define MSG_PKG		"org.tizen.message"
 
 #undef _
 #define _(s) dgettext(CALLUI_TEXT_DOMAIN, s)
