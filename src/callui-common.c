@@ -21,15 +21,10 @@
 #include <sys/sysinfo.h>
 #include <time.h>
 #include <contacts.h>
-#include <device/display.h>
-#include <device/power.h>
-#include <dbus/dbus.h>
-#include <gio/gio.h>
 #include <runtime_info.h>
 #include <bluetooth.h>
 #include <system_settings.h>
 #include <efl_util.h>
-#include <app_common.h>
 #include <msg.h>
 #include <msg_transport.h>
 
@@ -52,25 +47,10 @@
 #define CONTACT_PKG			"org.tizen.contacts"
 #define PHONE_PKG			"org.tizen.phone"
 #define BLUETOOTH_PKG		"ug-bluetooth-efl"
-#define BUS_NAME			"org.tizen.system.deviced"
-#define OBJECT_PATH			"/Org/Tizen/System/DeviceD"
-#define INTERFACE_NAME		BUS_NAME
-
-#define DEVICED_PATH_DISPLAY	OBJECT_PATH"/Display"
-#define DEVICED_INTERFACE_DISPLAY	INTERFACE_NAME".display"
-#define LCD_ON_SIGNAL_NAME "LCDOnByPowerkey"
-#define METHOD_SET_LCDTIMEOUT "setlcdtimeout"
 
 #define TIME_BUF_LEN (16)
 
-#define DBUS_REPLY_TIMEOUT (120 * 1000)
-
 static bool g_is_headset_connected;
-
-struct dbus_byte {
-	const char *data;
-	int size;
-};
 
 Eina_Bool _callui_common_is_earjack_connected(void)
 {
@@ -271,7 +251,7 @@ void _callui_common_launch_dialer(void *appdata)
 	}
 
 	app_control_destroy(service);
-	g_free(uri);
+	free(uri);
 
 	return;
 }
@@ -328,231 +308,6 @@ void _callui_common_launch_msg_composer(void *appdata, const char *number)
 
 	app_control_destroy(service);
 }
-
-/* LCD api */
-void _callui_common_dvc_control_lcd_state(callui_lcd_control_t state)
-{
-	dbg("[%d]", state);
-	int result = -1;
-	switch (state) {
-	case LCD_ON:
-		result = device_display_change_state(DISPLAY_STATE_NORMAL);
-		break;
-
-	case LCD_ON_LOCK:
-		result = device_display_change_state(DISPLAY_STATE_NORMAL);
-		result = device_power_request_lock(POWER_LOCK_DISPLAY, 0);
-		break;
-
-	case LCD_ON_UNLOCK:
-		result = device_display_change_state(DISPLAY_STATE_NORMAL);
-		result = device_power_release_lock(POWER_LOCK_DISPLAY);
-		result = device_power_release_lock(POWER_LOCK_CPU);
-		break;
-
-	case LCD_UNLOCK:
-		result = device_power_release_lock(POWER_LOCK_DISPLAY);
-		result = device_power_release_lock(POWER_LOCK_CPU);
-		break;
-
-	case LCD_OFF_SLEEP_LOCK:
-		result = device_power_request_lock(POWER_LOCK_CPU, 0);
-		break;
-
-	case LCD_OFF_SLEEP_UNLOCK:
-		result = device_power_release_lock(POWER_LOCK_CPU);
-		break;
-
-	case LCD_OFF:
-		result = device_display_change_state(DISPLAY_STATE_SCREEN_OFF);
-		break;
-
-	default:
-		break;
-	}
-	if (result != DEVICE_ERROR_NONE)
-		warn("error during change lcd state");
-}
-
-callui_lcd_control_t _callui_common_get_lcd_state()
-{
-	display_state_e state = DISPLAY_STATE_NORMAL;
-	int result = device_display_get_state(&state);
-	if (result != DEVICE_ERROR_NONE) {
-		warn("error during get lcd state");
-	}
-	switch (state) {
-		case DISPLAY_STATE_SCREEN_OFF:
-			return LCD_OFF;
-		case DISPLAY_STATE_NORMAL:
-		case DISPLAY_STATE_SCREEN_DIM:
-		default:
-			return LCD_ON;
-	}
-}
-
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-
-static int __callui_common_dvc_append_variant(DBusMessageIter *iter, const char *sig, char *param[])
-{
-	char *ch = NULL;
-	int i;
-	int int_type;
-	uint64_t int64_type;
-	DBusMessageIter arr;
-	struct dbus_byte *byte;
-
-	if (!sig || !param)
-		return 0;
-
-	for (ch = (char *)sig, i = 0; *ch != '\0'; ++i, ++ch) {
-		switch (*ch) {
-			case 'i':
-				int_type = atoi(param[i]);
-				dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &int_type);
-				break;
-			case 'u':
-				int_type = strtoul(param[i], NULL, 10);
-				dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT32, &int_type);
-				break;
-			case 't':
-				int64_type = atoll(param[i]);
-				dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT64, &int64_type);
-				break;
-			case 's':
-				dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &param[i]);
-				break;
-			case 'a':
-				if ((ch+1 != NULL) && (*(ch+1) == 'y')) {
-					dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &arr);
-					byte = (struct dbus_byte *)param[i];
-					dbus_message_iter_append_fixed_array(&arr, DBUS_TYPE_BYTE, &(byte->data), byte->size);
-					dbus_message_iter_close_container(iter, &arr);
-					ch++;
-				}
-				break;
-			default:
-				return -EINVAL;
-		}
-	}
-	return 0;
-}
-
-static void __callui_common_dvc_dbus_reply_cb(DBusPendingCall *call, gpointer user_data)
-{
-	//TODO DBus is not supported. Need to move on kdbus or gdbus
-
-	DBusMessage *reply;
-	DBusError derr;
-
-	reply = dbus_pending_call_steal_reply(call);
-	dbus_error_init(&derr);
-
-	if (dbus_set_error_from_message(&derr, reply)) {
-		err("__callui_common_dvc_dbus_reply_cb error: %s, %s",
-			derr.name, derr.message);
-		dbus_error_free(&derr);
-		goto done;
-	}
-	dbus_pending_call_unref(call);
-done:
-	dbg("__callui_common_dvc_dbus_reply_cb : -");
-	dbus_message_unref(reply);
-}
-
-gboolean __callui_common_dvc_invoke_dbus_method_async(const char *dest,
-		const char *path,
-		const char *interface,
-		const char *method, const char *sig, char *param[])
-{
-	// TODO DBus is not supported. Need to move on kdbus or gdbus
-
-	DBusConnection *conn = NULL;
-	DBusMessage *msg = NULL;
-	DBusMessageIter iter;
-	DBusPendingCall *c = NULL;
-	dbus_bool_t ret = FALSE;
-	int r = -1;
-	conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
-	if (!conn) {
-		err("dbus bus get error");
-		return FALSE;
-	}
-
-	msg = dbus_message_new_method_call(dest, path, interface, method);
-	if (!msg) {
-		err("dbus_message_new_method_call(%s:%s-%s",
-				path, interface, method);
-		return FALSE;
-	}
-	dbus_message_iter_init_append(msg, &iter);
-	r = __callui_common_dvc_append_variant(&iter, sig, param);
-	if (r < 0) {
-		err("append_variant error : %d", r);
-		goto EXIT;
-	}
-
-	ret = dbus_connection_send_with_reply(conn, msg, &c, DBUS_REPLY_TIMEOUT);
-	if (!ret) {
-		err("dbus_connection_send_ error (False returned)");
-	}
-	dbus_pending_call_set_notify(c, __callui_common_dvc_dbus_reply_cb,	NULL, NULL);
-
-EXIT:
-	dbus_message_unref(msg);
-
-	return ret;
-	return true;
-}
-
-void _callui_common_dvc_set_lcd_timeout(callui_lcd_timeout_t state)
-{
-	int powerkey_mode = 0;
-	char str_on[32];
-	char str_dim[32];
-	char str_holdkey[2];
-	char *ar[3];
-	int ret = vconf_get_bool(VCONFKEY_CISSAPPL_POWER_KEY_ENDS_CALL_BOOL, &powerkey_mode);
-	if (ret < 0) {
-		err("vconf_get_int failed..[%d]\n", ret);
-	}
-
-	dbg("set timeout : %d, powerkeymode : %d", state, powerkey_mode);
-	if (state == LCD_TIMEOUT_SET) {
-		snprintf(str_on, sizeof(str_on), "%d", 10);
-		snprintf(str_dim, sizeof(str_dim), "%d", 20);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", powerkey_mode);
-	} else if (state == LCD_TIMEOUT_UNSET) {
-		snprintf(str_on, sizeof(str_on), "%d", 0);
-		snprintf(str_dim, sizeof(str_dim), "%d", 0);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", powerkey_mode);
-	} else if (state == LCD_TIMEOUT_LOCKSCREEN_SET) { /*After lock-screen comes in Connected state LCD goes to OFF in 5 secs*/
-		snprintf(str_on, sizeof(str_on), "%d", 5);
-		snprintf(str_dim, sizeof(str_dim), "%d", 0);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", powerkey_mode);
-	} else if (state == LCD_TIMEOUT_KEYPAD_SET) {
-		snprintf(str_on, sizeof(str_on), "%d", 3);
-		snprintf(str_dim, sizeof(str_dim), "%d", 5);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", powerkey_mode);
-	} else {
-		snprintf(str_on, sizeof(str_on), "%d", 0);
-		snprintf(str_dim, sizeof(str_dim), "%d", 0);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", 0);
-	}
-
-	dbg("on(%s), dim(%s), hold(%s)", str_on, str_dim, str_holdkey);
-
-	ar[0] = str_on;
-	ar[1] = str_dim;
-	ar[2] = str_holdkey;
-
-	__callui_common_dvc_invoke_dbus_method_async(BUS_NAME,
-				DEVICED_PATH_DISPLAY,
-				DEVICED_INTERFACE_DISPLAY,
-				METHOD_SET_LCDTIMEOUT, "iii", ar);
-}
-
-#endif
 
 void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
 {
@@ -825,7 +580,7 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 	msg_set_int_value(msgInfo, MSG_MESSAGE_SIM_INDEX_INT, slot_id);
 
 	/* No setting send option */
-	msg_set_bool_value(sendOpt, MSG_SEND_OPT_SETTING_BOOL, FALSE);
+	msg_set_bool_value(sendOpt, MSG_SEND_OPT_SETTING_BOOL, false);
 
 	/* Set message body */
 	if (msg_set_str_value(msgInfo, MSG_MESSAGE_SMS_DATA_STR, reject_msg, strlen(reject_msg)) != MSG_SUCCESS) {

@@ -30,6 +30,7 @@ INCLUDE(FindPkgConfig)
 pkg_check_modules (pkgs REQUIRED
 	appcore-efl
 	glib-2.0
+	gio-2.0
 	elementary
 	dlog
 	capi-appfw-application

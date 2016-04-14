@@ -18,6 +18,8 @@
 #ifndef __CALLUI_COMMON_DEFINES_H__
 #define __CALLUI_COMMON_DEFINES_H__
 
+#define _DBUS_DISPLAY_DEVICE_TIMEOUT_
+
 #ifndef CALLUI_EXPORT_API
 #define CALLUI_EXPORT_API __attribute__ ((visibility("default")))
 #endif
