@@ -28,6 +28,7 @@
 #include "callui-state-provider.h"
 #include "callui-view-quickpanel.h"
 #include "callui-action-bar.h"
+#include "callui-display.h"
 
 #define APP_HANDLERS_COUNT 1
 
@@ -36,6 +37,7 @@ struct appdata {
 	Evas_Object *main_ly;
 
 	callui_qp_mc_h qp_minicontrol;
+	callui_display_h display;
 
 	Evas_Object *ctxpopup;
 	Evas_Object *second_call_popup;

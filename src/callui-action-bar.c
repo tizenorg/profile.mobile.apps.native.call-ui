@@ -383,7 +383,6 @@ static void __main_layout_del_cb(void *data, Evas *evas, Evas_Object *obj, void 
 
 static Evas_Object *__create_main_layout(callui_action_bar_h action_bar, Evas_Object *parent)
 {
-	debug_enter();
 	Evas_Object *layout = _callui_load_edj(parent, EDJ_NAME, GRP_BUTTON_LAYOUT);
 	CALLUI_RETURN_NULL_IF_FAIL(layout);
 	evas_object_event_callback_add(layout, EVAS_CALLBACK_DEL, __main_layout_del_cb, action_bar);

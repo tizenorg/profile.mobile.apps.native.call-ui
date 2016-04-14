@@ -24,9 +24,9 @@
 #define SENSOR_INTERVAL 100
 
 typedef enum {
-	PLM_LCD_NONE,
-	PLM_LCD_ON,
-	PLM_LCD_OFF
+	CALLUI_PLM_LCD_NONE,
+	CALLUI_PLM_LCD_ON,
+	CALLUI_PLM_LCD_OFF
 } proximity_lock_manager_state;
 
 typedef struct proximity_lock {
@@ -122,10 +122,12 @@ static void __callui_proximity_lock_manager_cb(sensor_h sensor, sensor_event_s *
 	CALLUI_RETURN_IF_FAIL(sensor_data);
 	float value = sensor_data->values[0];
 	dbg("changed proximity sensor value = %f", value);
+	callui_app_data_t *ad = _callui_get_app_data();
+
 	if (value > 0) {
-		if (proximity_h->state == PLM_LCD_OFF) {
-			_callui_common_dvc_control_lcd_state(LCD_ON);
-			proximity_h->state = PLM_LCD_ON;
+		if (proximity_h->state == CALLUI_PLM_LCD_OFF) {
+			_callui_display_set_control_state(ad->display, CALLUI_DISPLAY_ON);
+			proximity_h->state = CALLUI_PLM_LCD_ON;
 			if (proximity_h->unlock_cb) {
 				proximity_h->unlock_cb(proximity_h->cb_data);
 				proximity_h->unlock_cb = NULL;
@@ -133,9 +135,11 @@ static void __callui_proximity_lock_manager_cb(sensor_h sensor, sensor_event_s *
 			}
 		}
 	} else {
-		if (_callui_common_get_lcd_state() != LCD_OFF) {
-			_callui_common_dvc_control_lcd_state(LCD_OFF);
-			proximity_h->state = PLM_LCD_OFF;
+		callui_display_control_e state;
+		if (_callui_display_get_control_state(ad->display, &state) == CALLUI_RESULT_OK &&
+				CALLUI_DISPLAY_OFF == state) {
+			_callui_display_set_control_state(ad->display, CALLUI_DISPLAY_OFF);
+			proximity_h->state = CALLUI_PLM_LCD_OFF;
 		}
 	}
 }
@@ -146,7 +150,7 @@ static void *__callui_proximity_lock_manager_create()
 	proximity_lock_t *proximity_h = calloc(1, sizeof(proximity_lock_t));
 	CALLUI_RETURN_NULL_IF_FAIL(proximity_h);
 	proximity_h->is_started = false;
-	proximity_h->state = PLM_LCD_NONE;
+	proximity_h->state = CALLUI_PLM_LCD_NONE;
 	proximity_h->unlock_cb = NULL;
 	proximity_h->cb_data = NULL;
 
@@ -175,8 +179,9 @@ static void __callui_proximity_lock_manager_start(void *lock_h)
 	if (ret != SENSOR_ERROR_NONE) {
 		err("sensor_listener_start() failed(%d)", ret);
 	}
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
+#ifdef _DBUS_DISPLAY_DEVICE_TIMEOUT_
+	callui_app_data_t *ad = _callui_get_app_data();
+	_callui_display_set_timeout(ad->display, CALLUI_DISPLAY_TIMEOUT_SET);
 #endif
 
 	proximity_h->is_started = true;
@@ -204,7 +209,7 @@ static void __callui_proximity_lock_manager_stop(void *lock_h)
 		err("sensor_listener_stop() failed(%d)", ret);
 	}
 	proximity_h->is_started = false;
-	proximity_h->state = PLM_LCD_NONE;
+	proximity_h->state = CALLUI_PLM_LCD_NONE;
 }
 
 static bool __callui_proximity_lock_manager_is_started(void *lock_h)
@@ -230,7 +235,7 @@ static bool __callui_proximity_lock_manager_is_lcd_off(void *lock_h)
 	dbg("..");
 	CALLUI_RETURN_VALUE_IF_FAIL(lock_h, false);
 	proximity_lock_t *proximity_h = (proximity_lock_t *)lock_h;
-	return (proximity_h->state == PLM_LCD_OFF);
+	return (proximity_h->state == CALLUI_PLM_LCD_OFF);
 }
 
 static void __callui_proximity_lock_manager_set_callback_on_unlock(void *lock_h, unlock_cb_t callback, void *data)

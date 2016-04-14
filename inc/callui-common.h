@@ -29,24 +29,6 @@ typedef enum {
 	LOCK_TYPE_SECURITY_LOCK
 } callui_idle_lock_type_t;
 
-typedef enum {
-	LCD_TIMEOUT_SET = 1,
-	LCD_TIMEOUT_UNSET,
-	LCD_TIMEOUT_LOCKSCREEN_SET, /*After lock-screen comes in Connected state LCD goes to OFF in 5 secs*/
-	LCD_TIMEOUT_KEYPAD_SET, /*When Keypad is ON, LCD goes to DIM in 3 secs then goes to OFF in 5 secs*/
-	LCD_TIMEOUT_DEFAULT
-} callui_lcd_timeout_t;
-
-typedef enum {
-	LCD_ON,
-	LCD_ON_LOCK,
-	LCD_ON_UNLOCK,
-	LCD_UNLOCK,
-	LCD_OFF_SLEEP_LOCK,
-	LCD_OFF_SLEEP_UNLOCK,
-	LCD_OFF
-} callui_lcd_control_t;
-
 typedef void (*set_call_duration_time)(struct tm *cur_time, Evas_Object *obj, const char *part);
 
 /**
@@ -125,16 +107,6 @@ void _callui_common_launch_msg_composer(void *appdata, const char *number);
  */
 void _callui_common_reset_main_ly_text_fields(Evas_Object *contents);
 
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-/**
- * @brief Set lcd timeout
- *
- * @param[in] state          Lcd timer state
- *
- */
-void _callui_common_dvc_set_lcd_timeout(callui_lcd_timeout_t state);
-#endif
-
 /**
  * @brief state is volume mode on
  *
@@ -160,22 +132,6 @@ int _callui_common_is_answering_mode_on(void);
  *
  */
 int _callui_common_is_powerkey_mode_on(void);
-
-/**
- * @brief Changed lcd state
- *
- * @param[in] state           Lcd control state
- *
- */
-void _callui_common_dvc_control_lcd_state(callui_lcd_control_t state);
-
-/**
- * @brief Gets lcd state
- *
- * return Lcd control state
- *
- */
-callui_lcd_control_t _callui_common_get_lcd_state();
 
 /**
  * @brief State of earjack connection

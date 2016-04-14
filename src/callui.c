@@ -20,6 +20,7 @@
 #include <vconf-keys.h>
 #include <bluetooth.h>
 #include <system_settings.h>
+#include <efl_util.h>
 
 #include "callui.h"
 #include "callui-debug.h"
@@ -197,22 +198,22 @@ static void __call_state_change_cb(void *user_data,
 	switch (call_event_type) {
 	case CALLUI_CALL_EVENT_ACTIVE:
 		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
-			_callui_common_dvc_control_lcd_state(LCD_UNLOCK);
+			_callui_display_set_control_state(ad->display, CALLUI_DISPLAY_UNLOCK);
 		} else {
-			_callui_common_dvc_control_lcd_state(LCD_ON_UNLOCK);
+			_callui_display_set_control_state(ad->display, CALLUI_DISPLAY_ON_UNLOCK);
 		}
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
+#ifdef _DBUS_DISPLAY_DEVICE_TIMEOUT_
 		callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->sound_manager);
 		if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
-			_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
+			_callui_display_set_timeout(ad->display, CALLUI_DISPLAY_TIMEOUT_SET);
 		}
 #endif
 		break;
 	case CALLUI_CALL_EVENT_END:
 		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
-			_callui_common_dvc_control_lcd_state(LCD_UNLOCK);
+			_callui_display_set_control_state(ad->display, CALLUI_DISPLAY_UNLOCK);
 		} else {
-			_callui_common_dvc_control_lcd_state(LCD_ON_UNLOCK);
+			_callui_display_set_control_state(ad->display, CALLUI_DISPLAY_ON_UNLOCK);
 		}
 		break;
 	default:
@@ -308,8 +309,6 @@ static void __dial_status_cb(void *user_data, callui_dial_status_e dial_status)
 
 static bool __app_init(callui_app_data_t *ad)
 {
-	_callui_common_dvc_control_lcd_state(LCD_OFF_SLEEP_LOCK);
-
 	__init_app_event_handlers(ad);
 
 	__bt_init();
@@ -335,11 +334,14 @@ static bool __app_init(callui_app_data_t *ad)
 	ad->keypad = _callui_keypad_create(ad);
 	CALLUI_RETURN_VALUE_IF_FAIL(ad->keypad, __app_deinit(ad));
 
-	ad->lock_handle = _callui_lock_manager_create();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->lock_handle, __app_deinit(ad));
-
 	ad->qp_minicontrol =_callui_qp_mc_create(ad);
 	CALLUI_RETURN_VALUE_IF_FAIL(ad->qp_minicontrol, __app_deinit(ad));
+
+	ad->display = _callui_display_create(ad);
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->display, __app_deinit(ad));
+
+	ad->lock_handle = _callui_lock_manager_create();
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->lock_handle, __app_deinit(ad));
 
 	__set_main_win_key_grab(ad);
 
@@ -384,6 +386,11 @@ static void __main_win_delete_request_cb(void *data, Evas_Object *obj, void *eve
 	elm_exit();
 }
 
+static void __main_win_screen_mode_error_cb(Evas_Object *window, int error_code, void *user_data)
+{
+	err("__main_win_screen_mode_error_cb() return res[%d]", error_code);
+}
+
 static Evas_Object *__create_main_window(callui_app_data_t *ad)
 {
 	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_NOTIFICATION);
@@ -395,6 +402,7 @@ static Evas_Object *__create_main_window(callui_app_data_t *ad)
 
 	elm_win_title_set(eo, PACKAGE);
 	evas_object_smart_callback_add(eo, "delete,request", __main_win_delete_request_cb, NULL);
+	efl_util_set_window_screen_mode_error_cb(eo, __main_win_screen_mode_error_cb, NULL);
 
 	elm_win_screen_size_get(eo, NULL, NULL, &ad->root_w, &ad->root_h);
 	evas_object_resize(eo, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
@@ -480,9 +488,18 @@ static bool __app_deinit(callui_app_data_t *ad)
 		ad->keypad = NULL;
 	}
 
+	if (ad->display) {
+		_callui_display_destroy(ad->display);
+		ad->display = NULL;
+	}
+
 	if (ad->main_ly) {
 		evas_object_del(ad->main_ly);
 		ad->main_ly = NULL;
+	}
+
+	if (ad->win) {
+		efl_util_unset_window_screen_mode_error_cb(ad->win);
 	}
 
 	free(ad->end_call_data);
@@ -543,7 +560,7 @@ static void __app_service(app_control_h app_control, void *data)
 			&& !ad->waiting_dialing) {
 		err("CALLUI_VIEW_UNDEFINED. Clear data");
 		__reset_state_params(ad);
-		_callui_common_dvc_control_lcd_state(LCD_OFF_SLEEP_LOCK);
+		_callui_display_set_control_state(ad->display, CALLUI_DISPLAY_OFF_SLEEP_LOCK);
 	}
 
 	ret = app_control_get_operation(app_control, &operation);
@@ -559,7 +576,7 @@ static void __app_service(app_control_h app_control, void *data)
 	if ((strcmp(operation, APP_CONTROL_OPERATION_CALL) == 0) &&
 		(strncmp(uri_bundle, "tel:", 4) == 0)) {
 		if ((strncmp(uri_bundle, "tel:MT", 6) == 0)) {
-			_callui_common_dvc_control_lcd_state(LCD_ON_LOCK);
+			_callui_display_set_control_state(ad->display, CALLUI_DISPLAY_ON_LOCK);
 			ret = app_control_get_extra_data(app_control, "handle", &tmp);
 			if (ret != APP_CONTROL_ERROR_NONE) {
 				err("app_control_get_extra_data failed");

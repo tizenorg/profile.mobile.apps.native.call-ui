@@ -30,6 +30,7 @@
 
 #include "callui-manager.h"
 #include "callui-state-provider.h"
+#include "callui-sound-manager.h"
 
 #define CALLUI_DURING_ICON	"call_button_icon_03.png"
 #define CALLUI_REJECT_ICON	"call_button_icon_04.png"
@@ -125,12 +126,11 @@ static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	// TODO: need to replace from view
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	/* Set LCD timeout for call state */
-	/* LCD is alwasy on during incoming call screen */
-	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+#ifdef _DBUS_DISPLAY_DEVICE_TIMEOUT_
+	/* Set display timeout for call state */
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->sound_manager);
 	if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
-		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
+		_callui_display_set_timeout(ad->display, CALLUI_DISPLAY_TIMEOUT_SET);
 	}
 #endif
 

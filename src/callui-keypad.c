@@ -238,10 +238,6 @@ static void __on_hide_completed(void *data, Evas_Object *obj, const char *emissi
 
 	_callui_lock_manager_start(ad->lock_handle);
 
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
-#endif
-
 	Evas_Object *parent = ad->main_ly;
 	eext_object_event_callback_del(parent, EEXT_CALLBACK_BACK,	__back_button_click_cb);
 
@@ -418,12 +414,8 @@ void _callui_keypad_show(callui_keypad_h keypad)
 
 	keypad->is_keypad_show = EINA_TRUE;
 
-	/* change LCD timeout duration */
 	_callui_lock_manager_stop(ad->lock_handle);
 
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_KEYPAD_SET);
-#endif
 	Evas_Object *parent = ad->main_ly;
 	eext_object_event_callback_add(parent, EEXT_CALLBACK_BACK, __back_button_click_cb, keypad);
 

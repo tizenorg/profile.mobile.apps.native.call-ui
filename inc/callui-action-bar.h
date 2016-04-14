@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef _CALLUI_ACTION_BAR_H_
-#define _CALLUI_ACTION_BAR_H_
+#ifndef __CALLUI_ACTION_BAR_H__
+#define __CALLUI_ACTION_BAR_H__
 
 #include <Elementary.h>
 
@@ -58,4 +58,4 @@ void _callui_action_bar_show(callui_action_bar_h action_bar);
  */
 void _callui_action_bar_hide(callui_action_bar_h action_bar);
 
-#endif /* _CALLUI_ACTION_BAR_H_ */
+#endif /* __CALLUI_ACTION_BAR_H__ */

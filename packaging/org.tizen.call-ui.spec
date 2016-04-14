@@ -21,6 +21,8 @@ BuildRequires:  pkgconfig(efl-extension)
 BuildRequires:  cmake
 BuildRequires:  gettext-tools
 BuildRequires:  edje-tools
+BuildRequires:  pkgconfig(glib-2.0)
+BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(capi-network-bluetooth)
 BuildRequires:  pkgconfig(capi-network-connection)
 BuildRequires:  pkgconfig(capi-system-system-settings)
