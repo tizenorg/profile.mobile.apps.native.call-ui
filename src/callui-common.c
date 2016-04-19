@@ -44,11 +44,17 @@
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
 
-#define CONTACT_PKG			"org.tizen.contacts"
-#define PHONE_PKG			"org.tizen.phone"
-#define BLUETOOTH_PKG		"ug-bluetooth-efl"
+#define BLUETOOTH_PKG	"ug-bluetooth-efl"
+#define PHONE_PKG		"org.tizen.phone"
+
+#define PHONE_TELEPHONE_URI				"tel:"
+#define PHONE_LAUNCH_TYPE_PARAM_NAME	"launch_type"
+#define PHONE_LAUNCH_TYPE_VALUE			"add_call"
+
+#define MESSAGE_SMS_URI					"sms:"
 
 #define TIME_BUF_LEN (16)
+#define CONTACT_NUMBER_BUF_LEN 32
 
 static bool g_is_headset_connected;
 
@@ -158,155 +164,113 @@ void _callui_common_win_set_noti_type(void *appdata, bool win_noti)
 	}
 }
 
-void _callui_common_launch_contacts(void *appdata)
+static void __reset_visibility_properties(callui_app_data_t *ad)
 {
-	dbg("..");
-	app_control_h service;
-	callui_app_data_t *ad = appdata;
 	_callui_lock_manager_stop(ad->lock_handle);
 	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, false);
-
-	int ret = app_control_create(&service);
-	if (ret < 0) {
-		err("app_control_create() return error : %d", ret);
-		return;
-	}
-
-	if (app_control_set_app_id(service, CONTACT_PKG)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_app_id() is failed");
-	} else if (app_control_set_operation(service, APP_CONTROL_OPERATION_DEFAULT)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_operation() is failed");
-	} else if (app_control_send_launch_request(service, NULL, NULL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() is failed");
-	}
-
-	app_control_destroy(service);
+	_callui_common_win_set_noti_type(ad, false);
 }
 
-void _callui_common_launch_bt_app(void *appdata)
+void _callui_common_launch_setting_bluetooth(void *appdata)
 {
-	dbg("..");
-	app_control_h service;
+	CALLUI_RETURN_IF_FAIL(appdata);
+
 	callui_app_data_t *ad = appdata;
-	_callui_lock_manager_stop(ad->lock_handle);
-	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, false);
-
-	int ret = app_control_create(&service);
-	if (ret < 0) {
-		err("app_control_create() return error : %d", ret);
-		return;
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_app_id(app_control, BLUETOOTH_PKG)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_app_id() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_PICK)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
+	} else {
+		__reset_visibility_properties(ad);
 	}
-
-	if (app_control_set_app_id(service, BLUETOOTH_PKG) != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_app_id() is failed");
-	} else if (app_control_set_operation(service, APP_CONTROL_OPERATION_PICK) != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_operation() is failed");
-	} else if (app_control_send_launch_request(service, NULL, NULL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() is failed");
+	if (app_control) {
+		app_control_destroy(app_control);
 	}
-
-	app_control_destroy(service);
 }
 
 void _callui_common_launch_dialer(void *appdata)
 {
-	app_control_h service = NULL;
-	int ret = APP_CONTROL_ERROR_NONE;
-	char *uri = NULL;
+	CALLUI_RETURN_IF_FAIL(appdata);
 
 	callui_app_data_t *ad = appdata;
-	_callui_lock_manager_stop(ad->lock_handle);
-	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, false);
-
-	ret = app_control_create(&service);
-	if (ret < 0) {
-		err("app_control_create() return error : %d", ret);
-		return;
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_DIAL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_uri(app_control, PHONE_TELEPHONE_URI)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_uri() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_add_extra_data(app_control, PHONE_LAUNCH_TYPE_PARAM_NAME, PHONE_LAUNCH_TYPE_VALUE)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_add_extra_data() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
+	} else {
+		__reset_visibility_properties(ad);
 	}
-
-	uri = (char *)calloc(5, sizeof(char));
-	if (uri == NULL) {
-		err("memory alloc failed");
-		app_control_destroy(service);
-		return;
+	if (app_control){
+		app_control_destroy(app_control);
 	}
-	snprintf(uri, sizeof(char)*5, "%s", "tel:");
+}
 
-	if (app_control_set_app_id(service, PHONE_PKG)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_app_id() is failed");
-	} else if (app_control_set_operation(service, APP_CONTROL_OPERATION_DIAL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_operation() is failed");
-	} else if (app_control_set_uri(service, uri)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_uri() is failed");
-	} else if (app_control_add_extra_data(service, "launch_type", "add_call")  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_add_extra_data() is failed");
-	} else if (app_control_send_launch_request(service, NULL, NULL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() is failed");
+void _callui_common_launch_contacts(void *appdata)
+{
+	CALLUI_RETURN_IF_FAIL(appdata);
+
+	callui_app_data_t *ad = appdata;
+
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_app_id(app_control, PHONE_PKG)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_app_id() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_DEFAULT)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
+	} else {
+		__reset_visibility_properties(ad);
 	}
-
-	app_control_destroy(service);
-	free(uri);
-
-	return;
+	if (app_control) {
+		app_control_destroy(app_control);
+	}
 }
 
 void _callui_common_launch_msg_composer(void *appdata, const char *number)
 {
-	dbg("..");
-
-	app_control_h service;
-	int ret = APP_CONTROL_ERROR_NONE;
+	CALLUI_RETURN_IF_FAIL(appdata);
 
 	callui_app_data_t *ad = appdata;
-	_callui_lock_manager_stop(ad->lock_handle);
-	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, false);
+	char str[CONTACT_NUMBER_BUF_LEN];
+	snprintf(str, sizeof(str), "%s%s", MESSAGE_SMS_URI, number);
 
-	ret = app_control_create(&service);
-	if (ret != APP_CONTROL_ERROR_NONE) {
-		warn("app_control_create() return error : %d", ret);
-		return;
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_COMPOSE)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_uri(app_control, str)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_uri() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
+	} else {
+		__reset_visibility_properties(ad);
 	}
-
-	ret = app_control_set_app_id(service, MSG_PKG);
-	if (ret != APP_CONTROL_ERROR_NONE) {
-		warn("app_control_set_app_id() return error : %d", ret);
-		ret = app_control_destroy(service);
-		return;
+	if (app_control) {
+		app_control_destroy(app_control);
 	}
-
-	if (number) {
-		ret = app_control_add_extra_data(service, "type", "compose");
-		if (ret != APP_CONTROL_ERROR_NONE) {
-			warn("app_control_add_extra_data() return error : %d", ret);
-			ret = app_control_destroy(service);
-			return;
-		}
-
-		if (strlen(number) > 0) {
-			const char *array[] = { number };
-			ret = app_control_add_extra_data_array(service, APP_CONTROL_DATA_TO, array, 1);
-			if (ret != APP_CONTROL_ERROR_NONE) {
-				warn("app_control_add_extra_data() return error : %d", ret);
-				ret = app_control_destroy(service);
-				return;
-			}
-		}
-	}
-
-	ret = app_control_send_launch_request(service, NULL, NULL);
-	if (ret != APP_CONTROL_ERROR_NONE) {
-		warn("app_control_send_launch_request() is failed : %d", ret);
-	}
-
-	app_control_destroy(service);
 }
 
 void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
