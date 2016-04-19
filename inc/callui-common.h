@@ -67,37 +67,35 @@ int _callui_common_unlock_swipe_lock(void);
 void _callui_common_win_set_noti_type(void *appdata, bool win_noti);
 
 /**
- * @brief Launch contacts application
- *
- * @param[in] appdata        App data
- *
- */
-void _callui_common_launch_contacts(void *appdata);
-
-/**
  * @brief Launch bluetooth application
  *
  * @param[in] appdata        App data
- *
  */
-void _callui_common_launch_bt_app(void *appdata);
+void _callui_common_launch_setting_bluetooth(void *appdata);
 
 /**
- * @brief Launch dialer application
+ * @brief Launch Composer of Message application
  *
  * @param[in] appdata        App data
+ * @param[in] number         Phone number
+ */
+void _callui_common_launch_msg_composer(void *appdata, const char *number);
+
+/**
+ * @brief Launch Dialer of Phone application
  *
+ * @param[in] appdata        App data
  */
 void _callui_common_launch_dialer(void *appdata);
 
 /**
- * @brief Launch message application
+ * @brief Launch Contacts application
  *
  * @param[in] appdata        App data
- * @param[in] number         Phone number
  *
+ * @return result CALLUI_RESULT_OK on success and error type otherwise
  */
-void _callui_common_launch_msg_composer(void *appdata, const char *number);
+void _callui_common_launch_contacts(void *appdata);
 
 /**
  * @brief Reset main layout text fields
