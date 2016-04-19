@@ -41,7 +41,7 @@ static void __app_service(app_control_h app_control, void *data);
 static void __app_lang_changed_cb(app_event_info_h event_info, void *user_data);
 
 static bool __app_init(callui_app_data_t *ad);
-static bool __app_deinit(callui_app_data_t *ad);
+static void __app_deinit(callui_app_data_t *ad);
 
 static bool __create_main_gui_elem(callui_app_data_t *ad);
 static Evas_Object *__create_main_window(callui_app_data_t *ad);
@@ -364,6 +364,7 @@ static bool __app_create(void *data)
 	if (!res) {
 		__app_deinit(data);
 	}
+
 	return res;
 }
 
@@ -447,7 +448,7 @@ static bool __create_main_gui_elem(callui_app_data_t *ad)
 	return true;
 }
 
-static bool __app_deinit(callui_app_data_t *ad)
+static void __app_deinit(callui_app_data_t *ad)
 {
 	debug_enter();
 
@@ -502,8 +503,6 @@ static bool __app_deinit(callui_app_data_t *ad)
 	__bt_deinit();
 
 	debug_leave();
-
-	return false;
 }
 
 static void __app_terminate(void *data)
@@ -517,18 +516,20 @@ static void __app_terminate(void *data)
 
 static void __app_pause(void *data)
 {
-	dbg("..");
+	debug_enter();
 
 	_callui_common_unset_lock_state_changed_cb();
 
 	callui_app_data_t *ad = data;
 
 	_callui_vm_pause(ad->view_manager);
+
+	debug_leave();
 }
 
 static void __app_resume(void *data)
 {
-	dbg("..");
+	debug_enter();
 
 	callui_app_data_t *ad = data;
 
@@ -540,6 +541,8 @@ static void __app_resume(void *data)
 	}
 
 	_callui_vm_resume(ad->view_manager);
+
+	debug_leave();
 }
 
 static void __app_service(app_control_h app_control, void *data)
@@ -628,8 +631,8 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 	Ecore_Event_Key *ev = event;
 
 	if (ev == NULL) {
-		err("ERROR!!! ========= Event is NULL!!!");
-		return 0;
+		err("ERROR!!! Event is NULL!!!");
+		return EINA_FALSE;
 	}
 
 	callui_view_type_e view_type = _callui_vm_get_cur_view_type(ad->view_manager);
@@ -662,11 +665,11 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 					_callui_manager_end_call(ad->call_manager,
 							incom->call_id, CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
 				}
-			} else if (view_type == CALLUI_VIEW_SINGLECALL
-					|| view_type == CALLUI_VIEW_MULTICALL_CONF) {
+			} else if (view_type == CALLUI_VIEW_SINGLECALL ||
+					view_type == CALLUI_VIEW_MULTICALL_CONF) {
 				_callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_ALL);
-			} else if (view_type == CALLUI_VIEW_MULTICALL_SPLIT
-					|| view_type == CALLUI_VIEW_MULTICALL_LIST) {
+			} else if (view_type == CALLUI_VIEW_MULTICALL_SPLIT ||
+					view_type == CALLUI_VIEW_MULTICALL_LIST) {
 				_callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_ALL_ACTIVE);
 			}
 		} else {
@@ -762,7 +765,7 @@ static Eina_Bool __hard_key_down_cb(void *data, int type, void *event)
 	Ecore_Event_Key *ev = event;
 
 	if (ev == NULL) {
-		err("ERROR!!! ========= Event is NULL!!!");
+		err("ERROR!!! Event is NULL!!!");
 		return EINA_FALSE;
 	}
 

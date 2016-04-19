@@ -29,7 +29,7 @@
 #include "callui-state-provider.h"
 #include "callui-view-caller-info-defines.h"
 
-#define PART_SWALLOW_ACTION_BAR "action_bar"
+#define PART_SWALLOW_ACTION_BAR	"action_bar"
 
 typedef enum {
 	CALLUI_ACTION_BTN_SPEAKER = 0,
@@ -222,7 +222,7 @@ static void __bluetooth_btn_click_cb(void *data, Evas_Object *obj, void *event_i
 				if (bt_state == BT_ADAPTER_DISABLED) {
 					_callui_load_bluetooth_popup(ad);
 				} else {
-					_callui_common_launch_bt_app(ad);
+					_callui_common_launch_setting_bluetooth(ad);
 				}
 			} else {
 				err("Fail to get vconf key: %d", ret_code);
