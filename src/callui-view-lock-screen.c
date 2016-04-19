@@ -222,7 +222,7 @@ static bool __callui_lock_screen_create_layout(lock_screen_data_t *priv)
 
 	evas_object_resize(layout, ad->root_w, ad->root_h);
 	evas_object_move(layout, 0, 0);
-	elm_object_domain_translatable_part_text_set(layout, "lock-text", CALLUI_TEXT_DOMAIN, "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE");
+	elm_object_translatable_part_text_set(layout, "lock-text", "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE");
 
 	edje_object_signal_callback_add(_EDJ(layout), "mouse,down,1,double", "lock-icon", __callui_lock_screen_icon_double_clicked_cb, priv);
 

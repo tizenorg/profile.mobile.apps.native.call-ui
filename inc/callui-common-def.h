@@ -26,8 +26,6 @@
 
 #define PACKAGE	"org.tizen.call-ui"
 
-#define CALLUI_TEXT_DOMAIN	"call-ui"
-
 #define CALL_EDJ_NAME		"/edje/call.edj"
 #define CALL_THEME_EDJ_NAME	"/edje/call_theme.edj"
 
@@ -41,7 +39,7 @@
 #define MSG_PKG		"org.tizen.message"
 
 #undef _
-#define _(s) dgettext(CALLUI_TEXT_DOMAIN, s)
+#define _(s) gettext(s)
 
 #define GRP_MAIN_LY "main_ly"
 #define GRP_KEYPAD "keypad"

@@ -193,7 +193,7 @@ static callui_result_e __create_main_content(callui_view_mc_list_h vd)
 	Evas_Object *back_btn = elm_button_add(vd->base_view.contents);
 	CALLUI_RETURN_VALUE_IF_FAIL(back_btn, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_style_set(back_btn, "bottom");
-	_callui_common_eo_set_translatable_text(back_btn, "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB");
+	elm_object_translatable_text_set(back_btn, "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB");
 	elm_object_part_content_set(vd->base_view.contents, "bottom_btn", back_btn);
 	evas_object_smart_callback_add(back_btn, "clicked", __back_btn_click_cb, ad);
 	evas_object_show(back_btn);

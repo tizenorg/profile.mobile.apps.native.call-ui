@@ -448,7 +448,7 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 
 	if (!(call_name && call_name[0] != '\0') && !(call_number && call_number[0] != '\0')) {
 		elm_object_signal_emit(vd->base_view.contents, "big_buttons", "main_active_noti_call");
-		_callui_common_eo_txt_part_set_translatable_text(vd->base_view.contents,
+		elm_object_translatable_part_text_set(vd->base_view.contents,
 				"text.contact_name", "IDS_CALL_BODY_UNKNOWN");
 	} else if (!(call_name && call_name[0] != '\0')) {
 		elm_object_signal_emit(vd->base_view.contents, "small_buttons", "main_active_noti_call");

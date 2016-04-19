@@ -200,7 +200,7 @@ static Evas_Object *__create_merge_swap_btn(Evas_Object *parent, const char *nam
 	Evas_Object *layout = elm_layout_add(parent);
 	elm_layout_file_set(layout, EDJ_NAME, name);
 
-	_callui_common_eo_txt_part_set_translatable_text(layout, MERGE_SWAP_BTN_PART_TEXT, text);
+	elm_object_translatable_part_text_set(layout, MERGE_SWAP_BTN_PART_TEXT, text);
 
 	return layout;
 }
@@ -237,7 +237,7 @@ static void __fill_conference_layout(Evas_Object *parent, const callui_call_data
 	Evas_Object *thumbnail = _callui_create_thumbnail(parent, NULL, CONFERENCE_THUMBNAIL_138);
 	elm_object_part_content_set(parent, PART_SWALLOW_CALLER_ID, thumbnail);
 
-	_callui_common_eo_txt_part_set_translatable_text(parent,
+	elm_object_translatable_part_text_set(parent,
 			PART_TEXT_MAIN, "IDS_CALL_BODY_CONFERENCE");
 
 	char buffer[BUF_SIZE] = { 0 };
@@ -248,7 +248,7 @@ static void __fill_conference_layout(Evas_Object *parent, const callui_call_data
 
 static void __set_hold_info(Evas_Object *parent, Evas_Object *content)
 {
-	_callui_common_eo_txt_part_set_translatable_text(content,
+	elm_object_translatable_part_text_set(content,
 			PART_TEXT_STATUS, "IDS_CALL_BODY_ON_HOLD_ABB");
 
 	elm_object_part_content_set(parent, PART_SWALLOW_HOLD_INFO, content);
@@ -256,7 +256,7 @@ static void __set_hold_info(Evas_Object *parent, Evas_Object *content)
 
 static void __set_active_info(Evas_Object *parent, Evas_Object *content, callui_app_data_t *ad)
 {
-	_callui_common_eo_txt_part_set_translatable_text(content,
+	elm_object_translatable_part_text_set(content,
 			PART_TEXT_STATUS, "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB");
 
 	elm_object_part_content_set(parent, PART_SWALLOW_ACTIVE_INFO, content);

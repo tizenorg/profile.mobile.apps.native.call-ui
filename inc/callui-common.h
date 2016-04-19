@@ -236,21 +236,4 @@ char *_callui_common_get_time_string(struct tm *time);
  */
 struct tm *_callui_common_get_current_time_diff_in_tm(long time);
 
-/**
- * @brief Set the text for an object's part, marking it translatable for call app domain
- * @param[in] obj			Evas object containing the text part
- * @param[in] part			name of the part to set
- * @param[in] ids_string	IDS string to for text part
- */
-void _callui_common_eo_txt_part_set_translatable_text(Evas_Object *obj,
-		const char *part,
-		const char *ids_string);
-
-/**
- * @brief Set the text to Eas_object marking it translatable for call app domain
- * @param[in] obj			Evas object to set text
- * @param[in] ids_string	IDS string to set into the object
- */
-void _callui_common_eo_set_translatable_text(Evas_Object *obj, const char *ids_string);
-
 #endif /*__CALLUI_COMMON_H_ */

@@ -760,7 +760,7 @@ static void __create_reject_msg_layout(callui_view_incoming_call_h vd)
 	evas_object_event_callback_add(reject_msg_bg, EVAS_CALLBACK_MOUSE_MOVE, __reject_msg_bg_mouse_move_cb, vd);
 	evas_object_event_callback_add(reject_msg_bg, EVAS_CALLBACK_MOUSE_UP, __reject_msg_bg_mouse_up_cb, vd);
 
-	_callui_common_eo_txt_part_set_translatable_text(vd->reject_msg_layout,
+	elm_object_translatable_part_text_set(vd->reject_msg_layout,
 			"reject_msg_text", "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE");
 
 	elm_object_signal_emit(vd->reject_msg_layout, "show-up-arrow", "reject_msg");

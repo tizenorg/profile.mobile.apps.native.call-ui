@@ -694,23 +694,3 @@ struct tm *_callui_common_get_current_time_diff_in_tm(long time)
 
 	return time_tm;
 }
-
-void _callui_common_eo_txt_part_set_translatable_text(Evas_Object *obj,
-		const char *part,
-		const char *ids_string)
-{
-	CALLUI_RETURN_IF_FAIL(obj);
-	CALLUI_RETURN_IF_FAIL(part);
-	CALLUI_RETURN_IF_FAIL(ids_string);
-
-	elm_object_domain_translatable_part_text_set(obj, part, CALLUI_TEXT_DOMAIN, ids_string);
-}
-
-void _callui_common_eo_set_translatable_text(Evas_Object *obj, const char *ids_string)
-{
-	CALLUI_RETURN_IF_FAIL(obj);
-	CALLUI_RETURN_IF_FAIL(ids_string);
-
-	elm_object_domain_translatable_text_set(obj, CALLUI_TEXT_DOMAIN, ids_string);
-
-}

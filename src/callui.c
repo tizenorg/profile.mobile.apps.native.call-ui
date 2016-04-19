@@ -50,8 +50,6 @@ static Evas_Object *__create_main_layout(Evas_Object *conf);
 
 static void __init_app_event_handlers(callui_app_data_t *ad);
 
-static void __main_win_delete_request_cb(void *data, Evas_Object *obj, void *event_info);
-
 static Eina_Bool __hard_key_down_cb(void *data, int type, void *event);
 static Eina_Bool __hard_key_up_cb(void *data, int type, void *event);
 
@@ -314,7 +312,7 @@ static bool __app_init(callui_app_data_t *ad)
 	__bt_init();
 
 	ad->call_manager = _callui_manager_create();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->call_manager, __app_deinit(ad));
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->call_manager, false);
 
 	ad->state_provider = _callui_manager_get_state_provider(ad->call_manager);
 	ad->sound_manager = _callui_manager_get_sound_manager(ad->call_manager);
@@ -323,25 +321,25 @@ static bool __app_init(callui_app_data_t *ad)
 	_callui_stp_add_call_state_event_cb(ad->state_provider, __call_state_change_cb, ad);
 	_callui_sdm_add_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, ad);
 
-	CALLUI_RETURN_VALUE_IF_FAIL(__create_main_gui_elem(ad), __app_deinit(ad));
+	CALLUI_RETURN_VALUE_IF_FAIL(__create_main_gui_elem(ad), false);
 
 	ad->view_manager = _callui_vm_create(ad);
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->view_manager, __app_deinit(ad));
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->view_manager, false);
 
 	ad->action_bar = _callui_action_bar_create(ad);
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->action_bar, __app_deinit(ad));
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->action_bar, false);
 
 	ad->keypad = _callui_keypad_create(ad);
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->keypad, __app_deinit(ad));
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->keypad, false);
 
 	ad->qp_minicontrol =_callui_qp_mc_create(ad);
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->qp_minicontrol, __app_deinit(ad));
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->qp_minicontrol, false);
 
 	ad->display = _callui_display_create(ad);
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->display, __app_deinit(ad));
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->display, false);
 
 	ad->lock_handle = _callui_lock_manager_create();
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->lock_handle, __app_deinit(ad));
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->lock_handle, false);
 
 	__set_main_win_key_grab(ad);
 
@@ -362,7 +360,11 @@ static bool __app_create(void *data)
 
 	elm_config_accel_preference_set("3d");
 
-	return __app_init(data);
+	bool res = __app_init(data);
+	if (!res) {
+		__app_deinit(data);
+	}
+	return res;
 }
 
 static void __app_lang_changed_cb(app_event_info_h event_info, void *user_data)
@@ -381,11 +383,6 @@ static void __app_lang_changed_cb(app_event_info_h event_info, void *user_data)
 	_callui_vm_update_language(ad->view_manager);
 }
 
-static void __main_win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	elm_exit();
-}
-
 static void __main_win_screen_mode_error_cb(Evas_Object *window, int error_code, void *user_data)
 {
 	err("__main_win_screen_mode_error_cb() return res[%d]", error_code);
@@ -400,8 +397,6 @@ static Evas_Object *__create_main_window(callui_app_data_t *ad)
 	elm_win_fullscreen_set(eo, EINA_FALSE);
 	elm_win_alpha_set(eo, EINA_TRUE);
 
-	elm_win_title_set(eo, PACKAGE);
-	evas_object_smart_callback_add(eo, "delete,request", __main_win_delete_request_cb, NULL);
 	efl_util_set_window_screen_mode_error_cb(eo, __main_win_screen_mode_error_cb, NULL);
 
 	elm_win_screen_size_get(eo, NULL, NULL, &ad->root_w, &ad->root_h);
@@ -631,7 +626,6 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 	Ecore_Event_Key *ev = event;
-	const callui_call_data_t *call_data = NULL;
 
 	if (ev == NULL) {
 		err("ERROR!!! ========= Event is NULL!!!");
@@ -640,7 +634,7 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 
 	callui_view_type_e view_type = _callui_vm_get_cur_view_type(ad->view_manager);
 
-	dbg("Top view(%d)", view_type);
+	dbg("Current view type [%d]", view_type);
 
 	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider,
 					CALLUI_CALL_DATA_INCOMING);
@@ -649,7 +643,7 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 	const callui_call_data_t *held = _callui_stp_get_call_data(ad->state_provider,
 					CALLUI_CALL_DATA_HELD);
 
-	/*power key case */
+	/* power key case */
 	if (!strcmp(ev->keyname, CALLUI_KEY_POWER)) {
 		dbg("in keypower");
 		int is_powerkey_enabled = _callui_common_is_powerkey_mode_on();
@@ -659,42 +653,21 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 
 			if (view_type == CALLUI_VIEW_DIALLING) {
 				if (active) {
-					call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
-					if (call_data) {
-						_callui_manager_end_call(ad->call_manager, call_data->call_id,
-								CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
-					}
+					_callui_manager_end_call(ad->call_manager,
+							active->call_id, CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
 				}
 			} else if (view_type == CALLUI_VIEW_INCOMING_CALL ||
 					view_type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
 				if (incom) {
-					call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
-					if (call_data) {
-						_callui_manager_end_call(ad->call_manager, call_data->call_id,
-								CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
-					}
+					_callui_manager_end_call(ad->call_manager,
+							incom->call_id, CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
 				}
-			} else if (view_type == CALLUI_VIEW_SINGLECALL ||
-					view_type == CALLUI_VIEW_MULTICALL_CONF ||
-					view_type == CALLUI_VIEW_MULTICALL_LIST) {
-
-				call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
-				if (call_data) {
-					 _callui_manager_end_call(ad->call_manager, call_data->call_id,
-							CALLUI_CALL_RELEASE_ALL);
-				} else {
-					call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
-					if (call_data) {
-						_callui_manager_end_call(ad->call_manager, call_data->call_id,
-								CALLUI_CALL_RELEASE_ALL);
-					}
-				}
-			} else if (view_type == CALLUI_VIEW_MULTICALL_SPLIT) {
-				call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
-				if (call_data) {
-					_callui_manager_end_call(ad->call_manager, call_data->call_id,
-							CALLUI_CALL_RELEASE_ALL_ACTIVE);
-				}
+			} else if (view_type == CALLUI_VIEW_SINGLECALL
+					|| view_type == CALLUI_VIEW_MULTICALL_CONF) {
+				_callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_ALL);
+			} else if (view_type == CALLUI_VIEW_MULTICALL_SPLIT
+					|| view_type == CALLUI_VIEW_MULTICALL_LIST) {
+				_callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_ALL_ACTIVE);
 			}
 		} else {
 			if (incom && !active && !held) {
@@ -712,8 +685,7 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 		dbg("in key-media");
 	} else if (!strcmp(ev->keyname, CALLUI_KEY_VOLUMEUP) || !strcmp(ev->keyname, CALLUI_KEY_VOLUMEDOWN)) {
 		dbg("Handle Volume Up or Down key");
-		call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
-		if (call_data) {
+		if (incom) {
 			_callui_manager_stop_alert(ad->call_manager);
 		}
 	} else if (!strcmp(ev->keyname,  CALLUI_KEY_SELECT) || !strcmp(ev->keyname,  CALLUI_KEY_HOME)) {
@@ -722,8 +694,6 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 		result = elm_win_keygrab_unset(ad->win, CALLUI_KEY_SELECT, 0, 0);
 		if (!result) {
 			dbg("KEY_SELECT key ungrab failed");
-		} else {
-			dbg("KEY_SELECT key ungrab success");
 		}
 		if (view_type == CALLUI_VIEW_INCOMING_CALL ||
 				view_type == CALLUI_VIEW_INCOMING_CALL_NOTI) {

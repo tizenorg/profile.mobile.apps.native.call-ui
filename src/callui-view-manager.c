@@ -389,7 +389,7 @@ static void __update_cur_view(callui_vm_h vm)
 {
 	call_view_data_base_t *cur_view = vm->cur_view;
 
-	if (cur_view->update && cur_view->update_flags) {
+	if (cur_view && cur_view->update && cur_view->update_flags) {
 		cur_view->update(vm->cur_view);
 		cur_view->update_flags = 0;
 	}

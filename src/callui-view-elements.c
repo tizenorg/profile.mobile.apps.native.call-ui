@@ -171,7 +171,7 @@ Evas_Object *_callui_create_thumbnail_with_size(Evas_Object *parent, const char 
 void _callui_show_caller_info_name(void *data, const char *name)
 {
 	Evas_Object *layout = __callui_get_caller_info_layout(data);
-	_callui_common_eo_txt_part_set_translatable_text(layout, "txt_call_name", name);
+	elm_object_translatable_part_text_set(layout, "txt_call_name", name);
 }
 
 /* Caller info number */
@@ -186,7 +186,7 @@ Evas_Object *_callui_show_caller_info_status(void *data, const char *status)
 {
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 	Evas_Object *layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-	_callui_common_eo_txt_part_set_translatable_text(layout, "call_txt_status", status);
+	elm_object_translatable_part_text_set(layout, "call_txt_status", status);
 
 	return layout;
 }
@@ -455,7 +455,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 	ad->second_call_popup = elm_popup_add(ad->win);
 	CALLUI_RETURN_IF_FAIL(ad->second_call_popup);
 	elm_popup_align_set(ad->second_call_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
-	elm_object_domain_translatable_part_text_set(ad->second_call_popup, "title,text", CALLUI_TEXT_DOMAIN, "IDS_CALL_HEADER_ANSWER_CALL_ABB");
+	elm_object_translatable_part_text_set(ad->second_call_popup, "title,text", "IDS_CALL_HEADER_ANSWER_CALL_ABB");
 	evas_object_size_hint_weight_set(ad->second_call_popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
 	box = elm_box_add(ad->second_call_popup);
@@ -718,18 +718,18 @@ void _callui_load_bluetooth_popup(callui_app_data_t *ad)
 	elm_popup_align_set(ad->bt_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	evas_object_size_hint_weight_set(ad->bt_popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
-	elm_object_domain_translatable_part_text_set(ad->bt_popup, "title,text", CALLUI_TEXT_DOMAIN, "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB");
-	_callui_common_eo_set_translatable_text(ad->bt_popup, "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON");
+	elm_object_translatable_part_text_set(ad->bt_popup, "title,text", "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB");
+	elm_object_translatable_text_set(ad->bt_popup, "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON");
 
 	btn_cancel = elm_button_add(ad->bt_popup);
 	elm_object_style_set(btn_cancel, "popup");
-	_callui_common_eo_set_translatable_text(btn_cancel, "IDS_COM_SK_CANCEL");
+	elm_object_translatable_text_set(btn_cancel, "IDS_COM_SK_CANCEL");
 	elm_object_part_content_set(ad->bt_popup, "button1", btn_cancel);
 	evas_object_smart_callback_add(btn_cancel, "clicked", __callui_bt_popup_cancel_btn_cb, ad);
 
 	btn_ok = elm_button_add(ad->bt_popup);
 	elm_object_style_set(btn_ok, "popup");
-	_callui_common_eo_set_translatable_text(btn_ok, "IDS_COM_SK_OK");
+	elm_object_translatable_text_set(btn_ok, "IDS_COM_SK_OK");
 	elm_object_part_content_set(ad->bt_popup, "button2", btn_ok);
 	evas_object_smart_callback_add(btn_ok, "clicked", __callui_bt_popup_ok_btn_cb, ad);
 
@@ -763,7 +763,7 @@ int _callui_create_reject_msg_button(void *app_data, Evas_Object *parent, const 
 	CALLUI_RETURN_VALUE_IF_FAIL(msg_button, CALLUI_RESULT_ALLOCATION_FAIL);
 
 	elm_object_style_set(msg_button, "default");
-	_callui_common_eo_set_translatable_text(msg_button,  "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB");
+	elm_object_translatable_text_set(msg_button,  "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB");
 	evas_object_smart_callback_add(msg_button, "clicked", __callui_create_new_msg_btn_click_cb, app_data);
 	elm_object_part_content_set(parent, part, msg_button);
 	evas_object_show(msg_button);
