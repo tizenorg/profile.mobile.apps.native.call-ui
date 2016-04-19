@@ -293,18 +293,21 @@ static void __main_layout_mouse_up_cb(void *data, Evas *evas, Evas_Object *obj, 
 	callui_app_data_t *ad = qp->ad;
 	__hide_minicontrol(qp);
 
-	app_control_h request;
-	app_control_create(&request);
-	app_control_set_app_id(request, PACKAGE);
-	int err = app_control_send_launch_request(request, NULL, NULL);
-	if (err != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() failed(0x%x)", err);
-		return;
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_app_id(app_control, PACKAGE)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_app_id() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
+	} else {
+		ad->on_background = false;
+		_callui_lock_manager_start(ad->lock_handle);
 	}
-
-	app_control_destroy(request);
-	ad->on_background = false;
-	_callui_lock_manager_start(ad->lock_handle);
+	if (app_control) {
+		app_control_destroy(app_control);
+	}
 }
 
 static void __hide_minicontrol(callui_qp_mc_h qp)

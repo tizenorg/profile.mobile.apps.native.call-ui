@@ -36,8 +36,6 @@
 #define _EDJ(obj) elm_layout_edje_get(obj)
 #endif
 
-#define MSG_PKG		"org.tizen.message"
-
 #undef _
 #define _(s) gettext(s)
 

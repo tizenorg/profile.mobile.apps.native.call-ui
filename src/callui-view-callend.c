@@ -27,7 +27,6 @@
 #include "callui-state-provider.h"
 
 #define APP_CONTROL_MIME_CONTACT "application/vnd.tizen.contact"
-#define CONTACT_NUMBER_BUF_LEN 32
 #define OUTGOING_CALL_TIME_DURATION_STR "00:00"
 #define ENDING_TIMER_INTERVAL 2.0
 #define BLINKING_TIMER_INTERVAL 0.5
@@ -79,6 +78,8 @@ static void __set_emergency_call_info(callui_view_callend_h vd, const callui_cal
 static void __set_conference_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data);
 
 static void __bg_mouse_down_cb(void *data, Evas_Object *o, const char *emission, const char *source);
+
+static void __launch_contact_app(const char *operation, const char *call_number);
 
 callui_view_callend_h _callui_view_callend_new()
 {
@@ -319,53 +320,53 @@ static char *__vcui_endcall_get_item_text(void *data, Evas_Object *obj, const ch
 	return NULL;
 }
 
+static void __launch_contact_app(const char *operation, const char *call_number)
+{
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, operation)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_mime(app_control, APP_CONTROL_MIME_CONTACT)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_mime() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_add_extra_data(app_control, APP_CONTROL_DATA_PHONE, call_number)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_add_extra_data() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
+	}
+	if (app_control) {
+		app_control_destroy(app_control);
+	}
+}
+
 static void __create_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(data);
-	callui_view_callend_h vd = (callui_view_callend_h)data;
+
+	callui_view_callend_h vd = data;
 
 	_callui_common_exit_app();
 
-	// TODO: Need to replace into launcher
-	app_control_h request;
-	app_control_create(&request);
-	app_control_set_operation(request, APP_CONTROL_OPERATION_ADD);
-	app_control_set_mime(request, APP_CONTROL_MIME_CONTACT);
-	app_control_add_extra_data(request, APP_CONTROL_DATA_PHONE, vd->call_number);
-
-	int err = app_control_send_launch_request(request, NULL, NULL);
-	if (err != APP_CONTROL_ERROR_NONE) {
-		dbg("app_control_send_launch_request() is failed");
-	}
-	app_control_destroy(request);
+	__launch_contact_app(APP_CONTROL_OPERATION_ADD, vd->call_number);
 }
 
 static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(data);
-	callui_view_callend_h vd = (callui_view_callend_h)data;
+
+	callui_view_callend_h vd = data;
 
 	_callui_common_exit_app();
 
-	// TODO: Need to replace into launcher
-	app_control_h request;
-	app_control_create(&request);
-	app_control_set_operation(request, APP_CONTROL_OPERATION_EDIT);
-	app_control_set_mime(request, APP_CONTROL_MIME_CONTACT);
-	app_control_add_extra_data(request, APP_CONTROL_DATA_PHONE, vd->call_number);
-
-	int result = app_control_send_launch_request(request, NULL, NULL);
-	if (result != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() failed (%d)", result);
-	}
-	app_control_destroy(request);
+	__launch_contact_app(APP_CONTROL_OPERATION_EDIT, vd->call_number);
 }
 
 static void __popup_back_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(data);
 
-	callui_view_callend_h vd = (callui_view_callend_h)data;
+	callui_view_callend_h vd = data;
 
 	evas_object_del(obj);
 
@@ -420,22 +421,12 @@ static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj,
 static void __msg_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	CALLUI_RETURN_IF_FAIL(data);
-	callui_view_callend_h vd = (callui_view_callend_h)data;
+	callui_view_callend_h vd = data;
+	callui_app_data_t *ad = vd->base_view.ad;
 
 	edje_object_signal_callback_del_full(_EDJ(obj), "clicked", "edje", __msg_btn_click_cb, vd);
 
-	app_control_h request;
-	app_control_create(&request);
-	app_control_set_operation(request, APP_CONTROL_OPERATION_COMPOSE);
-	char str[CONTACT_NUMBER_BUF_LEN];
-	snprintf(str, sizeof(str), "sms:%s", vd->call_number);
-	app_control_set_uri(request, str);
-
-	int result = app_control_send_launch_request(request, NULL, NULL);
-	if (result != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() failed (%d)", result);
-	}
-	app_control_destroy(request);
+	_callui_common_launch_msg_composer(ad, vd->call_number);
 }
 
 static Eina_Bool __ending_timer_expired_cb(void *data)
