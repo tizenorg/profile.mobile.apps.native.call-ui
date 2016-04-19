@@ -44,7 +44,6 @@
 #define	POPUP_LIST_ITEM_H 	120
 #define APP_CONTROL_MIME_CONTACT "application/vnd.tizen.contact"
 #define CONTACT_ID_BUF_LEN 16
-#define CONTACT_NUMBER_BUF_LEN 32
 
 typedef struct {
 	int index;
@@ -703,7 +702,7 @@ static void __callui_bt_popup_ok_btn_cb(void *data, Evas_Object *obj, void *even
 
 	__callui_unload_bt_popup(ad);
 	/* Launch the BT App Control */
-	_callui_common_launch_bt_app(ad);
+	_callui_common_launch_setting_bluetooth(ad);
 	return;
 }
 

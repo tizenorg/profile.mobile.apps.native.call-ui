@@ -357,24 +357,23 @@ static void __create_reject_msg_content(callui_view_incoming_call_noti_h vd)
 
 static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
-	char *key = (char *) data;
-	if (key == NULL) {
-		return;
-	}
+	char *key = (char *)data;
+	CALLUI_RETURN_IF_FAIL(key);
 
-	//TODO: replace to separate launcher
-	app_control_h app_control = NULL;
-	if (app_control_create(&app_control) != APP_CONTROL_ERROR_NONE) {
-		dbg("app_control_create() is failed");
-	} else if (app_control_set_app_id(app_control, "org.tizen.call-ui") != APP_CONTROL_ERROR_NONE) {
-		dbg("app_control_set_app_id() is failed");
-	} else if (app_control_set_operation(app_control, key) != APP_CONTROL_ERROR_NONE) {
-		dbg("app_control_set_operation() is failed");
-	} else if (app_control_send_launch_request(app_control, NULL, NULL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() is failed");
+	app_control_h request = NULL;
+	int ret;
+	if ((ret = app_control_create(&request)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if (app_control_set_app_id(request, PACKAGE) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_app_id() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(request, key)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(request, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	}
-
-	app_control_destroy(app_control);
+	if (request) {
+		app_control_destroy(request);
+	}
 }
 
 static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd)
