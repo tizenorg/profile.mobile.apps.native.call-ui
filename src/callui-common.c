@@ -284,8 +284,8 @@ void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
 
 	caller_info = elm_object_part_content_get(contents, "caller_info");
 	if (caller_info) {
-		elm_object_part_text_set(caller_info, "txt_call_name", "");
-		elm_object_part_text_set(caller_info, "txt_phone_num", "");
+		elm_object_part_text_set(caller_info, "contact_name", "");
+		elm_object_part_text_set(caller_info, "phone_number", "");
 	}
 }
 

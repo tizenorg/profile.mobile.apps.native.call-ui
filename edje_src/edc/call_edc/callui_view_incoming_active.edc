@@ -37,9 +37,7 @@ styles {
 #define IAC_MAIN_HEIGHT				(INDICATOR_HEIGHT+IAC_REC_MAIN_INFO+IAC_REC_BTN_H+IAC_IAC_SWAP_BTN_Y) // 350
 #define IAC_MAIN_WIDTH				MAIN_SCREEN_W
 #define IAC_MAIN_HEIGHT_REJECT		MAIN_SCREEN_H
-
 #define IAC_MAIN_HEIGHT_RECT_REJECT	IAC_MAIN_HEIGHT
-#define IAC_MAIN_HEIGHT_REJECT		MAIN_SCREEN_H
 
 #define IAH_SPACE_BTN			186
 #define IAC_SPACE_BETWEEN_BTNS	16
@@ -244,7 +242,7 @@ group {
 			}
 		}
 
-		part { name: "caller_id";
+		part { name: "contact_icon";
 			type: SWALLOW;
 			scale: 1;
 			description { state: "default" 0.0;
@@ -454,12 +452,12 @@ group {
 		program {
 			name: "show_caller_id";
 			action: STATE_SET "show" 0.0;
-			target: "caller_id";
+			target: "contact_icon";
 		}
 		program {
 			name: "hide_caller_id";
 			action: STATE_SET "hide" 0.0;
-			target: "caller_id";
+			target: "contact_icon";
 		}
 		program {
 			name: "show_def_caller_id";

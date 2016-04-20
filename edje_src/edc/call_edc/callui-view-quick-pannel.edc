@@ -179,8 +179,8 @@ group {
 				fixed: 1 0;
 				min: QP_CONTACT_ICON_PAD_R 0;
 				max: QP_CONTACT_ICON_PAD_R -1;
-				rel1 { relative: 1 0; to_x: "caller_id"; }
-				rel2 { relative: 1 1; to_x: "caller_id"; }
+				rel1 { relative: 1 0; to_x: "contact_icon"; }
+				rel2 { relative: 1 1; to_x: "contact_icon"; }
 				align: 0 0.5;
 			}
 		}
@@ -313,7 +313,7 @@ group {
 				visible: 1;
 			}
 		}
-		part { name: "txt_call_name";
+		part { name: "contact_name";
 			type: TEXTBLOCK;
 			scale: 1;
 			description {
@@ -346,11 +346,11 @@ group {
 				state: "default" 0.0;
 				rel1 {
 					relative: 0.0 1.0;
-					to: "txt_call_name";
+					to: "contact_name";
 				}
 				rel2 {
 					relative: 1.0 1.0;
-					to: "txt_call_name";
+					to: "contact_name";
 				}
 				min: 0 QP_TIMER_TXT_H;
 				fixed: 0 1;
@@ -364,7 +364,7 @@ group {
 				color_class: "ATO006QP";
 			}
 		}
-		part { name: "caller_id";
+		part { name: "contact_icon";
 			type: SWALLOW;
 			scale: 1;
 			description {
@@ -416,8 +416,8 @@ group {
 			description {
 				visible: 0;
 				fixed: 1 1;
-				rel1 { relative: 0.0 0.0; to: "caller_id"; }
-				rel2 { relative: 1.0 1.0; to: "caller_id"; }
+				rel1 { relative: 0.0 0.0; to: "contact_icon"; }
+				rel2 { relative: 1.0 1.0; to: "contact_icon"; }
 				image {
 					normal: IMG_SRC_DIR/"call_photo_id_mask.png";
 				}
@@ -454,14 +454,14 @@ group {
 				visible: 0;
 			}
 		}
-		part {  name: "caller_id_img";
+		part {  name: "contact_icon_def";
 			type: IMAGE;
 			scale: 1;
 			description {
 				visible: 0;
 				fixed: 1 1;
-				rel1 { relative: 0.0 0.0; to: "caller_id"; }
-				rel2 { relative: 1.0 1.0; to: "caller_id"; }
+				rel1 { relative: 0.0 0.0; to: "contact_icon"; }
+				rel2 { relative: 1.0 1.0; to: "contact_icon"; }
 				image {
 					normal: IMG_SRC_DIR/"call_photo_id.png";
 				}
@@ -515,9 +515,9 @@ group {
 			target: "swallow.resume_button";
 			target: "swallow.call_button";
 			target: "swallow.speaker_button";
-			target: "caller_id_img";
+			target: "contact_icon_def";
 			target: "caller_id_mask";
-			target: "caller_id";
+			target: "contact_icon";
 			target: "txt_area";
 		}
 		program {
@@ -554,9 +554,9 @@ group {
 			target: "swallow.resume_button";
 			target: "swallow.call_button";
 			target: "swallow.speaker_button";
-			target: "caller_id_img";
+			target: "contact_icon_def";
 			target: "caller_id_mask";
-			target: "caller_id";
+			target: "contact_icon";
 			target: "txt_area";
 		}
 		program {
@@ -565,7 +565,7 @@ group {
 			source: "*";
 			action: STATE_SET "show" 0.0;
 			target: "caller_id_mask";
-			target: "caller_id_img";
+			target: "contact_icon_def";
 		}
 		program {
 			name: "hide_image";
@@ -573,7 +573,7 @@ group {
 			source: "*";
 			action: STATE_SET "hide" 0.0;
 			target: "caller_id_mask";
-			target: "caller_id_img";
+			target: "contact_icon_def";
 		}
 	}
 }

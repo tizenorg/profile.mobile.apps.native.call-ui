@@ -460,7 +460,7 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 
 	if (strcmp(file_path, "default") != 0) {
 		Evas_Object *layout = _callui_create_thumbnail(vd->base_view.contents, file_path, THUMBNAIL_98);
-		elm_object_part_content_set(vd->base_view.contents, "caller_id", layout);
+		elm_object_part_content_set(vd->base_view.contents, "contact_icon", layout);
 		elm_object_signal_emit(vd->base_view.contents, "hide_def_caller_id", "main_active_noti_call");
 	} else {
 		elm_object_signal_emit(vd->base_view.contents, "show_def_caller_id", "main_active_noti_call");

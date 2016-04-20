@@ -776,7 +776,7 @@ static callui_result_e __create_main_content(callui_view_incoming_call_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_VIEW_MAIN_LY);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(ad->main_ly, "elm.swallow.content",  vd->base_view.contents);
 
