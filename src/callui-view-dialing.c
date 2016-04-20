@@ -166,7 +166,7 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 	if (strlen(call_name) == 0) {
 		_callui_show_caller_info_name(ad, disp_number);
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
-	} else if (now_call_data->is_emergency == EINA_TRUE) {
+	} else if (now_call_data->is_emergency) {
 		_callui_show_caller_info_name(ad, call_name);
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
 	} else {
@@ -177,7 +177,7 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 
 	_callui_show_caller_info_status(ad, "IDS_CALL_POP_DIALLING");
 
-	if (now_call_data->is_emergency == EINA_TRUE) {
+	if (now_call_data->is_emergency) {
 		elm_object_signal_emit(vd->caller_info, "set_emergency_mode", "");
 	} else {
 		if (strcmp(file_path, "default") != 0) {

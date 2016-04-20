@@ -15,9 +15,96 @@
  *
  */
 
+/* ANIMATION DEFINES */
+
+#define EC_ANIM_DUR						0.5
+
+#define EC_ANIM_DUR_END_CALL_BTN		(EC_ANIM_DUR / 3)
+#define EC_ANIM_DUR_END_CALL_BTN_AREA	(EC_ANIM_DUR / 3)
+#define EC_ANIM_DUR_CONT_INFO_B_S		(EC_ANIM_DUR / 2)
+#define EC_ANIM_DUR_CONT_INFO_S_B		(EC_ANIM_DUR - EC_ANIM_DUR_CONT_INFO_B_S)
+#define EC_DELAY_HIDE_END_CALL_BTN		0.0 0.0
+#define EC_DELAY_SHOW_END_CALL_BTN		(EC_ANIM_DUR - EC_ANIM_DUR_END_CALL_BTN) 0.0
+#define EC_DELAY_HIDE_END_CALL_BTN_AREA	(EC_ANIM_DUR - EC_ANIM_DUR_END_CALL_BTN_AREA) 0.0
+#define EC_DELAY_SHOW_END_CALL_BTN_AREA	0.0 0.0
+
+#define EC_ANIM_DUR_REPLY_BTNS			(EC_ANIM_DUR - EC_ANIM_DUR_END_CALL_BTN)
+#define EC_DELAY_SHOW_REPLY_BTNS		EC_ANIM_DUR_END_CALL_BTN 0.0
+#define EC_DELAY_HIDE_REPLY_BTNS		0.0 0.0
+
+/* GUI DEFINES */
+
+#define EC_LAYOUT_PAD_LEFT					32
+#define EC_LAYOUT_PAD_RIGHT					32
+
+#define EC_STATE_TXT_PAD_INDICATOR			32
+#define EC_STATE_TXT_PAD_CONTACT_NAME_SMALL	50
+#define EC_STATE_TXT_PAD_ADD_CONTACT		74
+#define EC_STATE_TXT_PAD_CONTACT_ICON		30
+
+#define EC_STATE_TXT_PAD_TOP				(INDICATOR_HEIGHT + EC_STATE_TXT_PAD_INDICATOR)
+#define EC_STATE_TXT_HEIGHT					54
+
+#define EC_CONT_ICON_SMALL_DIMENT			168
+
+#define EC_STATE_TXT_PAD_CONTACT_ICON		30
+#define EC_CONT_ICON_SMALL_PAD_TOP			(EC_STATE_TXT_PAD_TOP + EC_STATE_TXT_HEIGHT + EC_STATE_TXT_PAD_CONTACT_ICON)
+#define EC_CONT_ICON_SMALL_PAD_BOTTOM		44
+#define EC_CONT_ICON_SMALL_PAD_RIGHT		32
+#define EC_CONT_ICON_SMALL_PAD_LEFT			EC_LAYOUT_PAD_LEFT
+
+#define EC_LAYOUT_MINIMIZE_SIZE				(EC_CONT_ICON_SMALL_PAD_TOP + EC_CONT_ICON_SMALL_DIMENT + EC_CONT_ICON_SMALL_PAD_BOTTOM)
+
+#define EC_ADD_CONT_BTN_DIMENT				80
+#define EC_ADD_CONT_BTN_PAD_RIGHT			17
+#define EC_ADD_CONT_BTN_PAD_LEFT			32
+
+#define EC_BG_PAD_RIGHT_MIN					EC_LAYOUT_PAD_RIGHT
+#define EC_BG_PAD_RIGHT_MIN_W_ADD_CONT_BTN	(EC_ADD_CONT_BTN_PAD_RIGHT + EC_ADD_CONT_BTN_DIMENT + EC_ADD_CONT_BTN_PAD_LEFT)
+
+#define EC_CONT_INFO_SMALL_PAD_LEFT			(EC_CONT_ICON_SMALL_PAD_LEFT + EC_CONT_ICON_SMALL_DIMENT + EC_CONT_ICON_SMALL_PAD_RIGHT)
+#define EC_CONT_NAME_SMALL_PAD_TOP			(EC_STATE_TXT_PAD_TOP + EC_STATE_TXT_HEIGHT + EC_STATE_TXT_PAD_CONTACT_NAME_SMALL)
+#define EC_CONT_NAME_SMALL_PAD_BOTTOM		6
+#define EC_CONT_NUMB_SMALL_PAD_TOP			(EC_CONT_NAME_SMALL_PAD_TOP + EC_CONT_NAME_SMALL_SIZE_MIN + EC_CONT_NAME_SMALL_PAD_BOTTOM)
+
+#define EC_ADD_CONT_BTN_PAD_TOP				(EC_STATE_TXT_PAD_TOP + EC_STATE_TXT_HEIGHT + EC_STATE_TXT_PAD_ADD_CONTACT)
+
+#define EC_CONT_NAME_BIG_PAD_TOP_2LINE		541
+#define EC_CONT_NAME_BIG_PAD_TOP_1LINE		570
+#define EC_CONT_NUMB_BIG_PAD_TOP			634
+#define EC_CONT_NAME_BIG_SIZE_MIN			0 86
+#define EC_CONT_NUMB_BIG_SIZE_MIN			0 54
+#define EC_CONT_ICON_BIG_PAD_LEFT			186
+#define EC_CONT_ICON_BIG_PAD_TOP			151
+
+#define EC_END_CALL_BTN_AREA_PAD_BOTTOM_MAX	152
+
+#define EC_CONT_NAME_SMALL_SIZE_MIN			0 76
+#define EC_CONT_NUMB_SMALL_SIZE_MIN			0 46
+
+#define EC_CONT_ICON_SIZE_MAX				348 348
+#define EC_CONT_ICON_SIZE_MIN				EC_CONT_ICON_SMALL_DIMENT EC_CONT_ICON_SMALL_DIMENT
+#define EC_ADD_CONT_BTN_SIZE				EC_ADD_CONT_BTN_DIMENT EC_ADD_CONT_BTN_DIMENT
+#define EC_ADD_CONT_BTN_IMAGE_SIZE			46 46
+#define EC_ADD_CONT_BTN_IMAGE_BORDER		17
+
+#define EC_END_CALL_BTN_BG_HEIGHT			EC_END_CALL_BTN_AREA_PAD_BOTTOM_MAX
+#define EC_REPLY_BTNS_HEIGHT				190
+#define EC_END_CALL_BTN_SIZE				104 104
+
+#define EC_REPLY_BTN_ICON_PAD_TOP			36
+#define EC_REPLY_BTN_ICON_DIMENT			64
+#define EC_REPLY_BTN_TXT_HEIGHT				38
+#define EC_REPLY_BTN_TXT_PAD_REPLY_BTN_ICON	20
+#define EC_REPLY_BTN_TXT_PAD_TOP			(EC_REPLY_BTN_ICON_PAD_TOP + EC_REPLY_BTN_ICON_DIMENT + EC_REPLY_BTN_TXT_PAD_REPLY_BTN_ICON)
+#define EC_REPLY_BTN_ICON_SIZE				EC_REPLY_BTN_ICON_DIMENT EC_REPLY_BTN_ICON_DIMENT
+
+#define COLOR_WHITE				255 255 255 255;
+#define COLOR_WHITE_TRANSP		255 255 255 0;
+
 styles {
 	style {
-		name: "call_timer_style";
+		name: "call_txt_status_style";
 		base: "font=Tizen:style=Regular align=left font_size=40 color=#FFFFFF ellipsis=1.0";
 	}
 	style {
@@ -38,150 +125,86 @@ styles {
 	}
 }
 
-#define MAIN_WIDTH					MAIN_SCREEN_W
-#define MAIN_HEIGHT					MAIN_SCREEN_H
-#define MAIN_WIDTH_TWO				(MAIN_WIDTH/2)
-
-#define EC_MAIN_TITLE_T_PAD			30
-#define EC_MAIN_TITLE_H				54
-#define EC_CONTACT_IMAGE_T_PAD		30
-#define EC_CONTACT_IMAGE_SIZE		168
-#define EC_BOTTOM_BTN_T_PAD			44
-#define EC_BOTTOM_BTN_H				190
-#define EC_MAIN_BG_H				(INDICATOR_HEIGHT+EC_MAIN_TITLE_T_PAD+EC_MAIN_TITLE_H+EC_CONTACT_IMAGE_T_PAD+EC_CONTACT_IMAGE_SIZE+EC_BOTTOM_BTN_T_PAD)
-
-#define EC_MAIN_TITLE_R_PAD			32
-
-#define EC_CONTACT_NAME_T_PAD		50
-#define EC_CONTACT_NAME_H			76
-
-#define EC_CONTACT_NUMBER_T_PAD		6
-#define EC_CONTACT_NUMBER_H			46
-
-#define EC_ADD_BTN_ICON_SIZE		80
-#define EC_ADD_BTN_ICON_B_PAD		88
-#define EC_ADD_BTN_SIZE				120
-#define EC_ADD_BUTTON_R_PAD			20
-
-#define EC_ADD_ICON_BTN_L_PAD		32
-#define EC_ADD_ICON_BTN_R_PAD		17
-
-#define EC_BOTTOM_BTN_ICON_SIZE		64
-#define EC_BOTTOM_BTN_TEXT_W		132
-#define EC_BOTTOM_BTN_ICON_T_PAD	36
-#define EC_BOTTOM_BTN_ICON_L_PAD	((MAIN_WIDTH_TWO-EC_BOTTOM_BTN_ICON_SIZE)/2)
-#define EC_BOTTOM_BTN_R_PAD			(EC_BOTTOM_BTN_R_PAD+EC_BOTTOM_BTN_ICON_SIZE)
-
-#define EC_BOTTOM_BTN_TEXT_B_PAD	38
-#define EC_BOTTOM_BTN_TEXT_R_PAD	((MAIN_WIDTH_TWO-EC_BOTTOM_BTN_TEXT_W)/2)
-#define EC_BOTTOM_BTN_TEXT_L_PAD	(EC_BOTTOM_BTN_TEXT_R_PAD+EC_BOTTOM_BTN_TEXT_W)
-
-#define EC_MAIN_TITLE_X0		((EC_MAIN_TITLE_R_PAD)/MAIN_WIDTH)
-#define EC_MAIN_TITLE_Y0		((INDICATOR_HEIGHT+EC_MAIN_TITLE_T_PAD)/EC_MAIN_BG_H)
-#define EC_MAIN_TITLE_Y1		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD)/EC_MAIN_BG_H)
-
-#define EC_CONTACT_IMAGE_X0		(EC_MAIN_TITLE_R_PAD/MAIN_WIDTH)
-#define EC_CONTACT_IMAGE_Y0		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_IMAGE_T_PAD)/EC_MAIN_BG_H)
-#define EC_CONTACT_IMAGE_X1		((EC_MAIN_TITLE_R_PAD+EC_CONTACT_IMAGE_SIZE)/MAIN_WIDTH)
-#define EC_CONTACT_IMAGE_Y1		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_IMAGE_T_PAD+EC_CONTACT_IMAGE_SIZE)/EC_MAIN_BG_H)
-
-#define EC_RECT_BUTTON_X0		0.0
-#define EC_RECT_BUTTON_Y0		(EC_MAIN_BG_H/EC_MAIN_BG_H)
-#define EC_RECT_BUTTON_Y1		((EC_MAIN_BG_H+EC_BOTTOM_BTN_H)/EC_MAIN_BG_H)
-
-#define EC_CONTACT_NAME_X0		(EC_CONTACT_IMAGE_X1+(EC_MAIN_TITLE_R_PAD/MAIN_WIDTH))
-#define EC_CONTACT_NAME_Y0		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD)/EC_MAIN_BG_H)
-#define EC_CONTACT_NAME_X1		((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD-EC_ADD_BTN_ICON_SIZE-EC_ADD_ICON_BTN_L_PAD)/MAIN_WIDTH)
-#define EC_CONTACT_NAME_Y1		((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD+EC_CONTACT_NAME_H)/EC_MAIN_BG_H)
-
-#define EC_CONTACT_NUMBER_X0	(EC_CONTACT_IMAGE_X1+(EC_MAIN_TITLE_R_PAD/MAIN_WIDTH))
-#define EC_CONTACT_NUMBER_Y0	((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD+EC_CONTACT_NAME_H+EC_CONTACT_NUMBER_T_PAD)/EC_MAIN_BG_H)
-#define EC_CONTACT_NUMBER_X1	((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD-EC_ADD_BTN_ICON_SIZE-EC_ADD_ICON_BTN_L_PAD)/MAIN_WIDTH)
-#define EC_CONTACT_NUMBER_Y1	((INDICATOR_HEIGHT+EC_MAIN_TITLE_H+EC_MAIN_TITLE_T_PAD+EC_CONTACT_NAME_T_PAD+EC_CONTACT_NAME_H+EC_CONTACT_NUMBER_T_PAD+EC_CONTACT_NUMBER_H)/EC_MAIN_BG_H)
-
-#define EC_CREATE_CONTACT_X0	((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD-EC_ADD_BTN_ICON_SIZE)/MAIN_WIDTH)
-#define EC_CREATE_CONTACT_Y0	((EC_MAIN_BG_H-EC_ADD_BTN_ICON_B_PAD-EC_ADD_BTN_ICON_SIZE)/EC_MAIN_BG_H)
-#define EC_CREATE_CONTACT_X1	((MAIN_WIDTH-EC_ADD_ICON_BTN_R_PAD)/MAIN_WIDTH)
-#define EC_CREATE_CONTACT_Y1	((EC_MAIN_BG_H-EC_ADD_BTN_ICON_B_PAD)/EC_MAIN_BG_H)
-
-#define EC_BUTTON_ICON_X0		(EC_BOTTOM_BTN_ICON_L_PAD/MAIN_WIDTH_TWO)
-#define EC_BUTTON_ICON_Y0		(EC_BOTTOM_BTN_ICON_T_PAD/EC_BOTTOM_BTN_H)
-#define EC_BUTTON_ICON_X1		((EC_BOTTOM_BTN_ICON_L_PAD+EC_BOTTOM_BTN_ICON_SIZE)/MAIN_WIDTH_TWO)
-#define EC_BUTTON_ICON_Y1		(EC_BOTTOM_BTN_ICON_T_PAD+EC_BOTTOM_BTN_ICON_SIZE)/EC_BOTTOM_BTN_H
-
-#define EC_BUTTON_TEXT_X0		(EC_BOTTOM_BTN_TEXT_R_PAD/MAIN_WIDTH_TWO)
-#define EC_BUTTON_TEXT_Y0		((EC_BOTTOM_BTN_ICON_T_PAD+EC_BOTTOM_BTN_ICON_SIZE)/EC_BOTTOM_BTN_H)
-#define EC_BUTTON_TEXT_X1		(EC_BOTTOM_BTN_TEXT_L_PAD/MAIN_WIDTH_TWO)
-#define EC_BUTTON_TEXT_Y1		((EC_BOTTOM_BTN_ICON_T_PAD+EC_BOTTOM_BTN_ICON_SIZE+EC_BOTTOM_BTN_TEXT_B_PAD)/EC_BOTTOM_BTN_H)
-
-#define EC_ADD_BTN_ICON_X0		(EC_ADD_BUTTON_R_PAD/EC_ADD_BTN_SIZE)
-#define EC_ADD_BTN_ICON_Y0		(EC_ADD_BUTTON_R_PAD/EC_ADD_BTN_SIZE)
-#define EC_ADD_BTN_ICON_X1		((EC_ADD_BTN_ICON_SIZE + EC_ADD_BUTTON_R_PAD)/EC_ADD_BTN_SIZE)
-#define EC_ADD_BTN_ICON_Y1		((EC_ADD_BTN_ICON_SIZE + EC_ADD_BUTTON_R_PAD)/EC_ADD_BTN_SIZE)
-
-#define EC_MAIN_BG_Y1			(EC_MAIN_BG_H/MAIN_HEIGHT)
-#define EC_EMERG_MAIN_BG_Y1		(EC_EMERG_MAIN_BG_H/MAIN_HEIGHT)
-
 #define END_BOTTOM_BUTTON(style_name, img_path) \
 group { \
 	name: style_name; \
 	parts { \
-		part { name: "bg"; \
-			type: RECT; \
-			scale: 1; \
-			description { \
-				state: "default" 0.0; \
+		CU_PART_RECT( "bg", \
+			mouse_events: 1; \
+			repeat_events: 0; \
+			description { state: "default" 0.0; } \
+			description { state: "pressed" 0.0; \
+				inherit: "default" 0.0; \
 				color_class: "AO001"; \
 			} \
-		} \
-		part { name: "click_bg"; \
-			type: RECT; \
-			scale: 1; \
-			description { \
-				state: "default" 0.0; \
-				color: 255 255 255 255; \
+		) \
+		CU_PART_RECT( "click_bg", \
+			mouse_events: 1; \
+			repeat_events: 0; \
+			description { state: "default" 0.0; \
+				color: COLOR_WHITE; \
+			} \
+			description { state: "pressed" 0.0; \
+				color: 0 0 0 76; \
+			} \
+		) \
+		CU_PART_SPACER( "sizer", \
+			description { state: "default" 0.0; \
+				min: 0 EC_REPLY_BTNS_HEIGHT; \
+				max: -1 EC_REPLY_BTNS_HEIGHT; \
+				fixed: 1 1; \
+			} \
+		) \
+		CU_PART_SPACER( "icon.padding.top", \
+			description { state: "default" 0.0; \
+				min: 0 EC_REPLY_BTN_ICON_PAD_TOP; \
+				fixed: 0 1; \
+				rel1 { relative: 0.0 0.0; to: "sizer"; } \
+				rel2 { relative: 1.0 0.0; to: "sizer"; } \
+				align: 0.0 0.0; \
+			} \
+		) \
+		CU_PART_IMAGE( "icon", \
+			description { state: "default" 0.0; \
+				rel1 { relative: 0.0 1.0; to: "icon.padding.top"; } \
+				rel2 { relative: 1.0 1.0; to: "icon.padding.top"; } \
+				min: EC_REPLY_BTN_ICON_SIZE; \
+				max: EC_REPLY_BTN_ICON_SIZE; \
+				fixed: 1 1; \
+				image.normal: img_path; \
+				color_class: "AO009"; \
+				align: 0.5 0.0; \
 			} \
 			description { \
 				state: "pressed" 0.0; \
-				color: 0 0 0 76; \
+				inherit: "default" 0.0; \
+				color_class: "AO001"; \
 			} \
-		} \
-		part { name: "end_btn_text"; \
-			type: TEXTBLOCK; \
-			scale: 1; \
-			description { \
-				state: "default" 0.0; \
-				rel1 { relative: EC_BUTTON_TEXT_X0 EC_BUTTON_TEXT_Y0; to: "bg";} \
-				rel2 { relative: EC_BUTTON_TEXT_X1 EC_BUTTON_TEXT_Y1; to: "bg";} \
+		) \
+		CU_PART_SPACER( "text.padding.top", \
+			description { state: "default" 0.0; \
+				min: 0 EC_REPLY_BTN_TXT_PAD_TOP; \
+				fixed: 0 1; \
+				rel1 { relative: 0.0 0.0; to: "sizer"; } \
+				rel2 { relative: 1.0 0.0; to: "sizer"; } \
+				align: 0.0 0.0; \
+			} \
+		) \
+		CU_PART_TEXTBLOCK( "text", \
+			description { state: "default" 0.0; \
+				rel1 { relative: 0.0 1.0; to: "text.padding.top"; } \
+				rel2 { relative: 1.0 1.0; to: "text.padding.top"; } \
+				min: 0 EC_REPLY_BTN_TXT_HEIGHT; \
 				text { \
 					fit: 1 1; \
 					style:"button_style"; \
 				} \
 			} \
-			description { \
-				state: "pressed" 0.0; \
+			description { state: "pressed" 0.0; \
 				inherit: "default" 0.0; \
 				text.style:"button_style_pressed"; \
 			} \
-		} \
-		part { name: "end_btn_icon"; \
-			type: IMAGE; \
-			scale: 1; \
-			description { \
-				state: "default" 0.0; \
-				rel1 { relative: EC_BUTTON_ICON_X0 EC_BUTTON_ICON_Y0; to: "bg";} \
-				rel2 { relative: EC_BUTTON_ICON_X1 EC_BUTTON_ICON_Y1; to: "bg";} \
-				image { \
-					normal: img_path; \
-				} \
-				color_class: "AO009"; \
-			} \
-			description { \
-				state: "pressed" 0.0; \
-				inherit: "default" 0.0; \
-				color_class: "AO001"; \
-			} \
-		} \
+		) \
 	} \
 	programs { \
 		program { name: "clicked"; \
@@ -194,17 +217,19 @@ group { \
 			signal: "mouse,down,*"; \
 			source: "*"; \
 			action: STATE_SET "pressed" 0.0; \
+			target: "bg"; \
 			target: "click_bg"; \
-			target: "end_btn_icon"; \
-			target: "end_btn_text"; \
+			target: "icon"; \
+			target: "text"; \
 		} \
 		program { name: "unpressed"; \
 			signal: "mouse,up,*"; \
 			source: "*"; \
 			action: STATE_SET "default" 0.0; \
+			target: "bg"; \
 			target: "click_bg"; \
-			target: "end_btn_icon"; \
-			target: "end_btn_text"; \
+			target: "icon"; \
+			target: "text"; \
 		} \
 		program { name: "touch_snd"; \
 			action: RUN_PLUGIN "touch_sound"; \
@@ -216,46 +241,48 @@ END_BOTTOM_BUTTON("call_back", IMG_SRC_DIR/"call_button_icon_03.png")
 END_BOTTOM_BUTTON("message_button", IMG_SRC_DIR/"call_button_icon_04.png")
 
 group {
-	name: "create_contact_button";
+	name: "add_contact_button";
 	parts {
-		part { name: "bg";
-			type: RECT;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				color_class: "W0113";
+		CU_PART_RECT( "bg",
+			description { state: "default" 0.0;
+				color: COLOR_BG_ALPHA;
 			}
-			description {
-				state: "pressed" 0.0;
+			description { state: "pressed" 0.0;
 				inherit: "default" 0.0;
 				color_class: "W0113P";
 			}
-		}
-
-		part { name: "icon";
-			type: IMAGE;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: EC_ADD_BTN_ICON_X0 EC_ADD_BTN_ICON_Y0; to: "bg";}
-				rel2 { relative: EC_ADD_BTN_ICON_X1 EC_ADD_BTN_ICON_Y1; to: "bg";}
-				image {
-					normal: IMG_SRC_DIR/"call_button_add.png";
+		)
+		CU_PART_PADDING_TOP(EC_ADD_CONT_BTN_IMAGE_BORDER)
+		CU_PART_PADDING_LEFT(EC_ADD_CONT_BTN_IMAGE_BORDER)
+		CU_PART_PADDING_BOTTOM(EC_ADD_CONT_BTN_IMAGE_BORDER)
+		CU_PART_PADDING_RIGHT(EC_ADD_CONT_BTN_IMAGE_BORDER)
+		CU_PART_IMAGE( "icon",
+			description { state: "default" 0.0;
+				min: EC_ADD_CONT_BTN_IMAGE_SIZE;
+				max: EC_ADD_CONT_BTN_IMAGE_SIZE;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "padding.left";
+					to_y: "padding.top";
 				}
-				color: 255 255 255 255;
+				rel2 {
+					relative: 0.0 0.0;
+					to_x: "padding.right";
+					to_y: "padding.bottom";
+				}
+				image.normal: IMG_SRC_DIR/"call_button_add.png";
+				color: COLOR_WHITE;
 			}
-		}
+		)
 	}
 	programs {
-		program {
-			name: "pressed";
+		program { name: "pressed";
 			signal: "mouse,down,*";
 			source: "*";
 			action: STATE_SET "pressed" 0.0;
 			target: "bg";
 		}
-		program {
-			name: "unpressed";
+		program { name: "unpressed";
 			signal: "mouse,up,*";
 			source: "*";
 			action: STATE_SET "default" 0.0;
@@ -267,261 +294,770 @@ group {
 group {
 	name: "main_end_call";
 	parts {
-		part { name: "background";
-			type: IMAGE;
-			description {
-				state: "default" 0.0;
+		CU_PART_IMAGE( "bg",
+			description { state: "default" 0.0;
 				image.normal: IMG_SRC_DIR/"background_dim.png";
 			}
-		}
+		)
+		CU_PART_IMAGE( "contact_ly.bg",
+			clip_to: "contact_ly";
+			description { state: "default" 0.0;
+				image.normal: IMG_SRC_DIR/"background.png";
+			}
+		)
+		CU_PART_SPACER( "contact_ly.maximized",
+			description { state: "default" 0.0;
+				rel1.relative: 0.0 1.0;
+				min: 0 EC_END_CALL_BTN_AREA_PAD_BOTTOM_MAX;
+				fixed: 0 1;
+				align: 0 1;
+			}
+		)
+		CU_PART_PADDING_TOP_NAME("contact_ly.minimized", EC_LAYOUT_MINIMIZE_SIZE)
 
-		part { name: "contact_ly";
-			type: RECT;
-			description {
-				state: "default" 0.0;
-				color_class: "AO001";
-				rel1 { relative: 0.0 0.0; to: "background"; }
-				rel2 { relative: 1.0 EC_MAIN_BG_Y1; to: "background"; }
+		CU_PART_RECT( "contact_ly",
+			description { state: "default" 0.0;
+				rel2 { relative: 1.0 0.0; to: "contact_ly.maximized"; }
 			}
-			description {
-				state: "show" 0.0;
+			description { state: "maximize" 0.0;
 				inherit: "default" 0.0;
-				visible: 1;
 			}
-			description {
-				state: "hide" 0.0;
+			description { state: "minimize" 0.0;
+				rel1 { relative: 0.0 0.0; to: "contact_ly.minimized"; }
+				rel2 { relative: 1.0 1.0; to: "contact_ly.minimized"; }
+			}
+		)
+		CU_PART_SPACER( "cont_info.padding.right",
+			description { state: "default" 0.0;
+				min: EC_BG_PAD_RIGHT_MIN 0;
+				fixed: 1 0;
+				rel1.relative: 1.0 0.0;
+				align: 1.0 0.0;
+			}
+			description { state: "add_contact_btn_enabled" 0.0;
 				inherit: "default" 0.0;
-				visible: 0;
+				min: EC_BG_PAD_RIGHT_MIN_W_ADD_CONT_BTN 0;
 			}
-		}
+		)
+		CU_PART_PADDING_LEFT(EC_LAYOUT_PAD_LEFT)
+		CU_PART_PADDING_RIGHT(EC_LAYOUT_PAD_RIGHT)
 
-		part { name: "caller_id";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
-				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-		}
+		CU_PART_PADDING_TOP_NAME("title_txt.padding.top", EC_STATE_TXT_PAD_TOP)
 
-		part {  name: "caller_id_mask";
-			type: IMAGE;
-			scale: 1;
-			description {
-				visible: 0;
-				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
-				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
-				image {
-					normal: IMG_SRC_DIR/"call_photo_id_mask.png";
+		CU_PART_PADDING_LEFT_NAME("contact_info_txt.padding.left", EC_CONT_INFO_SMALL_PAD_LEFT)
+		CU_PART_PADDING_TOP_NAME("contact_name.padding.top", EC_CONT_NAME_SMALL_PAD_TOP)
+		CU_PART_PADDING_TOP_NAME("contact_number.padding.top", EC_CONT_NUMB_SMALL_PAD_TOP)
+		CU_PART_PADDING_TOP_NAME("add_cont.padding.top", EC_ADD_CONT_BTN_PAD_TOP)
+		CU_PART_PADDING_RIGHT_NAME("add_cont.padding.left", EC_ADD_CONT_BTN_PAD_RIGHT)
+
+		CU_PART_PADDING_TOP_NAME("cont_name_big.padding.2line.top", EC_CONT_NAME_BIG_PAD_TOP_2LINE)
+		CU_PART_PADDING_TOP_NAME("cont_name_big.padding.1line.top", EC_CONT_NAME_BIG_PAD_TOP_1LINE)
+		CU_PART_PADDING_TOP_NAME("cont_numb_big.padding.top", EC_CONT_NUMB_BIG_PAD_TOP)
+
+		CU_PART_TEXTBLOCK( "contact_name_big",
+			description { state: "default" 0.0;
+				min: EC_CONT_NAME_BIG_SIZE_MIN;
+				fixed: 0 1;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "padding.left";
+					to_y: "cont_name_big.padding.1line.top";
 				}
-				aspect_preference: SOURCE;
-			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-			description {
-				state: "emergency" 0.0;
-				inherit: "default" 0.0;
-				color_class: "AO036";
-			}
-			description {
-				state: "conference" 0.0;
-				inherit: "show" 0.0;
-			}
-		}
-
-		part {  name: "caller_id_img";
-			type: IMAGE;
-			scale: 1;
-			description {
-				visible: 0;
-				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
-				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
-				image {
-					normal: IMG_SRC_DIR/"call_photo_id.png";
+				rel2 {
+					relative: 0.0 1.0;
+					to_x: "padding.right";
+					to_y: "cont_name_big.padding.1line.top";
 				}
-				aspect_preference: SOURCE;
-				color_class: "AO001";
+				align: 0.5 0.0;
+				text.style: "call_name_light";
 			}
-			description {
-				state: "show" 0.0;
+			description { state: "show_1line" 0.0;
 				inherit: "default" 0.0;
-				visible: 1;
 			}
-			description {
-				state: "hide" 0.0;
+			description { state: "show_2line" 0.0;
+				min: EC_CONT_NAME_BIG_SIZE_MIN;
+				fixed: 0 1;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "padding.left";
+					to_y: "cont_name_big.padding.2line.top";
+				}
+				rel2 {
+					relative: 0.0 1.0;
+					to_x: "padding.right";
+					to_y: "cont_name_big.padding.2line.top";
+				}
+				align: 0.5 0.0;
+				text.style: "call_name_light";
+			}
+			description { state: "hide_1line" 0.0;
+				inherit: "show_1line" 0.0;
+				color: COLOR_WHITE_TRANSP;
+			}
+			description { state: "hide_2line" 0.0;
+				inherit: "show_2line" 0.0;
+				color: COLOR_WHITE_TRANSP;
+			}
+		)
+		CU_PART_TEXTBLOCK( "contact_number_big",
+			description { state: "default" 0.0;
+				min: EC_CONT_NUMB_BIG_SIZE_MIN;
+				fixed: 0 1;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "padding.left";
+					to_y: "cont_numb_big.padding.top";
+				}
+				rel2 {
+					relative: 0.0 1.0;
+					to_x: "padding.right";
+					to_y: "cont_numb_big.padding.top";
+				}
+				align: 0.5 0.0;
+				text {
+					fit: 1 1;
+					style: "call_2line_light";
+				}
+			}
+			description { state: "show_2line" 0.0;
 				inherit: "default" 0.0;
-				visible: 0;
 			}
-			description {
-				state: "emergency" 0.0;
-				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
-				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
-				image {
-					normal: IMG_SRC_DIR/"call_photo_id_emergency.png";
+			description { state: "hide_2line" 0.0;
+				inherit: "default" 0.0;
+				color: COLOR_WHITE_TRANSP;
+			}
+			description { state: "show_1line" 0.0;
+				inherit: "hide_2line" 0.0;
+			}
+		)
+		CU_PART_SPACER( "cont_icon.padding.left",
+			description { state: "default" 0.0;
+				min: EC_CONT_ICON_BIG_PAD_LEFT 0;
+				fixed: 1 0;
+				rel2.relative: 0.0 1.0;
+				align: 0.0 0.0;
+			}
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				min: EC_CONT_ICON_SMALL_PAD_LEFT 0;
+				fixed: 1 0;
+				rel2.relative: 0.0 1.0;
+				align: 0.0 0.0;
+			}
+		)
+		CU_PART_SPACER( "cont_icon.padding.top",
+			description { state: "default" 0.0;
+				min: 0 EC_CONT_ICON_BIG_PAD_TOP;
+				fixed: 0 1;
+				rel2.relative: 1.0 0.0;
+				align: 0.0 0.0;
+			}
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				min: 0 EC_CONT_ICON_SMALL_PAD_TOP;
+				fixed: 0 1;
+				rel2.relative: 1.0 0.0;
+				align: 0.0 0.0;
+			}
+		)
+		CU_PART_TEXTBLOCK( "call_txt_status",
+			description { state: "default" 0.0;
+				min: 0 EC_STATE_TXT_HEIGHT;
+				fixed: 0 1;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "padding.left";
+					to_y: "title_txt.padding.top";
 				}
-				aspect_preference: SOURCE;
-			}
-			description {
-				state: "conference" 0.0;
-				rel1 { relative: EC_CONTACT_IMAGE_X0 EC_CONTACT_IMAGE_Y0; to: "contact_ly";}
-				rel2 { relative: EC_CONTACT_IMAGE_X1 EC_CONTACT_IMAGE_Y1; to: "contact_ly";}
-				image {
-					normal: IMG_SRC_DIR/"call_photo_id_conference.png";
+				rel2 {
+					relative: 0.0 1.0;
+					to_x: "padding.right";
+					to_y: "title_txt.padding.top";
 				}
-				color_class: "AO003L2";
-				aspect_preference: SOURCE;
+				text.style:"call_txt_status_style";
+				align: 0.0 0.0;
 			}
-		}
-
-		part { name: "contact_name";
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: EC_CONTACT_NAME_X0 EC_CONTACT_NAME_Y0; to: "contact_ly";}
-				rel2 { relative: EC_CONTACT_NAME_X1 EC_CONTACT_NAME_Y1; to: "contact_ly";}
+		)
+		CU_PART_TEXTBLOCK ("contact_name",
+			description { state: "default" 0.0;
+				min: EC_CONT_NAME_SMALL_SIZE_MIN;
+				fixed: 0 1;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "contact_info_txt.padding.left";
+					to_y: "contact_name.padding.top";
+				}
+				rel2 {
+					relative: 0.0 1.0;
+					to_x: "cont_info.padding.right";
+					to_y: "contact_name.padding.top";
+				}
 				text {
 					ellipsis: 0.0;
 					style:"call_name";
 				}
+				align: 0.0 0.0;
+				color: COLOR_WHITE_TRANSP;
 			}
-			description {
-				state: "show" 0.0;
+			description { state: "show" 0.0;
 				inherit: "default" 0.0;
-				visible: 1;
+				color: COLOR_WHITE;
 			}
-			description {
-				state: "hide" 0.0;
+			description { state: "hide" 0.0;
 				inherit: "default" 0.0;
-				visible: 0;
 			}
-		}
-
-		part { name: "contact_number";
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: EC_CONTACT_NUMBER_X0 EC_CONTACT_NUMBER_Y0; to: "contact_ly";}
-				rel2 { relative: EC_CONTACT_NUMBER_X1 EC_CONTACT_NUMBER_Y1; to: "contact_ly";}
+		)
+		CU_PART_TEXTBLOCK( "contact_number",
+			description { state: "default" 0.0;
+				min: EC_CONT_NUMB_SMALL_SIZE_MIN;
+				fixed: 0 1;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "contact_info_txt.padding.left";
+					to_y: "contact_number.padding.top";
+				}
+				rel2 {
+					relative: 0.0 1.0;
+					to_x: "cont_info.padding.right";
+					to_y: "contact_number.padding.top";
+				}
 				text {
-					ellipsis: 1.0;
+					ellipsis: 0.0;
 					style:"call_number";
 				}
+				align: 0.0 0.0;
+				color: COLOR_WHITE_TRANSP;
 			}
-			description {
-				state: "show" 0.0;
+			description { state: "show" 0.0;
+				inherit: "default" 0.0;
+				color: COLOR_WHITE;
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
+			}
+		)
+
+		/* CALLER ICON */
+
+		CU_PART_SPACER("cont_icon_base",
+			description { state: "default" 0.0;
+				min: EC_CONT_ICON_SIZE_MAX;
+				max: EC_CONT_ICON_SIZE_MAX;
+				fixed: 1 1;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "cont_icon.padding.left";
+					to_y: "cont_icon.padding.top";
+				}
+				align: 0.0 0.0;
+			}
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				min: EC_CONT_ICON_SIZE_MIN;
+				max: EC_CONT_ICON_SIZE_MIN;
+				fixed: 1 1;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "cont_icon.padding.left";
+					to_y: "cont_icon.padding.top";
+				}
+				align: 0.0 0.0;
+			}
+		)
+
+		CU_PART_SWALLOW( "caller_id",
+			description { state: "default" 0.0;
+				rel1 { relative: 0 0; to: "cont_icon_base"; }
+				rel2 { relative: 1 1; to: "cont_icon_base"; }
+			}
+			description { state: "show" 0.0;
 				inherit: "default" 0.0;
 				visible: 1;
 			}
-			description {
-				state: "hide" 0.0;
+			description { state: "hide" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
 			}
-		}
-
-		part { name: "swallow.create_contact";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: EC_CREATE_CONTACT_X0 EC_CREATE_CONTACT_Y0; to: "contact_ly";}
-				rel2 { relative: EC_CREATE_CONTACT_X1 EC_CREATE_CONTACT_Y1; to: "contact_ly";}
+		)
+		CU_PART_IMAGE( "caller_id_mask",
+			description { state: "default" 0.0;
+				visible: 0;
+				rel1 { relative: 0 0; to: "cont_icon_base"; }
+				rel2 { relative: 1 1; to: "cont_icon_base"; }
+				image.normal: IMG_SRC_DIR/"call_photo_id_bg.png";
+				aspect_preference: SOURCE;
 			}
-			description {
-				state: "show" 0.0;
+			description { state: "show" 0.0;
 				inherit: "default" 0.0;
 				visible: 1;
 			}
-			description {
-				state: "hide" 0.0;
+			description { state: "hide" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
 			}
-		}
+			description { state: "emergency" 0.0;
+				inherit: "default" 0.0;
+				color_class: "AO036";
+			}
+			description { state: "conference" 0.0;
+				inherit: "show" 0.0;
+			}
+		)
+		CU_PART_IMAGE( "caller_id_img",
+			description { state: "default" 0.0;
+				visible: 0;
+				rel1 { relative: 0 0; to: "cont_icon_base"; }
+				rel2 { relative: 1 1; to: "cont_icon_base"; }
+				image.normal: IMG_SRC_DIR/"call_photo_id.png";
+				aspect_preference: SOURCE;
+				color_class: "AO001";
+			}
+			description { state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description { state: "emergency" 0.0;
+				rel1 { relative: 0 0; to: "cont_icon_base"; }
+				rel2 { relative: 1 1; to: "cont_icon_base"; }
+				image.normal: IMG_SRC_DIR/"call_photo_id_emergency.png";
+				aspect_preference: SOURCE;
+			}
+			description { state: "conference" 0.0;
+				rel1 { relative: 0 0; to: "cont_icon_base"; }
+				rel2 { relative: 1 1; to: "cont_icon_base"; }
+				image.normal: IMG_SRC_DIR/"call_photo_id_conference.png";
+				color_class: "AO003L2";
+				aspect_preference: SOURCE;
+			}
+		)
+		CU_PART_SWALLOW( "add_contact_btn",
+			description { state: "default" 0.0;
+				min: EC_ADD_CONT_BTN_SIZE;
+				max: EC_ADD_CONT_BTN_SIZE;
+				fixed: 1 1;
+				rel1 {
+					relative: 0.0 1.0;
+					to_x: "add_cont.padding.left";
+					to_y: "add_cont.padding.top";
+				}
+				rel2 {
+					relative: 0.0 1.0;
+					to_x: "add_cont.padding.left";
+				}
+				align: 1.0 0.0;
+			}
+			description { state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		)
 
-		part { name: "button_call_back";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0.0 EC_RECT_BUTTON_Y0; to: "contact_ly";}
-				rel2 { relative: 0.5 EC_RECT_BUTTON_Y1; to: "contact_ly";}
-			}
-		}
+		/* END CALL BUTTON AREA */
 
-		part { name: "button_message_back";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0.5 EC_RECT_BUTTON_Y0; to: "contact_ly";}
-				rel2 { relative: 1.0 EC_RECT_BUTTON_Y1; to: "contact_ly";}
+		CU_PART_RECT( "end_btn.bg",
+			mouse_events: 0;
+			repeat_events: 1;
+			clip_to: "end_btn_area.clipper";
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 1.0; to: "contact_ly"; }
+				rel2 { relative: 1.0 1.0; to: "contact_ly"; }
+				min: 0 EC_END_CALL_BTN_BG_HEIGHT;
+				fixed: 0 1;
+				align: 0.5 0;
 			}
-		}
-		part { name: "call_txt_status";
-			type: TEXTBLOCK;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: EC_MAIN_TITLE_X0 EC_MAIN_TITLE_Y0; to: "contact_ly";}
-				rel2 { relative: 1.0 EC_MAIN_TITLE_Y1; to: "contact_ly";}
-				text.style:"call_timer_style";
+			description { state: "hide_reply_btns" 0.0;
+				inherit: "default" 0.0;
 			}
-		}
+			description { state: "show_reply_btns" 0.0;
+				rel1 { relative: 0.0 1.0; to: "contact_ly"; }
+				rel2 { relative: 1.0 1.0; to: "contact_ly"; }
+				min: 0 EC_REPLY_BTNS_HEIGHT;
+				fixed: 0 1;
+				align: 0.5 0;
+			}
+		)
+		CU_PART_RECT( "end_btn_area.clipper",
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "end_btn.bg"; }
+				rel2 { relative: 1.0 1.0; to: "end_btn.bg"; }
+				color: COLOR_WHITE;
+			}
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				inherit: "default" 0.0;
+				color: COLOR_WHITE_TRANSP;
+			}
+		)
+
+		/* END CALL BUTTON */
+
+		CU_PART_RECT( "end_btn.clipper",
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "end_btn"; }
+				rel2 { relative: 1.0 1.0; to: "end_btn"; }
+				color: COLOR_WHITE;
+			}
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				inherit: "default" 0.0;
+				color: COLOR_WHITE_TRANSP;
+			}
+		)
+		CU_PART_SWALLOW( "end_btn",
+			clip_to: "end_btn.clipper";
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "end_btn.bg"; }
+				rel2 { relative: 1.0 1.0; to: "end_btn.bg"; }
+				min: EC_END_CALL_BTN_SIZE;
+				max: EC_END_CALL_BTN_SIZE;
+				fixed: 1 1;
+			}
+		)
+
+		/* REPLY BUTTONS */
+
+		CU_PART_RECT( "reply_btns_area.clipper",
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "reply_btns"; }
+				rel2 { relative: 1.0 1.0; to: "reply_btns"; }
+				color: COLOR_WHITE_TRANSP;
+			}
+			description { state: "hide_reply_btns" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "show_reply_btns" 0.0;
+				inherit: "default" 0.0;
+				color: COLOR_WHITE;
+			}
+		)
+		CU_PART_SWALLOW( "reply_btns",
+			clip_to: "reply_btns_area.clipper";
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "end_btn.bg"; }
+				rel2 { relative: 1.0 1.0; to: "end_btn.bg"; }
+			}
+		)
 	}
 	programs{
-		program {
-			name: "show_def_caller_id";
+		script {
+			public show_add_contact_btn;
+			public show_reply_btns;
+			public big_ci_2line;
+		}
+
+		/* BIG CALLER INFO NUMBER OF LINES LOGIC */
+
+		program { name: "1line";
+			signal: "1line";
+			source: "main_end_call";
+
+			action: STATE_SET "show_1line" 0.0;
+			target: "contact_name_big";
+			target: "contact_number_big";
+
+			after: "deinit_big_ci_two_line";
+		}
+		program { name: "2line";
+			signal: "2line";
+			source: "main_end_call";
+
+			action: STATE_SET "show_2line" 0.0;
+			target: "contact_name_big";
+			target: "contact_number_big";
+
+			after: "init_big_ci_two_line";
+		}
+
+		/* BIG CALLER INFO ANIMATION LOGIC */
+
+		program { name: "anim_show_big_ci_1line";
+			action: STATE_SET "show_1line" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
+			target: "contact_name_big";
+		}
+		program { name: "anim_show_big_ci_2line";
+			action: STATE_SET "show_2line" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
+			target: "contact_name_big";
+			target: "contact_number_big";
+		}
+		program { name: "anim_hide_big_ci_1line";
+			action: STATE_SET "hide_1line" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
+			target: "contact_name_big";
+			after: "anim_show_small_ci";
+		}
+		program { name: "anim_hide_big_ci_2line";
+			action: STATE_SET "hide_2line" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
+			target: "contact_name_big";
+			target: "contact_number_big";
+			after: "anim_show_small_ci";
+		}
+
+		/* SMALL CALLER INFO ANIMATION LOGIC */
+
+		program { name: "anim_show_small_ci";
+			action: STATE_SET "show" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_S_B;
+			target: "contact_name";
+			target: "contact_number";
+		}
+		program { name: "anim_hide_small_ci";
+			action: STATE_SET "hide" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_S_B;
+			target: "contact_name";
+			target: "contact_number";
+			after: "select_show_big_ci_type";
+		}
+		program { name: "select_show_big_ci_type";
+			script {
+				if (get_int(big_ci_2line) == 1) {
+					run_program(PROGRAM:"anim_show_big_ci_2line");
+				} else {
+					run_program(PROGRAM:"anim_show_big_ci_1line");
+				}
+			}
+		}
+		program { name: "select_hide_big_ci_type";
+			script {
+				if (get_int(big_ci_2line) == 1) {
+					run_program(PROGRAM:"anim_hide_big_ci_2line");
+				} else {
+					run_program(PROGRAM:"anim_hide_big_ci_1line");
+				}
+			}
+		}
+
+		/* CALLER IMAGE LOGIC */
+
+		program { name: "show_def_caller_id";
 			signal: "show_def_caller_id";
 			source: "main_end_call";
+
 			action: STATE_SET "show" 0.0;
 			target: "caller_id_mask";
 			target: "caller_id_img";
 		}
-		program {
-			name: "hide_def_caller_id";
+		program { name: "hide_def_caller_id";
 			signal: "hide_def_caller_id";
 			source: "main_end_call";
+
 			action: STATE_SET "hide" 0.0;
 			target: "caller_id_mask";
 			target: "caller_id_img";
 		}
-		program {
-			name: "show_emergency_icon";
+		program { name: "show_emergency_icon";
 			signal: "set_emergency_mode";
 			source: "main_end_call";
+
 			action: STATE_SET "emergency" 0.0;
 			target: "caller_id_mask";
 			target: "caller_id_img";
 		}
-		program {
-			name: "show_conference_icon";
+		program { name: "show_conference_icon";
 			signal: "set_conference_mode";
 			source: "main_end_call";
+
 			action: STATE_SET "conference" 0.0;
 			target: "caller_id_img";
 			target: "caller_id_mask";
+		}
+
+		/* ADD CONTACT BUTTON */
+
+		program { name: "set_add_contact_btn_enabled";
+			signal: "set_add_contact_btn_enabled";
+			source: "main_end_call";
+
+			action: STATE_SET "add_contact_btn_enabled" 0.0;
+			target: "cont_info.padding.right";
+			after: "init_show_add_contact_btn_state";
+		}
+		program { name: "show_add_contact_btn";
+			action: STATE_SET "show" 0.0;
+			target: "add_contact_btn";
+		}
+		program { name: "hide_add_contact_btn";
+			action: STATE_SET "hide" 0.0;
+			target: "add_contact_btn";
+		}
+		program { name: "try_show_add_contact_btn";
+			script {
+				if (get_int(show_add_contact_btn) == 1) {
+					run_program(PROGRAM:"show_add_contact_btn");
+				}
+			}
+		}
+		program { name: "try_hide_add_contact_btn";
+			script {
+				if (get_int(show_add_contact_btn) == 1) {
+					run_program(PROGRAM:"hide_add_contact_btn");
+				}
+			}
+		}
+
+		/* REPLY BUTTONS */
+
+		program { name: "show_reply_btns_signal";
+			signal: "show_reply_btns";
+			source: "main_end_call";
+
+			script { set_int(show_reply_btns, 1); }
+		}
+		program { name: "try_show_reply_btns";
+			script {
+				if (get_int(show_reply_btns) == 1) {
+					run_program(PROGRAM:"show_reply_btns");
+				}
+			}
+		}
+		program { name: "try_hide_reply_btns";
+			script {
+				if (get_int(show_reply_btns) == 1) {
+					run_program(PROGRAM:"hide_reply_btns");
+				}
+			}
+		}
+		program { name: "show_reply_btns";
+			in: EC_DELAY_SHOW_REPLY_BTNS;
+			action: STATE_SET "show_reply_btns" 0.0;
+			transition: LINEAR EC_ANIM_DUR_REPLY_BTNS;
+			target: "end_btn.bg";
+			target: "reply_btns_area.clipper";
+		}
+		program { name: "hide_reply_btns";
+			in: EC_DELAY_HIDE_REPLY_BTNS;
+			action: STATE_SET "hide_reply_btns" 0.0;
+			transition: LINEAR EC_ANIM_DUR_REPLY_BTNS;
+			target: "end_btn.bg";
+			target: "reply_btns_area.clipper";
+		}
+
+		/* END CALL BUTTON */
+
+		program { name: "show_end_call_btn";
+			in: EC_DELAY_SHOW_END_CALL_BTN;
+			action: STATE_SET "maximize" 0.0;
+			transition: LINEAR EC_ANIM_DUR_END_CALL_BTN;
+			target: "end_btn.clipper";
+		}
+		program { name: "hide_end_call_btn";
+			in: EC_DELAY_HIDE_END_CALL_BTN;
+			action: STATE_SET "minimize" 0.0;
+			transition: LINEAR EC_ANIM_DUR_END_CALL_BTN;
+			target: "end_btn.clipper";
+		}
+		program { name: "try_show_end_call_btn_area";
+			script {
+				if (get_int(show_reply_btns) != 1) {
+					run_program(PROGRAM:"show_end_call_btn_area");
+				}
+			}
+		}
+		program { name: "try_hide_end_call_btn_area";
+			script {
+				if (get_int(show_reply_btns) != 1) {
+					run_program(PROGRAM:"hide_end_call_btn_area");
+				}
+			}
+		}
+
+		/* END CALL BACKGROUND */
+
+		program { name: "show_end_call_btn_area";
+			in: EC_DELAY_SHOW_END_CALL_BTN_AREA;
+			action: STATE_SET "maximize" 0.0;
+			transition: LINEAR EC_ANIM_DUR_END_CALL_BTN_AREA;
+			target: "end_btn_area.clipper";
+		}
+		program { name: "hide_end_call_btn_area";
+			in: EC_DELAY_HIDE_END_CALL_BTN_AREA;
+			action: STATE_SET "minimize" 0.0;
+			transition: LINEAR EC_ANIM_DUR_END_CALL_BTN_AREA;
+			target: "end_btn_area.clipper";
+		}
+
+		/* MINIMIZE / MAXIMIZE START LOGIC */
+
+		program { name: "minimize";
+			signal: "minimize";
+			source: "main_end_call";
+
+			after: "try_hide_add_contact_btn";
+			after: "hide_end_call_btn";
+			after: "try_show_reply_btns";
+			after: "try_hide_end_call_btn_area";
+			after: "run_minimize_animation";
+
+			after: "select_hide_big_ci_type";
+		}
+		program { name: "maximize";
+			signal: "maximize";
+			source: "main_end_call";
+
+			after: "try_hide_add_contact_btn";
+			after: "show_end_call_btn";
+			after: "try_hide_reply_btns";
+			after: "try_show_end_call_btn_area";
+			after: "run_maximize_animation";
+
+			after: "anim_hide_small_ci";
+		}
+		program { name: "run_minimize_animation";
+			action: STATE_SET "minimize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "cont_icon_base";
+			target: "cont_icon.padding.top";
+			target: "cont_icon.padding.left";
+			target: "contact_ly";
+			after: "try_show_add_contact_btn";
+			after: "minimize_anim_completed";
+		}
+		program { name: "run_maximize_animation";
+			action: STATE_SET "maximize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "cont_icon_base";
+			target: "cont_icon.padding.top";
+			target: "cont_icon.padding.left";
+			target: "contact_ly";
+			after: "maximize_anim_completed";
+		}
+		program { name: "minimize_anim_completed";
+			action: SIGNAL_EMIT "minimize_anim_completed" "main_end_call";
+		}
+		program { name: "maximize_anim_completed";
+			action: SIGNAL_EMIT "maximize_anim_completed" "main_end_call";
+		}
+		program {
+			name: "init_show_add_contact_btn_state";
+			script { set_int(show_add_contact_btn, 1); }
+		}
+		program {
+			name: "init_big_ci_two_line";
+			script { set_int(big_ci_2line, 1); }
+		}
+		program {
+			name: "deinit_big_ci_two_line";
+			script { set_int(big_ci_2line, 0); }
 		}
 	}
 }

@@ -18,70 +18,84 @@
 group {
     name: "app_main_ly";
 	parts {
-		part { name: "bg";
-			type: SPACER;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-			}
-		}
-		part { name: "pad.bottom";
-			type: SPACER;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1.relative: 0.0 1.0;
-				min: 0 ENDCALL_BTN_BG_H;
-				fixed: 0 1;
-				align: 0 1;
-			}
-		}
-		part { name: "elm.swallow.content";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-			}
-		}
-		part { name: "action_bar";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
+		CU_PART_SPACER( "bg",
+			description { state: "default" 0.0; }
+		)
+		CU_PART_SWALLOW( "elm.swallow.content",
+			description { state: "default" 0.0; }
+		)
+		CU_PART_SWALLOW( "action_bar",
+			clip_to: "keypadarea.clipper";
+			description { state: "default" 0.0;
 				rel1{ relative: ACTION_BAR_LAYOUT_L ACTION_BAR_LAYOUT_T; }
 				rel2{ relative: ACTION_BAR_LAYOUT_R ACTION_BAR_LAYOUT_B; }
 				align: 0.5 0.0;
 			}
-		}
-		part { name: "keypadarea.clipper";
-			type: RECT;
+		)
+		CU_PART_SPACER( "keypadarea.clipper.maximized",
+			description { state: "default" 0.0;
+				rel1.relative: 0.0 1.0;
+				min: 0 EC_END_CALL_BTN_AREA_PAD_BOTTOM_MAX;
+				fixed: 0 1;
+				align: 0 1;
+			}
+		)
+
+		CU_PART_PADDING_TOP_NAME("keypadarea.clipper.minimized", EC_LAYOUT_MINIMIZE_SIZE)
+
+		CU_PART_RECT( "keypadarea.clipper",
 			mouse_events: 0;
 			repeat_events: 1;
-			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1.relative: 0.0 0.0;
-				rel2 {
-					relative: 1.0 0.0;
-					to: "pad.bottom";
-				}
+			description { state: "default" 0.0;
+				rel2 { relative: 1.0 0.0; to: "keypadarea.clipper.maximized"; }
 			}
-		}
-		part { name: PART_SWALLOW_KEYPAD_LAYOUT_AREA;
-			type: SWALLOW;
-			scale: 1;
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "keypadarea.clipper.minimized"; }
+				rel2 { relative: 1.0 1.0; to: "keypadarea.clipper.minimized"; }
+			}
+		)
+		CU_PART_SWALLOW( PART_SWALLOW_KEYPAD_LAYOUT_AREA,
 			clip_to: "keypadarea.clipper";
 			description {
 				state: "default" 0.0;
-				rel1 {
-					relative: 0.0 0.0;
-					to: "keypadarea.clipper";
-				}
-				rel2 {
-					relative: 1.0 1.0;
-					to: "keypadarea.clipper";
-				}
+				rel1 { relative: 0.0 0.0; to: "keypadarea.clipper"; }
+				rel2 { relative: 1.0 1.0; to: "keypadarea.clipper"; }
 			}
+		)
+	}
+	programs {
+		program { name: "anim_minimize_main_clipper";
+			action: STATE_SET "minimize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "keypadarea.clipper";
+		}
+		program { name: "anim_maximize_main_clipper";
+			action: STATE_SET "maximize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "keypadarea.clipper";
+		}
+		program { name: "maximize_main_clipper";
+			action: STATE_SET "maximize" 0.0;
+			target: "keypadarea.clipper";
+		}
+		program { name: "minimize";
+			signal: "minimize";
+			source: "app_main_ly";
+			after: "anim_minimize_main_clipper";
+		}
+		program { name: "maximize";
+			signal: "maximize";
+			source: "app_main_ly";
+			after: "anim_maximize_main_clipper";
+		}
+		program { name: "maximize_no_anim";
+			signal: "maximize_no_anim";
+			source: "app_main_ly";
+			after: "maximize_main_clipper";
 		}
 	}
 }

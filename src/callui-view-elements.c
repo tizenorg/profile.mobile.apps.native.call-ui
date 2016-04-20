@@ -115,7 +115,6 @@ static Evas_Object *__callui_get_caller_info_layout(void *data)
 Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb cb_func, void *data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(parent != NULL, NULL);
-	CALLUI_RETURN_VALUE_IF_FAIL(cb_func != NULL, NULL);
 
 	Evas_Object *btn = elm_object_part_content_get(parent, PART_END_BTN);
 	if (!btn) {
@@ -127,7 +126,9 @@ Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb c
 		elm_object_part_content_set(btn, "elm.swallow.content", icon);
 		elm_object_part_content_set(parent, PART_END_BTN, btn);
 
-		evas_object_smart_callback_add(btn, "clicked", cb_func, data);
+		if (cb_func) {
+			evas_object_smart_callback_add(btn, "clicked", cb_func, data);
+		}
 	}
 	evas_object_show(btn);
 
