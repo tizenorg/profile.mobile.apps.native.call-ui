@@ -114,7 +114,6 @@ static Evas_Object *__callui_get_caller_info_layout(void *data)
 Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb cb_func, void *data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(parent != NULL, NULL);
-	CALLUI_RETURN_VALUE_IF_FAIL(cb_func != NULL, NULL);
 
 	Evas_Object *btn = elm_object_part_content_get(parent, PART_END_BTN);
 	if (!btn) {
@@ -126,7 +125,9 @@ Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb c
 		elm_object_part_content_set(btn, "elm.swallow.content", icon);
 		elm_object_part_content_set(parent, PART_END_BTN, btn);
 
-		evas_object_smart_callback_add(btn, "clicked", cb_func, data);
+		if (cb_func) {
+			evas_object_smart_callback_add(btn, "clicked", cb_func, data);
+		}
 	}
 	evas_object_show(btn);
 
@@ -170,14 +171,14 @@ Evas_Object *_callui_create_thumbnail_with_size(Evas_Object *parent, const char 
 void _callui_show_caller_info_name(void *data, const char *name)
 {
 	Evas_Object *layout = __callui_get_caller_info_layout(data);
-	elm_object_translatable_part_text_set(layout, "txt_call_name", name);
+	elm_object_translatable_part_text_set(layout, "contact_name", name);
 }
 
 /* Caller info number */
 void _callui_show_caller_info_number(void *data, const char *number)
 {
 	Evas_Object *layout = __callui_get_caller_info_layout(data);
-	elm_object_part_text_set(layout, "txt_phone_num", number);
+	elm_object_part_text_set(layout, "phone_number", number);
 }
 
 /* Caller info status*/
@@ -195,7 +196,7 @@ Evas_Object *_callui_show_caller_id(Evas_Object *contents, const char *path)
 	dbg("..");
 	Evas_Object *layout = _callui_create_thumbnail(contents, path, THUMBNAIL_138);
 
-	elm_object_part_content_set(contents, "caller_id", layout);
+	elm_object_part_content_set(contents, "contact_icon", layout);
 
 	/*Hide default caller-ID*/
 	elm_object_signal_emit(contents, "hide_default_cid", "");

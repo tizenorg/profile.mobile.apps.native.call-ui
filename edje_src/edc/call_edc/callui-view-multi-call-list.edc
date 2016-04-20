@@ -75,7 +75,7 @@ group {
 			description {
 				state: "default" 0.0;
 				rel1 { relative: 0 (INDICATOR_HEIGHT+72)/MULTI_LIST_HEIGHT; to: "background"; }
-				rel2 { relative: 1 (MULTI_LIST_HEIGHT-BOTTOM_BTN_BG_HEIGHT)/MULTI_LIST_HEIGHT; to: "background"; }
+				rel2 { relative: 1 (MULTI_LIST_HEIGHT-ENDCALL_BTN_BG_H)/MULTI_LIST_HEIGHT; to: "background"; }
 			}
 		}
 
@@ -84,7 +84,7 @@ group {
 			type: RECT;
 			description {
 				state: "default" 0.0;
-				rel1 { relative: 0 (MULTI_LIST_HEIGHT-BOTTOM_BTN_BG_HEIGHT)/MULTI_LIST_HEIGHT; to: "background"; }
+				rel1 { relative: 0 (MULTI_LIST_HEIGHT-ENDCALL_BTN_BG_H)/MULTI_LIST_HEIGHT; to: "background"; }
 				rel2 { relative: 1 1; to: "background"; }
 				color: 255 255 255 255;
 			}

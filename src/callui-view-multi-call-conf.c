@@ -69,7 +69,7 @@ static callui_result_e __create_main_content(callui_view_mc_conf_h vd)
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	/* Main Layout */
-	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_VIEW_MAIN_LY);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
 
@@ -84,7 +84,7 @@ static callui_result_e __create_main_content(callui_view_mc_conf_h vd)
 	/* Manage button Layout */
 	Evas_Object *manage_calls_ly = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_MANAGE_CALLS);
 	CALLUI_RETURN_VALUE_IF_FAIL(manage_calls_ly, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(vd->caller_info, "manage_calls_icon_swallow", manage_calls_ly);
+	elm_object_part_content_set(vd->caller_info, "manage_calls_btn", manage_calls_ly);
 	edje_object_signal_callback_add(_EDJ(manage_calls_ly), "mouse,clicked,1", "btn", __manage_calls_btn_clicked_cb, vd);
 
 	_callui_action_bar_show(ad->action_bar);
@@ -190,11 +190,11 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 	FREE(vd->base_view.call_duration_tm);
 
 	if (is_held) {
-		elm_object_signal_emit(vd->caller_info, "hide,arrow", "");
+		elm_object_signal_emit(vd->caller_info, "hide_manage_calls_btn", "");
 		_callui_show_caller_info_status(ad, "IDS_CALL_BODY_ON_HOLD_ABB");
 
 	} else {
-		elm_object_signal_emit(vd->caller_info, "show,arrow", "");
+		elm_object_signal_emit(vd->caller_info, "show_manage_calls_btn", "");
 
 		vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 		CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_tm, CALLUI_RESULT_ALLOCATION_FAIL);

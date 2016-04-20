@@ -28,8 +28,8 @@
 #define PART_SWALLOW_CALLER_ID				"swallow.caller_id"
 #define PART_TEXT_MAIN						"text.main"
 #define PART_TEXT_SUB						"text.sub"
-#define SIGNAL_SHOW_ARROW					"show,arrow"
-#define SIGNAL_HIDE_ARROW					"hide,arrow"
+#define SIGNAL_SHOW_ARROW					"show_manage_calls_btn"
+#define SIGNAL_HIDE_ARROW					"hide_manage_calls_btn"
 
 #define PART_TOP_FIRST_BTN					"top_first_button"
 #define PART_TOP_SECOND_BTN					"top_second_button"

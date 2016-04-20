@@ -183,10 +183,22 @@ static void __call_state_event_cb(void *user_data,
 	CALLUI_RETURN_IF_FAIL(user_data);
 
 	callui_vm_h vm = user_data;
+	callui_app_data_t *ad = vm->ad;
 
-	if (!(vm->cur_view_type == CALLUI_VIEW_ENDCALL && call_event_type == CALLUI_CALL_EVENT_END)) {
-		__auto_change_view(vm, event_info);
+	if (vm->cur_view_type == CALLUI_VIEW_ENDCALL) {
+		switch (call_event_type) {
+		case CALLUI_CALL_EVENT_END:
+			dbg("Ignored. Already in end call view.");
+			return;
+		case CALLUI_CALL_EVENT_INCOMING:
+			elm_object_signal_emit(ad->main_ly, "maximize_no_anim", "app_main_ly");
+			break;
+		default:
+			break;
+		}
+		_callui_action_bar_set_disabled_state(ad->action_bar, false);
 	}
+	__auto_change_view(vm, event_info);
 }
 
 static void __end_call_called_cb(void *user_data, unsigned int call_id, callui_call_release_type_e release_type)

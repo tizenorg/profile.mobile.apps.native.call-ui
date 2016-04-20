@@ -46,6 +46,7 @@ struct _callui_action_bar {
 	Evas_Object *buttons[CALLUI_ACTION_BTN_COUNT];
 	bool is_available[CALLUI_ACTION_BTN_COUNT];
 	callui_app_data_t *ad;
+	bool is_disabled;
 };
 typedef struct _callui_action_bar _callui_action_bar_t;
 
@@ -419,6 +420,11 @@ static void __audio_state_changed_cb(void *user_data, callui_audio_state_type_e 
 
 	callui_action_bar_h action_bar = user_data;
 
+	if (action_bar->is_disabled) {
+		dbg("Ignored. Action bar is in disabled state.");
+		return;
+	}
+
 	__update_speaker_btn(action_bar);
 	__update_bluetooth_btn(action_bar);
 }
@@ -428,6 +434,11 @@ static void __mute_state_changed_cb(void *user_data, bool is_enable)
 	CALLUI_RETURN_IF_FAIL(user_data);
 
 	callui_action_bar_h action_bar = user_data;
+
+	if (action_bar->is_disabled) {
+		dbg("Ignored. Action bar is in disabled state.");
+		return;
+	}
 
 	__update_mute_btn(action_bar);
 }
@@ -477,6 +488,11 @@ static void __call_state_event_cb(void *user_data,
 
 	callui_action_bar_h action_bar = user_data;
 
+	if (action_bar->is_disabled) {
+		dbg("Ignored. Action bar is in disabled state.");
+		return;
+	}
+
 	__update_btns_state(action_bar);
 
 	__update_all_btns(action_bar);
@@ -485,7 +501,9 @@ static void __call_state_event_cb(void *user_data,
 static callui_result_e __callui_action_bar_init(callui_action_bar_h action_bar,	callui_app_data_t *ad)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(ad->sound_manager, CALLUI_RESULT_FAIL);
+
 	action_bar->ad = ad;
+	action_bar->is_disabled = false;
 	Evas_Object *parent = ad->main_ly;
 
 	_callui_sdm_add_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, action_bar);
@@ -579,4 +597,31 @@ void _callui_action_bar_hide(callui_action_bar_h action_bar)
 
 	elm_object_part_content_unset(parent, PART_SWALLOW_ACTION_BAR);
 	evas_object_hide(action_bar->main_layout);
+}
+
+void _callui_action_bar_set_disabled_state(callui_action_bar_h action_bar, bool is_disabled)
+{
+	CALLUI_RETURN_IF_FAIL(action_bar);
+
+	if (action_bar->is_disabled == is_disabled) {
+		return;
+	}
+	action_bar->is_disabled = is_disabled;
+
+	if (is_disabled) {
+		int i = 0;
+		for (; i < CALLUI_ACTION_BTN_COUNT; i++) {
+			action_bar->is_available[i] = !is_disabled;
+		}
+	} else {
+		__update_btns_state(action_bar);
+	}
+	__update_all_btns(action_bar);
+}
+
+bool _callui_action_bar_get_disabled_state(callui_action_bar_h action_bar)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(action_bar, false);
+
+	return action_bar->is_disabled;
 }
