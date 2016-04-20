@@ -73,6 +73,7 @@ ADD_CUSTOM_COMMAND(
 			${INC_DIR}/callui-view-caller-info-defines.h
 			${INC_DIR}/callui-view-elements-defines.h
 			${EDC_SRC_DIR}/callui-color-classes.edc
+			${EDC_SRC_DIR}/callui-parts.edc
 			${EDC_SRC_DIR}/call_edc/edc_image_macro.edc
 			${EDC_SRC_DIR}/call_edc/callui-view-button-layout.edc
 			${EDC_SRC_DIR}/call_edc/callui-view-caller-info.edc
@@ -87,6 +88,7 @@ ADD_CUSTOM_COMMAND(
 			${EDC_SRC_DIR}/call_edc/callui-view-one-hold-in-conference.edc
 			${EDC_SRC_DIR}/call_edc/callui-view-elements.edc
 )
+
 ADD_CUSTOM_TARGET(call.edje ALL DEPENDS ${CMAKE_BINARY_DIR}/call.edj)
 
 ADD_CUSTOM_COMMAND(

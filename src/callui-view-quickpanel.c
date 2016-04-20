@@ -333,14 +333,14 @@ static void __update_caller_info(Evas_Object *eo, const callui_call_data_t *call
 	if (strlen(call_name) == 0) {
 		if (strlen(call_number) == 0) {
 			elm_object_translatable_part_text_set(eo,
-					"txt_call_name", "IDS_CALL_BODY_UNKNOWN");
+					"contact_name", "IDS_CALL_BODY_UNKNOWN");
 		} else {
-			elm_object_part_text_set(eo, "txt_call_name", call_number);
+			elm_object_part_text_set(eo, "contact_name", call_number);
 		}
 	} else {
 		char *convert_text = evas_textblock_text_utf8_to_markup(NULL, call_name);
 		if (convert_text) {
-			elm_object_part_text_set(eo, "txt_call_name", convert_text);
+			elm_object_part_text_set(eo, "contact_name", convert_text);
 			free(convert_text);
 			convert_text = NULL;
 		} else {
@@ -678,7 +678,7 @@ static void __update_text_components(char *txt_status, int count, Evas_Object *e
 	}
 	if (count > 1) {
 		elm_object_translatable_part_text_set(eo,
-				"txt_call_name", "IDS_CALL_OPT_CONFERENCE_CALL");
+				"contact_name", "IDS_CALL_OPT_CONFERENCE_CALL");
 	}
 }
 
