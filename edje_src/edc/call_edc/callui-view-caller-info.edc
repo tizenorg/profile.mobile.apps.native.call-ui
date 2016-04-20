@@ -113,13 +113,6 @@ group{
 				}
 				color_class: "ATO030";
 			}
-			description {
-				state: "emergency" 0.0;
-				rel1 { relative: CALLER_INFO_NAME_L CALLER_INFO_NAME_T; to: "background";}
-				rel2 { relative: CALLER_INFO_NAME_R CALLER_INFO_NAME_EMERGENCY_B; to: "background";}
-				text.size: 64;
-				text.text_class: "AO008";
-			}
 		}
 
 		part { name: "txt_2nd_area";
@@ -325,7 +318,6 @@ group{
 				action: STATE_SET "emergency" 0.0;
 				target: "caller_id_img";
 				target: "caller_id_bg";
-				target: "txt_call_name";
 			}
 
 			program {

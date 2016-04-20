@@ -60,7 +60,7 @@
 #define GRP_ENDCALL_MAIN_LAYOUT "main_end_call"
 #define GRP_ENDCALL_CALL_BACK_BTN "call_back"
 #define GRP_ENDCALL_MSG_BTN "message_button"
-#define GRP_ENDCALL_CREATE_CONT_BTN "create_contact_button"
+#define GRP_ENDCALL_ADD_CONTACT_BTN "add_contact_button"
 
 #define	CALLUI_DISPLAY_NAME_LENGTH_MAX			(255+1)			/**< Voiecall Display Name Max Length  */
 #define	CALLUI_IMAGE_PATH_LENGTH_MAX			(255+1)			/**< Max File length for image */
