@@ -48,9 +48,12 @@
 #define GRP_SEPARATOR_LAYOUT_1BUTTON "separator-layout-1button"
 #define GRP_SEPARATOR_LAYOUT_2BUTTON "separator-layout-2button"
 #define GRP_BUTTON_LAYOUT "button-layout"
+
 #define APP_CONTROL_OPERATION_DURING_CALL "http://tizen.org/appcontrol/oparation/during_call"
 #define APP_CONTROL_OPERATION_MESSAGE_REJECT "http://tizen.org/appcontrol/operation/message_reject"
 #define APP_CONTROL_OPERATION_END_CALL "http://tizen.org/appcontrol/operation/end_call"
+#define APP_CONTROL_OPERATION_QP_RESUME "http://tizen.org/appcontrol/operation/qp_resume"
+
 #define GRP_CALLER_INFO "caller-info"
 #define GRP_MANAGE_CALLS "manage-calls"
 #define GRP_LOCK_ACCEPT "lock_accept"

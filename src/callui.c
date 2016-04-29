@@ -603,6 +603,10 @@ static void __app_service(app_control_h app_control, void *data)
 		}
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_DEFAULT) == 0) {
 		warn("Unsupported operation type");
+	} else if (strcmp(operation, APP_CONTROL_OPERATION_QP_RESUME) == 0) {
+		if (ad->view_manager && _callui_vm_get_cur_view_type(ad->view_manager) == CALLUI_VIEW_INCOMING_CALL_NOTI) {
+			_callui_vm_change_view(ad->view_manager, CALLUI_VIEW_INCOMING_CALL);
+		}
 	} else if (strcmp(operation, APP_CONTROL_OPERATION_DURING_CALL) == 0) {
 		ret = _callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_NORMAL);
 		if (CALLUI_RESULT_OK != ret) {
