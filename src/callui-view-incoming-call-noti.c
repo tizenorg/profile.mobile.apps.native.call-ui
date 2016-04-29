@@ -46,6 +46,8 @@ struct _callui_view_incoming_call_noti {
 
 	Elm_Genlist_Item_Class *reject_msg_itc;
 	char reject_msg[CALLUI_REJ_MSG_MAX_LENGTH];
+
+	bool rej_msg_list_visible;
 };
 
 typedef struct _callui_view_incoming_call_noti _callui_view_incoming_call_noti_t;
@@ -58,7 +60,6 @@ static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd
 static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h vd);
 
 static void __reject_msg_genlist_item_click_cb(void *data, Evas_Object *obj, void *event_info);
-static void __reject_msg_layout_back_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __reject_msg_genlist_add(callui_view_incoming_call_noti_h vd);
 static char *__reject_msg_genlist_item_txt_cb(void *data, Evas_Object *obj, const char *part);
 static void __reject_msg_genlist_init_item_class(callui_view_incoming_call_noti_h vd);
@@ -71,6 +72,7 @@ static Eina_Bool __reject_msg_close_effect_activated_cb(void *data);
 static void __show_reject_msg_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 
 static void __create_reject_msg_content(callui_view_incoming_call_noti_h vd);
+static void __destroy_reject_msg_content(callui_view_incoming_call_noti_h vd);
 
 static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 
@@ -225,24 +227,16 @@ static void __show_reject_msg_btn_click_cb(void *data, Evas *evas, Evas_Object *
 	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	evas_object_resize(ad->win, ad->root_w, ad->root_h);
-
-	__create_reject_msg_content(vd);
-
-	elm_object_signal_emit(vd->base_view.contents, "big_main_ly", "main_active_noti_call");
-}
-
-static void __reject_msg_layout_back_click_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	CALLUI_RETURN_IF_FAIL(data);
-
-	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)data;
-	callui_app_data_t *ad = vd->base_view.ad;
-
-	evas_object_resize(ad->win, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
-
-	elm_object_signal_emit(vd->base_view.contents, "small_main_ly", "main_active_noti_call");
-	evas_object_del(vd->reject_msg_genlist);
+	if (vd->rej_msg_list_visible) {
+		evas_object_resize(ad->win, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
+		elm_object_signal_emit(vd->base_view.contents, "small_main_ly", "main_active_noti_call");
+		__destroy_reject_msg_content(vd);
+	} else {
+		evas_object_resize(ad->win, ad->root_w, ad->root_h);
+		elm_object_signal_emit(vd->base_view.contents, "big_main_ly", "main_active_noti_call");
+		__create_reject_msg_content(vd);
+	}
+	vd->rej_msg_list_visible = !vd->rej_msg_list_visible;
 }
 
 static void __reject_msg_genlist_add(callui_view_incoming_call_noti_h vd)
@@ -254,7 +248,6 @@ static void __reject_msg_genlist_add(callui_view_incoming_call_noti_h vd)
 
 	vd->reject_msg_genlist = elm_genlist_add(vd->base_view.contents);
 	CALLUI_RETURN_IF_FAIL(vd->reject_msg_genlist);
-	eext_object_event_callback_add(vd->reject_msg_layout, EEXT_CALLBACK_BACK, __reject_msg_layout_back_click_cb, vd);
 	evas_object_data_set(vd->reject_msg_genlist, CALLUI_REJ_MSG_GENLIST_DATA, vd);
 
 	evas_object_size_hint_weight_set(vd->reject_msg_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -353,6 +346,12 @@ static void __create_reject_msg_content(callui_view_incoming_call_noti_h vd)
 	evas_object_size_hint_max_set(vd->reject_msg_genlist, ad->root_w, ELM_SCALE_SIZE(MTLOCK_REJECT_MSG_LIST_1ITEM_NEW_HEIGHT * msg_cnt));
 	evas_object_show(vd->reject_msg_layout);
 	evas_object_show(vd->reject_msg_genlist);
+}
+
+static void __destroy_reject_msg_content(callui_view_incoming_call_noti_h vd)
+{
+	DELETE_EVAS_OBJECT(vd->reject_msg_layout);
+	vd->reject_msg_genlist = NULL;
 }
 
 static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
