@@ -54,8 +54,9 @@
 #define APP_CONTROL_OPERATION_END_CALL "http://tizen.org/appcontrol/operation/end_call"
 #define APP_CONTROL_OPERATION_QP_RESUME "http://tizen.org/appcontrol/operation/qp_resume"
 
-#define GRP_CALLER_INFO "caller-info"
-#define GRP_MANAGE_CALLS "manage-calls"
+#define GRP_CALLER_INFO "caller_info"
+#define GRP_MANAGE_CALLS "manage_calls"
+
 #define GRP_LOCK_ACCEPT "lock_accept"
 #define GRP_LOCK_REJECT "lock_reject"
 #define GRP_LOCK_REJECT_WITH_MSG "lock_reject_with_msg"
