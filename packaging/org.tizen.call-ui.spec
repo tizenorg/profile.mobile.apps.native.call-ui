@@ -1,6 +1,6 @@
 Name:       org.tizen.call-ui
-#VCS_FROM:   profile/mobile/apps/native/call-ui#c3ba837aea7a1f6020992dfaa90d5ecd69c4a914
-#RS_Ver:    20160428_3 
+#VCS_FROM:   profile/mobile/apps/native/call-ui#fe4a161d90697e9ce34adf60080d7cf97fef92fc
+#RS_Ver:    20160512_2 
 Summary:    Call UI Application
 Version:    1.0.0
 Release:    1
@@ -11,6 +11,7 @@ Source0:    %{name}-%{version}.tar.gz
 BuildRequires:  pkgconfig(libtzplatform-config)
 Requires(post):  /usr/bin/tpk-backend
 
+%define internal_name org.tizen.call-ui
 %define preload_tpk_path %{TZ_SYS_RO_APP}/.preload-tpk 
 
 %ifarch i386 i486 i586 i686 x86_64
@@ -24,6 +25,7 @@ Requires(post):  /usr/bin/tpk-backend
 %endif
 
 %description
+profile/mobile/apps/native/call-ui#fe4a161d90697e9ce34adf60080d7cf97fef92fc
 This is a container package which have preload TPK files
 
 %prep
@@ -34,7 +36,7 @@ This is a container package which have preload TPK files
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{preload_tpk_path}
-install %{name}-%{version}-%{target}.tpk %{buildroot}/%{preload_tpk_path}/
+install %{internal_name}-%{version}-%{target}.tpk %{buildroot}/%{preload_tpk_path}/
 
 %post
 
