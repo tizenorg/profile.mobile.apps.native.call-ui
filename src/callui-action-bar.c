@@ -16,8 +16,8 @@
  */
 
 #include <stdbool.h>
-#include <bluetooth_type.h>
-#include <bluetooth.h>
+#include <network/bluetooth_type.h>
+#include <network/bluetooth.h>
 
 #include "callui-action-bar.h"
 #include "callui-common-types.h"

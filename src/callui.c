@@ -18,7 +18,7 @@
 #include <app.h>
 #include <vconf.h>
 #include <vconf-keys.h>
-#include <bluetooth.h>
+#include <network/bluetooth.h>
 #include <system_settings.h>
 #include <efl_util.h>
 

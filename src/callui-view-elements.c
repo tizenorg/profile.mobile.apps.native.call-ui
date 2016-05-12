@@ -17,7 +17,7 @@
 
 #include <vconf.h>
 #include <vconf-keys.h>
-#include <bluetooth.h>
+#include <network/bluetooth.h>
 #include <app_control.h>
 #include <notification.h>
 #include <efl_extension.h>

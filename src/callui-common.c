@@ -22,7 +22,7 @@
 #include <time.h>
 #include <contacts.h>
 #include <runtime_info.h>
-#include <bluetooth.h>
+#include <network/bluetooth.h>
 #include <system_settings.h>
 #include <efl_util.h>
 #include <msg.h>
