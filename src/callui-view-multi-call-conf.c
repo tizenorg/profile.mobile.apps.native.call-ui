@@ -39,11 +39,11 @@ struct _callui_view_mc_conf {
 
 typedef struct _callui_view_mc_conf _callui_view_mc_conf_t;
 
-static callui_result_e __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata);
 static callui_result_e __callui_view_multi_call_conf_onupdate(call_view_data_base_t *view_data);
 static callui_result_e __callui_view_multi_call_conf_ondestroy(call_view_data_base_t *view_data);
 
-static callui_result_e __create_main_content(callui_view_mc_conf_h vd);
+static callui_result_e __create_main_content(callui_view_mc_conf_h vd, Evas_Object *parent);
 static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd);
 
 static void __manage_calls_btn_clicked_cb(void *data, Evas_Object *o, const char *emission, const char *source);
@@ -64,14 +64,14 @@ callui_view_mc_conf_h _callui_view_multi_call_conf_new()
 	return mc_list_conf;
 }
 
-static callui_result_e __create_main_content(callui_view_mc_conf_h vd)
+static callui_result_e __create_main_content(callui_view_mc_conf_h vd, Evas_Object *parent)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	/* Main Layout */
-	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_VIEW_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME, GRP_VIEW_MAIN_LY);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
+	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
 
 	// TODO: replace this into view manager in nearest future
 	eext_object_event_callback_add(vd->base_view.contents, EEXT_CALLBACK_MORE, __more_btn_click_cb, ad);
@@ -99,15 +99,16 @@ static callui_result_e __create_main_content(callui_view_mc_conf_h vd)
 	return CALLUI_RESULT_OK;
 }
 
-static callui_result_e __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e __callui_view_multi_call_conf_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(parent, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
 
 	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)view_data;
 	view_data->ad = (callui_app_data_t *)appdata;
 
-	callui_result_e res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd, parent);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	return __update_displayed_data(vd);
@@ -215,9 +216,6 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 	elm_object_signal_emit(vd->base_view.contents, "SHOW_NO_EFFECT", "ALLBTN");
 
 	evas_object_show(vd->base_view.contents);
-
-	evas_object_hide(ad->main_ly);
-	evas_object_show(ad->main_ly);
 
 	return CALLUI_RESULT_OK;
 }

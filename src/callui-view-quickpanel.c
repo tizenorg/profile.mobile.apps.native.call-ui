@@ -279,7 +279,7 @@ static void __caller_btn_click_cb(void *data, Evas_Object *obj, void *event_info
 /*	if (_callui_get_idle_lock_type() == CALL_LOCK)
 		vconf_set_int(VCONFKEY_IDLE_LOCK_STATE, VCONFKEY_IDLE_UNLOCK);*/
 
-	elm_win_activate(ad->win);
+	_callui_window_activate(ad->window);
 }
 
 static void __main_layout_mouse_up_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
