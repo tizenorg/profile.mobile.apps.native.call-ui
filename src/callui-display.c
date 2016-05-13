@@ -221,22 +221,22 @@ callui_result_e _callui_display_set_control_state(callui_display_h display, call
 	case CALLUI_DISPLAY_ON_LOCK:
 		result = device_display_change_state(DISPLAY_STATE_NORMAL);
 		CALLUI_RETURN_VALUE_IF_FAIL(result == DEVICE_ERROR_NONE, CALLUI_RESULT_FAIL);
-		result = efl_util_set_window_screen_mode(display->ad->win, EFL_UTIL_SCREEN_MODE_ALWAYS_ON);
-		CALLUI_RETURN_VALUE_IF_FAIL(result == EFL_UTIL_ERROR_NONE, CALLUI_RESULT_FAIL);
+		result = _callui_window_set_screen_mode(display->ad->window, CALLUI_WIN_SCREEN_MODE_ALWAYS_ON);
+		CALLUI_RETURN_VALUE_IF_FAIL(result == CALLUI_RESULT_OK, result);
 		break;
 
 	case CALLUI_DISPLAY_ON_UNLOCK:
 		result = device_display_change_state(DISPLAY_STATE_NORMAL);
 		CALLUI_RETURN_VALUE_IF_FAIL(result == DEVICE_ERROR_NONE, CALLUI_RESULT_FAIL);
-		result = efl_util_set_window_screen_mode(display->ad->win, EFL_UTIL_SCREEN_MODE_DEFAULT);
-		CALLUI_RETURN_VALUE_IF_FAIL(result == EFL_UTIL_ERROR_NONE, CALLUI_RESULT_FAIL);
+		result = _callui_window_set_screen_mode(display->ad->window, CALLUI_WIN_SCREEN_MODE_DEFAULT);
+		CALLUI_RETURN_VALUE_IF_FAIL(result == CALLUI_RESULT_OK, result);
 		result = device_power_release_lock(POWER_LOCK_CPU);
 		CALLUI_RETURN_VALUE_IF_FAIL(result == DEVICE_ERROR_NONE, CALLUI_RESULT_FAIL);
 		break;
 
 	case CALLUI_DISPLAY_UNLOCK:
-		result = efl_util_set_window_screen_mode(display->ad->win, EFL_UTIL_SCREEN_MODE_DEFAULT);
-		CALLUI_RETURN_VALUE_IF_FAIL(result == EFL_UTIL_ERROR_NONE, CALLUI_RESULT_FAIL);
+		result = _callui_window_set_screen_mode(display->ad->window, CALLUI_WIN_SCREEN_MODE_DEFAULT);
+		CALLUI_RETURN_VALUE_IF_FAIL(result == CALLUI_RESULT_OK, result);
 		result = device_power_release_lock(POWER_LOCK_CPU);
 		CALLUI_RETURN_VALUE_IF_FAIL(result == EFL_UTIL_ERROR_NONE, CALLUI_RESULT_FAIL);
 		break;

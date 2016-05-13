@@ -20,6 +20,7 @@
 #include "callui-view-dialing.h"
 #include "callui-view-single-call.h"
 #include "callui-view-callend.h"
+#include "callui-view-elements.h"
 #include "callui-view-incoming-call-noti.h"
 #include "callui-view-incoming-call.h"
 #include "callui-view-multi-call-split.h"
@@ -33,6 +34,9 @@
 typedef call_view_data_base_t *(*new_view_data_cb) ();
 
 struct _callui_vm {
+
+	Evas_Object *main_ly;
+
 	call_view_data_base_t *cur_view;
 	callui_view_type_e cur_view_type;
 	callui_app_data_t *ad;
@@ -58,6 +62,7 @@ static void __call_state_event_cb(void *user_data,
 		callui_sim_slot_type_e sim_type,
 		void *event_info);
 static void __end_call_called_cb(void *user_data, unsigned int call_id, callui_call_release_type_e release_type);
+static Evas_Object *__create_eo_layout(Evas_Object *parent);
 
 static call_view_data_base_t *__allocate_view(callui_view_type_e view_type)
 {
@@ -191,7 +196,7 @@ static void __call_state_event_cb(void *user_data,
 			dbg("Ignored. Already in end call view.");
 			return;
 		case CALLUI_CALL_EVENT_INCOMING:
-			elm_object_signal_emit(ad->main_ly, "maximize_no_anim", "app_main_ly");
+			elm_object_signal_emit(_callui_vm_get_main_ly(ad->view_manager), "maximize_no_anim", "app_main_ly");
 			break;
 		default:
 			break;
@@ -228,11 +233,23 @@ static void __end_call_called_cb(void *user_data, unsigned int call_id, callui_c
 	}
 }
 
+static Evas_Object *__create_eo_layout(Evas_Object *parent)
+{
+	Evas_Object *layout = _callui_load_edj(parent, EDJ_NAME,  "app_main_ly");
+	elm_object_content_set(parent, layout);
+	evas_object_show(layout);
+
+	return layout;
+}
+
 static callui_result_e __callui_vm_init(callui_vm_h vm, callui_app_data_t *ad)
 {
 	vm->cur_view_type = CALLUI_VIEW_UNDEFINED;
 	vm->ad = ad;
 	vm->paused = true;
+
+	vm->main_ly = __create_eo_layout(_callui_window_get_content_parent(ad->window));
+	CALLUI_RETURN_VALUE_IF_FAIL(vm->main_ly, CALLUI_RESULT_FAIL);
 
 	callui_result_e res = _callui_stp_add_call_state_event_cb(ad->state_provider, __call_state_event_cb, vm);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
@@ -251,6 +268,8 @@ static void __callui_vm_deinit(callui_vm_h vm)
 	_callui_manager_remove_end_call_called_cb(ad->call_manager, __end_call_called_cb, vm);
 
 	__destroy_cur_view(vm);
+
+	DELETE_EVAS_OBJECT(vm->main_ly);
 }
 
 callui_vm_h _callui_vm_create(callui_app_data_t *ad)
@@ -275,6 +294,13 @@ void _callui_vm_destroy(callui_vm_h vm)
 	__callui_vm_deinit(vm);
 
 	free(vm);
+}
+
+Evas_Object *_callui_vm_get_main_ly(callui_vm_h vm)
+{
+	CALLUI_RETURN_NULL_IF_FAIL(vm);
+
+	return vm->main_ly;
 }
 
 callui_view_type_e _callui_vm_get_cur_view_type(callui_vm_h vm)
@@ -325,7 +351,7 @@ static callui_result_e __create_update_view(callui_vm_h vm, callui_view_type_e t
 			return CALLUI_RESULT_FAIL;
 		}
 
-		res = view->create(view, vm->ad);
+		res = view->create(view, vm->main_ly, vm->ad);
 
 		if (res != CALLUI_RESULT_OK) {
 			err("create() failed! res[%d]", res);
@@ -370,10 +396,8 @@ static callui_result_e __change_view(callui_vm_h vm, callui_view_type_e type)
 	if (type == CALLUI_VIEW_DIALLING
 			|| type == CALLUI_VIEW_INCOMING_CALL
 			|| type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
-		elm_win_activate(vm->ad->win);
+		_callui_window_activate(vm->ad->window);
 	}
-
-	evas_object_show(vm->ad->win);
 
 	return res;
 }

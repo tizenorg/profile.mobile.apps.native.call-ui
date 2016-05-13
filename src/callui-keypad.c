@@ -72,9 +72,8 @@ typedef struct _callui_keypad _callui_keypad_t;
 int __callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appdata)
 {
 	keypad->ad = appdata;
-	Evas_Object *parent = appdata->main_ly;
 
-	keypad->main_layout = _callui_load_edj(parent, EDJ_NAME, "keypad_layout");
+	keypad->main_layout = _callui_load_edj(_callui_vm_get_main_ly(appdata->view_manager), EDJ_NAME, "keypad_layout");
 	CALLUI_RETURN_VALUE_IF_FAIL(keypad->main_layout, CALLUI_RESULT_ALLOCATION_FAIL);
 
 	elm_object_signal_callback_add(keypad->main_layout, "hide_completed", "*", __on_hide_completed, keypad);
@@ -235,15 +234,15 @@ static void __on_hide_completed(void *data, Evas_Object *obj, const char *emissi
 
 	callui_keypad_h keypad = (callui_keypad_h)data;
 	callui_app_data_t *ad = keypad->ad;
+	Evas_Object *main_ly = _callui_vm_get_main_ly(ad->view_manager);
 
 	_callui_lock_manager_start(ad->lock_handle);
 
-	Evas_Object *parent = ad->main_ly;
-	eext_object_event_callback_del(parent, EEXT_CALLBACK_BACK,	__back_button_click_cb);
+	eext_object_event_callback_del(main_ly, EEXT_CALLBACK_BACK, __back_button_click_cb);
 
 	DELETE_ECORE_TIMER(keypad->anim_timer);
 
-	keypad->main_layout = elm_object_part_content_unset(keypad->ad->main_ly,
+	keypad->main_layout = elm_object_part_content_unset(main_ly,
 			PART_SWALLOW_KEYPAD_LAYOUT_AREA);
 
 	evas_object_hide(keypad->main_layout);
@@ -401,8 +400,9 @@ void _callui_keypad_show(callui_keypad_h keypad)
 {
 	CALLUI_RETURN_IF_FAIL(keypad);
 	callui_app_data_t *ad = keypad->ad;
+	Evas_Object *main_ly = _callui_vm_get_main_ly(ad->view_manager);
 
-	elm_object_part_content_set(keypad->ad->main_ly, PART_SWALLOW_KEYPAD_LAYOUT_AREA, keypad->main_layout);
+	elm_object_part_content_set(main_ly, PART_SWALLOW_KEYPAD_LAYOUT_AREA, keypad->main_layout);
 	evas_object_show(keypad->main_layout);
 
 	elm_object_signal_emit(keypad->btns_layout, "SHOW", "KEYPADBTN");
@@ -416,8 +416,7 @@ void _callui_keypad_show(callui_keypad_h keypad)
 
 	_callui_lock_manager_stop(ad->lock_handle);
 
-	Evas_Object *parent = ad->main_ly;
-	eext_object_event_callback_add(parent, EEXT_CALLBACK_BACK, __back_button_click_cb, keypad);
+	eext_object_event_callback_add(main_ly, EEXT_CALLBACK_BACK, __back_button_click_cb, keypad);
 
 	ecore_timer_del(keypad->anim_timer);
 	keypad->anim_timer = ecore_timer_add(2.0, __down_arrow_animation_timeout_cb, keypad);

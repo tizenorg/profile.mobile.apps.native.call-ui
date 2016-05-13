@@ -20,7 +20,6 @@
 #include <vconf-keys.h>
 #include <network/bluetooth.h>
 #include <system_settings.h>
-#include <efl_util.h>
 
 #include "callui.h"
 #include "callui-debug.h"
@@ -42,11 +41,6 @@ static void __app_lang_changed_cb(app_event_info_h event_info, void *user_data);
 
 static bool __app_init(callui_app_data_t *ad);
 static void __app_deinit(callui_app_data_t *ad);
-
-static bool __create_main_gui_elem(callui_app_data_t *ad);
-static Evas_Object *__create_main_window(callui_app_data_t *ad);
-static Evas_Object *__create_conformant(Evas_Object *win);
-static Evas_Object *__create_main_layout(Evas_Object *conf);
 
 static void __init_app_event_handlers(callui_app_data_t *ad);
 
@@ -75,26 +69,26 @@ static callui_app_data_t g_ad;
 
 static void __set_main_win_key_grab(callui_app_data_t *ad)
 {
-	int result = elm_win_keygrab_set(ad->win, CALLUI_KEY_MEDIA, 0, 0, 0, ELM_WIN_KEYGRAB_EXCLUSIVE);
-	if (!result) {
+	int res = _callui_window_set_keygrab_mode(ad->window, CALLUI_KEY_MEDIA, CALLUI_WIN_KEYGRAB_EXCLUSIVE);
+	if (res != CALLUI_RESULT_OK) {
 		dbg("KEY_MEDIA key grab failed");
 	}
 
 	if (_callui_common_is_powerkey_mode_on()) {
-		result = elm_win_keygrab_set(ad->win, CALLUI_KEY_POWER, 0, 0, 0, ELM_WIN_KEYGRAB_EXCLUSIVE);
+		res = _callui_window_set_keygrab_mode(ad->window, CALLUI_KEY_POWER, CALLUI_WIN_KEYGRAB_EXCLUSIVE);
 	} else {
-		result = elm_win_keygrab_set(ad->win, CALLUI_KEY_POWER, 0, 0, 0, ELM_WIN_KEYGRAB_SHARED);
+		res = _callui_window_set_keygrab_mode(ad->window, CALLUI_KEY_POWER, CALLUI_WIN_KEYGRAB_SHARED);
 	}
-	if (!result) {
+	if (!res) {
 		dbg("KEY_POWER key grab failed");
 	}
 }
 
 static void __unset_main_win_key_grab(callui_app_data_t *ad)
 {
-	elm_win_keygrab_unset(ad->win, CALLUI_KEY_SELECT, 0, 0);
-	elm_win_keygrab_unset(ad->win, CALLUI_KEY_POWER, 0, 0);
-	elm_win_keygrab_unset(ad->win, CALLUI_KEY_MEDIA, 0, 0);
+	_callui_window_unset_keygrab_mode(ad->window, CALLUI_KEY_SELECT);
+	_callui_window_unset_keygrab_mode(ad->window, CALLUI_KEY_POWER);
+	_callui_window_unset_keygrab_mode(ad->window, CALLUI_KEY_MEDIA);
 }
 
 static void __add_ecore_event_key_handlers(callui_app_data_t *ad)
@@ -321,10 +315,14 @@ static bool __app_init(callui_app_data_t *ad)
 	_callui_stp_add_call_state_event_cb(ad->state_provider, __call_state_change_cb, ad);
 	_callui_sdm_add_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, ad);
 
-	CALLUI_RETURN_VALUE_IF_FAIL(__create_main_gui_elem(ad), false);
+	ad->window = _callui_window_create(ad);
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->window, false);
 
 	ad->view_manager = _callui_vm_create(ad);
 	CALLUI_RETURN_VALUE_IF_FAIL(ad->view_manager, false);
+
+	_callui_window_get_screen_size(ad->window, NULL, NULL, &ad->root_w, &ad->root_h);
+	_callui_window_set_content(ad->window, _callui_vm_get_main_ly(ad->view_manager));
 
 	ad->action_bar = _callui_action_bar_create(ad);
 	CALLUI_RETURN_VALUE_IF_FAIL(ad->action_bar, false);
@@ -384,70 +382,6 @@ static void __app_lang_changed_cb(app_event_info_h event_info, void *user_data)
 	_callui_vm_update_language(ad->view_manager);
 }
 
-static void __main_win_screen_mode_error_cb(Evas_Object *window, int error_code, void *user_data)
-{
-	err("__main_win_screen_mode_error_cb() return res[%d]", error_code);
-}
-
-static Evas_Object *__create_main_window(callui_app_data_t *ad)
-{
-	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_NOTIFICATION);
-	CALLUI_RETURN_NULL_IF_FAIL(eo);
-
-	elm_win_aux_hint_add(eo, "wm.policy.win.user.geometry", "1");
-	elm_win_fullscreen_set(eo, EINA_FALSE);
-	elm_win_alpha_set(eo, EINA_TRUE);
-
-	efl_util_set_window_screen_mode_error_cb(eo, __main_win_screen_mode_error_cb, NULL);
-
-	elm_win_screen_size_get(eo, NULL, NULL, &ad->root_w, &ad->root_h);
-	evas_object_resize(eo, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
-
-	elm_win_center(eo, EINA_FALSE, EINA_TRUE);
-	evas_object_move(eo, 0, 0);
-	elm_win_indicator_mode_set(eo, ELM_WIN_INDICATOR_SHOW);
-	elm_win_indicator_opacity_set(eo, ELM_WIN_INDICATOR_TRANSLUCENT);
-	elm_win_conformant_set(eo, EINA_TRUE);
-
-	return eo;
-}
-
-static Evas_Object *__create_conformant(Evas_Object *win)
-{
-	Evas_Object *win_conformant = elm_conformant_add(win);
-	CALLUI_RETURN_NULL_IF_FAIL(win_conformant);
-
-	elm_object_signal_emit(win_conformant, "elm,state,indicator,overlap", "elm");
-	evas_object_size_hint_weight_set(win_conformant, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	elm_win_resize_object_add(win, win_conformant);
-	evas_object_show(win_conformant);
-
-	return win_conformant;
-}
-
-static Evas_Object *__create_main_layout(Evas_Object *conf)
-{
-	Evas_Object *layout = _callui_load_edj(conf, EDJ_NAME,  "app_main_ly");
-	elm_object_content_set(conf, layout);
-	evas_object_show(layout);
-
-	return layout;
-}
-
-static bool __create_main_gui_elem(callui_app_data_t *ad)
-{
-	ad->win = __create_main_window(ad);
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->win, false)
-
-	Evas_Object *conf = __create_conformant(ad->win);
-	CALLUI_RETURN_VALUE_IF_FAIL(conf, false);
-
-	ad->main_ly = __create_main_layout(conf);
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->main_ly, false);
-
-	return true;
-}
-
 static void __app_deinit(callui_app_data_t *ad)
 {
 	debug_enter();
@@ -459,29 +393,9 @@ static void __app_deinit(callui_app_data_t *ad)
 
 	__unset_main_win_key_grab(ad);
 
-	if (ad->view_manager) {
-		_callui_vm_destroy(ad->view_manager);
-		ad->view_manager = NULL;
-	}
-
-	if (ad->qp_minicontrol) {
-		_callui_qp_mc_destroy(ad->qp_minicontrol);
-		ad->qp_minicontrol = NULL;
-	}
-
 	if (ad->lock_handle) {
 		_callui_lock_manager_destroy(ad->lock_handle);
 		ad->lock_handle = NULL;
-	}
-
-	if (ad->action_bar) {
-		_callui_action_bar_destroy(ad->action_bar);
-		ad->action_bar = NULL;
-	}
-
-	if (ad->keypad) {
-		_callui_keypad_destroy(ad->keypad);
-		ad->keypad = NULL;
 	}
 
 	if (ad->display) {
@@ -489,13 +403,29 @@ static void __app_deinit(callui_app_data_t *ad)
 		ad->display = NULL;
 	}
 
-	if (ad->main_ly) {
-		evas_object_del(ad->main_ly);
-		ad->main_ly = NULL;
+	if (ad->qp_minicontrol) {
+		_callui_qp_mc_destroy(ad->qp_minicontrol);
+		ad->qp_minicontrol = NULL;
 	}
 
-	if (ad->win) {
-		efl_util_unset_window_screen_mode_error_cb(ad->win);
+	if (ad->keypad) {
+		_callui_keypad_destroy(ad->keypad);
+		ad->keypad = NULL;
+	}
+
+	if (ad->action_bar) {
+		_callui_action_bar_destroy(ad->action_bar);
+		ad->action_bar = NULL;
+	}
+
+	if (ad->view_manager) {
+		_callui_vm_destroy(ad->view_manager);
+		ad->view_manager = NULL;
+	}
+
+	if (ad->window) {
+		_callui_window_destroy(ad->window);
+		ad->window = NULL;
 	}
 
 	free(ad->end_call_data);
@@ -593,7 +523,8 @@ static void __app_service(app_control_h app_control, void *data)
 			sec_dbg("number: [%s]", tmp);
 			if (tmp) {
 				sec_dbg("number: [%s]", tmp);
-				evas_object_resize(ad->win, ad->root_w, ad->root_h);
+				_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_FULLSCREEN);
+				_callui_window_set_rotation_locked(ad->window, true);
 				if (!ad->waiting_dialing) {
 					__process_outgoing_call(ad, tmp);
 				}
@@ -697,11 +628,11 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 		}
 	} else if (!strcmp(ev->keyname,  CALLUI_KEY_SELECT) || !strcmp(ev->keyname,  CALLUI_KEY_HOME)) {
 		dbg("in KEY_SELECT");
-		int result = 0;
-		result = elm_win_keygrab_unset(ad->win, CALLUI_KEY_SELECT, 0, 0);
-		if (!result) {
+
+		if (_callui_window_unset_keygrab_mode(ad->window, CALLUI_KEY_SELECT) != CALLUI_RESULT_OK) {
 			dbg("KEY_SELECT key ungrab failed");
 		}
+
 		if (view_type == CALLUI_VIEW_INCOMING_CALL ||
 				view_type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
 
@@ -726,7 +657,8 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 					_callui_load_second_call_popup(ad);
 				}
 			} else {
-				if (!elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
+				if (_callui_window_set_keygrab_mode(ad->window,
+						CALLUI_KEY_SELECT, CALLUI_WIN_KEYGRAB_TOPMOST) != CALLUI_RESULT_OK) {
 					dbg("KEY_SELECT key ungrab failed");
 				}
 			}
@@ -735,7 +667,7 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 			//Ecore_X_Window focus_win = ecore_x_window_focus_get();
 			//if (ad->win != NULL && focus_win == elm_win_xwindow_get(ad->win)) {
 				/* ToDo: Use lock-screen interface to raise the home screen */
-				_callui_common_win_set_noti_type(ad, false);
+				_callui_window_set_top_level_priority(ad->window, false);
 				_callui_lock_manager_stop(ad->lock_handle);
 				ad->on_background = true;
 			//}

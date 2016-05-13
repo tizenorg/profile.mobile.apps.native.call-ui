@@ -58,15 +58,6 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void);
 int _callui_common_unlock_swipe_lock(void);
 
 /**
- * @brief Set notification type
- *
- * @param[in] person_id		Person id
- * @param[in] win_noti		defines if window must be notification type
- *
- */
-void _callui_common_win_set_noti_type(void *appdata, bool win_noti);
-
-/**
  * @brief Launch bluetooth application
  *
  * @param[in] appdata        App data

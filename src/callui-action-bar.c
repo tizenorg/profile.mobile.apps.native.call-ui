@@ -504,7 +504,6 @@ static callui_result_e __callui_action_bar_init(callui_action_bar_h action_bar,	
 
 	action_bar->ad = ad;
 	action_bar->is_disabled = false;
-	Evas_Object *parent = ad->main_ly;
 
 	_callui_sdm_add_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, action_bar);
 	_callui_sdm_add_mute_state_changed_cb(ad->sound_manager, __mute_state_changed_cb, action_bar);
@@ -512,7 +511,7 @@ static callui_result_e __callui_action_bar_init(callui_action_bar_h action_bar,	
 
 	__update_btns_state(action_bar);
 
-	action_bar->main_layout = __create_main_layout(action_bar, parent);
+	action_bar->main_layout = __create_main_layout(action_bar, _callui_vm_get_main_ly(ad->view_manager));
 	CALLUI_RETURN_VALUE_IF_FAIL(action_bar->main_layout, CALLUI_RESULT_ALLOCATION_FAIL);
 
 	Evas_Object *btn;
@@ -582,10 +581,8 @@ void _callui_action_bar_show(callui_action_bar_h action_bar)
 {
 	CALLUI_RETURN_IF_FAIL(action_bar);
 
-	Evas_Object *parent = action_bar->ad->main_ly;
-
 	__update_btns_txt(action_bar);
-	elm_object_part_content_set(parent, PART_SWALLOW_ACTION_BAR, action_bar->main_layout);
+	elm_object_part_content_set(_callui_vm_get_main_ly(action_bar->ad->view_manager), PART_SWALLOW_ACTION_BAR, action_bar->main_layout);
 	evas_object_show(action_bar->main_layout);
 }
 
@@ -593,9 +590,7 @@ void _callui_action_bar_hide(callui_action_bar_h action_bar)
 {
 	CALLUI_RETURN_IF_FAIL(action_bar);
 
-	Evas_Object *parent = action_bar->ad->main_ly;
-
-	elm_object_part_content_unset(parent, PART_SWALLOW_ACTION_BAR);
+	elm_object_part_content_unset(_callui_vm_get_main_ly(action_bar->ad->view_manager), PART_SWALLOW_ACTION_BAR);
 	evas_object_hide(action_bar->main_layout);
 }
 

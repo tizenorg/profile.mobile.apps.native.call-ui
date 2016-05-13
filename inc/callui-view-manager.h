@@ -47,7 +47,7 @@ struct _view_data;
 typedef struct appdata callui_app_data_t;
 
 struct _view_data {
-	callui_result_e (*create) (struct _view_data *view_data, void *appdata);
+	callui_result_e (*create) (struct _view_data *view_data, Evas_Object *parent, void *appdata);
 	callui_result_e (*update) (struct _view_data *view_data);
 	callui_result_e (*destroy) (struct _view_data *view_data);
 	callui_result_e (*pause) (struct _view_data *view_data);
@@ -66,6 +66,8 @@ typedef struct _callui_vm *callui_vm_h;
 /**
  * @brief Create view manager
  *
+ * @param[in]	ad		application data
+ *
  * @return view manager handler
  */
 callui_vm_h _callui_vm_create(callui_app_data_t *ad);
@@ -76,6 +78,15 @@ callui_vm_h _callui_vm_create(callui_app_data_t *ad);
  * @param[in]	vm		View manager handler
  */
 void _callui_vm_destroy(callui_vm_h vm);
+
+/**
+ * @brief Returns application main layout
+ *
+ * @param[in]	vm		View manager handler
+ *
+ * @return application main layout or NULL on fail
+ */
+Evas_Object *_callui_vm_get_main_ly(callui_vm_h vm);
 
 /**
  * @brief Change view
