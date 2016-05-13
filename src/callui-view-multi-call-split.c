@@ -38,13 +38,13 @@ struct _callui_view_mc_split {
 };
 typedef struct _callui_view_mc_split _callui_view_mc_split_t;
 
-static callui_result_e _callui_view_multi_call_split_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e _callui_view_multi_call_split_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata);
 static callui_result_e _callui_view_multi_call_split_onupdate(call_view_data_base_t *view_data);
 static callui_result_e _callui_view_multi_call_split_ondestroy(call_view_data_base_t *view_data);
 
 static callui_result_e __update_nonetranslatable_elements(callui_view_mc_split_h vd);
 
-static callui_result_e __create_main_content(callui_view_mc_split_h vd);
+static callui_result_e __create_main_content(callui_view_mc_split_h vd, Evas_Object *parent);
 static callui_result_e __update_displayed_data(callui_view_mc_split_h vd);
 
 static Evas_Object *__create_merge_swap_btn(Evas_Object *parent, const char *name, const char *text);
@@ -104,9 +104,10 @@ static callui_result_e __update_nonetranslatable_elements(callui_view_mc_split_h
 	return CALLUI_RESULT_OK;
 }
 
-static callui_result_e _callui_view_multi_call_split_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e _callui_view_multi_call_split_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(parent, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
 
 	callui_view_mc_split_h vd = (callui_view_mc_split_h)view_data;
@@ -114,7 +115,7 @@ static callui_result_e _callui_view_multi_call_split_oncreate(call_view_data_bas
 
 	vd->base_view.ad = ad;
 
-	callui_result_e res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd, parent);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	_callui_lock_manager_start(ad->lock_handle);
@@ -163,13 +164,13 @@ static callui_result_e _callui_view_multi_call_split_ondestroy(call_view_data_ba
 }
 
 
-static callui_result_e __create_main_content(callui_view_mc_split_h vd)
+static callui_result_e __create_main_content(callui_view_mc_split_h vd, Evas_Object *parent)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GROUP_SPLIT);
+	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME, GROUP_SPLIT);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
+	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
 
 	vd->caller_info = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GROUP_ONE_HOLD_IN_CONFERENCE);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
@@ -378,9 +379,6 @@ static callui_result_e __update_displayed_data(callui_view_mc_split_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	evas_object_show(vd->base_view.contents);
-
-	evas_object_hide(ad->main_ly);
-	evas_object_show(ad->main_ly);
 
 	return res;
 }

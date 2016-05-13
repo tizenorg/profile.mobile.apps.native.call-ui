@@ -29,12 +29,12 @@
 #include "callui-view-quickpanel.h"
 #include "callui-action-bar.h"
 #include "callui-display.h"
+#include "callui-window.h"
 
 #define APP_HANDLERS_COUNT 1
 
 struct appdata {
-	Evas_Object *win;
-	Evas_Object *main_ly;
+	callui_window_h window;
 
 	callui_qp_mc_h qp_minicontrol;
 	callui_display_h display;
@@ -68,7 +68,6 @@ struct appdata {
 	callui_call_data_t *end_call_data;
 
 	app_event_handler_h app_event_handlers[APP_HANDLERS_COUNT];
-
 };
 
 callui_app_data_t *_callui_get_app_data();

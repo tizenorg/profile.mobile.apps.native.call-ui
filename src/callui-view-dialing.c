@@ -33,11 +33,11 @@ struct _callui_view_dialing {
 };
 typedef struct _callui_view_dialing _callui_view_dialing_t;
 
-static callui_result_e __callui_view_dialing_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e __callui_view_dialing_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata);
 static callui_result_e __callui_view_dialing_onupdate(call_view_data_base_t *view_data);
 static callui_result_e __callui_view_dialing_ondestroy(call_view_data_base_t *view_data);
 
-static callui_result_e __create_main_content(callui_view_dialing_h vd);
+static callui_result_e __create_main_content(callui_view_dialing_h vd, Evas_Object *parent);
 
 static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 static callui_result_e __update_displayed_data(callui_view_dialing_h vd);
@@ -55,9 +55,10 @@ callui_view_dialing_h _callui_dialing_view_dialing_new()
 	return dialing_view;
 }
 
-static callui_result_e __callui_view_dialing_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e __callui_view_dialing_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(parent, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
 
 	callui_view_dialing_h vd = (callui_view_dialing_h)view_data;
@@ -65,7 +66,7 @@ static callui_result_e __callui_view_dialing_oncreate(call_view_data_base_t *vie
 
 	vd->base_view.ad = ad;
 
-	callui_result_e res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd, parent);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, CALLUI_RESULT_FAIL);
 
 	_callui_lock_manager_start(ad->lock_handle);
@@ -73,13 +74,14 @@ static callui_result_e __callui_view_dialing_oncreate(call_view_data_base_t *vie
 	return __update_displayed_data(vd);
 }
 
-static callui_result_e __create_main_content(callui_view_dialing_h vd)
+static callui_result_e __create_main_content(callui_view_dialing_h vd, Evas_Object *parent)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_VIEW_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME, GRP_VIEW_MAIN_LY);
+
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
+	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
 
 	vd->caller_info = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_CALLER_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
@@ -188,9 +190,6 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 	elm_object_signal_emit(vd->base_view.contents, "SHOW_EFFECT", "ALLBTN");
 
 	evas_object_show(vd->base_view.contents);
-
-	evas_object_hide(ad->main_ly);
-	evas_object_show(ad->main_ly);
 
 	return CALLUI_RESULT_OK;
 }

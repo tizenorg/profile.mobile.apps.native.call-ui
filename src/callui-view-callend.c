@@ -54,10 +54,10 @@ struct _callui_view_callend {
 };
 typedef struct _callui_view_callend _callui_view_callend_t;
 
-static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata);
 static callui_result_e __callui_view_callend_ondestroy(call_view_data_base_t *view_data);
 
-static callui_result_e __create_main_content(callui_view_callend_h vd);
+static callui_result_e __create_main_content(callui_view_callend_h vd, Evas_Object *parent);
 static callui_result_e __update_displayed_data(callui_view_callend_h vd);
 
 static void __call_back_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *source);
@@ -120,9 +120,10 @@ static Eina_Bool __minimize_animation_idler_cb(void *data)
 	return ECORE_CALLBACK_CANCEL;
 }
 
-static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(parent, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
 
 	callui_view_callend_h vd = (callui_view_callend_h)view_data;
@@ -130,9 +131,9 @@ static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *vie
 
 	vd->base_view.ad = ad;
 
-	_callui_common_win_set_noti_type(vd->base_view.ad, true);
+	_callui_window_set_top_level_priority(ad->window, true);
 
-	callui_result_e res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd, parent);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	res = __update_displayed_data(vd);
@@ -174,14 +175,13 @@ static callui_result_e __callui_view_callend_ondestroy(call_view_data_base_t *vi
 	return CALLUI_RESULT_OK;
 }
 
-static callui_result_e __create_main_content(callui_view_callend_h vd)
+static callui_result_e __create_main_content(callui_view_callend_h vd, Evas_Object *parent)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
-	CALLUI_RETURN_VALUE_IF_FAIL(ad->main_ly, CALLUI_RESULT_FAIL);
 
-	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_VIEW_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME, GRP_VIEW_MAIN_LY);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
+	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
 
 	elm_object_signal_callback_add(vd->base_view.contents,
 			"mouse,down,*", "dim_bg", __bg_mouse_down_cb, vd);
@@ -416,7 +416,7 @@ static void __run_minimize_animation(callui_view_callend_h vd)
 
 	elm_object_signal_emit(vd->caller_info, "minimize", "caller_info");
 	elm_object_signal_emit(vd->base_view.contents, "minimize", "view_main_ly");
-	elm_object_signal_emit(ad->main_ly, "minimize", "app_main_ly");
+	elm_object_signal_emit(_callui_vm_get_main_ly(ad->view_manager), "minimize", "app_main_ly");
 }
 
 static void __run_maximize_animation(callui_view_callend_h vd)
@@ -435,7 +435,7 @@ static void __run_maximize_animation(callui_view_callend_h vd)
 
 	elm_object_signal_emit(vd->caller_info, "maximize", "caller_info");
 	elm_object_signal_emit(vd->base_view.contents, "maximize", "view_main_ly");
-	elm_object_signal_emit(ad->main_ly, "maximize", "app_main_ly");
+	elm_object_signal_emit(_callui_vm_get_main_ly(ad->view_manager), "maximize", "app_main_ly");
 }
 
 static callui_result_e __update_displayed_data(callui_view_callend_h vd)
@@ -458,9 +458,6 @@ static callui_result_e __update_displayed_data(callui_view_callend_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	evas_object_show(vd->base_view.contents);
-
-	evas_object_hide(ad->main_ly);
-	evas_object_show(ad->main_ly);
 
 	return CALLUI_RESULT_OK;
 }

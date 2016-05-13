@@ -150,26 +150,12 @@ int _callui_common_unlock_swipe_lock(void)
 	return 0;
 }
 
-void _callui_common_win_set_noti_type(void *appdata, bool win_noti)
-{
-	CALLUI_RETURN_IF_FAIL(appdata);
-
-	callui_app_data_t *ad = appdata;
-	if (win_noti) {
-		dbg("window type: NOTIFICATION");
-		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
-	} else {
-		dbg("window type: NORMAL");
-		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_NONE);
-	}
-}
-
 static void __reset_visibility_properties(callui_app_data_t *ad)
 {
 	_callui_lock_manager_stop(ad->lock_handle);
 	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(ad, false);
+	_callui_window_set_top_level_priority(ad->window, false);
 }
 
 void _callui_common_launch_setting_bluetooth(void *appdata)
@@ -342,9 +328,9 @@ static void __callui_common_lock_state_cb (system_settings_key_e key, void *user
 {
 	callui_app_data_t *ad = _callui_get_app_data();
 	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK) {
-		_callui_common_win_set_noti_type(ad, false);
+		_callui_window_set_top_level_priority(ad->window, false);
 	} else {
-		_callui_common_win_set_noti_type(ad, true);
+		_callui_window_set_top_level_priority(ad->window, true);
 	}
 }
 
