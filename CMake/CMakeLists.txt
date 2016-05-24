@@ -113,5 +113,3 @@ INSTALL(FILES ${PROJECT_FILES_DIR}/${PKG_NAME}.xml DESTINATION ${CMAKE_SHARE_PAC
 # install manifest file & icon
 INSTALL(FILES ${PROJECT_FILES_DIR}/res/images/call_button_icon_01.png DESTINATION ${IMG_DIR})
 INSTALL(FILES ${PROJECT_FILES_DIR}/res/images/call_button_icon_03.png DESTINATION ${IMG_DIR})
-INSTALL(FILES ${PROJECT_FILES_DIR}/res/images/call_button_icon_04.png DESTINATION ${IMG_DIR})
-
