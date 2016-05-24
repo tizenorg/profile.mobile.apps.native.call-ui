@@ -130,6 +130,34 @@
 		} \
 	} while (0)
 
+#undef DELETE_ECORE_IDLE_ENTERER
+#define DELETE_ECORE_IDLE_ENTERER(x) \
+	do { \
+		if (x != NULL) { \
+			ecore_idle_enterer_del(x); \
+			x = NULL; \
+		} \
+	} while (0)
+
+#undef DELETE_ELM_TRANSIT_HARD
+#define DELETE_ELM_TRANSIT_HARD(x) \
+	do { \
+		if (x != NULL) { \
+			elm_transit_del_cb_set(x, NULL, NULL); \
+			elm_transit_del(x); \
+			x = NULL; \
+		} \
+	} while (0)
+
+#undef DELETE_ELM_TRANSIT_SOFT
+#define DELETE_ELM_TRANSIT_SOFT(x) \
+	do { \
+		if (x != NULL) { \
+			elm_transit_del(x); \
+			x = NULL; \
+		} \
+	} while (0)
+
 #undef STRING_EMPTY
 #define STRING_EMPTY(x) !(x && x[0] != '\0')
 
