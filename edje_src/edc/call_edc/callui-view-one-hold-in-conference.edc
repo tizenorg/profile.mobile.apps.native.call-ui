@@ -39,7 +39,6 @@ images {
 	image: IMG_SRC_DIR/"call_multi_hold_bg.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_hold_btn_merge_bg.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_hold_btn_swap_bg.png" COMP;
-	image: IMG_SRC_DIR/"background.png" COMP;
 }
 
 styles {
