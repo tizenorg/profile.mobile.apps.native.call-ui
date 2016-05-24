@@ -157,6 +157,14 @@ const char *_callui_common_get_call_edj_path();
 const char *_callui_common_get_call_theme_path();
 
 /**
+ * @brief Gets reject message count
+ *
+ * @param[out] count	Reject message count
+ *
+ * @return CALLUI_RESULT_OK on success or CALLUI_RESULT_FAIL otherwise
+ */
+callui_result_e _callui_common_get_reject_msg_count(int *count);
+/**
  * @brief Gets reject message text by index
  * @param[in] index		index of the reject message
  * @return reject message text
