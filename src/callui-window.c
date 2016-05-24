@@ -23,7 +23,7 @@
 #include "callui-debug.h"
 #include "callui-view-layout.h"
 
-#define CALLUI_WIN_ACT_NOTI_HEIGHT			ELM_SCALE_SIZE(350)
+#define CALLUI_WIN_ACT_NOTI_HEIGHT			ELM_SCALE_SIZE(413)
 #define CALLUI_WIN_ACT_NOTI_ROTATION_COUNT	4
 #define CALLUI_WIN_NORM_ROTATION_COUNT		1
 
@@ -93,14 +93,14 @@ static void __eo_win_move_and_resize(callui_window_h win_handler, bool force_res
 	if (win_handler->size_type != CALLUI_WIN_SIZE_FULLSCREEN) {
 		switch (angle) {
 		case 90:
-			move_y = ACTIVE_NOTI_L_PAD;
+			move_y = ACTIVE_NOTI_LANDSCAPE_L_PAD;
 			break;
 		case 180:
 			move_y = ad->root_h - win_h;
 			break;
 		case 270:
 			move_x = ad->root_w - win_h;
-			move_y = ad->root_h - win_w - ACTIVE_NOTI_L_PAD;
+			move_y = ad->root_h - win_w - ACTIVE_NOTI_LANDSCAPE_L_PAD;
 			break;
 		default:
 			break;
@@ -236,9 +236,7 @@ static callui_result_e __eo_win_set_rotation_locked(callui_window_h win_handler,
 			CALLUI_RESULT_ALREADY_REGISTERED);
 
 	if (elm_win_wm_rotation_supported_get(win_handler->win)) {
-		//win_handler->rotation_locked = is_locked;
-		//TODO: Temporary solution as Active Notification is not ready to support rotation
-		win_handler->rotation_locked = true;
+		win_handler->rotation_locked = is_locked;
 
 		if (win_handler->rotation_locked) {
 			int rotate_angles[CALLUI_WIN_NORM_ROTATION_COUNT] = { 0 };

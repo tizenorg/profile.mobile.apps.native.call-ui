@@ -33,50 +33,125 @@
 #include "callui-sound-manager.h"
 
 #define CALLUI_DURING_ICON	"call_button_icon_03.png"
-#define CALLUI_REJECT_ICON	"call_button_icon_04.png"
 #define CALLUI_END_ICON		"call_button_icon_01.png"
+#define CALLUI_ADD_ICON		"call_button_add.png"
 
-#define CALLUI_REJ_MSG_GENLIST_DATA "VIEW_DATA"
+#define CALLUI_MOVE_TRANSITION_TIME_SEC		0.5
+
+#define CALLUI_REJ_MSG_GENLIST_DATA			"VIEW_DATA"
+#define CALLUI_REJ_MSG_ADD_BTN_SIZE			60
+#define CALLUI_REJ_MSG_ADD_BTN_COLOR		0, 0, 0, 255
+
+#define CALLUI_REJ_MSG_ANIM_PATH			10000.0
+#define CALLUI_REJ_MSG_ANIM_TIME			4.0
+#define CALLUI_REJ_MSG_ANIM_VELOCITY		(CALLUI_REJ_MSG_ANIM_PATH / CALLUI_REJ_MSG_ANIM_TIME)
+
+#define CALLUI_AN_CONTACT_INFO_BG_H			ELM_SCALE_SIZE(ACTIVE_NOTI_CONTACT_INFO_BG_H)
+#define CALLUI_AN_ACTION_BG_W_REJECT_MSG_H	ELM_SCALE_SIZE(ACTIVE_NOTI_ACTION_BG_W_REJ_MSG_H)
+#define CALLUI_AN_STROKE_H					ELM_SCALE_SIZE(ACTIVE_NOTI_STROKE_H)
+
+#define CALLUI_REJ_MSG_SCREEN_USED_H		(CALLUI_AN_CONTACT_INFO_BG_H + CALLUI_AN_ACTION_BG_W_REJECT_MSG_H + CALLUI_AN_STROKE_H)
+#define CALLUI_REJ_MSG_FLICK_TIME_LIMIT_MS	500
+
+#define CALLUI_REJ_MSG_DIMMER_ALFA_START	0
+#define CALLUI_REJ_MSG_DIMMER_ALFA_END		77
+#define CALLUI_REJ_MSG_DIMMER_COLOR			0, 0, 0
+
+#define AO028	0, 0, 0, 26
+
+typedef enum {
+	CALLUI_REJ_MSG_UPDATE_GL_HINT = 0x01,
+	CALLUI_REJ_MSG_UPDATE_AVAILABLE_SIZE = 0x02
+} _callui_rej_msg_update_params_e;
+
+typedef enum {
+	CALLUI_REJ_MSG_HIDDEN,
+	CALLUI_REJ_MSG_HIDE_REQ,
+	CALLUI_REJ_MSG_HIDE_IN_PROG,
+	CALLUI_REJ_MSG_SHOWN,
+	CALLUI_REJ_MSG_SHOW_REQ,
+	CALLUI_REJ_MSG_SHOW_IN_PROG,
+} _callui_rej_msg_state;
 
 struct _callui_view_incoming_call_noti {
 	call_view_data_base_t base_view;
 
-	Evas_Object *reject_msg_layout;
-	Evas_Object *reject_msg_genlist;
+	Evas_Object *parent;
 
-	Elm_Genlist_Item_Class *reject_msg_itc;
+	Evas_Object *box;
+	Evas_Object *layout;
+	Evas_Object *rm_gl;
+	Evas_Object *rm_gl_anchor;
+	Evas_Object *rm_gl_stroke;
+
+	Elm_Genlist_Item_Class *rm_msg_itc;
+	Elm_Genlist_Item_Class *rm_compose_itc;
+
+	Ecore_Idle_Enterer *transit_effect_idler;
+	Elm_Transit *transit;
+
+	bool is_showen;
+
 	char reject_msg[CALLUI_REJ_MSG_MAX_LENGTH];
 
-	bool rej_msg_list_visible;
+	bool rm_turned_on;
+
+	int rm_gl_max_h;
+	int rm_gl_anim_start_h;
+	int rm_gl_anim_start_w;
+	int rm_gl_x;
+	int rm_gl_y;
+
+	double rm_anim_path;
+	_callui_rej_msg_state rm_state;
+	int rm_gl_available_h;
+	int rm_actualize_state;
+	Ecore_Animator *rm_animator;
+	int rm_dimmer_alfa;
+	int rm_dimmer_alfa_start;
 };
 
 typedef struct _callui_view_incoming_call_noti _callui_view_incoming_call_noti_t;
 
 static callui_result_e __callui_view_incoming_call_noti_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata);
-static callui_result_e __callui_view_incoming_call_noti_onupdate(call_view_data_base_t *view_data);
 static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data_base_t *view_data);
 
 static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd, Evas_Object *parent);
 static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h vd);
 
-static void __reject_msg_genlist_item_click_cb(void *data, Evas_Object *obj, void *event_info);
-static void __reject_msg_genlist_add(callui_view_incoming_call_noti_h vd);
-static char *__reject_msg_genlist_item_txt_cb(void *data, Evas_Object *obj, const char *part);
-static void __reject_msg_genlist_init_item_class(callui_view_incoming_call_noti_h vd);
-static void __reject_msg_genlist_deinit_item_class(callui_view_incoming_call_noti_h vd);
-static Elm_Object_Item *__reject_msg_genlist_append_item(Evas_Object *msg_glist, Elm_Genlist_Item_Class * itc_reject_msg, int index);
-static int __reject_msg_genlist_fill(callui_view_incoming_call_noti_h vd);
+static void __reject_msg_gl_item_msg_click_cb(void *data, Evas_Object *obj, void *event_info);
+static Evas_Object *__reject_msg_gl_add(Evas_Object *parent, callui_view_incoming_call_noti_h vd);
+static char *__reject_msg_gl_item_msg_txt_cb(void *data, Evas_Object *obj, const char *part);
+static void __reject_msg_gl_init_item_classes(callui_view_incoming_call_noti_h vd);
+static void __reject_msg_gl_deinit_item_classes(callui_view_incoming_call_noti_h vd);
+static void __reject_msg_gl_fill(Evas_Object *gl, callui_view_incoming_call_noti_h vd);
 
-static void __swipe_layout_mouse_move_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
-static Eina_Bool __reject_msg_close_effect_activated_cb(void *data);
-static void __show_reject_msg_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+static void __reset_params_after_transit(callui_view_incoming_call_noti_h vd);
+static void __appear_transit_del_cb(void *data, Elm_Transit *transit);
+static void __disappear_transit_del_cb(void *data, Elm_Transit *transit);
+static Eina_Bool __appear_effect_activated_cb(void *data);
+static Eina_Bool __disappear_effect_activated_cb(void *data);
+
+static void __show_reject_msg_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 
 static void __create_reject_msg_content(callui_view_incoming_call_noti_h vd);
 static void __destroy_reject_msg_content(callui_view_incoming_call_noti_h vd);
 
-static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+static void __launch_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 
-static callui_result_e __create_custom_button(char *icon_name, char *part, Evas_Object_Event_Cb func, void *data, void *data_bt_cb);
+static void __reject_msg_calc_available_size(callui_view_incoming_call_noti_h vd);
+static void __reject_msg_reset_anim_params(callui_view_incoming_call_noti_h vd);
+static void __reject_msg_try_actualize(callui_view_incoming_call_noti_h vd);
+
+static void __parent_resize_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+static void __reject_msg_move_layout(callui_view_incoming_call_noti_h vd);
+
+static Evas_Object *__create_btn(callui_view_incoming_call_noti_h vd,
+		const char *style,
+		const char *icon_name,
+		const char *txt,
+		Evas_Smart_Cb click_cb,
+		void *cb_data);
 
 callui_view_incoming_call_noti_h _callui_view_incoming_call_noti_new()
 {
@@ -84,7 +159,7 @@ callui_view_incoming_call_noti_h _callui_view_incoming_call_noti_new()
 	CALLUI_RETURN_NULL_IF_FAIL(incoming_call_noti);
 
 	incoming_call_noti->base_view.create = __callui_view_incoming_call_noti_oncreate;
-	incoming_call_noti->base_view.update = __callui_view_incoming_call_noti_onupdate;
+	incoming_call_noti->base_view.update = NULL;
 	incoming_call_noti->base_view.destroy = __callui_view_incoming_call_noti_ondestroy;
 
 	return incoming_call_noti;
@@ -115,13 +190,6 @@ static callui_result_e __callui_view_incoming_call_noti_oncreate(call_view_data_
 	return __update_displayed_data(vd);
 }
 
-static callui_result_e __callui_view_incoming_call_noti_onupdate(call_view_data_base_t *view_data)
-{
-	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
-
-	return __update_displayed_data((callui_view_incoming_call_noti_h)view_data);
-}
-
 static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data_base_t *view_data)
 {
 	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)view_data;
@@ -136,7 +204,11 @@ static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data
 	}
 #endif
 
-	DELETE_EVAS_OBJECT(vd->base_view.contents);
+	evas_object_event_callback_del_full(vd->parent, EVAS_CALLBACK_RESIZE, __parent_resize_cb, vd);
+
+	DELETE_ECORE_IDLE_ENTERER(vd->transit_effect_idler);
+	DELETE_ELM_TRANSIT_HARD(vd->transit);
+	DELETE_EVAS_OBJECT(vd->box);
 
 	_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_FULLSCREEN);
 	_callui_window_set_rotation_locked(ad->window, true);
@@ -149,7 +221,7 @@ static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data
 	return CALLUI_RESULT_OK;
 }
 
-static void __reject_msg_genlist_item_click_cb(void *data, Evas_Object *obj, void *event_info)
+static void __reject_msg_gl_item_msg_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	int index = CALLUI_SAFE_C_CAST(int, data);
 	dbg("index: %d", index);
@@ -180,84 +252,297 @@ static void __reject_msg_genlist_item_click_cb(void *data, Evas_Object *obj, voi
 	}
 }
 
-static void __swipe_layout_mouse_move_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __reject_msg_gl_item_compose_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(data);
 
-	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)data;
-	callui_app_data_t *ad = vd->base_view.ad;
+	callui_app_data_t *ad = (callui_app_data_t *)data;
 
-	ecore_idle_enterer_before_add(__reject_msg_close_effect_activated_cb, vd);
+	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
+	CALLUI_RETURN_IF_FAIL(incom);
 
-//	evas_object_resize(ad->win, 0, 0);
-	_callui_window_minimize(ad->window);
+	_callui_common_launch_msg_composer(ad, incom->call_num);
+
+	callui_result_e res = _callui_manager_reject_call(ad->call_manager);
+	if (res != CALLUI_RESULT_OK) {
+		err("_callui_manager_reject_call() failed. res[%d]", res);
+	}
 }
 
-static Eina_Bool __reject_msg_close_effect_activated_cb(void *data)
+static void __reset_params_after_transit(callui_view_incoming_call_noti_h vd)
+{
+	vd->transit = NULL;
+	evas_object_freeze_events_set(vd->box, EINA_FALSE);
+}
+
+static void __appear_transit_del_cb(void *data, Elm_Transit *transit)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+	__reset_params_after_transit(data);
+}
+
+static void __disappear_transit_del_cb(void *data, Elm_Transit *transit)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+	__reset_params_after_transit(data);
+
+	callui_view_incoming_call_noti_h vd = data;
+	_callui_window_set_top_level_priority(vd->base_view.ad->window, false);
+	_callui_window_minimize(vd->base_view.ad->window);
+}
+
+static Eina_Bool __appear_effect_activated_cb(void *data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
 
-	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)data;
+	callui_view_incoming_call_noti_h vd = data;
 
-	Evas_Object *screen_ly = NULL;
-	Elm_Transit *transit = NULL;
+	int height = 0;
+	evas_object_geometry_get(vd->box, NULL, NULL, NULL, &height);
+
+	DELETE_ELM_TRANSIT_HARD(vd->transit);
+	vd->transit = elm_transit_add();
+	if (!vd->transit) {
+		err("transit is NULL");
+		vd->transit_effect_idler = NULL;
+		return ECORE_CALLBACK_CANCEL;
+	}
+	elm_transit_del_cb_set(vd->transit, __appear_transit_del_cb, vd);
+	elm_transit_object_add(vd->transit, vd->box);
+	elm_transit_effect_translation_add(vd->transit, 0, -height, 0, 0);
+	elm_transit_duration_set(vd->transit, CALLUI_MOVE_TRANSITION_TIME_SEC);
+	elm_transit_objects_final_state_keep_set(vd->transit, EINA_TRUE);
+	elm_transit_go(vd->transit);
+
+	vd->transit_effect_idler = NULL;
+	evas_object_freeze_events_set(vd->box, EINA_TRUE);
+
+	return ECORE_CALLBACK_DONE;
+}
+
+static Eina_Bool __disappear_effect_activated_cb(void *data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+
+	callui_view_incoming_call_noti_h vd = data;
+
 	int xpos = 0;
 	int ypos = 0;
 	int width = 0;
 	int height = 0;
-	int transit_y = 0;
+	evas_object_geometry_get(vd->box, &xpos, &ypos, &width, &height);
+	int transit_y = -(height + ypos);
 
-	screen_ly = vd->base_view.contents;
-	transit = elm_transit_add();
-	elm_transit_object_add(transit, screen_ly);
-	evas_object_geometry_get(screen_ly, &xpos, &ypos, &width, &height);
-	transit_y = -(height + ypos);
-	elm_transit_effect_translation_add(transit, 0, 0, 0, transit_y);
-	elm_transit_duration_set(transit, 0.5);
-	evas_object_show(screen_ly);
-	elm_transit_objects_final_state_keep_set(transit, EINA_TRUE);
-	elm_transit_go(transit);
+	DELETE_ELM_TRANSIT_HARD(vd->transit);
+	vd->transit = elm_transit_add();
+	if (!vd->transit) {
+		err("transit is NULL");
+		vd->transit_effect_idler = NULL;
+		return ECORE_CALLBACK_CANCEL;
+	}
+	elm_transit_del_cb_set(vd->transit, __disappear_transit_del_cb, vd);
+	elm_transit_object_add(vd->transit, vd->box);
+	elm_transit_effect_translation_add(vd->transit, xpos, ypos, xpos, transit_y);
+	elm_transit_duration_set(vd->transit, CALLUI_MOVE_TRANSITION_TIME_SEC);
+	elm_transit_objects_final_state_keep_set(vd->transit, EINA_TRUE);
+	elm_transit_go(vd->transit);
+
+	vd->transit_effect_idler = NULL;
+	evas_object_freeze_events_set(vd->box, EINA_TRUE);
 
 	return ECORE_CALLBACK_CANCEL;
 }
 
-static void __show_reject_msg_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __reject_msg_reset_status_flags(callui_view_incoming_call_noti_h vd)
+{
+	vd->rm_actualize_state |= CALLUI_REJ_MSG_UPDATE_GL_HINT;
+	vd->rm_actualize_state |= CALLUI_REJ_MSG_UPDATE_AVAILABLE_SIZE;
+}
+
+static void __show_reject_msg_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(data);
 
-	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)data;
+	callui_view_incoming_call_noti_h vd = data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	if (vd->rej_msg_list_visible) {
-		_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_ACTIVE_NOTI);
-		elm_object_signal_emit(vd->base_view.contents, "small_main_ly", "main_active_noti_call");
-		__destroy_reject_msg_content(vd);
+	if (vd->rm_turned_on) {
+		dbg("* Hide reject messages request");
+
+		__reject_msg_reset_anim_params(vd);
+		if (vd->rm_state == CALLUI_REJ_MSG_SHOW_IN_PROG ||
+				vd->rm_state == CALLUI_REJ_MSG_SHOW_REQ) {
+			dbg("Show animation in progress...");
+		} else {
+			dbg("No show animation in progress...");
+		}
+		vd->rm_state = CALLUI_REJ_MSG_HIDE_REQ;
+		__reject_msg_try_actualize(vd);
 	} else {
-		_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_FULLSCREEN);
-		elm_object_signal_emit(vd->base_view.contents, "big_main_ly", "main_active_noti_call");
-		__create_reject_msg_content(vd);
+		dbg("* Show reject messages request");
+
+		__reject_msg_reset_anim_params(vd);
+		if (vd->rm_state == CALLUI_REJ_MSG_HIDE_IN_PROG ||
+				vd->rm_state == CALLUI_REJ_MSG_HIDE_REQ) {
+			dbg("Hide animation in progress...");
+			vd->rm_actualize_state &= ~CALLUI_REJ_MSG_UPDATE_AVAILABLE_SIZE;
+		} else {
+			dbg("No hide animation in progress...");
+			__reject_msg_reset_status_flags(vd);
+			_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_FULLSCREEN);
+			elm_object_signal_emit(vd->layout, "hide_swipe", "main_active_noti_call");
+			__create_reject_msg_content(vd);
+			__reject_msg_move_layout(vd);
+		}
+		vd->rm_state = CALLUI_REJ_MSG_SHOW_REQ;
+		__reject_msg_try_actualize(vd);
 	}
-	vd->rej_msg_list_visible = !vd->rej_msg_list_visible;
+	vd->rm_turned_on = !vd->rm_turned_on;
 }
 
-static void __reject_msg_genlist_add(callui_view_incoming_call_noti_h vd)
+static void __reject_msg_get_genlist_cur_size(callui_view_incoming_call_noti_h vd, int *w, int *h)
 {
-	if (vd->reject_msg_genlist) {
-		evas_object_del(vd->reject_msg_genlist);
-		vd->reject_msg_genlist = NULL;
-	}
-
-	vd->reject_msg_genlist = elm_genlist_add(vd->base_view.contents);
-	CALLUI_RETURN_IF_FAIL(vd->reject_msg_genlist);
-	evas_object_data_set(vd->reject_msg_genlist, CALLUI_REJ_MSG_GENLIST_DATA, vd);
-
-	evas_object_size_hint_weight_set(vd->reject_msg_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(vd->reject_msg_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
-
-	elm_object_part_content_set(vd->reject_msg_layout, "swallow.content", vd->reject_msg_genlist);
+	evas_object_geometry_get(vd->rm_gl, NULL, NULL, w, h);
+	dbg("RM genlist size - w[%d] h[%d]", *w, *h);
 }
 
-static char *__reject_msg_genlist_item_txt_cb(void *data, Evas_Object *obj, const char *part)
+static void __box_changed_hints_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+	callui_view_incoming_call_noti_h vd = data;
+
+	if (vd->is_showen) {
+		return;
+	}
+
+	vd->is_showen = true;
+	vd->transit_effect_idler = ecore_idle_enterer_before_add(__appear_effect_activated_cb, vd);
+}
+
+static void __reject_msg_gl_changed_hints_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	callui_view_incoming_call_noti_h vd = data;
+	Evas_Coord w = 0;
+	Evas_Coord h = 0;
+	evas_object_size_hint_min_get(obj, &w, &h);
+	dbg("RM genlist hint min - w[%d] h[%d]", w, h);
+
+	vd->rm_gl_max_h = h;
+
+	vd->rm_actualize_state &= ~CALLUI_REJ_MSG_UPDATE_GL_HINT;
+	__reject_msg_try_actualize(vd);
+}
+
+static void __reject_msg_close_cb(callui_view_incoming_call_noti_h vd)
+{
+	__destroy_reject_msg_content(vd);
+	elm_object_signal_emit(vd->layout, "show_swipe", "main_active_noti_call");
+	_callui_window_set_size_type(vd->base_view.ad->window, CALLUI_WIN_SIZE_ACTIVE_NOTI);
+	__reject_msg_move_layout(vd);
+}
+
+static void __reject_msg_gl_resize_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_view_incoming_call_noti_h vd = data;
+	Evas_Coord h = 0;
+	evas_object_geometry_get(obj, NULL, NULL, NULL, &h);
+
+	if (h == 0 && vd->rm_state == CALLUI_REJ_MSG_HIDDEN) {
+		dbg("RM genlist height is 0");
+		__reject_msg_close_cb(vd);
+	}
+}
+
+static void __reject_msg_reset_anim_params(callui_view_incoming_call_noti_h vd)
+{
+	if (vd->rm_animator) {
+		ecore_animator_del(vd->rm_animator);
+		vd->rm_animator = NULL;
+	}
+}
+
+static void __reject_msg_animation_end_cb(callui_view_incoming_call_noti_h vd)
+{
+	vd->rm_animator = NULL;
+
+	if (vd->rm_state == CALLUI_REJ_MSG_SHOW_IN_PROG) {
+		vd->rm_state = CALLUI_REJ_MSG_SHOWN;
+	} else if (vd->rm_state == CALLUI_REJ_MSG_HIDE_IN_PROG) {
+		vd->rm_state = CALLUI_REJ_MSG_HIDDEN;
+		__reject_msg_close_cb(vd);
+	}
+}
+
+static int dtoi(double value) {
+	if (value > 0) {
+		return (value + 0.5);
+	} else {
+		return (value - 0.5);
+	}
+}
+
+static Eina_Bool __reject_msg_animation_cb(void *data, double pos)
+{
+	debug_enter();
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+
+	callui_view_incoming_call_noti_h vd = data;
+
+	Evas_Coord path_step = dtoi((vd->rm_anim_path) * pos);
+	Evas_Coord new_gl_height = 0;
+
+	int dim_step = 0;
+	if (CALLUI_REJ_MSG_DIMMER_ALFA_END == vd->rm_dimmer_alfa_start) {
+		dim_step = dtoi(CALLUI_REJ_MSG_DIMMER_ALFA_END * pos);
+	} else {
+		dim_step = dtoi((CALLUI_REJ_MSG_DIMMER_ALFA_END - vd->rm_dimmer_alfa_start) * pos);
+	}
+
+	if (vd->rm_state == CALLUI_REJ_MSG_SHOW_IN_PROG) {
+		new_gl_height = vd->rm_gl_anim_start_h + path_step;
+		vd->rm_dimmer_alfa = vd->rm_dimmer_alfa_start + dim_step;
+	} else if (vd->rm_state == CALLUI_REJ_MSG_HIDE_IN_PROG) {
+		new_gl_height = vd->rm_gl_anim_start_h - path_step;
+		vd->rm_dimmer_alfa = vd->rm_dimmer_alfa_start - dim_step;
+	} else {
+		err("Invalid state for animation. rm_state[%d]", vd->rm_state);
+		__reject_msg_reset_anim_params(vd);
+		return ECORE_CALLBACK_CANCEL;
+	}
+	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alfa);
+	int r, g, b, a;
+	evas_object_color_get(vd->base_view.contents, &r, &g, &b, &a);
+	dbg("pos[%f] , new RM genlist height[%d]", pos, new_gl_height);
+	dbg("color [%d, %d, %d, %d]", r, g, b, a);
+
+	//evas_object_size_hint_min_set(vd->rm_grid, vd->rm_gl_anim_start_w, new_gl_height);
+	evas_object_resize(vd->rm_gl, vd->rm_gl_anim_start_w, new_gl_height);
+	evas_object_move(vd->rm_gl_stroke, vd->rm_gl_x, vd->rm_gl_y + new_gl_height);
+	if (pos == 1.0) {
+		__reject_msg_animation_end_cb(vd);
+	}
+	return ECORE_CALLBACK_RENEW;
+}
+
+static Evas_Object *__reject_msg_gl_add(Evas_Object *parent, callui_view_incoming_call_noti_h vd)
+{
+	Evas_Object *gl = elm_genlist_add(parent);
+	CALLUI_RETURN_NULL_IF_FAIL(gl);
+	evas_object_data_set(gl, CALLUI_REJ_MSG_GENLIST_DATA, vd);
+
+	elm_genlist_mode_set(gl, ELM_LIST_COMPRESS);
+	elm_genlist_homogeneous_set(gl, EINA_TRUE);
+	elm_scroller_content_min_limit(gl, EINA_FALSE, EINA_TRUE);
+
+	evas_object_size_hint_weight_set(gl, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(gl, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+	return gl;
+}
+
+static char *__reject_msg_gl_item_msg_txt_cb(void *data, Evas_Object *obj, const char *part)
 {
 	int index = CALLUI_SAFE_C_CAST(int, data);
 	char *msg_str = NULL;
@@ -276,35 +561,56 @@ static char *__reject_msg_genlist_item_txt_cb(void *data, Evas_Object *obj, cons
 	return NULL;
 }
 
-static void __reject_msg_genlist_init_item_class(callui_view_incoming_call_noti_h vd)
+static char *__reject_msg_gl_item_compose_txt_cb(void *data, Evas_Object *obj, const char *part)
 {
-	Elm_Genlist_Item_Class *item_class = elm_genlist_item_class_new();
-	CALLUI_RETURN_IF_FAIL(item_class);
-
-	item_class->item_style = "type1";
-	item_class->func.text_get = __reject_msg_genlist_item_txt_cb;
-	item_class->func.content_get = NULL;
-	item_class->func.state_get = NULL;
-	item_class->func.del = NULL;
-	vd->reject_msg_itc = item_class;
+	if (!strcmp(part, "elm.text")) {
+		return strdup(_("IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"));
+	}
+	return NULL;
 }
 
-static void __reject_msg_genlist_deinit_item_class(callui_view_incoming_call_noti_h vd)
+static Evas_Object *__reject_msg_gl_item_compose_content_cb(void *data, Evas_Object *obj, const char *part)
 {
-	elm_genlist_item_class_free(vd->reject_msg_itc);
-	vd->reject_msg_itc = NULL;
+	if (!strcmp(part, "elm.swallow.end")) {
+		Evas_Object *icon = elm_image_add(obj);
+		CALLUI_RETURN_NULL_IF_FAIL(icon);
+		elm_image_file_set(icon, EDJ_NAME, CALLUI_ADD_ICON);
+		evas_object_propagate_events_set(icon, EINA_TRUE);
+		evas_object_color_set(icon, CALLUI_REJ_MSG_ADD_BTN_COLOR);
+		evas_object_size_hint_min_set(icon, CALLUI_REJ_MSG_ADD_BTN_SIZE, CALLUI_REJ_MSG_ADD_BTN_SIZE);
+		return icon;
+	}
+	return NULL;
 }
 
-static Elm_Object_Item *__reject_msg_genlist_append_item(Evas_Object *msg_glist, Elm_Genlist_Item_Class * itc_reject_msg, int index)
+static void __reject_msg_gl_init_item_classes(callui_view_incoming_call_noti_h vd)
 {
-	Elm_Object_Item *item = NULL;
-	item = elm_genlist_item_append(msg_glist, itc_reject_msg,
-			CALLUI_SAFE_C_CAST(void *, index), NULL, ELM_GENLIST_ITEM_NONE,
-			__reject_msg_genlist_item_click_cb, CALLUI_SAFE_C_CAST(void *, index));
-	return item;
+	Elm_Genlist_Item_Class *reject_msg_itc = elm_genlist_item_class_new();
+	CALLUI_RETURN_IF_FAIL(reject_msg_itc);
+
+	reject_msg_itc->item_style = "type1";
+	reject_msg_itc->func.text_get = __reject_msg_gl_item_msg_txt_cb;
+	vd->rm_msg_itc = reject_msg_itc;
+
+	Elm_Genlist_Item_Class *compose_itc = elm_genlist_item_class_new();
+	CALLUI_RETURN_IF_FAIL(compose_itc);
+
+	compose_itc->item_style = "type1";
+	compose_itc->func.text_get = __reject_msg_gl_item_compose_txt_cb;
+	compose_itc->func.content_get = __reject_msg_gl_item_compose_content_cb;
+	vd->rm_compose_itc = compose_itc;
 }
 
-static int __reject_msg_genlist_fill(callui_view_incoming_call_noti_h vd)
+static void __reject_msg_gl_deinit_item_classes(callui_view_incoming_call_noti_h vd)
+{
+	elm_genlist_item_class_free(vd->rm_msg_itc);
+	vd->rm_msg_itc = NULL;
+
+	elm_genlist_item_class_free(vd->rm_compose_itc);
+	vd->rm_compose_itc = NULL;
+}
+
+static void __reject_msg_gl_fill(Evas_Object *gl, callui_view_incoming_call_noti_h vd)
 {
 	int msg_cnt = 0;
 	if (0 != vconf_get_int(VCONFKEY_CISSAPPL_REJECT_CALL_MSG_INT, &msg_cnt)) {
@@ -313,49 +619,65 @@ static int __reject_msg_genlist_fill(callui_view_incoming_call_noti_h vd)
 	dbg("msg_cnt: %d", msg_cnt);
 
 	int index = 0;
-	if (msg_cnt == 0) {
-		index = -1;
-		Elm_Object_Item * item = __reject_msg_genlist_append_item(vd->reject_msg_genlist, vd->reject_msg_itc, index);
-		if (item) {
-			elm_genlist_item_select_mode_set(item, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
-		}
-	} else {
-		for (index = 0; index < msg_cnt; index++) {
-			__reject_msg_genlist_append_item(vd->reject_msg_genlist, vd->reject_msg_itc, index);
-		}
+	for (index = 0; index < msg_cnt; index++) {
+		elm_genlist_item_append(gl, vd->rm_msg_itc,
+				CALLUI_SAFE_C_CAST(void *, index), NULL, ELM_GENLIST_ITEM_NONE,
+				__reject_msg_gl_item_msg_click_cb, CALLUI_SAFE_C_CAST(void *, index));
 	}
-	return msg_cnt;
+	elm_genlist_item_append(gl, vd->rm_compose_itc,
+			NULL, NULL, ELM_GENLIST_ITEM_NONE, __reject_msg_gl_item_compose_click_cb, vd->base_view.ad);
+}
+
+static void __reject_msg_gl_anchor_move_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	callui_view_incoming_call_noti_h vd = data;
+
+	Evas_Coord x = 0;
+	Evas_Coord y = 0;
+	Evas_Coord w = 0;
+	Evas_Coord h = 0;
+	evas_object_geometry_get(obj, &x, &y, &w, &h);
+	dbg("RM genlist anchor geometry -  x[%d] y[%d] w[%d] h[%d]", x, y, w, h);
+	evas_object_move(vd->rm_gl, x, y);
+	vd->rm_gl_x = x;
+	vd->rm_gl_y = y;
 }
 
 static void __create_reject_msg_content(callui_view_incoming_call_noti_h vd)
 {
-	callui_app_data_t *ad = vd->base_view.ad;
+	/* Reject message genlist */
+	__reject_msg_gl_init_item_classes(vd);
+	vd->rm_gl = __reject_msg_gl_add(vd->layout, vd);
+	CALLUI_RETURN_IF_FAIL(vd->rm_gl);
+	evas_object_resize(vd->rm_gl, vd->base_view.ad->root_w, 0);
+	evas_object_event_callback_add(vd->rm_gl, EVAS_CALLBACK_CHANGED_SIZE_HINTS, __reject_msg_gl_changed_hints_cb, vd);
+	evas_object_event_callback_add(vd->rm_gl, EVAS_CALLBACK_RESIZE, __reject_msg_gl_resize_cb, vd);
+	__reject_msg_gl_fill(vd->rm_gl, vd);
+	__reject_msg_gl_deinit_item_classes(vd);
+	evas_object_show(vd->rm_gl);
 
-	vd->reject_msg_layout = _callui_load_edj(vd->base_view.contents, EDJ_NAME, "reject_msg_ly");
-	elm_object_part_content_set(vd->base_view.contents, "swallow.reject_msg", vd->reject_msg_layout);
+	/* Reject message genlist bottom stroke */
+	vd->rm_gl_stroke = evas_object_rectangle_add(evas_object_evas_get(vd->rm_gl));
+	CALLUI_RETURN_IF_FAIL(vd->rm_gl_stroke);
+	evas_object_color_set(vd->rm_gl_stroke, AO028);
+	evas_object_resize(vd->rm_gl_stroke, vd->base_view.ad->root_w, CALLUI_AN_STROKE_H);
+	evas_object_show(vd->rm_gl_stroke);
 
-	// TODO: possibly can be replaced in common part. Need investigate
-	__reject_msg_genlist_add(vd);
-	__reject_msg_genlist_init_item_class(vd);
-	int msg_cnt = __reject_msg_genlist_fill(vd);
-	__reject_msg_genlist_deinit_item_class(vd);
-
-	_callui_create_reject_msg_button(ad, vd->reject_msg_layout, "swallow.button");
-
-	elm_object_tree_focus_allow_set(vd->reject_msg_genlist, EINA_FALSE);
-	evas_object_size_hint_min_set(vd->reject_msg_genlist, ad->root_w, 0);
-	evas_object_size_hint_max_set(vd->reject_msg_genlist, ad->root_w, ELM_SCALE_SIZE(MTLOCK_REJECT_MSG_LIST_1ITEM_NEW_HEIGHT * msg_cnt));
-	evas_object_show(vd->reject_msg_layout);
-	evas_object_show(vd->reject_msg_genlist);
+	/* Reject message genlist EDJE anchor */
+	vd->rm_gl_anchor = evas_object_rectangle_add(evas_object_evas_get(vd->layout));
+	CALLUI_RETURN_IF_FAIL(vd->rm_gl_anchor);
+	evas_object_event_callback_add(vd->rm_gl_anchor, EVAS_CALLBACK_MOVE, __reject_msg_gl_anchor_move_cb, vd);
+	evas_object_color_set(vd->rm_gl_anchor, 0, 0, 0, 0);
+	elm_object_part_content_set(vd->layout, "swallow.reject_msg_gl_anchor", vd->rm_gl_anchor);
 }
 
 static void __destroy_reject_msg_content(callui_view_incoming_call_noti_h vd)
 {
-	DELETE_EVAS_OBJECT(vd->reject_msg_layout);
-	vd->reject_msg_genlist = NULL;
+	DELETE_EVAS_OBJECT(vd->rm_gl);
+	DELETE_EVAS_OBJECT(vd->rm_gl_stroke);
 }
 
-static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __launch_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	CALLUI_RETURN_IF_FAIL(data);
 
@@ -377,54 +699,112 @@ static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void
 	}
 }
 
-static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd, Evas_Object *parent)
+static Evas_Event_Flags __gesture_layer_flick_end_cb(void *data, void *event_info)
 {
-	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME,  "main_active_noti_call");
-	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
+	CALLUI_RETURN_VALUE_IF_FAIL(data, EVAS_EVENT_FLAG_NONE);
 
-	callui_result_e res = __create_custom_button(CALLUI_DURING_ICON, "swallow.call_button",
-			__launch_btn_click_cb, vd, (void *)APP_CONTROL_OPERATION_DURING_CALL);
-	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+	callui_view_incoming_call_noti_h vd = data;
+	Elm_Gesture_Line_Info *line_info = (Elm_Gesture_Line_Info *)event_info;
 
-	res = __create_custom_button(CALLUI_REJECT_ICON, "swallow.rj_msg_button",
-			__show_reject_msg_btn_click_cb, vd, (void *)vd);
-	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
-
-	res = __create_custom_button(CALLUI_END_ICON, "swallow.end_call_button",
-			__launch_btn_click_cb, vd, (void *)APP_CONTROL_OPERATION_END_CALL);
-	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
-
-	Evas_Object *swipe_layout = elm_layout_add(vd->base_view.contents);
-	CALLUI_RETURN_VALUE_IF_FAIL(swipe_layout, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_layout_file_set(swipe_layout, EDJ_NAME, "swipe_call_button_ly");
-	evas_object_event_callback_add(swipe_layout, EVAS_CALLBACK_MOUSE_MOVE, __swipe_layout_mouse_move_cb, vd);
-	elm_object_part_content_set(vd->base_view.contents, "swallow.swipe_button", swipe_layout);
-
-	return res;
+	if (((line_info->angle >= 340. && line_info->angle <= 360.) ||
+			(line_info->angle >= 0. && line_info->angle <= 20.)) && !vd->rm_turned_on) {
+		DELETE_ECORE_IDLE_ENTERER(vd->transit_effect_idler);
+		vd->transit_effect_idler = ecore_idle_enterer_before_add(__disappear_effect_activated_cb, vd);
+	}
+	return EVAS_EVENT_FLAG_ON_HOLD;
 }
 
-static callui_result_e __create_custom_button(char *icon_name, char *part, Evas_Object_Event_Cb func, void * data, void * data_bt_cb)
+static Evas_Object *__create_gesture_layer(callui_view_incoming_call_noti_h vd)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(data, CALLUI_RESULT_INVALID_PARAM);
+	Evas_Object *gesture_layer = elm_gesture_layer_add(vd->layout);
+	CALLUI_RETURN_NULL_IF_FAIL(gesture_layer);
 
-	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)data;
-	callui_app_data_t *ad = vd->base_view.ad;
+	elm_gesture_layer_attach(gesture_layer, vd->layout);
+	elm_gesture_layer_flick_time_limit_ms_set(gesture_layer, CALLUI_REJ_MSG_FLICK_TIME_LIMIT_MS);
+	elm_gesture_layer_cb_set(gesture_layer, ELM_GESTURE_N_LINES , ELM_GESTURE_STATE_END, __gesture_layer_flick_end_cb, vd);
+	evas_object_show(gesture_layer);
 
-	Evas_Object *button_call = elm_layout_add(vd->base_view.contents);
-	CALLUI_RETURN_VALUE_IF_FAIL(button_call, CALLUI_RESULT_ALLOCATION_FAIL);
+	return gesture_layer;
+}
 
-	elm_layout_file_set(button_call, EDJ_NAME, "main_button_ly");
-	Evas_Object *icon = elm_image_add(button_call);
-	CALLUI_RETURN_VALUE_IF_FAIL(icon, CALLUI_RESULT_ALLOCATION_FAIL);
+static void __contact_info_click_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	CALLUI_RETURN_IF_FAIL(data);
 
-	elm_image_file_set(icon, EDJ_NAME, icon_name);
-	elm_object_part_content_set(button_call, "swallow.icon", icon);
-	elm_object_part_content_set(vd->base_view.contents, part, button_call);
-	evas_object_data_set(button_call, "app_data", ad);
-	evas_object_event_callback_add(button_call, EVAS_CALLBACK_MOUSE_UP, func, data_bt_cb);
+	callui_view_incoming_call_noti_h vd = data;
+
+	_callui_vm_change_view(vd->base_view.ad->view_manager, CALLUI_VIEW_INCOMING_CALL);
+}
+
+static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd, Evas_Object *parent)
+{
+	vd->base_view.contents = evas_object_rectangle_add(evas_object_evas_get(parent));
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
+	evas_object_size_hint_weight_set(vd->base_view.contents, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(vd->base_view.contents, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, CALLUI_REJ_MSG_DIMMER_ALFA_START);
+	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
+	evas_object_show(vd->base_view.contents);
+
+	vd->box = elm_box_add(vd->base_view.contents);
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->box, CALLUI_RESULT_ALLOCATION_FAIL);
+	evas_object_event_callback_add(vd->box, EVAS_CALLBACK_CHANGED_SIZE_HINTS, __box_changed_hints_cb, vd);
+	elm_box_horizontal_set(vd->box, EINA_FALSE);
+	evas_object_show(vd->box);
+
+	vd->layout = _callui_load_edj(vd->box, EDJ_NAME,  "main_active_noti_call");
+	CALLUI_RETURN_VALUE_IF_FAIL(vd->layout, CALLUI_RESULT_ALLOCATION_FAIL);
+	evas_object_size_hint_weight_set(vd->layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(vd->layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+	elm_object_signal_callback_add(vd->layout, "contact_info.clicked",
+			"main_active_noti_call", __contact_info_click_cb, vd);
+
+	elm_box_pack_end(vd->box, vd->layout);
+
+	Evas_Object *answer_btn = __create_btn(vd, "answer_call_noti", CALLUI_DURING_ICON,
+			NULL, __launch_btn_click_cb, APP_CONTROL_OPERATION_DURING_CALL);
+	CALLUI_RETURN_VALUE_IF_FAIL(answer_btn, CALLUI_RESULT_ALLOCATION_FAIL);
+	elm_object_part_content_set(vd->layout, "swallow.call_accept_btn", answer_btn);
+
+	Evas_Object *reject_btn = __create_btn(vd, "reject_call_noti", CALLUI_END_ICON,
+			NULL, __launch_btn_click_cb, APP_CONTROL_OPERATION_END_CALL);
+	CALLUI_RETURN_VALUE_IF_FAIL(reject_btn, CALLUI_RESULT_ALLOCATION_FAIL);
+	elm_object_part_content_set(vd->layout, "swallow.call_reject_btn", reject_btn);
+
+	CALLUI_RETURN_VALUE_IF_FAIL(__create_gesture_layer(vd), CALLUI_RESULT_ALLOCATION_FAIL);
+
+	elm_object_signal_emit(vd->layout, "start_swipe_anim", "main_active_noti_call");
+
+	vd->rm_state = CALLUI_REJ_MSG_HIDDEN;
+	vd->parent = parent;
+	evas_object_event_callback_add(vd->parent, EVAS_CALLBACK_RESIZE, __parent_resize_cb, vd);
 
 	return CALLUI_RESULT_OK;
+}
+
+static Evas_Object *__create_btn(callui_view_incoming_call_noti_h vd,
+		const char *style,
+		const char *icon_name,
+		const char *txt,
+		Evas_Smart_Cb click_cb,
+		void *cb_data)
+{
+	Evas_Object *button = elm_button_add(vd->layout);
+	CALLUI_RETURN_NULL_IF_FAIL(button);
+	elm_object_style_set(button, style);
+	evas_object_smart_callback_add(button, "clicked", click_cb, cb_data);
+
+	if (icon_name) {
+		Evas_Object *icon = elm_image_add(button);
+		CALLUI_RETURN_NULL_IF_FAIL(icon);
+		elm_image_file_set(icon, EDJ_NAME, icon_name);
+		elm_object_part_content_set(button, "elm.swallow.content", icon);
+	}
+	if (txt) {
+		elm_object_translatable_part_text_set(button, "elm.text", txt);
+	}
+	return button;
 }
 
 static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h vd)
@@ -434,7 +814,7 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 	const callui_call_data_t *call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
 
-	elm_object_signal_emit(vd->base_view.contents, "small_main_ly", "main_active_noti_call");
+	elm_object_signal_emit(vd->layout, "small_main_ly", "main_active_noti_call");
 
 	const char *call_name = call_data->call_ct_info.call_disp_name;
 	const char *call_number = NULL;
@@ -444,21 +824,199 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 		call_number = call_data->call_num;
 	}
 
-	if (STRING_EMPTY(call_name) && STRING_EMPTY(call_number)) {
-		elm_object_signal_emit(vd->base_view.contents, "big_buttons", "main_active_noti_call");
-		elm_object_translatable_part_text_set(vd->base_view.contents, "text.contact_name", "IDS_CALL_BODY_UNKNOWN");
-	} else if (STRING_EMPTY(call_name)) {
-		elm_object_signal_emit(vd->base_view.contents, "small_buttons", "main_active_noti_call");
-		elm_object_part_text_set(vd->base_view.contents, "text.contact_name", call_number);
+	elm_object_translatable_part_text_set(vd->layout, "text.status", "IDS_CALL_BODY_INCOMING_CALL");
+
+	bool is_unknown = false;
+	if (!(call_name && call_name[0] != '\0') && !(call_number && call_number[0] != '\0')) {
+		elm_object_signal_emit(vd->layout, "show_two_lines", "main_active_noti_call");
+		elm_object_signal_emit(vd->layout, "hide_reject_msg_btn", "main_active_noti_call");
+		elm_object_translatable_part_text_set(vd->layout, "text.contact_name", "IDS_CALL_BODY_UNKNOWN");
+		is_unknown = true;
+	} else if (!(call_name && call_name[0] != '\0')) {
+		elm_object_signal_emit(vd->layout, "show_two_lines", "main_active_noti_call");
+		elm_object_part_text_set(vd->layout, "text.contact_name", call_number);
 	} else {
-		elm_object_signal_emit(vd->base_view.contents, "small_buttons", "main_active_noti_call");
-		elm_object_part_text_set(vd->base_view.contents, "text.contact_name", call_name);
-		elm_object_part_text_set(vd->base_view.contents, "text.contact_number", call_number);
+		elm_object_signal_emit(vd->layout, "show_three_lines", "main_active_noti_call");
+		elm_object_part_text_set(vd->layout, "text.contact_name", call_name);
+		elm_object_part_text_set(vd->layout, "text.contact_number", call_number);
 	}
 
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->base_view.contents, call_data), CALLUI_RESULT_FAIL);
+	if (!is_unknown) {
+		Evas_Object *reject_msg_btn = __create_btn(vd, "reject_msg_noti", NULL,
+				"IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE", __show_reject_msg_btn_click_cb, vd);
+		CALLUI_RETURN_VALUE_IF_FAIL(reject_msg_btn, CALLUI_RESULT_ALLOCATION_FAIL);
+		elm_object_part_content_set(vd->layout, "swallow.reject_msg_btn", reject_msg_btn);
+	}
 
-	evas_object_show(vd->base_view.contents);
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->layout, call_data), CALLUI_RESULT_FAIL);
+
+	evas_object_show(vd->layout);
 
 	return CALLUI_RESULT_OK;
+}
+
+static void __reject_msg_prepare_animator(callui_view_incoming_call_noti_h vd)
+{
+	double anim_time = vd->rm_anim_path / CALLUI_REJ_MSG_ANIM_VELOCITY;
+
+	dbg("Animation start params: path[%f], time[%f], rm_gl_width[%d], rm_gl_height[%d]",
+			vd->rm_anim_path, anim_time, vd->rm_gl_anim_start_w, vd->rm_gl_anim_start_h);
+
+	vd->rm_dimmer_alfa_start = vd->rm_dimmer_alfa;
+	vd->rm_animator = ecore_animator_timeline_add(anim_time, __reject_msg_animation_cb, vd);
+	if (!vd->rm_animator) {
+		err("Failed to create animator.");
+	}
+}
+
+static void __reject_msg_show_animated(callui_view_incoming_call_noti_h vd)
+{
+	debug_enter();
+
+	vd->rm_state = CALLUI_REJ_MSG_SHOW_IN_PROG;
+
+	if (vd->rm_gl_max_h > vd->rm_gl_available_h) {
+		vd->rm_anim_path = vd->rm_gl_available_h;
+	} else {
+		vd->rm_anim_path = vd->rm_gl_max_h;
+	}
+
+	__reject_msg_get_genlist_cur_size(vd, &vd->rm_gl_anim_start_w, &vd->rm_gl_anim_start_h);
+	vd->rm_anim_path = vd->rm_anim_path - vd->rm_gl_anim_start_h;
+
+	__reject_msg_prepare_animator(vd);
+}
+
+static void __reject_msg_hide_animated(callui_view_incoming_call_noti_h vd)
+{
+	debug_enter();
+
+	vd->rm_state = CALLUI_REJ_MSG_HIDE_IN_PROG;
+
+	__reject_msg_get_genlist_cur_size(vd, &vd->rm_gl_anim_start_w, &vd->rm_gl_anim_start_h);
+	vd->rm_anim_path = vd->rm_gl_anim_start_h;
+
+	__reject_msg_prepare_animator(vd);
+}
+
+static void __reject_msg_recalc(callui_view_incoming_call_noti_h vd)
+{
+	debug_enter();
+
+	int new_height = 0;
+	if (vd->rm_gl_max_h > vd->rm_gl_available_h) {
+		new_height = vd->rm_gl_available_h;
+	} else {
+		new_height = vd->rm_gl_max_h;
+	}
+
+	int width = 0;
+	int height = 0;
+	__reject_msg_get_genlist_cur_size(vd, &width, &height);
+	evas_object_resize(vd->rm_gl, width, new_height);
+	evas_object_move(vd->rm_gl_stroke, vd->rm_gl_x, vd->rm_gl_y + new_height);
+}
+
+static void __reject_msg_hide_instantly(callui_view_incoming_call_noti_h vd)
+{
+	__reject_msg_reset_anim_params(vd);
+
+	vd->rm_dimmer_alfa = CALLUI_REJ_MSG_DIMMER_ALFA_START;
+	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alfa);
+
+	__reject_msg_close_cb(vd);
+
+	vd->rm_state = CALLUI_REJ_MSG_HIDDEN;
+}
+
+static void __reject_msg_show_instantly(callui_view_incoming_call_noti_h vd)
+{
+	__reject_msg_reset_anim_params(vd);
+
+	vd->rm_dimmer_alfa = CALLUI_REJ_MSG_DIMMER_ALFA_END;
+	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alfa);
+
+	__reject_msg_recalc(vd);
+
+	vd->rm_state = CALLUI_REJ_MSG_SHOWN;
+}
+
+static void __reject_msg_try_actualize(callui_view_incoming_call_noti_h vd)
+{
+	dbg("rm_actualize_state[%d] rm_state[%d]", vd->rm_actualize_state, vd->rm_state);
+
+	if (!vd->rm_actualize_state) {
+
+		vd->rm_actualize_state |= CALLUI_REJ_MSG_UPDATE_AVAILABLE_SIZE;
+
+		switch (vd->rm_state) {
+		case CALLUI_REJ_MSG_HIDDEN:
+			return;
+		case CALLUI_REJ_MSG_SHOWN:
+			__reject_msg_recalc(vd);
+			break;
+		case CALLUI_REJ_MSG_SHOW_REQ:
+			__reject_msg_show_animated(vd);
+			break;
+		case CALLUI_REJ_MSG_HIDE_IN_PROG:
+			__reject_msg_hide_instantly(vd);
+			break;
+		case CALLUI_REJ_MSG_SHOW_IN_PROG:
+			__reject_msg_show_instantly(vd);
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (vd->rm_state == CALLUI_REJ_MSG_HIDE_REQ) {
+		__reject_msg_hide_animated(vd);
+	}
+}
+
+static void __reject_msg_calc_available_size(callui_view_incoming_call_noti_h vd)
+{
+	vd->rm_gl_available_h = 0;
+	callui_app_data_t *ad = vd->base_view.ad;
+
+	int rotation = _callui_window_get_rotation(ad->window);
+	switch (rotation) {
+	case 0:
+	case 180:
+		vd->rm_gl_available_h = ad->root_h - CALLUI_REJ_MSG_SCREEN_USED_H;
+		break;
+	case 90:
+	case 270:
+		vd->rm_gl_available_h = ad->root_w - CALLUI_REJ_MSG_SCREEN_USED_H;
+		break;
+	default:
+		return;
+		break;
+	}
+	dbg("Available RM genlist height - [%d]",  vd->rm_gl_available_h);
+}
+
+static void __reject_msg_move_layout(callui_view_incoming_call_noti_h vd)
+{
+	callui_app_data_t *ad = vd->base_view.ad;
+	int rotation = _callui_window_get_rotation(ad->window);
+	int new_x = 0;
+	if (vd->rm_gl) {
+		if (rotation == 90 || rotation == 270)
+			new_x = (ad->root_h - ad->root_w - ACTIVE_NOTI_LANDSCAPE_L_PAD);
+	}
+	evas_object_move(vd->box, new_x, 0);
+}
+
+static void __parent_resize_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+{
+	CALLUI_RETURN_IF_FAIL(data);
+
+	callui_view_incoming_call_noti_h vd = data;
+
+	__reject_msg_calc_available_size(vd);
+	__reject_msg_move_layout(vd);
+
+	vd->rm_actualize_state &= ~CALLUI_REJ_MSG_UPDATE_AVAILABLE_SIZE;
+	__reject_msg_try_actualize(vd);
 }

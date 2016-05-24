@@ -68,6 +68,7 @@ images {
 	image: IMG_SRC_DIR/"background.png" COMP;
 	image: IMG_SRC_DIR/"background_dim.png" COMP;
 	image: IMG_SRC_DIR/"call_button_add.png" COMP;
+	image: IMG_SRC_DIR/"call_active_ic_call.png" COMP;
 
 	image: CALLID_IMG_SRC_DIR/"call_active_photo_id_bg.png" COMP;
 	image: CALLID_IMG_SRC_DIR/"call_active_photo_id_default.png" COMP;
