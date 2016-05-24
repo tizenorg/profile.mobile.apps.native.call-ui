@@ -34,4 +34,10 @@ typedef enum {
 
 } callui_result_e;
 
+typedef struct rgb_color_data {
+	int r;
+	int g;
+	int b;
+} callui_rgb_color_t;
+
 #endif /* __CALLUI_COMMON_TYPES_H__ */

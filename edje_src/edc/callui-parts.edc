@@ -87,8 +87,8 @@
 			} \
 		)
 
-#define E_SWALLOW_BG \
-		CU_PART_SWALLOW("email.swallow.bg", \
+#define CU_SWALLOW_BG \
+		CU_PART_SWALLOW("callui.swallow.bg", \
 			mouse_events: 0; \
 			description { state: "default" 0.0; \
 			} \

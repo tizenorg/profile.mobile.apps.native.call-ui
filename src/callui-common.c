@@ -428,6 +428,16 @@ static char *__callui_common_parse_vconf_string(char *input_string)
 	return parsed_message;
 }
 
+callui_result_e _callui_common_get_reject_msg_count(int *count)
+{
+	int res = vconf_get_int(VCONFKEY_CISSAPPL_REJECT_CALL_MSG_INT, count);
+	if (res != 0) {
+		*count = 0;
+		return CALLUI_RESULT_FAIL;
+	}
+	return CALLUI_RESULT_OK;
+}
+
 char *_callui_common_get_reject_msg_by_index(int index)
 {
 	char *message = NULL;
