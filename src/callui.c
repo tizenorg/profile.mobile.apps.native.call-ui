@@ -459,9 +459,14 @@ static void __app_deinit(callui_app_data_t *ad)
 
 	__unset_main_win_key_grab(ad);
 
-	if (ad->view_manager) {
-		_callui_vm_destroy(ad->view_manager);
-		ad->view_manager = NULL;
+	if (ad->lock_handle) {
+		_callui_lock_manager_destroy(ad->lock_handle);
+		ad->lock_handle = NULL;
+	}
+
+	if (ad->display) {
+		_callui_display_destroy(ad->display);
+		ad->display = NULL;
 	}
 
 	if (ad->qp_minicontrol) {
@@ -469,9 +474,9 @@ static void __app_deinit(callui_app_data_t *ad)
 		ad->qp_minicontrol = NULL;
 	}
 
-	if (ad->lock_handle) {
-		_callui_lock_manager_destroy(ad->lock_handle);
-		ad->lock_handle = NULL;
+	if (ad->keypad) {
+		_callui_keypad_destroy(ad->keypad);
+		ad->keypad = NULL;
 	}
 
 	if (ad->action_bar) {
@@ -479,14 +484,16 @@ static void __app_deinit(callui_app_data_t *ad)
 		ad->action_bar = NULL;
 	}
 
-	if (ad->keypad) {
-		_callui_keypad_destroy(ad->keypad);
-		ad->keypad = NULL;
+	if (ad->view_manager) {
+		_callui_vm_destroy(ad->view_manager);
+		ad->view_manager = NULL;
 	}
 
-	if (ad->display) {
-		_callui_display_destroy(ad->display);
-		ad->display = NULL;
+	if (ad->call_manager) {
+		_callui_manager_destroy(ad->call_manager);
+		ad->call_manager = NULL;
+		ad->state_provider = NULL;
+		ad->sound_manager = NULL;
 	}
 
 	if (ad->main_ly) {
