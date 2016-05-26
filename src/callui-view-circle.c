@@ -62,13 +62,13 @@ static void __callui_view_circle_handle_accept(callui_app_data_t *ad)
 		_callui_common_unlock_swipe_lock();
 	}
 
-	const callui_call_state_data_t *call_data =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *call_data =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 
 	if (!call_data) {
 		dbg("No Call Or Held call - Accept");
 		callui_result_e res = _callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_NORMAL);
+						CALLUI_CALL_ANSWER_NORMAL);
 		if (res != CALLUI_RESULT_OK) {
 			err("_callui_manager_answer_call() failed. res[%d]", res);
 		}
@@ -385,7 +385,8 @@ callui_result_e _callui_view_circle_create_reject_layout(callui_app_data_t *ad, 
 
 	elm_object_signal_emit(lock_reject, "outer_circle,hide", "outer-circle");
 
-	elm_object_part_text_set(lock_reject, "reject_text", _("IDS_CALL_BUTTON_REJECT"));
+	elm_object_translatable_part_text_set(lock_reject,
+			"reject_text", "IDS_CALL_BUTTON_REJECT");
 
 	evas_object_data_set(lock_reject, CALLUI_CIRCLE_LAYOUT_DATA, vd);
 
@@ -444,7 +445,8 @@ callui_result_e _callui_view_circle_create_accept_layout(callui_app_data_t *ad, 
 
 	evas_object_data_set(lock_accept, CALLUI_CIRCLE_LAYOUT_DATA, vd);
 
-	elm_object_part_text_set(lock_accept, "accept_text", _("IDS_CALL_BUTTON_ACCEPT"));
+	elm_object_translatable_part_text_set(lock_accept,
+			"accept_text", "IDS_CALL_BUTTON_ACCEPT");
 	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MOUSE_DOWN, __callui_view_circle_mouse_down_cb, ad);
 	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MOUSE_MOVE, __callui_view_circle_mouse_move_cb, ad);
 	evas_object_event_callback_add(lock_accept, EVAS_CALLBACK_MOUSE_UP, __callui_view_circle_mouse_up_cb, ad);

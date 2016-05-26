@@ -15,10 +15,11 @@
  *
  */
 
-#ifndef _CALLUI_ACTION_BAR_H_
-#define _CALLUI_ACTION_BAR_H_
+#ifndef __CALLUI_ACTION_BAR_H__
+#define __CALLUI_ACTION_BAR_H__
 
 #include <Elementary.h>
+#include <stdbool.h>
 
 typedef struct _callui_action_bar *callui_action_bar_h;
 
@@ -58,4 +59,20 @@ void _callui_action_bar_show(callui_action_bar_h action_bar);
  */
 void _callui_action_bar_hide(callui_action_bar_h action_bar);
 
-#endif /* _CALLUI_ACTION_BAR_H_ */
+/**
+ * @brief Set disabled state on action bar
+ *
+ * @param[in]	action_bar	Action bar handler
+ * @param[in]	is_disable	Disable state
+ */
+void _callui_action_bar_set_disabled_state(callui_action_bar_h action_bar, bool is_disabled);
+
+/**
+ * @brief Get disabled state on action bar
+ *
+ * @param[in]	action_bar	Action bar handler
+ * @param[in]	is_disable	Disable state
+ */
+bool _callui_action_bar_get_disabled_state(callui_action_bar_h action_bar);
+
+#endif /* __CALLUI_ACTION_BAR_H__ */

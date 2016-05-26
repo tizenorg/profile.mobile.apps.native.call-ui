@@ -42,14 +42,16 @@ static callui_result_e _callui_view_multi_call_split_oncreate(call_view_data_bas
 static callui_result_e _callui_view_multi_call_split_onupdate(call_view_data_base_t *view_data);
 static callui_result_e _callui_view_multi_call_split_ondestroy(call_view_data_base_t *view_data);
 
+static callui_result_e __update_nonetranslatable_elements(callui_view_mc_split_h vd);
+
 static callui_result_e __create_main_content(callui_view_mc_split_h vd);
 static callui_result_e __update_displayed_data(callui_view_mc_split_h vd);
 
 static Evas_Object *__create_merge_swap_btn(Evas_Object *parent, const char *name, const char *text);
 
-static void __update_hold_active_layout(Evas_Object *layout, const callui_call_state_data_t *call_data);
-static void __fill_one_contact_layout(Evas_Object *parent, const callui_call_state_data_t *call_data);
-static void __fill_conference_layout(Evas_Object *parent, const callui_call_state_data_t *call_data);
+static void __update_hold_active_layout(Evas_Object *layout, const callui_call_data_t *call_data);
+static void __fill_one_contact_layout(Evas_Object *parent, const callui_call_data_t *call_data);
+static void __fill_conference_layout(Evas_Object *parent, const callui_call_data_t *call_data);
 static void __set_hold_info(Evas_Object *parent, Evas_Object *content);
 static void __set_active_info(Evas_Object *parent, Evas_Object *content, callui_app_data_t *ad);
 
@@ -62,17 +64,44 @@ static void __swap_btn_click_cb(void *data, Evas_Object *obj, const char *emissi
 static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility);
 static Eina_Bool __call_duration_timer_cb(void* data);
 static callui_result_e __init_call_duration_timer(callui_view_mc_split_h vd);
+static void __update_call_duration_time(callui_view_mc_split_h vd, struct tm *comp_time);
 
 callui_view_mc_split_h _callui_view_multi_call_split_new()
 {
 	callui_view_mc_split_h mc_split_view = calloc(1, sizeof(_callui_view_mc_split_t));
 	CALLUI_RETURN_NULL_IF_FAIL(mc_split_view);
 
-	mc_split_view->base_view.onCreate = _callui_view_multi_call_split_oncreate;
-	mc_split_view->base_view.onUpdate = _callui_view_multi_call_split_onupdate;
-	mc_split_view->base_view.onDestroy = _callui_view_multi_call_split_ondestroy;
+	mc_split_view->base_view.create = _callui_view_multi_call_split_oncreate;
+	mc_split_view->base_view.update = _callui_view_multi_call_split_onupdate;
+	mc_split_view->base_view.destroy = _callui_view_multi_call_split_ondestroy;
 
 	return mc_split_view;
+}
+
+static callui_result_e __update_nonetranslatable_elements(callui_view_mc_split_h vd)
+{
+	callui_app_data_t *ad = vd->base_view.ad;
+
+	const callui_call_data_t *active = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
+	CALLUI_RETURN_VALUE_IF_FAIL(active, CALLUI_RESULT_FAIL);
+
+	const callui_call_data_t *held = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
+	CALLUI_RETURN_VALUE_IF_FAIL(held, CALLUI_RESULT_FAIL);
+
+	char buffer[BUF_SIZE] = { 0 };
+	const char *fmt = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
+
+	if (held->conf_member_count > 1) {
+		snprintf(buffer, BUF_SIZE, fmt, held->conf_member_count);
+		elm_object_part_text_set(vd->hold_layout, PART_TEXT_SUB, buffer);
+	}
+
+	if (active->conf_member_count > 1) {
+		snprintf(buffer, BUF_SIZE, fmt, active->conf_member_count);
+		elm_object_part_text_set(vd->active_layout, PART_TEXT_SUB, buffer);
+	}
+
+	return CALLUI_RESULT_OK;
 }
 
 static callui_result_e _callui_view_multi_call_split_oncreate(call_view_data_base_t *view_data, void *appdata)
@@ -98,11 +127,16 @@ static callui_result_e _callui_view_multi_call_split_onupdate(call_view_data_bas
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
 
 	callui_view_mc_split_h vd = (callui_view_mc_split_h)view_data;
-	callui_app_data_t *ad = vd->base_view.ad;
 
-	_callui_lock_manager_start(ad->lock_handle);
+	_callui_lock_manager_start(vd->base_view.ad->lock_handle);
 
-	return 	__update_displayed_data(vd);
+	callui_result_e res = CALLUI_RESULT_FAIL;
+	if (vd->base_view.update_flags & CALLUI_UF_DATA_REFRESH) {
+		res = __update_displayed_data(vd);
+	} else if (vd->base_view.update_flags & CALLUI_UF_LANG_CHANGE) {
+		res = __update_nonetranslatable_elements(vd);
+	}
+	return res;
 }
 
 static callui_result_e _callui_view_multi_call_split_ondestroy(call_view_data_base_t *view_data)
@@ -141,10 +175,10 @@ static callui_result_e __create_main_content(callui_view_mc_split_h vd)
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->base_view.contents, PART_SWALLOW_CALL_INFO, vd->caller_info);
 
-	vd->hold_layout = _callui_load_edj(vd->caller_info, EDJ_NAME, GROUP_ACTIVE_HOLD_INFO);
+	vd->hold_layout = _callui_load_edj(vd->caller_info, EDJ_NAME, GROUP_HOLD_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->hold_layout, CALLUI_RESULT_ALLOCATION_FAIL);
 
-	vd->active_layout = _callui_load_edj(vd->caller_info, EDJ_NAME, GROUP_ACTIVE_HOLD_INFO);
+	vd->active_layout = _callui_load_edj(vd->caller_info, EDJ_NAME, GROUP_ACTIVE_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->active_layout, CALLUI_RESULT_ALLOCATION_FAIL);
 
 	callui_result_e res = __create_merge_swap_btns(vd->caller_info, ad);
@@ -166,12 +200,12 @@ static Evas_Object *__create_merge_swap_btn(Evas_Object *parent, const char *nam
 	Evas_Object *layout = elm_layout_add(parent);
 	elm_layout_file_set(layout, EDJ_NAME, name);
 
-	elm_object_part_text_set(layout, PART_TEXT_MERGE_SWAP_BTN, text);
+	elm_object_translatable_part_text_set(layout, MERGE_SWAP_BTN_PART_TEXT, text);
 
 	return layout;
 }
 
-static void __update_hold_active_layout(Evas_Object *layout, const callui_call_state_data_t *call_data)
+static void __update_hold_active_layout(Evas_Object *layout, const callui_call_data_t *call_data)
 {
 	if (call_data->conf_member_count == 1) {
 		__fill_one_contact_layout(layout, call_data);
@@ -180,7 +214,7 @@ static void __update_hold_active_layout(Evas_Object *layout, const callui_call_s
 	}
 }
 
-static void __fill_one_contact_layout(Evas_Object *parent, const callui_call_state_data_t *call_data)
+static void __fill_one_contact_layout(Evas_Object *parent, const callui_call_data_t *call_data)
 {
 	const char *pic_path = call_data->call_ct_info.caller_id_path;
 	const char *main_text = call_data->call_ct_info.call_disp_name;
@@ -198,12 +232,13 @@ static void __fill_one_contact_layout(Evas_Object *parent, const callui_call_sta
 	}
 }
 
-static void __fill_conference_layout(Evas_Object *parent, const callui_call_state_data_t *call_data)
+static void __fill_conference_layout(Evas_Object *parent, const callui_call_data_t *call_data)
 {
 	Evas_Object *thumbnail = _callui_create_thumbnail(parent, NULL, CONFERENCE_THUMBNAIL_138);
 	elm_object_part_content_set(parent, PART_SWALLOW_CALLER_ID, thumbnail);
 
-	elm_object_part_text_set(parent, PART_TEXT_MAIN, _("IDS_CALL_BODY_CONFERENCE"));
+	elm_object_translatable_part_text_set(parent,
+			PART_TEXT_MAIN, "IDS_CALL_BODY_CONFERENCE");
 
 	char buffer[BUF_SIZE] = { 0 };
 	const char *fmt = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
@@ -213,21 +248,21 @@ static void __fill_conference_layout(Evas_Object *parent, const callui_call_stat
 
 static void __set_hold_info(Evas_Object *parent, Evas_Object *content)
 {
-	elm_object_part_text_set(content, PART_TEXT_STATUS, _("IDS_CALL_BODY_ON_HOLD_ABB"));
+	elm_object_translatable_part_text_set(content,
+			PART_TEXT_STATUS, "IDS_CALL_BODY_ON_HOLD_ABB");
 
 	elm_object_part_content_set(parent, PART_SWALLOW_HOLD_INFO, content);
-	elm_object_signal_emit(content, SIGNAL_SET_BLURRED_BACKGROUND, "");
 }
 
 static void __set_active_info(Evas_Object *parent, Evas_Object *content, callui_app_data_t *ad)
 {
-	elm_object_part_text_set(content, PART_TEXT_STATUS, _("IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"));
+	elm_object_translatable_part_text_set(content,
+			PART_TEXT_STATUS, "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB");
 
 	elm_object_part_content_set(parent, PART_SWALLOW_ACTIVE_INFO, content);
-	elm_object_signal_emit(content, SIGNAL_SET_TRANSPARENT_BACKGROUND, "");
 
-	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->state_provider,
-			CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *active = _callui_stp_get_call_data(ad->state_provider,
+			CALLUI_CALL_DATA_ACTIVE);
 
 	if (active) {
 		if (active->conf_member_count > 1) {
@@ -242,12 +277,12 @@ static void __set_active_info(Evas_Object *parent, Evas_Object *content, callui_
 
 static callui_result_e __create_merge_swap_btns(Evas_Object *parent, callui_app_data_t *ad)
 {
-	Evas_Object *merge = __create_merge_swap_btn(parent, GROUP_MERGE_BTN, _("IDS_CALL_BODY_MERGE_T_CALL"));
+	Evas_Object *merge = __create_merge_swap_btn(parent, GROUP_MERGE_BTN, "IDS_CALL_BODY_MERGE_T_CALL");
 	CALLUI_RETURN_VALUE_IF_FAIL(merge, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(parent, PART_SWALLOW_MERGE, merge);
 	elm_object_signal_callback_add(merge, "mouse,clicked,*", "*", __merge_btn_click_cb, ad);
 
-	Evas_Object *swap = __create_merge_swap_btn(parent, GROUP_SWAP_BTN, _("IDS_CALL_SK_MULTICALL_SWAP"));
+	Evas_Object *swap = __create_merge_swap_btn(parent, GROUP_SWAP_BTN, "IDS_CALL_SK_MULTICALL_SWAP");
 	CALLUI_RETURN_VALUE_IF_FAIL(merge, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(parent, PART_SWALLOW_SWAP, swap);
 	elm_object_signal_callback_add(swap, "mouse,clicked,*", "*", __swap_btn_click_cb, ad);
@@ -263,9 +298,26 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	callui_result_e res = _callui_manager_end_call(ad->call_manager,
-			0, CALLUI_CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS);
+			0, CALLUI_CALL_RELEASE_ALL_ACTIVE);
 	if (res != CALLUI_RESULT_OK) {
 		err("_callui_manager_end_call() failed. res[%d]", res);
+	}
+}
+
+static void __update_call_duration_time(callui_view_mc_split_h vd, struct tm *comp_time)
+{
+	struct tm *cur_time = vd->base_view.call_duration_tm;
+	int sec_diff = comp_time->tm_sec - cur_time->tm_sec;
+
+	if (sec_diff != 0) {
+		memcpy(cur_time, comp_time, sizeof(struct tm));
+
+		char *tmp = _callui_common_get_time_string(cur_time);
+
+		elm_object_part_text_set(vd->active_layout, PART_TEXT_STATUS, tmp);
+		elm_object_part_text_set(vd->base_view.contents, PART_TEXT_CALL_DURATION, tmp);
+
+		free(tmp);
 	}
 }
 
@@ -276,17 +328,13 @@ static Eina_Bool __call_duration_timer_cb(void* data)
 	callui_view_mc_split_h vd = data;
 
 	struct tm *new_tm = _callui_stp_get_call_duration(vd->base_view.ad->state_provider,
-			CALLUI_CALL_DATA_TYPE_ACTIVE);
+			CALLUI_CALL_DATA_ACTIVE);
 	if (!new_tm) {
 		vd->base_view.call_duration_timer = NULL;
 		return ECORE_CALLBACK_CANCEL;
 	}
 
-	_callui_common_try_update_call_duration_time(vd->base_view.call_duration_tm,
-			new_tm,
-			_callui_common_set_call_duration_time,
-			vd->active_layout,
-			PART_TEXT_STATUS);
+	__update_call_duration_time(vd, new_tm);
 
 	free(new_tm);
 
@@ -300,7 +348,7 @@ static callui_result_e __init_call_duration_timer(callui_view_mc_split_h vd)
 	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
 	FREE(vd->base_view.call_duration_tm);
 
-	vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	vd->base_view.call_duration_tm = _callui_stp_get_call_duration(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_tm, CALLUI_RESULT_ALLOCATION_FAIL);
 
 	_callui_common_set_call_duration_time(vd->base_view.call_duration_tm, vd->active_layout, PART_TEXT_STATUS);
@@ -315,9 +363,9 @@ static callui_result_e __update_displayed_data(callui_view_mc_split_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	const callui_call_state_data_t *active = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *active = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 	CALLUI_RETURN_VALUE_IF_FAIL(active, CALLUI_RESULT_FAIL);
-	const callui_call_state_data_t *held = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+	const callui_call_data_t *held = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
 	CALLUI_RETURN_VALUE_IF_FAIL(held, CALLUI_RESULT_FAIL);
 
 	__update_hold_active_layout(vd->hold_layout, held);
@@ -341,7 +389,7 @@ static void __mng_callers_btn_click_cb(void *data, Evas_Object *obj, const char 
 {
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 
-	_callui_vm_change_view(ad->view_manager, VIEW_TYPE_MULTICALL_LIST);
+	_callui_vm_change_view(ad->view_manager, CALLUI_VIEW_MULTICALL_LIST);
 }
 
 static void __merge_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *src)

@@ -113,8 +113,8 @@ callui_result_e _callui_listeners_coll_add_listener(_callui_listeners_coll_t *li
 
 callui_result_e _callui_listeners_coll_call_listeners(_callui_listeners_coll_t *listeners_coll, ...)
 {
+	debug_enter();
 	CALLUI_RETURN_VALUE_IF_FAIL(listeners_coll, CALLUI_RESULT_INVALID_PARAM);
-
 	CALLUI_RETURN_VALUE_IF_FAIL(listeners_coll->is_initialized, CALLUI_RESULT_FAIL);
 
 	listeners_coll->is_locked = true;
@@ -124,12 +124,10 @@ callui_result_e _callui_listeners_coll_call_listeners(_callui_listeners_coll_t *
 
 	EINA_LIST_FOREACH(listeners_coll->list, l, data) {
 		if(data != NULL) {
-			dbg("calling listener start...");
 			va_list args;
 			va_start(args, listeners_coll);
 			data->handler(data, args);
 			va_end(args);
-			dbg("... calling listener done");
 		}
 	}
 

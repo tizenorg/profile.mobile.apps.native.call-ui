@@ -114,10 +114,11 @@ static void __callui_lock_screen_show_layout(lock_screen_data_t *lock_screen_pri
 	evas_object_raise(lock_screen_priv->layout);
 	evas_object_show(lock_screen_priv->layout);
 
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	if (_callui_vm_get_cur_view_type(ad->view_manager) != VIEW_TYPE_DIALLING) {
+#ifdef _DBUS_DISPLAY_DEVICE_TIMEOUT_
+	if (_callui_vm_get_cur_view_type(ad->view_manager) != CALLUI_VIEW_DIALLING) {
 		dbg("lcd show");
-		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_LOCKSCREEN_SET);
+		callui_app_data_t *ad = _callui_get_app_data();
+		_callui_display_set_timeout(ad->display, CALLUI_DISPLAY_TIMEOUT_LS_SET);
 	}
 #endif
 
@@ -135,10 +136,11 @@ static void __callui_lock_screen_hide_layout(lock_screen_data_t *lock_screen_pri
 	evas_object_hide(lock_screen_priv->layout);
 	lock_screen_priv->is_locked = false;
 
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	if (_callui_vm_get_cur_view_type(ad->view_manager) != VIEW_TYPE_DIALLING) {
+#ifdef _DBUS_DISPLAY_DEVICE_TIMEOUT_
+	if (_callui_vm_get_cur_view_type(ad->view_manager) != CALLUI_VIEW_DIALLING) {
 		dbg("lcd hide");
-		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
+		callui_app_data_t *ad = _callui_get_app_data();
+		_callui_display_set_timeout(ad->display, CALLUI_DISPLAY_TIMEOUT_SET);
 	}
 #endif
 
@@ -164,9 +166,9 @@ static Eina_Bool __lock_timeout_cb(void *data)
 	priv->no_lock_timer = NULL;
 
 	callui_view_type_e type = _callui_vm_get_cur_view_type(ad->view_manager);
-	if (type >= VIEW_TYPE_MULTICALL_LIST) {
+	if (type >= CALLUI_VIEW_MULTICALL_LIST) {
 		return ECORE_CALLBACK_CANCEL;
-	} else if (type == VIEW_TYPE_INCOMING_CALL || type == VIEW_TYPE_INCOMING_CALL_NOTI) {
+	} else if (type == CALLUI_VIEW_INCOMING_CALL || type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
 		return ECORE_CALLBACK_RENEW;
 	}
 
@@ -220,7 +222,7 @@ static bool __callui_lock_screen_create_layout(lock_screen_data_t *priv)
 
 	evas_object_resize(layout, ad->root_w, ad->root_h);
 	evas_object_move(layout, 0, 0);
-	elm_object_domain_translatable_part_text_set(layout, "lock-text", CALLUI_TEXT_DOMAIN, "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE");
+	elm_object_translatable_part_text_set(layout, "lock-text", "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE");
 
 	edje_object_signal_callback_add(_EDJ(layout), "mouse,down,1,double", "lock-icon", __callui_lock_screen_icon_double_clicked_cb, priv);
 

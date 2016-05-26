@@ -30,8 +30,10 @@
 #define VC_KEYPAD_ENTRY_FONT "<font='Samsung Sans Num47:style=Light'>%s</>"
 #define VC_KEYAD_ENTRY_STYLE "DEFAULT='align=center color=#ffffffff font_size=76'"
 
-int __callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appdata);
-void __callui_keypad_deinit(callui_keypad_h keypad);
+#define VC_AUTO_SPACING_TIMEOUT_SEC 5.0
+
+static int	__callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appdata);
+static void __callui_keypad_deinit(callui_keypad_h keypad);
 
 static void __back_button_click_cb(void *data, Evas_Object *obj, void *event_info);
 static Evas_Event_Flags __arrow_flick_gesture_event_cb(void *data, void *event_info);
@@ -55,8 +57,6 @@ struct _callui_keypad {
 	Evas_Object *entry;
 
 	Eina_Bool is_keypad_show;
-	Ecore_Timer *anim_timer;
-
 	Evas_Object *gesture_layer;
 	int gesture_start_y;
 	int gesture_momentum_y;
@@ -65,11 +65,14 @@ struct _callui_keypad {
 
 	show_state_change_cd cb_func;
 	void *cb_data;
+
+	Ecore_Timer *anim_timer;
+	Ecore_Timer *auto_spacing_timer;
 };
 
 typedef struct _callui_keypad _callui_keypad_t;
 
-int __callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appdata)
+static int __callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appdata)
 {
 	keypad->ad = appdata;
 	Evas_Object *parent = appdata->main_ly;
@@ -95,9 +98,11 @@ int __callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appdata)
 	return res;
 }
 
-void __callui_keypad_deinit(callui_keypad_h keypad)
+static void __callui_keypad_deinit(callui_keypad_h keypad)
 {
 	DELETE_ECORE_TIMER(keypad->anim_timer);
+
+	DELETE_ECORE_TIMER(keypad->auto_spacing_timer);
 
 	if (keypad->main_layout) {
 		evas_object_del(keypad->btns_layout);
@@ -238,10 +243,6 @@ static void __on_hide_completed(void *data, Evas_Object *obj, const char *emissi
 
 	_callui_lock_manager_start(ad->lock_handle);
 
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
-#endif
-
 	Evas_Object *parent = ad->main_ly;
 	eext_object_event_callback_del(parent, EEXT_CALLBACK_BACK,	__back_button_click_cb);
 
@@ -257,12 +258,23 @@ static void __on_hide_completed(void *data, Evas_Object *obj, const char *emissi
 	}
 }
 
+static Eina_Bool __auto_spacing_timer_cb(void *data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
+
+	callui_keypad_h keypad = data;
+	if (keypad->entry) {
+		elm_entry_entry_append(keypad->entry, " ");
+	}
+	return ECORE_CALLBACK_DONE;
+}
+
 static void __on_key_down_click_event(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	CALLUI_RETURN_IF_FAIL(data);
 	CALLUI_RETURN_IF_FAIL(source);
 
-	callui_keypad_h keypad = (callui_keypad_h)data;
+	callui_keypad_h keypad = data;
 	callui_app_data_t *ad = keypad->ad;
 
 	char *entry_dest = NULL;
@@ -327,12 +339,15 @@ static void __on_key_up_click_event(void *data, Evas_Object *obj, const char *em
 {
 	CALLUI_RETURN_IF_FAIL(data);
 
-	callui_app_data_t *ad = (callui_app_data_t *)data;
+	callui_keypad_h keypad = data;
 
-	callui_result_e res = _callui_sdm_stop_dtmf(ad->sound_manager);
+	callui_result_e res = _callui_sdm_stop_dtmf(keypad->ad->sound_manager);
 	if (res != CALLUI_RESULT_OK) {
 		err("_callui_sdm_stop_dtmf() failed. res[%d]", res);
 	}
+
+	DELETE_ECORE_TIMER(keypad->auto_spacing_timer);
+	keypad->auto_spacing_timer = ecore_timer_add(VC_AUTO_SPACING_TIMEOUT_SEC, __auto_spacing_timer_cb, keypad);
 }
 
 static Evas_Object *__create_single_line_scrolled_entry(Evas_Object *content)
@@ -354,7 +369,7 @@ static Evas_Object *__create_single_line_scrolled_entry(Evas_Object *content)
 	elm_entry_input_panel_enabled_set(en, EINA_FALSE);
 	elm_entry_single_line_set(en, EINA_TRUE);
 
-	digits_filter_data.accepted = "0123456789+*#";
+	digits_filter_data.accepted = "0123456789+*# ";
 	digits_filter_data.rejected = NULL;
 	elm_entry_markup_filter_append(en, elm_entry_filter_accept_set, &digits_filter_data);
 
@@ -379,7 +394,7 @@ static int __create_entry(callui_keypad_h keypad)
 	}
 
 	elm_object_signal_callback_add(keypad->btns_layout, "pad_down", "*", __on_key_down_click_event, keypad);
-	elm_object_signal_callback_add(keypad->btns_layout, "pad_up", "*", __on_key_up_click_event, keypad->ad);
+	elm_object_signal_callback_add(keypad->btns_layout, "pad_up", "*", __on_key_up_click_event, keypad);
 
 	__clear_entry(keypad);
 
@@ -406,6 +421,8 @@ void _callui_keypad_show(callui_keypad_h keypad)
 	CALLUI_RETURN_IF_FAIL(keypad);
 	callui_app_data_t *ad = keypad->ad;
 
+	__clear_entry(keypad);
+
 	elm_object_part_content_set(keypad->ad->main_ly, PART_SWALLOW_KEYPAD_LAYOUT_AREA, keypad->main_layout);
 	evas_object_show(keypad->main_layout);
 
@@ -418,12 +435,8 @@ void _callui_keypad_show(callui_keypad_h keypad)
 
 	keypad->is_keypad_show = EINA_TRUE;
 
-	/* change LCD timeout duration */
 	_callui_lock_manager_stop(ad->lock_handle);
 
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_KEYPAD_SET);
-#endif
 	Evas_Object *parent = ad->main_ly;
 	eext_object_event_callback_add(parent, EEXT_CALLBACK_BACK, __back_button_click_cb, keypad);
 
@@ -440,6 +453,8 @@ static void __hide_keypad(callui_keypad_h keypad, Eina_Bool is_immediately)
 	if (!keypad->is_keypad_show) {
 		return;
 	}
+
+	DELETE_ECORE_TIMER(keypad->auto_spacing_timer);
 
 	keypad->is_keypad_show = EINA_FALSE;
 

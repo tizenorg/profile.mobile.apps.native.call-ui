@@ -16,8 +16,8 @@
  */
 
 #include <stdbool.h>
-#include <bluetooth_type.h>
-#include <bluetooth.h>
+#include <network/bluetooth_type.h>
+#include <network/bluetooth.h>
 
 #include "callui-action-bar.h"
 #include "callui-common-types.h"
@@ -29,23 +29,24 @@
 #include "callui-state-provider.h"
 #include "callui-view-caller-info-defines.h"
 
-#define PART_SWALLOW_ACTION_BAR "action_bar"
+#define PART_SWALLOW_ACTION_BAR	"action_bar"
 
 typedef enum {
-	ACTION_BTN_TYPE_SPEAKER = 0,
-	ACTION_BTN_TYPE_KEYPAD,
-	ACTION_BTN_TYPE_BT,
-	ACTION_BTN_TYPE_ADD_CALL,
-	ACTION_BTN_TYPE_MUTE,
-	ACTION_BTN_TYPE_CONTACT,
-	ACTION_BTN_TYPE_MAX
+	CALLUI_ACTION_BTN_SPEAKER = 0,
+	CALLUI_ACTION_BTN_KEYPAD,
+	CALLUI_ACTION_BTN_BT,
+	CALLUI_ACTION_BTN_ADD_CALL,
+	CALLUI_ACTION_BTN_MUTE,
+	CALLUI_ACTION_BTN_CONTACT,
+	CALLUI_ACTION_BTN_COUNT
 } callui_btn_type_e;
 
 struct _callui_action_bar {
 	Evas_Object *main_layout;
-	Evas_Object *buttons[ACTION_BTN_TYPE_MAX];
-	bool is_available[ACTION_BTN_TYPE_MAX];
+	Evas_Object *buttons[CALLUI_ACTION_BTN_COUNT];
+	bool is_available[CALLUI_ACTION_BTN_COUNT];
 	callui_app_data_t *ad;
+	bool is_disabled;
 };
 typedef struct _callui_action_bar _callui_action_bar_t;
 
@@ -81,7 +82,7 @@ static callui_result_e __update_add_call_btn(callui_action_bar_h action_bar);
 static callui_result_e __update_mute_btn(callui_action_bar_h action_bar);
 static callui_result_e __update_contacts_btn(callui_action_bar_h action_bar);
 
-static __action_btn_params_t btn_params[ACTION_BTN_TYPE_MAX] = {
+static __action_btn_params_t btn_params[CALLUI_ACTION_BTN_COUNT] = {
 		{
 				"IDS_CALL_BUTTON_SPEAKER", PART_TOP_FIRST_BTN,
 				__update_speaker_btn, __speaker_btn_click_cb,
@@ -222,7 +223,7 @@ static void __bluetooth_btn_click_cb(void *data, Evas_Object *obj, void *event_i
 				if (bt_state == BT_ADAPTER_DISABLED) {
 					_callui_load_bluetooth_popup(ad);
 				} else {
-					_callui_common_launch_bt_app(ad);
+					_callui_common_launch_setting_bluetooth(ad);
 				}
 			} else {
 				err("Fail to get vconf key: %d", ret_code);
@@ -261,19 +262,19 @@ static void __contacts_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 static callui_result_e __update_speaker_btn(callui_action_bar_h action_bar)
 {
 	callui_app_data_t *ad = action_bar->ad;
-	Evas_Object *btn = action_bar->buttons[ACTION_BTN_TYPE_SPEAKER];
+	Evas_Object *btn = action_bar->buttons[CALLUI_ACTION_BTN_SPEAKER];
 	CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_FAIL);
 
-	if (!action_bar->is_available[ACTION_BTN_TYPE_SPEAKER]) {
-		__disable_action_button(btn, ACTION_BTN_TYPE_SPEAKER);
+	if (!action_bar->is_available[CALLUI_ACTION_BTN_SPEAKER]) {
+		__disable_action_button(btn, CALLUI_ACTION_BTN_SPEAKER);
 		return CALLUI_RESULT_OK;
 	}
 
 	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->sound_manager);
 	if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
-		elm_object_style_set(btn, btn_params[ACTION_BTN_TYPE_SPEAKER].style.active);
+		elm_object_style_set(btn, btn_params[CALLUI_ACTION_BTN_SPEAKER].style.active);
 	} else {
-		elm_object_style_set(btn, btn_params[ACTION_BTN_TYPE_SPEAKER].style.normal);
+		elm_object_style_set(btn, btn_params[CALLUI_ACTION_BTN_SPEAKER].style.normal);
 	}
 	elm_object_disabled_set(btn, EINA_FALSE);
 
@@ -282,15 +283,15 @@ static callui_result_e __update_speaker_btn(callui_action_bar_h action_bar)
 
 static callui_result_e __update_keypad_btn(callui_action_bar_h action_bar)
 {
-	Evas_Object *btn = action_bar->buttons[ACTION_BTN_TYPE_KEYPAD];
+	Evas_Object *btn = action_bar->buttons[CALLUI_ACTION_BTN_KEYPAD];
 	CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_FAIL);
 
-	if (!action_bar->is_available[ACTION_BTN_TYPE_KEYPAD]) {
-		__disable_action_button(btn, ACTION_BTN_TYPE_KEYPAD);
+	if (!action_bar->is_available[CALLUI_ACTION_BTN_KEYPAD]) {
+		__disable_action_button(btn, CALLUI_ACTION_BTN_KEYPAD);
 		return CALLUI_RESULT_OK;
 	}
 
-	elm_object_style_set(btn, btn_params[ACTION_BTN_TYPE_KEYPAD].style.normal);
+	elm_object_style_set(btn, btn_params[CALLUI_ACTION_BTN_KEYPAD].style.normal);
 	elm_object_disabled_set(btn, EINA_FALSE);
 
 	return CALLUI_RESULT_OK;
@@ -299,19 +300,19 @@ static callui_result_e __update_keypad_btn(callui_action_bar_h action_bar)
 static callui_result_e __update_bluetooth_btn(callui_action_bar_h action_bar)
 {
 	callui_app_data_t *ad = action_bar->ad;
-	Evas_Object *btn = action_bar->buttons[ACTION_BTN_TYPE_BT];
+	Evas_Object *btn = action_bar->buttons[CALLUI_ACTION_BTN_BT];
 	CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_FAIL);
 
-	if (!action_bar->is_available[ACTION_BTN_TYPE_BT]) {
-		__disable_action_button(btn, ACTION_BTN_TYPE_BT);
+	if (!action_bar->is_available[CALLUI_ACTION_BTN_BT]) {
+		__disable_action_button(btn, CALLUI_ACTION_BTN_BT);
 		return CALLUI_RESULT_OK;
 	}
 
 	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->sound_manager);
 	if (audio_state == CALLUI_AUDIO_STATE_BT) {
-		elm_object_style_set(btn, btn_params[ACTION_BTN_TYPE_BT].style.active);
+		elm_object_style_set(btn, btn_params[CALLUI_ACTION_BTN_BT].style.active);
 	} else {
-		elm_object_style_set(btn, btn_params[ACTION_BTN_TYPE_BT].style.normal);
+		elm_object_style_set(btn, btn_params[CALLUI_ACTION_BTN_BT].style.normal);
 	}
 	elm_object_disabled_set(btn, EINA_FALSE);
 
@@ -320,15 +321,15 @@ static callui_result_e __update_bluetooth_btn(callui_action_bar_h action_bar)
 
 static callui_result_e __update_add_call_btn(callui_action_bar_h action_bar)
 {
-	Evas_Object *btn = action_bar->buttons[ACTION_BTN_TYPE_ADD_CALL];
+	Evas_Object *btn = action_bar->buttons[CALLUI_ACTION_BTN_ADD_CALL];
 	CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_FAIL);
 
-	if (!action_bar->is_available[ACTION_BTN_TYPE_ADD_CALL]) {
-		__disable_action_button(btn, ACTION_BTN_TYPE_ADD_CALL);
+	if (!action_bar->is_available[CALLUI_ACTION_BTN_ADD_CALL]) {
+		__disable_action_button(btn, CALLUI_ACTION_BTN_ADD_CALL);
 		return CALLUI_RESULT_OK;
 	}
 
-	elm_object_style_set(btn, btn_params[ACTION_BTN_TYPE_ADD_CALL].style.normal);
+	elm_object_style_set(btn, btn_params[CALLUI_ACTION_BTN_ADD_CALL].style.normal);
 	elm_object_disabled_set(btn, EINA_FALSE);
 
 	return CALLUI_RESULT_OK;
@@ -337,18 +338,18 @@ static callui_result_e __update_add_call_btn(callui_action_bar_h action_bar)
 static callui_result_e __update_mute_btn(callui_action_bar_h action_bar)
 {
 	callui_app_data_t *ad = action_bar->ad;
-	Evas_Object *btn = action_bar->buttons[ACTION_BTN_TYPE_MUTE];
+	Evas_Object *btn = action_bar->buttons[CALLUI_ACTION_BTN_MUTE];
 	CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_FAIL);
 
-	if (!action_bar->is_available[ACTION_BTN_TYPE_MUTE]) {
-		__disable_action_button(btn, ACTION_BTN_TYPE_MUTE);
+	if (!action_bar->is_available[CALLUI_ACTION_BTN_MUTE]) {
+		__disable_action_button(btn, CALLUI_ACTION_BTN_MUTE);
 		return CALLUI_RESULT_OK;
 	}
 
 	if (_callui_sdm_get_mute_state(ad->sound_manager)) {
-		elm_object_style_set(btn, btn_params[ACTION_BTN_TYPE_MUTE].style.active);
+		elm_object_style_set(btn, btn_params[CALLUI_ACTION_BTN_MUTE].style.active);
 	} else {
-		elm_object_style_set(btn, btn_params[ACTION_BTN_TYPE_MUTE].style.normal);
+		elm_object_style_set(btn, btn_params[CALLUI_ACTION_BTN_MUTE].style.normal);
 	}
 	elm_object_disabled_set(btn, EINA_FALSE);
 
@@ -357,15 +358,15 @@ static callui_result_e __update_mute_btn(callui_action_bar_h action_bar)
 
 static callui_result_e __update_contacts_btn(callui_action_bar_h action_bar)
 {
-	Evas_Object *btn = action_bar->buttons[ACTION_BTN_TYPE_CONTACT];
+	Evas_Object *btn = action_bar->buttons[CALLUI_ACTION_BTN_CONTACT];
 	CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_FAIL);
 
-	if (!action_bar->is_available[ACTION_BTN_TYPE_CONTACT]) {
-		__disable_action_button(btn, ACTION_BTN_TYPE_CONTACT);
+	if (!action_bar->is_available[CALLUI_ACTION_BTN_CONTACT]) {
+		__disable_action_button(btn, CALLUI_ACTION_BTN_CONTACT);
 		return CALLUI_RESULT_OK;
 	}
 
-	elm_object_style_set(btn, btn_params[ACTION_BTN_TYPE_CONTACT].style.normal);
+	elm_object_style_set(btn, btn_params[CALLUI_ACTION_BTN_CONTACT].style.normal);
 	elm_object_disabled_set(btn, EINA_FALSE);
 
 	return CALLUI_RESULT_OK;
@@ -383,7 +384,6 @@ static void __main_layout_del_cb(void *data, Evas *evas, Evas_Object *obj, void 
 
 static Evas_Object *__create_main_layout(callui_action_bar_h action_bar, Evas_Object *parent)
 {
-	debug_enter();
 	Evas_Object *layout = _callui_load_edj(parent, EDJ_NAME, GRP_BUTTON_LAYOUT);
 	CALLUI_RETURN_NULL_IF_FAIL(layout);
 	evas_object_event_callback_add(layout, EVAS_CALLBACK_DEL, __main_layout_del_cb, action_bar);
@@ -406,7 +406,7 @@ static Evas_Object *__create_action_button(
 		CALLUI_RETURN_NULL_IF_FAIL(res == CALLUI_RESULT_OK);
 	}
 
-	elm_object_domain_translatable_text_set(btn, CALLUI_TEXT_DOMAIN, btn_params[type].txt);
+	elm_object_translatable_text_set(btn, btn_params[type].txt);
 	evas_object_smart_callback_add(btn, "clicked", btn_params[type].click_cb_func, action_bar->ad);
 	elm_object_part_content_set(parent, btn_params[type].part, btn);
 	evas_object_show(btn);
@@ -420,6 +420,11 @@ static void __audio_state_changed_cb(void *user_data, callui_audio_state_type_e 
 
 	callui_action_bar_h action_bar = user_data;
 
+	if (action_bar->is_disabled) {
+		dbg("Ignored. Action bar is in disabled state.");
+		return;
+	}
+
 	__update_speaker_btn(action_bar);
 	__update_bluetooth_btn(action_bar);
 }
@@ -430,37 +435,42 @@ static void __mute_state_changed_cb(void *user_data, bool is_enable)
 
 	callui_action_bar_h action_bar = user_data;
 
+	if (action_bar->is_disabled) {
+		dbg("Ignored. Action bar is in disabled state.");
+		return;
+	}
+
 	__update_mute_btn(action_bar);
 }
 
 static void __update_btns_state(callui_action_bar_h action_bar)
 {
 	int i = 0;
-	for (; i < ACTION_BTN_TYPE_MAX; i++) {
+	for (; i < CALLUI_ACTION_BTN_COUNT; i++) {
 		action_bar->is_available[i] = true;
 	}
 
-	const callui_call_state_data_t *active =
-			_callui_stp_get_call_data(action_bar->ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
-	const callui_call_state_data_t *held =
-			_callui_stp_get_call_data(action_bar->ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
+	const callui_call_data_t *active =
+			_callui_stp_get_call_data(action_bar->ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
+	const callui_call_data_t *held =
+			_callui_stp_get_call_data(action_bar->ad->state_provider, CALLUI_CALL_DATA_HELD);
 
 	if (active && active->is_dialing) {
-		action_bar->is_available[ACTION_BTN_TYPE_ADD_CALL] = false;
-		action_bar->is_available[ACTION_BTN_TYPE_MUTE] = false;
-		action_bar->is_available[ACTION_BTN_TYPE_CONTACT] = false;
+		action_bar->is_available[CALLUI_ACTION_BTN_ADD_CALL] = false;
+		action_bar->is_available[CALLUI_ACTION_BTN_MUTE] = false;
+		action_bar->is_available[CALLUI_ACTION_BTN_CONTACT] = false;
 	} else if (active && held) {
-		action_bar->is_available[ACTION_BTN_TYPE_ADD_CALL] = false;
+		action_bar->is_available[CALLUI_ACTION_BTN_ADD_CALL] = false;
 	} else if (held) {
-		action_bar->is_available[ACTION_BTN_TYPE_KEYPAD] = false;
-		action_bar->is_available[ACTION_BTN_TYPE_MUTE] = false;
+		action_bar->is_available[CALLUI_ACTION_BTN_KEYPAD] = false;
+		action_bar->is_available[CALLUI_ACTION_BTN_MUTE] = false;
 	}
 }
 
 static void __update_all_btns(callui_action_bar_h action_bar)
 {
 	int i = 0;
-	for (; i < ACTION_BTN_TYPE_MAX; i++) {
+	for (; i < CALLUI_ACTION_BTN_COUNT; i++) {
 		if (btn_params[i].update_func) {
 			btn_params[i].update_func(action_bar);
 		}
@@ -478,6 +488,11 @@ static void __call_state_event_cb(void *user_data,
 
 	callui_action_bar_h action_bar = user_data;
 
+	if (action_bar->is_disabled) {
+		dbg("Ignored. Action bar is in disabled state.");
+		return;
+	}
+
 	__update_btns_state(action_bar);
 
 	__update_all_btns(action_bar);
@@ -486,7 +501,9 @@ static void __call_state_event_cb(void *user_data,
 static callui_result_e __callui_action_bar_init(callui_action_bar_h action_bar,	callui_app_data_t *ad)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(ad->sound_manager, CALLUI_RESULT_FAIL);
+
 	action_bar->ad = ad;
+	action_bar->is_disabled = false;
 	Evas_Object *parent = ad->main_ly;
 
 	_callui_sdm_add_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, action_bar);
@@ -500,7 +517,7 @@ static callui_result_e __callui_action_bar_init(callui_action_bar_h action_bar,	
 
 	Evas_Object *btn;
 	int i = 0;
-	for (; i < ACTION_BTN_TYPE_MAX; i++) {
+	for (; i < CALLUI_ACTION_BTN_COUNT; i++) {
 		btn = __create_action_button(action_bar, i);
 		CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_ALLOCATION_FAIL);
 	}
@@ -536,7 +553,7 @@ static void __callui_action_bar_deinit(callui_action_bar_h action_bar)
 	_callui_stp_remove_call_state_event_cb(ad->state_provider, __call_state_event_cb, action_bar);
 
 	int i = 0;
-	for (; i < ACTION_BTN_TYPE_MAX; i++) {
+	for (; i < CALLUI_ACTION_BTN_COUNT; i++) {
 		evas_object_smart_callback_del_full(action_bar->buttons[i], "clicked",
 				btn_params[i].click_cb_func, ad);
 	}
@@ -553,12 +570,21 @@ void _callui_action_bar_destroy(callui_action_bar_h action_bar)
 	free(action_bar);
 }
 
+static void __update_btns_txt(callui_action_bar_h action_bar)
+{
+	int i = 0;
+	for (; i < CALLUI_ACTION_BTN_COUNT; i++) {
+		elm_object_translatable_text_set(action_bar->buttons[i], btn_params[i].txt);
+	}
+}
+
 void _callui_action_bar_show(callui_action_bar_h action_bar)
 {
 	CALLUI_RETURN_IF_FAIL(action_bar);
 
 	Evas_Object *parent = action_bar->ad->main_ly;
 
+	__update_btns_txt(action_bar);
 	elm_object_part_content_set(parent, PART_SWALLOW_ACTION_BAR, action_bar->main_layout);
 	evas_object_show(action_bar->main_layout);
 }
@@ -571,4 +597,31 @@ void _callui_action_bar_hide(callui_action_bar_h action_bar)
 
 	elm_object_part_content_unset(parent, PART_SWALLOW_ACTION_BAR);
 	evas_object_hide(action_bar->main_layout);
+}
+
+void _callui_action_bar_set_disabled_state(callui_action_bar_h action_bar, bool is_disabled)
+{
+	CALLUI_RETURN_IF_FAIL(action_bar);
+
+	if (action_bar->is_disabled == is_disabled) {
+		return;
+	}
+	action_bar->is_disabled = is_disabled;
+
+	if (is_disabled) {
+		int i = 0;
+		for (; i < CALLUI_ACTION_BTN_COUNT; i++) {
+			action_bar->is_available[i] = !is_disabled;
+		}
+	} else {
+		__update_btns_state(action_bar);
+	}
+	__update_all_btns(action_bar);
+}
+
+bool _callui_action_bar_get_disabled_state(callui_action_bar_h action_bar)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(action_bar, false);
+
+	return action_bar->is_disabled;
 }

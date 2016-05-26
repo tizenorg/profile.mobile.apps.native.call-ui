@@ -1,0 +1,427 @@
+/*
+ * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+#define VML_LAYOUT_PAD_LEFT			32
+#define VML_LAYOUT_PAD_RIGHT		32
+#define VML_CALLER_INFO_PAD_BOTTOM	(ACTION_BAR_LAYOUT_HEIGHT + ENDCALL_BTN_BG_H)
+
+group {
+    name: "app_main_ly";
+	parts {
+		CU_PART_SPACER( "bg",
+			description { state: "default" 0.0; }
+		)
+		CU_PART_SWALLOW( "elm.swallow.content",
+			description { state: "default" 0.0; }
+		)
+		CU_PART_SWALLOW( "action_bar",
+			clip_to: "keypadarea.clipper";
+			description { state: "default" 0.0;
+				rel1{ relative: ACTION_BAR_LAYOUT_L ACTION_BAR_LAYOUT_T; }
+				rel2{ relative: ACTION_BAR_LAYOUT_R ACTION_BAR_LAYOUT_B; }
+				align: 0.5 0.0;
+			}
+		)
+		CU_PART_SPACER( "keypadarea.clipper.maximized",
+			description { state: "default" 0.0;
+				rel1.relative: 0.0 1.0;
+				min: 0 ENDCALL_BTN_BG_H;
+				fixed: 0 1;
+				align: 0 1;
+			}
+		)
+
+		CU_PART_PADDING_TOP_NAME("keypadarea.clipper.minimized", EC_LAYOUT_MINIMIZE_SIZE)
+
+		CU_PART_RECT( "keypadarea.clipper",
+			mouse_events: 0;
+			repeat_events: 1;
+			description { state: "default" 0.0;
+				rel2 { relative: 1.0 0.0; to: "keypadarea.clipper.maximized"; }
+			}
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				inherit: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "keypadarea.clipper.minimized"; }
+				rel2 { relative: 1.0 1.0; to: "keypadarea.clipper.minimized"; }
+			}
+		)
+		CU_PART_SWALLOW( PART_SWALLOW_KEYPAD_LAYOUT_AREA,
+			clip_to: "keypadarea.clipper";
+			description {
+				state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "keypadarea.clipper"; }
+				rel2 { relative: 1.0 1.0; to: "keypadarea.clipper"; }
+			}
+		)
+	}
+	programs {
+		program { name: "anim_minimize_main_clipper";
+			action: STATE_SET "minimize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "keypadarea.clipper";
+			after: "minimize_anim_finished";
+		}
+		program { name: "anim_maximize_main_clipper";
+			action: STATE_SET "maximize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "keypadarea.clipper";
+			after: "maximize_anim_finished";
+		}
+		program { name: "maximize_main_clipper";
+			action: STATE_SET "maximize" 0.0;
+			target: "keypadarea.clipper";
+			after: "maximize_anim_finished";
+		}
+		program { name: "minimize";
+			signal: "minimize";
+			source: "app_main_ly";
+			after: "anim_minimize_main_clipper";
+		}
+		program { name: "maximize";
+			signal: "maximize";
+			source: "app_main_ly";
+			after: "anim_maximize_main_clipper";
+		}
+		program { name: "maximize_no_anim";
+			signal: "maximize_no_anim";
+			source: "app_main_ly";
+			after: "maximize_main_clipper";
+		}
+		program { name: "minimize_anim_finished";
+			action: SIGNAL_EMIT "minimize.anim.finished" "app_main_ly";
+		}
+		program { name: "maximize_anim_finished";
+			action: SIGNAL_EMIT "maximize.anim.finished" "app_main_ly";
+		}
+	}
+}
+
+styles {
+	style {
+		name: "call_timer_style";
+		base: "font="VC_FONT_REGULAR" align=left font_size=40 color=#FFFFFF ellipsis=1.0";
+	}
+}
+
+group {
+    name: "view_main_ly";
+	parts {
+		CU_PART_IMAGE( "dim_bg",
+			description { state: "default" 0.0;
+				image.normal: IMG_SRC_DIR/"background_dim.png";
+			}
+		)
+		CU_PART_IMAGE( "bg",
+			clip_to: "content.clipper";
+			description { state: "default" 0.0;
+				image.normal: IMG_SRC_DIR/"background.png";
+			}
+		)
+		CU_PART_SPACER( "content.clipper.maximized",
+			description { state: "default" 0.0;
+				rel1.relative: 0.0 1.0;
+				min: 0 ENDCALL_BTN_BG_H;
+				fixed: 0 1;
+				align: 0 1;
+			}
+		)
+		CU_PART_PADDING_TOP_NAME("content.clipper.minimized", EC_LAYOUT_MINIMIZE_SIZE)
+
+		CU_PART_RECT( "content.clipper",
+			description { state: "default" 0.0;
+				rel2 { relative: 1.0 0.0; to: "content.clipper.maximized"; }
+			}
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				rel1 { relative: 0.0 0.0; to: "content.clipper.minimized"; }
+				rel2 { relative: 1.0 1.0; to: "content.clipper.minimized"; }
+			}
+		)
+
+		CU_PART_PADDING_LEFT(VML_LAYOUT_PAD_LEFT)
+		CU_PART_PADDING_RIGHT(VML_LAYOUT_PAD_RIGHT)
+		CU_PART_PADDING_TOP_NAME("title_txt.padding.top", CALL_STATUS_TXT_PAD_TOP)
+
+		CU_PART_TEXTBLOCK( "call_txt_status",
+			description { state: "default" 0.0;
+				min: 0 CALL_STATUS_TXT_HEIGHT;
+				fixed: 0 1;
+				rel1 {
+					relative: 1.0 1.0;
+					to_x: "padding.left";
+					to_y: "title_txt.padding.top";
+				}
+				rel2 {
+					relative: 0.0 1.0;
+					to_x: "padding.right";
+					to_y: "title_txt.padding.top";
+				}
+				text.style:"call_timer_style";
+				align: 0.0 0.0;
+			}
+		)
+		CU_PART_PADDING_BOTTOM_NAME( "caller_info.padding.bottom", VML_CALLER_INFO_PAD_BOTTOM)
+		CU_PART_SWALLOW( "caller_info",
+			clip_to: "content.clipper";
+			description {
+				state: "default" 0.0;
+				visible: 1;
+				rel2 { relative: 1.0 0.0; to: "caller_info.padding.bottom"; }
+			}
+			description { state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		)
+		CU_PART_RECT( "circle_btn_area",
+			clip_to: "content.clipper";
+			description {
+				state: "default" 0.0;
+				rel1{ relative: 0.0 0.0; to: "caller_info.padding.bottom"; }
+				color: 255 255 255 255;
+				align: 0.5 0.0;
+			}
+		)
+		CU_PART_RECT( "end_btn.bg",
+			mouse_events: 0;
+			repeat_events: 1;
+			clip_to: "end_btn_area.clipper";
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 1.0; to: "content.clipper"; }
+				rel2 { relative: 1.0 1.0; to: "content.clipper"; }
+				min: 0 ENDCALL_BTN_BG_H;
+				fixed: 0 1;
+				align: 0.5 0;
+			}
+			description { state: "hide_reply_btns" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "show_reply_btns" 0.0;
+				rel1 { relative: 0.0 1.0; to: "content.clipper"; }
+				rel2 { relative: 1.0 1.0; to: "content.clipper"; }
+				min: 0 EC_REPLY_BTN_HEIGHT;
+				fixed: 0 1;
+				align: 0.5 0;
+			}
+		)
+		CU_PART_RECT( "end_btn_area.clipper",
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "end_btn.bg"; }
+				rel2 { relative: 1.0 1.0; to: "end_btn.bg"; }
+				color: COLOR_WHITE;
+			}
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				inherit: "default" 0.0;
+				color: COLOR_WHITE_TRANSP;
+			}
+		)
+		CU_PART_RECT( "end_btn.clipper",
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "end_btn"; }
+				rel2 { relative: 1.0 1.0; to: "end_btn"; }
+				color: COLOR_WHITE;
+			}
+			description { state: "maximize" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "minimize" 0.0;
+				inherit: "default" 0.0;
+				color: COLOR_WHITE_TRANSP;
+			}
+		)
+		CU_PART_SWALLOW( "end_btn",
+			clip_to: "end_btn.clipper";
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "end_btn.bg"; }
+				rel2 { relative: 1.0 1.0; to: "end_btn.bg"; }
+				min: ENDCALL_BTN_SIZE ENDCALL_BTN_SIZE;
+				max: ENDCALL_BTN_SIZE ENDCALL_BTN_SIZE;
+				fixed: 1 1;
+			}
+		)
+		CU_PART_RECT( "reply_btns_area.clipper",
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "reply_btns"; }
+				rel2 { relative: 1.0 1.0; to: "reply_btns"; }
+				color: COLOR_WHITE_TRANSP;
+			}
+			description { state: "hide_reply_btns" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "show_reply_btns" 0.0;
+				inherit: "default" 0.0;
+				color: COLOR_WHITE;
+			}
+		)
+		CU_PART_SWALLOW( "reply_btns",
+			clip_to: "reply_btns_area.clipper";
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "end_btn.bg"; }
+				rel2 { relative: 1.0 1.0; to: "end_btn.bg"; }
+			}
+		)
+ 	}
+	programs {
+		script {
+			public show_reply_btns;
+		}
+		program { name: "show_keypadbtn_no_effect";
+			signal: "SHOW";
+			source: "KEYPAD_BTN";
+			action: STATE_SET "hide" 0.0;
+			target: "caller_info";
+		}
+		program { name: "hide_keypadbtn";
+			signal: "HIDE";
+			source: "KEYPAD_BTN";
+			action: STATE_SET "default" 0.0;
+			target: "caller_info";
+		}
+
+		// REPLY BUTTONS
+
+		program { name: "show_reply_btns_signal";
+			signal: "show_reply_btns";
+			source: "view_main_ly";
+
+			script { set_int(show_reply_btns, 1); }
+		}
+		program { name: "try_show_reply_btns";
+			script {
+				if (get_int(show_reply_btns) == 1) {
+					run_program(PROGRAM:"show_reply_btns");
+				}
+			}
+		}
+		program { name: "try_hide_reply_btns";
+			script {
+				if (get_int(show_reply_btns) == 1) {
+					run_program(PROGRAM:"hide_reply_btns");
+				}
+			}
+		}
+		program { name: "show_reply_btns";
+			in: EC_DELAY_SHOW_REPLY_BTNS;
+			action: STATE_SET "show_reply_btns" 0.0;
+			transition: LINEAR EC_ANIM_DUR_REPLY_BTNS;
+			target: "end_btn.bg";
+			target: "reply_btns_area.clipper";
+		}
+		program { name: "hide_reply_btns";
+			in: EC_DELAY_HIDE_REPLY_BTNS;
+			action: STATE_SET "hide_reply_btns" 0.0;
+			transition: LINEAR EC_ANIM_DUR_REPLY_BTNS;
+			target: "end_btn.bg";
+			target: "reply_btns_area.clipper";
+		}
+
+		// END CALL BUTTON
+
+		program { name: "show_end_call_btn";
+			in: EC_DELAY_SHOW_ENDCALL_BTN;
+			action: STATE_SET "maximize" 0.0;
+			transition: LINEAR EC_ANIM_DUR_ENDCALL_BTN;
+			target: "end_btn.clipper";
+		}
+		program { name: "hide_end_call_btn";
+			in: EC_DELAY_HIDE_ENDCALL_BTN;
+			action: STATE_SET "minimize" 0.0;
+			transition: LINEAR EC_ANIM_DUR_ENDCALL_BTN;
+			target: "end_btn.clipper";
+		}
+		program { name: "try_show_end_call_btn_area";
+			script {
+				if (get_int(show_reply_btns) != 1) {
+					run_program(PROGRAM:"show_end_call_btn_area");
+				}
+			}
+		}
+		program { name: "try_hide_end_call_btn_area";
+			script {
+				if (get_int(show_reply_btns) != 1) {
+					run_program(PROGRAM:"hide_end_call_btn_area");
+				}
+			}
+		}
+
+		// END CALL BACKGROUND
+
+		program { name: "show_end_call_btn_area";
+			in: EC_DELAY_SHOW_ENDCALL_BTN_AREA;
+			action: STATE_SET "maximize" 0.0;
+			transition: LINEAR EC_ANIM_DUR_ENDCALL_BTN_AREA;
+			target: "end_btn_area.clipper";
+		}
+		program { name: "hide_end_call_btn_area";
+			in: EC_DELAY_HIDE_ENDCALL_BTN_AREA;
+			action: STATE_SET "minimize" 0.0;
+			transition: LINEAR EC_ANIM_DUR_ENDCALL_BTN_AREA;
+			target: "end_btn_area.clipper";
+		}
+
+		// MINIMIZE / MAXIMIZE START LOGIC
+
+		program { name: "minimize";
+			signal: "minimize";
+			source: "view_main_ly";
+
+			after: "hide_end_call_btn";
+			after: "try_show_reply_btns";
+			after: "try_hide_end_call_btn_area";
+			after: "run_minimize_animation";
+		}
+		program { name: "maximize";
+			signal: "maximize";
+			source: "view_main_ly";
+
+			after: "show_end_call_btn";
+			after: "try_hide_reply_btns";
+			after: "try_show_end_call_btn_area";
+			after: "run_maximize_animation";
+		}
+		program { name: "run_minimize_animation";
+			action: STATE_SET "minimize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "content.clipper";
+			after: "minimize_anim_finished";
+		}
+		program { name: "run_maximize_animation";
+			action: STATE_SET "maximize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "content.clipper";
+			after: "maximize_anim_finished";
+		}
+		program { name: "minimize_anim_finished";
+			action: SIGNAL_EMIT "minimize.anim.finished" "view_main_ly";
+		}
+		program { name: "maximize_anim_finished";
+			action: SIGNAL_EMIT "maximize.anim.finished" "view_main_ly";
+		}
+	}
+}

@@ -48,9 +48,9 @@ callui_view_dialing_h _callui_dialing_view_dialing_new()
 	callui_view_dialing_h dialing_view = calloc(1, sizeof(_callui_view_dialing_t));
 	CALLUI_RETURN_NULL_IF_FAIL(dialing_view);
 
-	dialing_view->base_view.onCreate = __callui_view_dialing_oncreate;
-	dialing_view->base_view.onUpdate = __callui_view_dialing_onupdate;
-	dialing_view->base_view.onDestroy = __callui_view_dialing_ondestroy;
+	dialing_view->base_view.create = __callui_view_dialing_oncreate;
+	dialing_view->base_view.update = __callui_view_dialing_onupdate;
+	dialing_view->base_view.destroy = __callui_view_dialing_ondestroy;
 
 	return dialing_view;
 }
@@ -77,7 +77,7 @@ static callui_result_e __create_main_content(callui_view_dialing_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_VIEW_MAIN_LY);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(ad->main_ly, "elm.swallow.content", vd->base_view.contents);
 
@@ -129,12 +129,12 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 	callui_view_dialing_h vd = (callui_view_dialing_h)data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	const callui_call_state_data_t *call_state =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *call_state =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 
 	if (call_state) {
 		callui_result_e res = _callui_manager_end_call(ad->call_manager,
-				call_state->call_id, CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE);
+				call_state->call_id, CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
 		if (res != CALLUI_RESULT_OK) {
 			err("_callui_manager_end_call() failed. res[%d]", res);
 		}
@@ -144,8 +144,8 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
-	const callui_call_state_data_t *now_call_data = _callui_stp_get_call_data(ad->state_provider,
-			CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *now_call_data = _callui_stp_get_call_data(ad->state_provider,
+			CALLUI_CALL_DATA_ACTIVE);
 	CALLUI_RETURN_VALUE_IF_FAIL(now_call_data, CALLUI_RESULT_FAIL);
 
 	const char *file_path = now_call_data->call_ct_info.caller_id_path;
@@ -159,14 +159,14 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 	}
 
 	if (now_call_data->is_emergency) {
-		call_name = _("IDS_COM_BODY_EMERGENCY_NUMBER");
+		call_name = "IDS_COM_BODY_EMERGENCY_NUMBER";
 		disp_number = "";
 	}
 
 	if (strlen(call_name) == 0) {
 		_callui_show_caller_info_name(ad, disp_number);
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
-	} else if (now_call_data->is_emergency == EINA_TRUE) {
+	} else if (now_call_data->is_emergency) {
 		_callui_show_caller_info_name(ad, call_name);
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
 	} else {
@@ -175,9 +175,9 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 		elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
 	}
 
-	_callui_show_caller_info_status(ad, _("IDS_CALL_POP_DIALLING"));
+	_callui_show_caller_info_status(ad, "IDS_CALL_POP_DIALLING");
 
-	if (now_call_data->is_emergency == EINA_TRUE) {
+	if (now_call_data->is_emergency) {
 		elm_object_signal_emit(vd->caller_info, "set_emergency_mode", "");
 	} else {
 		if (strcmp(file_path, "default") != 0) {

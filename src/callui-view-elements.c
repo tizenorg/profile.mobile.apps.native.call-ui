@@ -17,7 +17,7 @@
 
 #include <vconf.h>
 #include <vconf-keys.h>
-#include <bluetooth.h>
+#include <network/bluetooth.h>
 #include <app_control.h>
 #include <notification.h>
 #include <efl_extension.h>
@@ -44,7 +44,6 @@
 #define	POPUP_LIST_ITEM_H 	120
 #define APP_CONTROL_MIME_CONTACT "application/vnd.tizen.contact"
 #define CONTACT_ID_BUF_LEN 16
-#define CONTACT_NUMBER_BUF_LEN 32
 
 typedef struct {
 	int index;
@@ -115,7 +114,6 @@ static Evas_Object *__callui_get_caller_info_layout(void *data)
 Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb cb_func, void *data)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(parent != NULL, NULL);
-	CALLUI_RETURN_VALUE_IF_FAIL(cb_func != NULL, NULL);
 
 	Evas_Object *btn = elm_object_part_content_get(parent, PART_END_BTN);
 	if (!btn) {
@@ -127,7 +125,9 @@ Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb c
 		elm_object_part_content_set(btn, "elm.swallow.content", icon);
 		elm_object_part_content_set(parent, PART_END_BTN, btn);
 
-		evas_object_smart_callback_add(btn, "clicked", cb_func, data);
+		if (cb_func) {
+			evas_object_smart_callback_add(btn, "clicked", cb_func, data);
+		}
 	}
 	evas_object_show(btn);
 
@@ -170,29 +170,23 @@ Evas_Object *_callui_create_thumbnail_with_size(Evas_Object *parent, const char 
 /* Caller info name or number*/
 void _callui_show_caller_info_name(void *data, const char *name)
 {
-	Evas_Object *layout = NULL;
-
-	layout = __callui_get_caller_info_layout(data);
-	edje_object_part_text_set(_EDJ(layout), "txt_call_name", name);
+	Evas_Object *layout = __callui_get_caller_info_layout(data);
+	elm_object_translatable_part_text_set(layout, "contact_name", name);
 }
 
 /* Caller info number */
 void _callui_show_caller_info_number(void *data, const char *number)
 {
-	Evas_Object *layout = NULL;
-
-	layout = __callui_get_caller_info_layout(data);
-	edje_object_part_text_set(_EDJ(layout), "txt_phone_num", number);
+	Evas_Object *layout = __callui_get_caller_info_layout(data);
+	elm_object_part_text_set(layout, "phone_number", number);
 }
 
 /* Caller info status*/
 Evas_Object *_callui_show_caller_info_status(void *data, const char *status)
 {
-	Evas_Object *layout = NULL;
-
 	callui_app_data_t *ad = (callui_app_data_t *)data;
-	layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
-	edje_object_part_text_set(_EDJ(layout), "call_txt_status", status);
+	Evas_Object *layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
+	elm_object_translatable_part_text_set(layout, "call_txt_status", status);
 
 	return layout;
 }
@@ -202,7 +196,7 @@ Evas_Object *_callui_show_caller_id(Evas_Object *contents, const char *path)
 	dbg("..");
 	Evas_Object *layout = _callui_create_thumbnail(contents, path, THUMBNAIL_138);
 
-	elm_object_part_content_set(contents, "caller_id", layout);
+	elm_object_part_content_set(contents, "contact_icon", layout);
 
 	/*Hide default caller-ID*/
 	elm_object_signal_emit(contents, "hide_default_cid", "");
@@ -290,7 +284,7 @@ void _callui_load_more_option(void *data)
 	}
 
 	if (is_lcd_locked) {
-		dbg( "Lock screen active. Do not show popup.");
+		dbg("Lock screen active. Do not show popup.");
 		return;
 	}
 
@@ -304,9 +298,9 @@ void _callui_load_more_option(void *data)
 		eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
 
 		/* Hold/Resume */
-		if (_callui_vm_get_cur_view_type(ad->view_manager) != VIEW_TYPE_MULTICALL_SPLIT) {
-			const callui_call_state_data_t *call_data =
-					_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+		if (_callui_vm_get_cur_view_type(ad->view_manager) != CALLUI_VIEW_MULTICALL_SPLIT) {
+			const callui_call_data_t *call_data =
+					_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 			if (call_data) {
 				elm_ctxpopup_item_append(ctxpopup, _("IDS_CALL_BUTTON_HOLD"), NULL, __callui_hold_btn_cb, ad);
 			} else {
@@ -387,19 +381,19 @@ static void __callui_gl_second_call_option_sel(void *data, Evas_Object *obj, voi
 		CALLUI_RETURN_IF_FAIL(item_data);
 		dbg("index: %d", item_data->index);
 
-		const callui_call_state_data_t *hold_call_data =
-				_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
-		const callui_call_state_data_t *unhold_call_data =
-				_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+		const callui_call_data_t *hold_call_data =
+				_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
+		const callui_call_data_t *unhold_call_data =
+				_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 
 		if ((unhold_call_data) && (hold_call_data == NULL)) {
 			dbg("1 active call OR 1 active conference call");
 			if (item_data->index == 0) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_HOLD_ACTIVE_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_HOLD_ACTIVE_AND_ACCEPT);
 			} else if (item_data->index == 1) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_RELEASE_ACTIVE_AND_ACCEPT);
 			} else {
 				err("Wrong index.. Should never get here");
 			}
@@ -407,13 +401,13 @@ static void __callui_gl_second_call_option_sel(void *data, Evas_Object *obj, voi
 			dbg("1 active call + 1 held call OR 1 active conf call + 1 held call OR 1 active call + 1 held conf call");
 			if (item_data->index == 0) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_RELEASE_ACTIVE_AND_ACCEPT);
 			} else if (item_data->index == 1) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_RELEASE_HOLD_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_RELEASE_HOLD_AND_ACCEPT);
 			} else if (item_data->index == 2) {
 				_callui_manager_answer_call(ad->call_manager,
-						CALLUI_CALL_ANSWER_TYPE_RELEASE_ALL_AND_ACCEPT);
+						CALLUI_CALL_ANSWER_RELEASE_ALL_AND_ACCEPT);
 			} else {
 				err("Wrong index.. Should never get here");
 			}
@@ -427,7 +421,7 @@ static void __callui_second_call_cancel_btn_response_cb(void *data, Evas_Object 
 
 	callui_app_data_t *ad = (callui_app_data_t*) data;
 	__callui_unload_second_call_popup(ad);
-	_callui_vm_change_view(ad->view_manager, VIEW_TYPE_INCOMING_CALL);
+	_callui_vm_change_view(ad->view_manager, CALLUI_VIEW_INCOMING_CALL);
 
 	return;
 }
@@ -449,8 +443,8 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 	Evas_Object *genlist = NULL;
 	CALLUI_RETURN_IF_FAIL(ad);
 
-	const callui_call_state_data_t *hold_call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
-	const callui_call_state_data_t *unhold_call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
+	const callui_call_data_t *hold_call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
+	const callui_call_data_t *unhold_call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 	if (unhold_call_data == NULL) {
 		err("active call data is null");
 		return;
@@ -461,7 +455,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 	ad->second_call_popup = elm_popup_add(ad->win);
 	CALLUI_RETURN_IF_FAIL(ad->second_call_popup);
 	elm_popup_align_set(ad->second_call_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
-	elm_object_domain_translatable_part_text_set(ad->second_call_popup, "title,text", CALLUI_TEXT_DOMAIN, "IDS_CALL_HEADER_ANSWER_CALL_ABB");
+	elm_object_translatable_part_text_set(ad->second_call_popup, "title,text", "IDS_CALL_HEADER_ANSWER_CALL_ABB");
 	evas_object_size_hint_weight_set(ad->second_call_popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
 	box = elm_box_add(ad->second_call_popup);
@@ -709,7 +703,7 @@ static void __callui_bt_popup_ok_btn_cb(void *data, Evas_Object *obj, void *even
 
 	__callui_unload_bt_popup(ad);
 	/* Launch the BT App Control */
-	_callui_common_launch_bt_app(ad);
+	_callui_common_launch_setting_bluetooth(ad);
 	return;
 }
 
@@ -724,34 +718,24 @@ void _callui_load_bluetooth_popup(callui_app_data_t *ad)
 	elm_popup_align_set(ad->bt_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	evas_object_size_hint_weight_set(ad->bt_popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
-	elm_object_domain_translatable_part_text_set(ad->bt_popup, "title,text", CALLUI_TEXT_DOMAIN, "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB");
-	elm_object_text_set(ad->bt_popup, _("IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON"));
+	elm_object_translatable_part_text_set(ad->bt_popup, "title,text", "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB");
+	elm_object_translatable_text_set(ad->bt_popup, "IDS_CALL_POP_TO_SWITCH_TO_USING_YOUR_BLUETOOTH_DEVICE_BLUETOOTH_WILL_BE_TURNED_ON");
 
 	btn_cancel = elm_button_add(ad->bt_popup);
 	elm_object_style_set(btn_cancel, "popup");
-	elm_object_text_set(btn_cancel, _("IDS_COM_SK_CANCEL"));
+	elm_object_translatable_text_set(btn_cancel, "IDS_COM_SK_CANCEL");
 	elm_object_part_content_set(ad->bt_popup, "button1", btn_cancel);
 	evas_object_smart_callback_add(btn_cancel, "clicked", __callui_bt_popup_cancel_btn_cb, ad);
 
 	btn_ok = elm_button_add(ad->bt_popup);
 	elm_object_style_set(btn_ok, "popup");
-	elm_object_text_set(btn_ok, _("IDS_COM_SK_OK"));
+	elm_object_translatable_text_set(btn_ok, "IDS_COM_SK_OK");
 	elm_object_part_content_set(ad->bt_popup, "button2", btn_ok);
 	evas_object_smart_callback_add(btn_ok, "clicked", __callui_bt_popup_ok_btn_cb, ad);
 
 	eext_object_event_callback_add(ad->bt_popup, EEXT_CALLBACK_BACK, __callui_bt_popup_cancel_btn_cb, ad);
 
 	evas_object_show(ad->bt_popup);
-	return;
-}
-
-void _callui_create_toast_message(char *string)
-{
-	dbg("$$$$$$ Noti-String : %s", string);
-
-	if (string) {
-		notification_status_message_post(string);
-	}
 	return;
 }
 
@@ -762,7 +746,7 @@ static void __callui_create_new_msg_btn_click_cb(void *data, Evas_Object *obj, v
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 
 
-	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 	CALLUI_RETURN_IF_FAIL(incom);
 
 	_callui_common_launch_msg_composer(ad, incom->call_num);
@@ -779,7 +763,7 @@ int _callui_create_reject_msg_button(void *app_data, Evas_Object *parent, const 
 	CALLUI_RETURN_VALUE_IF_FAIL(msg_button, CALLUI_RESULT_ALLOCATION_FAIL);
 
 	elm_object_style_set(msg_button, "default");
-	elm_object_text_set(msg_button,  _("IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"));
+	elm_object_translatable_text_set(msg_button,  "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB");
 	evas_object_smart_callback_add(msg_button, "clicked", __callui_create_new_msg_btn_click_cb, app_data);
 	elm_object_part_content_set(parent, part, msg_button);
 	evas_object_show(msg_button);

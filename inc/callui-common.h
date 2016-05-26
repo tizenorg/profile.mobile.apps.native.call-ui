@@ -29,24 +29,6 @@ typedef enum {
 	LOCK_TYPE_SECURITY_LOCK
 } callui_idle_lock_type_t;
 
-typedef enum {
-	LCD_TIMEOUT_SET = 1,
-	LCD_TIMEOUT_UNSET,
-	LCD_TIMEOUT_LOCKSCREEN_SET, /*After lock-screen comes in Connected state LCD goes to OFF in 5 secs*/
-	LCD_TIMEOUT_KEYPAD_SET, /*When Keypad is ON, LCD goes to DIM in 3 secs then goes to OFF in 5 secs*/
-	LCD_TIMEOUT_DEFAULT
-} callui_lcd_timeout_t;
-
-typedef enum {
-	LCD_ON,
-	LCD_ON_LOCK,
-	LCD_ON_UNLOCK,
-	LCD_UNLOCK,
-	LCD_OFF_SLEEP_LOCK,
-	LCD_OFF_SLEEP_UNLOCK,
-	LCD_OFF
-} callui_lcd_control_t;
-
 typedef void (*set_call_duration_time)(struct tm *cur_time, Evas_Object *obj, const char *part);
 
 /**
@@ -78,19 +60,11 @@ int _callui_common_unlock_swipe_lock(void);
 /**
  * @brief Set notification type
  *
- * @param[in] person_id      Person id
- * @param[in] bwin_noti      win type
+ * @param[in] person_id		Person id
+ * @param[in] win_noti		defines if window must be notification type
  *
  */
-void _callui_common_win_set_noti_type(void *appdata, int bwin_noti);
-
-/**
- * @brief Launch contacts application
- *
- * @param[in] appdata        App data
- *
- */
-void _callui_common_launch_contacts(void *appdata);
+void _callui_common_win_set_noti_type(void *appdata, bool win_noti);
 
 /**
  * @brief Launch bluetooth application
@@ -98,18 +72,10 @@ void _callui_common_launch_contacts(void *appdata);
  * @param[in] appdata        App data
  *
  */
-void _callui_common_launch_bt_app(void *appdata);
+void _callui_common_launch_setting_bluetooth(void *appdata);
 
 /**
- * @brief Launch dialer application
- *
- * @param[in] appdata        App data
- *
- */
-void _callui_common_launch_dialer(void *appdata);
-
-/**
- * @brief Launch message application
+ * @brief Launch Composer of Message application
  *
  * @param[in] appdata        App data
  * @param[in] number         Phone number
@@ -118,22 +84,28 @@ void _callui_common_launch_dialer(void *appdata);
 void _callui_common_launch_msg_composer(void *appdata, const char *number);
 
 /**
+ * @brief Launch Dialer of Phone application
+ *
+ * @param[in] appdata        App data
+ *
+ */
+void _callui_common_launch_dialer(void *appdata);
+
+/**
+ * @brief Launch Contacts application
+ *
+ * @param[in] appdata        App data
+ *
+ */
+void _callui_common_launch_contacts(void *appdata);
+
+/**
  * @brief Reset main layout text fields
  *
  * @param[in] contents	Parent object
  *
  */
 void _callui_common_reset_main_ly_text_fields(Evas_Object *contents);
-
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-/**
- * @brief Set lcd timeout
- *
- * @param[in] state          Lcd timer state
- *
- */
-void _callui_common_dvc_set_lcd_timeout(callui_lcd_timeout_t state);
-#endif
 
 /**
  * @brief state is volume mode on
@@ -160,22 +132,6 @@ int _callui_common_is_answering_mode_on(void);
  *
  */
 int _callui_common_is_powerkey_mode_on(void);
-
-/**
- * @brief Changed lcd state
- *
- * @param[in] state           Lcd control state
- *
- */
-void _callui_common_dvc_control_lcd_state(callui_lcd_control_t state);
-
-/**
- * @brief Gets lcd state
- *
- * return Lcd control state
- *
- */
-callui_lcd_control_t _callui_common_get_lcd_state();
 
 /**
  * @brief State of earjack connection
@@ -280,14 +236,4 @@ char *_callui_common_get_time_string(struct tm *time);
  */
 struct tm *_callui_common_get_current_time_diff_in_tm(long time);
 
-/**
- * @brief Set the text for an object's part, marking it as translatable for call app domain
- * @param[in] obj		Evas object containing the text part
- * @param[in] part		name of the part to set
- * @param[in] text		the original, non-translated text to set
- */
-void _callui_common_eo_txt_part_set_translatable_text(Evas_Object *obj,
-		const char *part,
-		const char *ids_string);
-
-#endif //__CALLUI_COMMON_H_
+#endif /*__CALLUI_COMMON_H_ */

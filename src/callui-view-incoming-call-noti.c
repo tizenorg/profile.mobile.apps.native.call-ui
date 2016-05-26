@@ -30,6 +30,7 @@
 
 #include "callui-manager.h"
 #include "callui-state-provider.h"
+#include "callui-sound-manager.h"
 
 #define CALLUI_DURING_ICON	"call_button_icon_03.png"
 #define CALLUI_REJECT_ICON	"call_button_icon_04.png"
@@ -45,6 +46,8 @@ struct _callui_view_incoming_call_noti {
 
 	Elm_Genlist_Item_Class *reject_msg_itc;
 	char reject_msg[CALLUI_REJ_MSG_MAX_LENGTH];
+
+	bool rej_msg_list_visible;
 };
 
 typedef struct _callui_view_incoming_call_noti _callui_view_incoming_call_noti_t;
@@ -57,7 +60,6 @@ static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd
 static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h vd);
 
 static void __reject_msg_genlist_item_click_cb(void *data, Evas_Object *obj, void *event_info);
-static void __reject_msg_layout_back_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __reject_msg_genlist_add(callui_view_incoming_call_noti_h vd);
 static char *__reject_msg_genlist_item_txt_cb(void *data, Evas_Object *obj, const char *part);
 static void __reject_msg_genlist_init_item_class(callui_view_incoming_call_noti_h vd);
@@ -70,6 +72,7 @@ static Eina_Bool __reject_msg_close_effect_activated_cb(void *data);
 static void __show_reject_msg_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 
 static void __create_reject_msg_content(callui_view_incoming_call_noti_h vd);
+static void __destroy_reject_msg_content(callui_view_incoming_call_noti_h vd);
 
 static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 
@@ -81,9 +84,9 @@ callui_view_incoming_call_noti_h _callui_view_incoming_call_noti_new()
 	callui_view_incoming_call_noti_h incoming_call_noti = calloc(1, sizeof(_callui_view_incoming_call_noti_t));
 	CALLUI_RETURN_NULL_IF_FAIL(incoming_call_noti);
 
-	incoming_call_noti->base_view.onCreate = __callui_view_incoming_call_noti_oncreate;
-	incoming_call_noti->base_view.onUpdate = __callui_view_incoming_call_noti_onupdate;
-	incoming_call_noti->base_view.onDestroy = __callui_view_incoming_call_noti_ondestroy;
+	incoming_call_noti->base_view.create = __callui_view_incoming_call_noti_oncreate;
+	incoming_call_noti->base_view.update = __callui_view_incoming_call_noti_onupdate;
+	incoming_call_noti->base_view.destroy = __callui_view_incoming_call_noti_ondestroy;
 
 	return incoming_call_noti;
 }
@@ -100,9 +103,9 @@ static callui_result_e __callui_view_incoming_call_noti_oncreate(call_view_data_
 
 	// TODO: need to remove this logic from here
 	evas_object_resize(ad->win, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
-	_callui_common_win_set_noti_type(ad, EINA_TRUE);
+	_callui_common_win_set_noti_type(ad, true);
 
-	if (elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
+	if (!elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
 		dbg("KEY_SELECT key grab failed");
 	}
 
@@ -125,18 +128,17 @@ static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	// TODO: need to replace from view
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-	/* Set LCD timeout for call state */
-	/* LCD is alwasy on during incoming call screen */
-	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->call_sdm);
+#ifdef _DBUS_DISPLAY_DEVICE_TIMEOUT_
+	/* Set display timeout for call state */
+	callui_audio_state_type_e audio_state = _callui_sdm_get_audio_state(ad->sound_manager);
 	if (audio_state == CALLUI_AUDIO_STATE_SPEAKER) {
-		_callui_common_dvc_set_lcd_timeout(LCD_TIMEOUT_SET);
+		_callui_display_set_timeout(ad->display, CALLUI_DISPLAY_TIMEOUT_SET);
 	}
 #endif
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
 
-	_callui_common_win_set_noti_type(ad, EINA_FALSE);
+	_callui_common_win_set_noti_type(ad, false);
 
 	evas_object_resize(ad->win, ad->root_w, ad->root_h);
 
@@ -225,24 +227,16 @@ static void __show_reject_msg_btn_click_cb(void *data, Evas *evas, Evas_Object *
 	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)data;
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	evas_object_resize(ad->win, ad->root_w, ad->root_h);
-
-	__create_reject_msg_content(vd);
-
-	elm_object_signal_emit(vd->base_view.contents, "big_main_ly", "main_active_noti_call");
-}
-
-static void __reject_msg_layout_back_click_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	CALLUI_RETURN_IF_FAIL(data);
-
-	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)data;
-	callui_app_data_t *ad = vd->base_view.ad;
-
-	evas_object_resize(ad->win, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
-
-	elm_object_signal_emit(vd->base_view.contents, "small_main_ly", "main_active_noti_call");
-	evas_object_del(vd->reject_msg_genlist);
+	if (vd->rej_msg_list_visible) {
+		evas_object_resize(ad->win, ad->root_w, ELM_SCALE_SIZE(MTLOCK_ACTIVE_NOTI_CALL_HEIGHT));
+		elm_object_signal_emit(vd->base_view.contents, "small_main_ly", "main_active_noti_call");
+		__destroy_reject_msg_content(vd);
+	} else {
+		evas_object_resize(ad->win, ad->root_w, ad->root_h);
+		elm_object_signal_emit(vd->base_view.contents, "big_main_ly", "main_active_noti_call");
+		__create_reject_msg_content(vd);
+	}
+	vd->rej_msg_list_visible = !vd->rej_msg_list_visible;
 }
 
 static void __reject_msg_genlist_add(callui_view_incoming_call_noti_h vd)
@@ -254,7 +248,6 @@ static void __reject_msg_genlist_add(callui_view_incoming_call_noti_h vd)
 
 	vd->reject_msg_genlist = elm_genlist_add(vd->base_view.contents);
 	CALLUI_RETURN_IF_FAIL(vd->reject_msg_genlist);
-	eext_object_event_callback_add(vd->reject_msg_layout, EEXT_CALLBACK_BACK, __reject_msg_layout_back_click_cb, vd);
 	evas_object_data_set(vd->reject_msg_genlist, CALLUI_REJ_MSG_GENLIST_DATA, vd);
 
 	evas_object_size_hint_weight_set(vd->reject_msg_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -355,26 +348,32 @@ static void __create_reject_msg_content(callui_view_incoming_call_noti_h vd)
 	evas_object_show(vd->reject_msg_genlist);
 }
 
+static void __destroy_reject_msg_content(callui_view_incoming_call_noti_h vd)
+{
+	DELETE_EVAS_OBJECT(vd->reject_msg_layout);
+	vd->reject_msg_genlist = NULL;
+}
+
 static void __launch_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
 {
-	char *key = (char *) data;
-	if (key == NULL) {
-		return;
-	}
+	CALLUI_RETURN_IF_FAIL(data);
 
-	//TODO: replace to separate launcher
+	char *key = (char *)data;
+
 	app_control_h app_control = NULL;
-	if (app_control_create(&app_control) != APP_CONTROL_ERROR_NONE) {
-		dbg("app_control_create() is failed");
-	} else if (app_control_set_app_id(app_control, "org.tizen.call-ui") != APP_CONTROL_ERROR_NONE) {
-		dbg("app_control_set_app_id() is failed");
-	} else if (app_control_set_operation(app_control, key) != APP_CONTROL_ERROR_NONE) {
-		dbg("app_control_set_operation() is failed");
-	} else if (app_control_send_launch_request(app_control, NULL, NULL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() is failed");
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if (app_control_set_app_id(app_control, PACKAGE) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_app_id() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, key)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	}
-
-	app_control_destroy(app_control);
+	if (app_control) {
+		app_control_destroy(app_control);
+	}
 }
 
 static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd)
@@ -432,7 +431,7 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	const callui_call_state_data_t *call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_data_t *call_data = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
 
 	elm_object_signal_emit(vd->base_view.contents, "small_main_ly", "main_active_noti_call");
@@ -448,7 +447,8 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 
 	if (!(call_name && call_name[0] != '\0') && !(call_number && call_number[0] != '\0')) {
 		elm_object_signal_emit(vd->base_view.contents, "big_buttons", "main_active_noti_call");
-		elm_object_part_text_set(vd->base_view.contents, "text.contact_name", _("IDS_CALL_BODY_UNKNOWN"));
+		elm_object_translatable_part_text_set(vd->base_view.contents,
+				"text.contact_name", "IDS_CALL_BODY_UNKNOWN");
 	} else if (!(call_name && call_name[0] != '\0')) {
 		elm_object_signal_emit(vd->base_view.contents, "small_buttons", "main_active_noti_call");
 		elm_object_part_text_set(vd->base_view.contents, "text.contact_name", call_number);
@@ -460,7 +460,7 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 
 	if (strcmp(file_path, "default") != 0) {
 		Evas_Object *layout = _callui_create_thumbnail(vd->base_view.contents, file_path, THUMBNAIL_98);
-		elm_object_part_content_set(vd->base_view.contents, "caller_id", layout);
+		elm_object_part_content_set(vd->base_view.contents, "contact_icon", layout);
 		elm_object_signal_emit(vd->base_view.contents, "hide_def_caller_id", "main_active_noti_call");
 	} else {
 		elm_object_signal_emit(vd->base_view.contents, "show_def_caller_id", "main_active_noti_call");

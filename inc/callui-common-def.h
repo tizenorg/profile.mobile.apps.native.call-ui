@@ -18,13 +18,16 @@
 #ifndef __CALLUI_COMMON_DEFINES_H__
 #define __CALLUI_COMMON_DEFINES_H__
 
+#define _DBUS_DISPLAY_DEVICE_TIMEOUT_
+
 #ifndef CALLUI_EXPORT_API
 #define CALLUI_EXPORT_API __attribute__ ((visibility("default")))
 #endif
 
-#define MSG_PKG		"org.tizen.message"
+#define PACKAGE	"org.tizen.call-ui"
 
-#define PACKAGE		"org.tizen.call-ui"
+#define CALL_EDJ_NAME		"/edje/call.edj"
+#define CALL_THEME_EDJ_NAME	"/edje/call_theme.edj"
 
 #define EDJ_NAME	_callui_common_get_call_edj_path()
 #define CALL_THEME	_callui_common_get_call_theme_path()
@@ -33,12 +36,10 @@
 #define _EDJ(obj) elm_layout_edje_get(obj)
 #endif
 
-#define CALLUI_TEXT_DOMAIN "call-ui"
-
 #undef _
-#define _(s) dgettext(CALLUI_TEXT_DOMAIN, s)
+#define _(s) gettext(s)
 
-#define GRP_MAIN_LY "main_ly"
+#define GRP_VIEW_MAIN_LY "view_main_ly"
 #define GRP_KEYPAD "keypad"
 #define GRP_MULTICALL "multicall-list"
 #define GRP_REJECT_MSG "reject_with_msg"
@@ -47,11 +48,15 @@
 #define GRP_SEPARATOR_LAYOUT_1BUTTON "separator-layout-1button"
 #define GRP_SEPARATOR_LAYOUT_2BUTTON "separator-layout-2button"
 #define GRP_BUTTON_LAYOUT "button-layout"
+
 #define APP_CONTROL_OPERATION_DURING_CALL "http://tizen.org/appcontrol/oparation/during_call"
 #define APP_CONTROL_OPERATION_MESSAGE_REJECT "http://tizen.org/appcontrol/operation/message_reject"
 #define APP_CONTROL_OPERATION_END_CALL "http://tizen.org/appcontrol/operation/end_call"
-#define GRP_CALLER_INFO "caller-info"
-#define GRP_MANAGE_CALLS "manage-calls"
+#define APP_CONTROL_OPERATION_QP_RESUME "http://tizen.org/appcontrol/operation/qp_resume"
+
+#define GRP_CALLER_INFO "caller_info"
+#define GRP_MANAGE_CALLS "manage_calls"
+
 #define GRP_LOCK_ACCEPT "lock_accept"
 #define GRP_LOCK_REJECT "lock_reject"
 #define GRP_LOCK_REJECT_WITH_MSG "lock_reject_with_msg"
@@ -59,7 +64,7 @@
 #define GRP_ENDCALL_MAIN_LAYOUT "main_end_call"
 #define GRP_ENDCALL_CALL_BACK_BTN "call_back"
 #define GRP_ENDCALL_MSG_BTN "message_button"
-#define GRP_ENDCALL_CREATE_CONT_BTN "create_contact_button"
+#define GRP_ENDCALL_ADD_CONTACT_BTN "add_contact_button"
 
 #define	CALLUI_DISPLAY_NAME_LENGTH_MAX			(255+1)			/**< Voiecall Display Name Max Length  */
 #define	CALLUI_IMAGE_PATH_LENGTH_MAX			(255+1)			/**< Max File length for image */

@@ -1,0 +1,250 @@
+/*
+ * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+// ANIMATION DEFINES
+
+#define EC_ANIM_DUR							0.5
+
+#define EC_ANIM_DUR_ENDCALL_BTN				(EC_ANIM_DUR / 3)
+#define EC_ANIM_DUR_ENDCALL_BTN_AREA		(EC_ANIM_DUR / 3)
+#define EC_ANIM_DUR_CONT_INFO_B_S			(EC_ANIM_DUR / 2)
+#define EC_ANIM_DUR_CONT_INFO_S_B			(EC_ANIM_DUR - EC_ANIM_DUR_CONT_INFO_B_S)
+#define EC_ANIM_DUR_REPLY_BTNS				(EC_ANIM_DUR - EC_ANIM_DUR_ENDCALL_BTN)
+
+#define EC_DELAY_HIDE_ENDCALL_BTN			0.0 0.0
+#define EC_DELAY_SHOW_ENDCALL_BTN			(EC_ANIM_DUR - EC_ANIM_DUR_ENDCALL_BTN) 0.0
+#define EC_DELAY_HIDE_ENDCALL_BTN_AREA		(EC_ANIM_DUR - EC_ANIM_DUR_ENDCALL_BTN_AREA) 0.0
+#define EC_DELAY_SHOW_ENDCALL_BTN_AREA		0.0 0.0
+#define EC_DELAY_SHOW_REPLY_BTNS			EC_ANIM_DUR_ENDCALL_BTN 0.0
+#define EC_DELAY_HIDE_REPLY_BTNS			0.0 0.0
+
+// CALLER INFO DEFINES
+
+#define EC_ADD_CONT_BTN_DIMENT				80
+#define EC_ADD_CONT_BTN_PAD_RIGHT			17
+#define EC_ADD_CONT_BTN_PAD_LEFT			32
+#define EC_ADD_CONT_BTN_PAD_TOP				(CALL_STATUS_TXT_PAD_TOP + CALL_STATUS_TXT_HEIGHT + EC_STATE_TXT_PAD_EC_ADD_CONT_BTN)
+#define EC_ADD_CONT_BTN_SIZE				EC_ADD_CONT_BTN_DIMENT EC_ADD_CONT_BTN_DIMENT
+#define EC_ADD_CONT_BTN_IMAGE_SIZE			46 46
+#define EC_ADD_CONT_BTN_IMAGE_BORDER		17
+
+#define EC_STATE_TXT_PAD_EC_CONT_NAME		50
+#define EC_STATE_TXT_PAD_EC_ADD_CONT_BTN	74
+#define EC_STATE_TXT_PAD_CONT_ICON			30
+
+#define EC_CONT_ICON_DIMENT					168
+#define EC_CONT_ICON_SIZE_MIN				EC_CONT_ICON_DIMENT EC_CONT_ICON_DIMENT
+#define EC_CONT_ICON_PAD_TOP				(CALL_STATUS_TXT_PAD_TOP + CALL_STATUS_TXT_HEIGHT + EC_STATE_TXT_PAD_CONT_ICON)
+#define EC_CONT_ICON_PAD_BOTTOM				44
+#define EC_CONT_ICON_PAD_RIGHT				32
+#define EC_CONT_ICON_PAD_LEFT				32
+
+#define EC_BG_PAD_RIGHT_MIN					CI_LAYOUT_PAD_RIGHT
+#define EC_BG_PAD_RIGHT_MIN_W_ADD_CONT_BTN	(EC_ADD_CONT_BTN_PAD_RIGHT + EC_ADD_CONT_BTN_DIMENT + EC_ADD_CONT_BTN_PAD_LEFT)
+
+#define EC_CONT_NAME_SIZE_MIN				0 76
+#define EC_CONT_INFO_PAD_LEFT				(EC_CONT_ICON_PAD_LEFT + EC_CONT_ICON_DIMENT + EC_CONT_ICON_PAD_RIGHT)
+#define EC_CONT_NAME_PAD_TOP				(CALL_STATUS_TXT_PAD_TOP + CALL_STATUS_TXT_HEIGHT + EC_STATE_TXT_PAD_EC_CONT_NAME)
+#define EC_CONT_NAME_PAD_BOTTOM				6
+
+#define EC_PHONE_NUMB_SIZE_MIN				0 46
+#define EC_PHONE_NUMB_PAD_TOP				(EC_CONT_NAME_PAD_TOP + EC_CONT_NAME_SIZE_MIN + EC_CONT_NAME_PAD_BOTTOM)
+
+// APPLICATION AND VIEW MAIN LAYOUT DEFINES
+
+#define EC_LAYOUT_MINIMIZE_SIZE				(CALL_STATUS_TXT_PAD_TOP + CALL_STATUS_TXT_HEIGHT + EC_STATE_TXT_PAD_CONT_ICON + EC_CONT_ICON_DIMENT + EC_CONT_ICON_PAD_BOTTOM)
+
+#define EC_REPLY_BTN_HEIGHT					190
+#define EC_REPLY_BTN_ICON_PAD_TOP			36
+#define EC_REPLY_BTN_ICON_DIMENT			64
+#define EC_REPLY_BTN_TXT_HEIGHT				38
+#define EC_REPLY_BTN_TXT_PAD_REPLY_BTN_ICON	20
+#define EC_REPLY_BTN_TXT_PAD_TOP			(EC_REPLY_BTN_ICON_PAD_TOP + EC_REPLY_BTN_ICON_DIMENT + EC_REPLY_BTN_TXT_PAD_REPLY_BTN_ICON)
+#define EC_REPLY_BTN_ICON_SIZE				EC_REPLY_BTN_ICON_DIMENT EC_REPLY_BTN_ICON_DIMENT
+
+styles {
+	style { name: "ec_reply_btn_default";
+		base: "font=Tizen:style=Regular align=center font_size=34 color=#808080 ellipsis=1.0";
+	}
+	style { name: "ec_reply_btn_pressed";
+		base: "font=Tizen:style=Regular align=center font_size=34 color=#3DB9CC ellipsis=1.0";
+	}
+	style { name: "ec_contact_name";
+		base: "font=Tizen:style=Regular align=left font_size=56 color=#FFFFFF ellipsis=1.0";
+	}
+	style { name: "ec_phone_number";
+		base: "font=Tizen:style=Regular align=left font_size=34 color=#FFFFFF ellipsis=1.0";
+	}
+}
+
+#define EC_REPLY_BUTTON(style_name, img_path) \
+group { \
+	name: style_name; \
+	parts { \
+		CU_PART_RECT( "bg", \
+			mouse_events: 1; \
+			repeat_events: 0; \
+			description { state: "default" 0.0; } \
+			description { state: "pressed" 0.0; \
+				inherit: "default" 0.0; \
+				color_class: "AO001"; \
+			} \
+		) \
+		CU_PART_RECT( "click_bg", \
+			mouse_events: 1; \
+			repeat_events: 0; \
+			description { state: "default" 0.0; \
+				color: COLOR_WHITE; \
+			} \
+			description { state: "pressed" 0.0; \
+				color: 0 0 0 76; \
+			} \
+		) \
+		CU_PART_SPACER( "sizer", \
+			description { state: "default" 0.0; \
+				min: 0 EC_REPLY_BTN_HEIGHT; \
+				max: -1 EC_REPLY_BTN_HEIGHT; \
+				fixed: 1 1; \
+			} \
+		) \
+		CU_PART_SPACER( "icon.padding.top", \
+			description { state: "default" 0.0; \
+				min: 0 EC_REPLY_BTN_ICON_PAD_TOP; \
+				fixed: 0 1; \
+				rel1 { relative: 0.0 0.0; to: "sizer"; } \
+				rel2 { relative: 1.0 0.0; to: "sizer"; } \
+				align: 0.0 0.0; \
+			} \
+		) \
+		CU_PART_IMAGE( "icon", \
+			description { state: "default" 0.0; \
+				rel1 { relative: 0.0 1.0; to: "icon.padding.top"; } \
+				rel2 { relative: 1.0 1.0; to: "icon.padding.top"; } \
+				min: EC_REPLY_BTN_ICON_SIZE; \
+				max: EC_REPLY_BTN_ICON_SIZE; \
+				fixed: 1 1; \
+				image.normal: img_path; \
+				color_class: "AO009"; \
+				align: 0.5 0.0; \
+			} \
+			description { \
+				state: "pressed" 0.0; \
+				inherit: "default" 0.0; \
+				color_class: "AO001"; \
+			} \
+		) \
+		CU_PART_SPACER( "text.padding.top", \
+			description { state: "default" 0.0; \
+				min: 0 EC_REPLY_BTN_TXT_PAD_TOP; \
+				fixed: 0 1; \
+				rel1 { relative: 0.0 0.0; to: "sizer"; } \
+				rel2 { relative: 1.0 0.0; to: "sizer"; } \
+				align: 0.0 0.0; \
+			} \
+		) \
+		CU_PART_TEXTBLOCK( "text", \
+			description { state: "default" 0.0; \
+				rel1 { relative: 0.0 1.0; to: "text.padding.top"; } \
+				rel2 { relative: 1.0 1.0; to: "text.padding.top"; } \
+				min: 0 EC_REPLY_BTN_TXT_HEIGHT; \
+				text { \
+					fit: 1 1; \
+					style:"ec_reply_btn_default"; \
+				} \
+			} \
+			description { state: "pressed" 0.0; \
+				inherit: "default" 0.0; \
+				text.style:"ec_reply_btn_pressed"; \
+			} \
+		) \
+	} \
+	programs { \
+		program { name: "clicked"; \
+			signal: "mouse,clicked,1"; \
+			source: "*"; \
+			action: SIGNAL_EMIT "clicked" "edje"; \
+			after: "touch_snd"; \
+		} \
+		program { name: "pressed"; \
+			signal: "mouse,down,*"; \
+			source: "*"; \
+			action: STATE_SET "pressed" 0.0; \
+			target: "bg"; \
+			target: "click_bg"; \
+			target: "icon"; \
+			target: "text"; \
+		} \
+		program { name: "unpressed"; \
+			signal: "mouse,up,*"; \
+			source: "*"; \
+			action: STATE_SET "default" 0.0; \
+			target: "bg"; \
+			target: "click_bg"; \
+			target: "icon"; \
+			target: "text"; \
+		} \
+		program { name: "touch_snd"; \
+			action: RUN_PLUGIN "touch_sound"; \
+		} \
+	} \
+} \
+
+EC_REPLY_BUTTON("call_back", IMG_SRC_DIR/"call_button_icon_03.png")
+EC_REPLY_BUTTON("message_button", IMG_SRC_DIR/"call_button_icon_04.png")
+
+group {
+	name: "add_contact_button";
+	parts {
+		CU_PART_RECT( "bg",
+			description { state: "default" 0.0;
+				color: COLOR_BG_ALPHA;
+			}
+			description { state: "pressed" 0.0;
+				inherit: "default" 0.0;
+				color_class: "W0113P";
+			}
+		)
+		CU_PART_PADDING_TOP(EC_ADD_CONT_BTN_IMAGE_BORDER)
+		CU_PART_PADDING_LEFT(EC_ADD_CONT_BTN_IMAGE_BORDER)
+		CU_PART_PADDING_BOTTOM(EC_ADD_CONT_BTN_IMAGE_BORDER)
+		CU_PART_PADDING_RIGHT(EC_ADD_CONT_BTN_IMAGE_BORDER)
+		CU_PART_IMAGE( "icon",
+			description { state: "default" 0.0;
+				min: EC_ADD_CONT_BTN_IMAGE_SIZE;
+				max: EC_ADD_CONT_BTN_IMAGE_SIZE;
+				rel1 { relative: 1.0 1.0;	to_x: "padding.left";	to_y: "padding.top"; }
+				rel2 { relative: 0.0 0.0; 	to_x: "padding.right";	to_y: "padding.bottom"; }
+				image.normal: IMG_SRC_DIR/"call_button_add.png";
+				color: COLOR_WHITE;
+			}
+		)
+	}
+	programs {
+		program { name: "pressed";
+			signal: "mouse,down,*";
+			source: "*";
+			action: STATE_SET "pressed" 0.0;
+			target: "bg";
+		}
+		program { name: "unpressed";
+			signal: "mouse,up,*";
+			source: "*";
+			action: STATE_SET "default" 0.0;
+			target: "bg";
+		}
+	}
+}

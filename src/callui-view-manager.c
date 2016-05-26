@@ -37,7 +37,9 @@ struct _callui_vm {
 	callui_view_type_e cur_view_type;
 	callui_app_data_t *ad;
 
-	bool is_conf_call_ended;
+	bool conf_call_ended;
+	bool paused;
+	bool check_conf_memeber_count;
 };
 typedef struct _callui_vm callui_vm_t;
 
@@ -48,7 +50,8 @@ static callui_result_e __destroy_cur_view(callui_vm_h vm);
 static callui_result_e __create_update_view(callui_vm_h vm, callui_view_type_e type);
 static call_view_data_base_t *__allocate_view(callui_view_type_e view_type);
 static callui_result_e __change_view(callui_vm_h vm, callui_view_type_e type);
-static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_state_data_t *call_data);
+static void __update_cur_view(callui_vm_h vm);
+static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_data_t *call_data);
 static void __call_state_event_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
@@ -60,21 +63,21 @@ static call_view_data_base_t *__allocate_view(callui_view_type_e view_type)
 {
 	switch (view_type)
 	{
-	case VIEW_TYPE_DIALLING:
+	case CALLUI_VIEW_DIALLING:
 		return (call_view_data_base_t *)_callui_dialing_view_dialing_new();
-	case VIEW_TYPE_INCOMING_CALL_NOTI:
+	case CALLUI_VIEW_INCOMING_CALL_NOTI:
 		return (call_view_data_base_t *)_callui_view_incoming_call_noti_new();
-	case VIEW_TYPE_INCOMING_CALL:
+	case CALLUI_VIEW_INCOMING_CALL:
 		return (call_view_data_base_t *)_callui_view_incoming_call_new();
-	case VIEW_TYPE_SINGLECALL:
+	case CALLUI_VIEW_SINGLECALL:
 		return (call_view_data_base_t *)_callui_view_single_call_new();
-	case VIEW_TYPE_MULTICALL_SPLIT:
+	case CALLUI_VIEW_MULTICALL_SPLIT:
 		return (call_view_data_base_t *)_callui_view_multi_call_split_new();
-	case VIEW_TYPE_MULTICALL_CONF:
+	case CALLUI_VIEW_MULTICALL_CONF:
 		return (call_view_data_base_t *)_callui_view_multi_call_conf_new();
-	case VIEW_TYPE_MULTICALL_LIST:
+	case CALLUI_VIEW_MULTICALL_LIST:
 		return (call_view_data_base_t *)_callui_view_multi_call_list_new();
-	case VIEW_TYPE_ENDCALL:
+	case CALLUI_VIEW_ENDCALL:
 		return (call_view_data_base_t *)_callui_view_callend_new();
 	default:
 		return NULL;
@@ -89,80 +92,80 @@ static void _lock_manager_unlock_cb(void *data)
 	if (_callui_stp_is_any_calls_available(ad->state_provider)) {
 		return;
 	}
-	__change_view(ad->view_manager, VIEW_TYPE_ENDCALL);
+	__change_view(ad->view_manager, CALLUI_VIEW_ENDCALL);
 }
 
-static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_state_data_t *call_data)
+static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_data_t *call_data)
 {
 	callui_app_data_t *ad = vm->ad;
 	callui_result_e res = CALLUI_RESULT_FAIL;
 
-	const callui_call_state_data_t *active =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
-	const callui_call_state_data_t *held =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
-	const callui_call_state_data_t *incom =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_data_t *active =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
+	const callui_call_data_t *held =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
+	const callui_call_data_t *incom =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 
-	if (vm->is_conf_call_ended && call_data) {
+	if (vm->conf_call_ended && call_data) {
 		if (!ad->end_call_data) {
-			ad->end_call_data = calloc(1, sizeof(callui_call_state_data_t));
+			ad->end_call_data = calloc(1, sizeof(callui_call_data_t));
 			CALLUI_RETURN_VALUE_IF_FAIL(ad->end_call_data, CALLUI_RESULT_ALLOCATION_FAIL);
 		}
-		memcpy(ad->end_call_data, call_data, sizeof(callui_call_state_data_t));
-		res = __change_view(vm, VIEW_TYPE_ENDCALL);
-		vm->is_conf_call_ended = false;
+		memcpy(ad->end_call_data, call_data, sizeof(callui_call_data_t));
+		res = __change_view(vm, CALLUI_VIEW_ENDCALL);
+		vm->conf_call_ended = false;
 		return res;
 	}
 
-	if (ad->multi_call_list_end_clicked) {
-		ad->multi_call_list_end_clicked = false;
+	if (vm->check_conf_memeber_count) {
+		vm->check_conf_memeber_count = false;
 
 		if (active && active->conf_member_count > 1) {
-			return __change_view(vm, VIEW_TYPE_MULTICALL_LIST);
+			return __change_view(vm, CALLUI_VIEW_MULTICALL_LIST);
 		}
 	}
 
 	if (incom) {
-		callui_view_type_e type = VIEW_TYPE_INCOMING_CALL;
+		callui_view_type_e type = CALLUI_VIEW_INCOMING_CALL;
 		callui_view_type_e cur_type = _callui_vm_get_cur_view_type(ad->view_manager);
 		if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK &&
 				active == NULL &&
 				held == NULL &&
-				(cur_type == VIEW_TYPE_UNDEFINED || cur_type == VIEW_TYPE_ENDCALL)) {
-			type = VIEW_TYPE_INCOMING_CALL_NOTI;
+				(cur_type == CALLUI_VIEW_UNDEFINED || cur_type == CALLUI_VIEW_ENDCALL)) {
+			type = CALLUI_VIEW_INCOMING_CALL_NOTI;
 		}
 		res =__change_view(ad->view_manager, type);
 	} else if (active) {
 		if (active->is_dialing) {
-			res = __change_view(vm, VIEW_TYPE_DIALLING);
+			res = __change_view(vm, CALLUI_VIEW_DIALLING);
 		} else if (held) {
-			res = __change_view(vm, VIEW_TYPE_MULTICALL_SPLIT);
+			res = __change_view(vm, CALLUI_VIEW_MULTICALL_SPLIT);
 		} else if (active->conf_member_count > 1) {
-			res = __change_view(vm, VIEW_TYPE_MULTICALL_CONF);
+			res = __change_view(vm, CALLUI_VIEW_MULTICALL_CONF);
 		} else {
-			res = __change_view(vm, VIEW_TYPE_SINGLECALL);
+			res = __change_view(vm, CALLUI_VIEW_SINGLECALL);
 		}
 	} else if (held) {
 		if (held->conf_member_count > 1) {
-			res = __change_view(vm, VIEW_TYPE_MULTICALL_CONF);
+			res = __change_view(vm, CALLUI_VIEW_MULTICALL_CONF);
 		} else {
-			res = __change_view(vm, VIEW_TYPE_SINGLECALL);
+			res = __change_view(vm, CALLUI_VIEW_SINGLECALL);
 		}
 	} else {
-		if (call_data && call_data->type != CALLUI_CALL_DATA_TYPE_INCOMING) {
+		if (call_data && call_data->type != CALLUI_CALL_DATA_INCOMING) {
 
 			if (!ad->end_call_data) {
-				ad->end_call_data = calloc(1, sizeof(callui_call_state_data_t));
+				ad->end_call_data = calloc(1, sizeof(callui_call_data_t));
 				CALLUI_RETURN_VALUE_IF_FAIL(ad->end_call_data, CALLUI_RESULT_ALLOCATION_FAIL);
 			}
-			memcpy(ad->end_call_data, call_data, sizeof(callui_call_state_data_t));
+			memcpy(ad->end_call_data, call_data, sizeof(callui_call_data_t));
 
 			if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 				_callui_lock_manager_set_callback_on_unlock(ad->lock_handle, _lock_manager_unlock_cb, ad);
 			} else {
 				_callui_lock_manager_stop(ad->lock_handle);
-				res = __change_view(vm, VIEW_TYPE_ENDCALL);
+				res = __change_view(vm, CALLUI_VIEW_ENDCALL);
 			}
 		} else {
 			_callui_common_exit_app();
@@ -180,40 +183,56 @@ static void __call_state_event_cb(void *user_data,
 	CALLUI_RETURN_IF_FAIL(user_data);
 
 	callui_vm_h vm = user_data;
+	callui_app_data_t *ad = vm->ad;
 
-	if (!(vm->cur_view_type == VIEW_TYPE_ENDCALL && call_event_type == CALLUI_CALL_EVENT_TYPE_END)) {
-		__auto_change_view(vm, event_info);
+	if (vm->cur_view_type == CALLUI_VIEW_ENDCALL) {
+		switch (call_event_type) {
+		case CALLUI_CALL_EVENT_END:
+			dbg("Ignored. Already in end call view.");
+			return;
+		case CALLUI_CALL_EVENT_INCOMING:
+			elm_object_signal_emit(ad->main_ly, "maximize_no_anim", "app_main_ly");
+			break;
+		default:
+			break;
+		}
+		_callui_action_bar_set_disabled_state(ad->action_bar, false);
 	}
+	__auto_change_view(vm, event_info);
 }
 
 static void __end_call_called_cb(void *user_data, unsigned int call_id, callui_call_release_type_e release_type)
 {
 	CALLUI_RETURN_IF_FAIL(user_data);
+	callui_vm_h vm = user_data;
 
-	if (release_type == CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE) {
+	if (release_type == CALLUI_CALL_RELEASE_BY_CALL_HANDLE) {
+		if (vm->cur_view_type == CALLUI_VIEW_MULTICALL_LIST) {
+			vm->check_conf_memeber_count = true;
+		}
 		return;
 	}
-	callui_vm_h vm = user_data;
 
 	callui_app_data_t *ad = vm->ad;
 
-	const callui_call_state_data_t *active =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_ACTIVE);
-	const callui_call_state_data_t *held =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_HELD);
-	const callui_call_state_data_t *incom =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_data_t *active =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
+	const callui_call_data_t *held =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
+	const callui_call_data_t *incom =
+			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 
 	if ((active && !held && !incom && (active->conf_member_count > 1)) ||
 			(held && !active && !incom && (held->conf_member_count > 1))) {
-		vm->is_conf_call_ended = true;
+		vm->conf_call_ended = true;
 	}
 }
 
 static callui_result_e __callui_vm_init(callui_vm_h vm, callui_app_data_t *ad)
 {
-	vm->cur_view_type = VIEW_TYPE_UNDEFINED;
+	vm->cur_view_type = CALLUI_VIEW_UNDEFINED;
 	vm->ad = ad;
+	vm->paused = true;
 
 	callui_result_e res = _callui_stp_add_call_state_event_cb(ad->state_provider, __call_state_event_cb, vm);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
@@ -245,6 +264,7 @@ callui_vm_h _callui_vm_create(callui_app_data_t *ad)
 	if (res != CALLUI_RESULT_OK) {
 		FREE(vm);
 	}
+
 	return vm;
 }
 
@@ -261,7 +281,7 @@ callui_view_type_e _callui_vm_get_cur_view_type(callui_vm_h vm)
 {
 	if (!vm) {
 		err("vm is NULL");
-		return VIEW_TYPE_UNDEFINED;
+		return CALLUI_VIEW_UNDEFINED;
 	}
 	return vm->cur_view_type;
 }
@@ -269,18 +289,21 @@ callui_view_type_e _callui_vm_get_cur_view_type(callui_vm_h vm)
 static callui_result_e __destroy_cur_view(callui_vm_h vm)
 {
 	callui_result_e res = CALLUI_RESULT_FAIL;
-
 	call_view_data_base_t *view = vm->cur_view;
 
-	CALLUI_RETURN_VALUE_IF_FAIL(view, CALLUI_RESULT_FAIL);
-	CALLUI_RETURN_VALUE_IF_FAIL(view->onDestroy, CALLUI_RESULT_FAIL);
+	if (!view) {
+		dbg("Current view is NULL");
+		return CALLUI_RESULT_OK;
+	}
 
-	if (view->onDestroy) {
-		res = view->onDestroy(view);
+	if (view->destroy) {
+		res = view->destroy(view);
+	} else {
+		warn("destroy() is not set! Possible memory leak");
 	}
 
 	vm->cur_view = NULL;
-	vm->cur_view_type = VIEW_TYPE_UNDEFINED;
+	vm->cur_view_type = CALLUI_VIEW_UNDEFINED;
 
 	return res;
 }
@@ -296,25 +319,26 @@ static callui_result_e __create_update_view(callui_vm_h vm, callui_view_type_e t
 		view = __allocate_view(type);
 		CALLUI_RETURN_VALUE_IF_FAIL(view, CALLUI_RESULT_FAIL);
 
-		if (!view->onCreate) {
-			err("Create callback is NULL");
+		if (!view->create) {
+			err("create() is NULL");
 			free(view);
 			return CALLUI_RESULT_FAIL;
 		}
 
-		res = view->onCreate(view, vm->ad);
+		res = view->create(view, vm->ad);
 
 		if (res != CALLUI_RESULT_OK) {
-			err("onCreate callback failed! res[%d]", res);
+			err("create() failed! res[%d]", res);
 			free(view);
 			return CALLUI_RESULT_FAIL;
 		}
 		vm->cur_view = view;
 
 	} else {
-		dbg("Try update view [%d]", type);
-		CALLUI_RETURN_VALUE_IF_FAIL(view->onUpdate, CALLUI_RESULT_OK);
-		view->onUpdate(view);
+		vm->cur_view->update_flags |= CALLUI_UF_DATA_REFRESH;
+		if (!vm->paused) {
+			__update_cur_view(vm);
+		}
 	}
 	return CALLUI_RESULT_OK;
 }
@@ -323,17 +347,16 @@ static callui_result_e __change_view(callui_vm_h vm, callui_view_type_e type)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
 
-	if ((type <= VIEW_TYPE_UNDEFINED) || (type >= VIEW_TYPE_MAX)) {
+	if ((type <= CALLUI_VIEW_UNDEFINED) || (type >= CALLUI_VIEW_COUNT)) {
 		err("Invalid view type [%d]", type);
 		return CALLUI_RESULT_INVALID_PARAM;
 	}
-
 	info("Change view: [%d] -> [%d]", vm->cur_view_type, type);
 
 	callui_result_e res;
 	callui_view_type_e last_view_type = vm->cur_view_type;
 
-	if ((last_view_type != VIEW_TYPE_UNDEFINED) && (last_view_type != type)) {
+	if ((last_view_type != CALLUI_VIEW_UNDEFINED) && (last_view_type != type)) {
 		dbg("destroy [%d]", last_view_type);
 		res = __destroy_cur_view(vm);
 		CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
@@ -344,9 +367,9 @@ static callui_result_e __change_view(callui_vm_h vm, callui_view_type_e type)
 
 	vm->cur_view_type = type;
 
-	if (type == VIEW_TYPE_DIALLING
-			|| type == VIEW_TYPE_INCOMING_CALL
-			|| type == VIEW_TYPE_INCOMING_CALL_NOTI) {
+	if (type == CALLUI_VIEW_DIALLING
+			|| type == CALLUI_VIEW_INCOMING_CALL
+			|| type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
 		elm_win_activate(vm->ad->win);
 	}
 
@@ -359,7 +382,7 @@ callui_result_e _callui_vm_change_view(callui_vm_h vm, callui_view_type_e type)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
 
-	if ((type <= VIEW_TYPE_UNDEFINED) || (type >= VIEW_TYPE_MAX)) {
+	if ((type <= CALLUI_VIEW_UNDEFINED) || (type >= CALLUI_VIEW_COUNT)) {
 		err("Invalid view type [%d]", type);
 		return CALLUI_RESULT_INVALID_PARAM;
 	}
@@ -372,4 +395,62 @@ callui_result_e _callui_vm_auto_change_view(callui_vm_h vm)
 	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
 
 	return __auto_change_view(vm, NULL);
+}
+
+static void __update_cur_view(callui_vm_h vm)
+{
+	call_view_data_base_t *cur_view = vm->cur_view;
+
+	if (cur_view && cur_view->update && cur_view->update_flags) {
+		cur_view->update(vm->cur_view);
+		cur_view->update_flags = 0;
+	}
+}
+
+callui_result_e _callui_vm_pause(callui_vm_h vm)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(!vm->paused, CALLUI_RESULT_FAIL);
+
+	vm->paused = true;
+
+	call_view_data_base_t *cur_view = vm->cur_view;
+
+	if (cur_view && cur_view->pause) {
+		cur_view->pause(vm->cur_view);
+	}
+
+	return CALLUI_RESULT_OK;
+}
+
+callui_result_e _callui_vm_resume(callui_vm_h vm)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(vm->paused, CALLUI_RESULT_FAIL);
+
+	vm->paused = false;
+
+	call_view_data_base_t *cur_view = vm->cur_view;
+	if (cur_view && cur_view->resume) {
+		cur_view->resume(vm->cur_view);
+	}
+	__update_cur_view(vm);
+
+	return CALLUI_RESULT_OK;
+}
+
+callui_result_e _callui_vm_update_language(callui_vm_h vm)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
+
+	call_view_data_base_t *cur_view = vm->cur_view;
+
+	if (cur_view) {
+		cur_view->update_flags |= CALLUI_UF_LANG_CHANGE;
+		if (!vm->paused) {
+			__update_cur_view(vm);
+		}
+	}
+
+	return CALLUI_RESULT_OK;
 }

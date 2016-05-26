@@ -21,19 +21,12 @@
 #include <sys/sysinfo.h>
 #include <time.h>
 #include <contacts.h>
-#include <device/display.h>
-#include <device/power.h>
-#include <dbus/dbus.h>
-#include <gio/gio.h>
 #include <runtime_info.h>
-#include <bluetooth.h>
+#include <network/bluetooth.h>
 #include <system_settings.h>
 #include <efl_util.h>
-#include <app_common.h>
 #include <msg.h>
 #include <msg_transport.h>
-// TODO: needed for functionality of switch window types that currently does not work
-//#include <Ecore_Wayland.h>
 
 #include "callui-common.h"
 #include "callui-debug.h"
@@ -51,31 +44,19 @@
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
 
-#define CONTACT_PKG			"org.tizen.contacts"
-#define PHONE_PKG			"org.tizen.phone"
-#define BLUETOOTH_PKG		"ug-bluetooth-efl"
-#define BUS_NAME			"org.tizen.system.deviced"
-#define OBJECT_PATH			"/Org/Tizen/System/DeviceD"
-#define INTERFACE_NAME		BUS_NAME
+#define BLUETOOTH_PKG	"ug-bluetooth-efl"
+#define CONTACTS_PKG		"org.tizen.contacts"
 
-#define DEVICED_PATH_DISPLAY	OBJECT_PATH"/Display"
-#define DEVICED_INTERFACE_DISPLAY	INTERFACE_NAME".display"
-#define LCD_ON_SIGNAL_NAME "LCDOnByPowerkey"
-#define METHOD_SET_LCDTIMEOUT "setlcdtimeout"
+#define PHONE_TELEPHONE_URI				"tel:"
+#define PHONE_LAUNCH_TYPE_PARAM_NAME	"launch_type"
+#define PHONE_LAUNCH_TYPE_VALUE			"add_call"
+
+#define MESSAGE_SMS_URI					"sms:"
 
 #define TIME_BUF_LEN (16)
-
-#define DBUS_REPLY_TIMEOUT (120 * 1000)
+#define CONTACT_NUMBER_BUF_LEN 32
 
 static bool g_is_headset_connected;
-
-#define CALL_EDJ_NAME		"/edje/call.edj"
-#define CALL_THEME_EDJ_NAME	"/edje/call_theme.edj"
-
-struct dbus_byte {
-	const char *data;
-	int size;
-};
 
 Eina_Bool _callui_common_is_earjack_connected(void)
 {
@@ -162,405 +143,135 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void)
 
 int _callui_common_unlock_swipe_lock(void)
 {
-	vconf_set_int(VCONFKEY_IDLE_LOCK_STATE, VCONFKEY_IDLE_UNLOCK);
+	int res = vconf_set_int(VCONFKEY_IDLE_LOCK_STATE, VCONFKEY_IDLE_UNLOCK);
+	if (res != 0) {
+		err("Set flag IDLE_UNLOCK failed");
+	}
 	return 0;
 }
 
-void _callui_common_win_set_noti_type(void *appdata, int bwin_noti)
+void _callui_common_win_set_noti_type(void *appdata, bool win_noti)
 {
-	dbg("_callui_common_win_set_noti_type");
-	// TODO: commented until functionality of switch window types will be fixed
-//	callui_app_data_t *ad = (callui_app_data_t *)appdata;
-//
-//	Ecore_Wl_Window *win = elm_win_wl_window_get(ad->win);
-//	if (bwin_noti == EINA_FALSE) {
-//		dbg("window type: NORMAL");
-//		/* Set Normal window */
-//		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_TOPLEVEL);
-//	} else {
-//		dbg("window type: NOTI-HIGH");
-//		/* Set Notification window */
-//		ecore_wl_window_type_set(win, ECORE_WL_WINDOW_TYPE_NOTIFICATION);
-//		/* Set Notification's priority to LEVEL_HIGH */
-//		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
-//	}
+	CALLUI_RETURN_IF_FAIL(appdata);
+
+	callui_app_data_t *ad = appdata;
+	if (win_noti) {
+		dbg("window type: NOTIFICATION");
+		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_TOP);
+	} else {
+		dbg("window type: NORMAL");
+		efl_util_set_notification_window_level(ad->win, EFL_UTIL_NOTIFICATION_LEVEL_NONE);
+	}
 }
 
-void _callui_common_launch_contacts(void *appdata)
+static void __reset_visibility_properties(callui_app_data_t *ad)
 {
-	dbg("..");
-	app_control_h service;
-	callui_app_data_t *ad = appdata;
 	_callui_lock_manager_stop(ad->lock_handle);
 	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, EINA_FALSE);
-
-	int ret = app_control_create(&service);
-	if (ret < 0) {
-		err("app_control_create() return error : %d", ret);
-		return;
-	}
-
-	if (app_control_set_app_id(service, CONTACT_PKG)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_app_id() is failed");
-	} else if (app_control_set_operation(service, APP_CONTROL_OPERATION_DEFAULT)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_operation() is failed");
-	} else if (app_control_send_launch_request(service, NULL, NULL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() is failed");
-	}
-
-	app_control_destroy(service);
+	_callui_common_win_set_noti_type(ad, false);
 }
 
-void _callui_common_launch_bt_app(void *appdata)
+void _callui_common_launch_setting_bluetooth(void *appdata)
 {
-	dbg("..");
-	app_control_h service;
+	CALLUI_RETURN_IF_FAIL(appdata);
+
 	callui_app_data_t *ad = appdata;
-	_callui_lock_manager_stop(ad->lock_handle);
-	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, EINA_FALSE);
-
-	int ret = app_control_create(&service);
-	if (ret < 0) {
-		err("app_control_create() return error : %d", ret);
-		return;
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_app_id(app_control, BLUETOOTH_PKG)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_app_id() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_PICK)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
+	} else {
+		__reset_visibility_properties(ad);
 	}
-
-	if (app_control_set_app_id(service, BLUETOOTH_PKG) != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_app_id() is failed");
-	} else if (app_control_set_operation(service, APP_CONTROL_OPERATION_PICK) != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_operation() is failed");
-	} else if (app_control_send_launch_request(service, NULL, NULL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() is failed");
+	if (app_control) {
+		app_control_destroy(app_control);
 	}
-
-	app_control_destroy(service);
 }
 
 void _callui_common_launch_dialer(void *appdata)
 {
-	app_control_h service = NULL;
-	int ret = APP_CONTROL_ERROR_NONE;
-	char *uri = NULL;
+	CALLUI_RETURN_IF_FAIL(appdata);
 
 	callui_app_data_t *ad = appdata;
-	_callui_lock_manager_stop(ad->lock_handle);
-	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, EINA_FALSE);
-
-	ret = app_control_create(&service);
-	if (ret < 0) {
-		err("app_control_create() return error : %d", ret);
-		return;
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_DIAL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_uri(app_control, PHONE_TELEPHONE_URI)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_uri() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_add_extra_data(app_control, PHONE_LAUNCH_TYPE_PARAM_NAME, PHONE_LAUNCH_TYPE_VALUE)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_add_extra_data() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
+	} else {
+		__reset_visibility_properties(ad);
 	}
-
-	uri = (char *)calloc(5, sizeof(char));
-	if (uri == NULL) {
-		err("memory alloc failed");
-		app_control_destroy(service);
-		return;
+	if (app_control){
+		app_control_destroy(app_control);
 	}
-	snprintf(uri, sizeof(char)*5, "%s", "tel:");
+}
 
-	if (app_control_set_app_id(service, PHONE_PKG)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_app_id() is failed");
-	} else if (app_control_set_operation(service, APP_CONTROL_OPERATION_DIAL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_operation() is failed");
-	} else if (app_control_set_uri(service, uri)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_set_uri() is failed");
-	} else if (app_control_add_extra_data(service, "launch_type", "add_call")  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_add_extra_data() is failed");
-	} else if (app_control_send_launch_request(service, NULL, NULL)  != APP_CONTROL_ERROR_NONE) {
-		err("app_control_send_launch_request() is failed");
+void _callui_common_launch_contacts(void *appdata)
+{
+	CALLUI_RETURN_IF_FAIL(appdata);
+
+	callui_app_data_t *ad = appdata;
+
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_app_id(app_control, CONTACTS_PKG)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_app_id() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_DEFAULT)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
+	} else {
+		__reset_visibility_properties(ad);
 	}
-
-	app_control_destroy(service);
-	g_free(uri);
-
-	return;
+	if (app_control) {
+		app_control_destroy(app_control);
+	}
 }
 
 void _callui_common_launch_msg_composer(void *appdata, const char *number)
 {
-	dbg("..");
-
-	app_control_h service;
-	int ret = APP_CONTROL_ERROR_NONE;
+	CALLUI_RETURN_IF_FAIL(appdata);
 
 	callui_app_data_t *ad = appdata;
-	_callui_lock_manager_stop(ad->lock_handle);
-	ad->start_lock_manager_on_resume = true;
 
-	_callui_common_win_set_noti_type(appdata, EINA_FALSE);
+	char str[CONTACT_NUMBER_BUF_LEN];
+	snprintf(str, sizeof(str), "%s%s", MESSAGE_SMS_URI, number);
 
-	ret = app_control_create(&service);
-	if (ret != APP_CONTROL_ERROR_NONE) {
-		warn("app_control_create() return error : %d", ret);
-		return;
-	}
-
-	ret = app_control_set_app_id(service, MSG_PKG);
-	if (ret != APP_CONTROL_ERROR_NONE) {
-		warn("app_control_set_app_id() return error : %d", ret);
-		ret = app_control_destroy(service);
-		return;
-	}
-
-	if (number) {
-		ret = app_control_add_extra_data(service, "type", "compose");
-		if (ret != APP_CONTROL_ERROR_NONE) {
-			warn("app_control_add_extra_data() return error : %d", ret);
-			ret = app_control_destroy(service);
-			return;
-		}
-
-		if (strlen(number) > 0) {
-			const char *array[] = { number };
-			ret = app_control_add_extra_data_array(service, APP_CONTROL_DATA_TO, array, 1);
-			if (ret != APP_CONTROL_ERROR_NONE) {
-				warn("app_control_add_extra_data() return error : %d", ret);
-				ret = app_control_destroy(service);
-				return;
-			}
-		}
-	}
-
-	ret = app_control_send_launch_request(service, NULL, NULL);
-	if (ret != APP_CONTROL_ERROR_NONE) {
-		warn("app_control_send_launch_request() is failed : %d", ret);
-	}
-
-	app_control_destroy(service);
-}
-
-/* LCD api */
-void _callui_common_dvc_control_lcd_state(callui_lcd_control_t state)
-{
-	dbg("[%d]", state);
-	int result = -1;
-	switch (state) {
-	case LCD_ON:
-		result = device_display_change_state(DISPLAY_STATE_NORMAL);
-		break;
-
-	case LCD_ON_LOCK:
-		result = device_display_change_state(DISPLAY_STATE_NORMAL);
-		result = device_power_request_lock(POWER_LOCK_DISPLAY, 0);
-		break;
-
-	case LCD_ON_UNLOCK:
-		result = device_display_change_state(DISPLAY_STATE_NORMAL);
-		result = device_power_release_lock(POWER_LOCK_DISPLAY);
-		result = device_power_release_lock(POWER_LOCK_CPU);
-		break;
-
-	case LCD_UNLOCK:
-		result = device_power_release_lock(POWER_LOCK_DISPLAY);
-		result = device_power_release_lock(POWER_LOCK_CPU);
-		break;
-
-	case LCD_OFF_SLEEP_LOCK:
-		result = device_power_request_lock(POWER_LOCK_CPU, 0);
-		break;
-
-	case LCD_OFF_SLEEP_UNLOCK:
-		result = device_power_release_lock(POWER_LOCK_CPU);
-		break;
-
-	case LCD_OFF:
-		result = device_display_change_state(DISPLAY_STATE_SCREEN_OFF);
-		break;
-
-	default:
-		break;
-	}
-	if (result != DEVICE_ERROR_NONE)
-		warn("error during change lcd state");
-}
-
-callui_lcd_control_t _callui_common_get_lcd_state()
-{
-	display_state_e state = DISPLAY_STATE_NORMAL;
-	int result = device_display_get_state(&state);
-	if (result != DEVICE_ERROR_NONE) {
-		warn("error during get lcd state");
-	}
-	switch (state) {
-		case DISPLAY_STATE_SCREEN_OFF:
-			return LCD_OFF;
-		case DISPLAY_STATE_NORMAL:
-		case DISPLAY_STATE_SCREEN_DIM:
-		default:
-			return LCD_ON;
-	}
-}
-
-#ifdef _DBUS_DVC_LSD_TIMEOUT_
-
-static int __callui_common_dvc_append_variant(DBusMessageIter *iter, const char *sig, char *param[])
-{
-	char *ch = NULL;
-	int i;
-	int int_type;
-	uint64_t int64_type;
-	DBusMessageIter arr;
-	struct dbus_byte *byte;
-
-	if (!sig || !param)
-		return 0;
-
-	for (ch = (char *)sig, i = 0; *ch != '\0'; ++i, ++ch) {
-		switch (*ch) {
-			case 'i':
-				int_type = atoi(param[i]);
-				dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &int_type);
-				break;
-			case 'u':
-				int_type = strtoul(param[i], NULL, 10);
-				dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT32, &int_type);
-				break;
-			case 't':
-				int64_type = atoll(param[i]);
-				dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT64, &int64_type);
-				break;
-			case 's':
-				dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &param[i]);
-				break;
-			case 'a':
-				if ((ch+1 != NULL) && (*(ch+1) == 'y')) {
-					dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &arr);
-					byte = (struct dbus_byte *)param[i];
-					dbus_message_iter_append_fixed_array(&arr, DBUS_TYPE_BYTE, &(byte->data), byte->size);
-					dbus_message_iter_close_container(iter, &arr);
-					ch++;
-				}
-				break;
-			default:
-				return -EINVAL;
-		}
-	}
-	return 0;
-}
-
-static void __callui_common_dvc_dbus_reply_cb(DBusPendingCall *call, gpointer user_data)
-{
-	//TODO DBus is not supported. Need to move on kdbus or gdbus
-
-	DBusMessage *reply;
-	DBusError derr;
-
-	reply = dbus_pending_call_steal_reply(call);
-	dbus_error_init(&derr);
-
-	if (dbus_set_error_from_message(&derr, reply)) {
-		err("__callui_common_dvc_dbus_reply_cb error: %s, %s",
-			derr.name, derr.message);
-		dbus_error_free(&derr);
-		goto done;
-	}
-	dbus_pending_call_unref(call);
-done:
-	dbg("__callui_common_dvc_dbus_reply_cb : -");
-	dbus_message_unref(reply);
-}
-
-gboolean __callui_common_dvc_invoke_dbus_method_async(const char *dest,
-		const char *path,
-		const char *interface,
-		const char *method, const char *sig, char *param[])
-{
-	// TODO DBus is not supported. Need to move on kdbus or gdbus
-
-	DBusConnection *conn = NULL;
-	DBusMessage *msg = NULL;
-	DBusMessageIter iter;
-	DBusPendingCall *c = NULL;
-	dbus_bool_t ret = FALSE;
-	int r = -1;
-	conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
-	if (!conn) {
-		err("dbus bus get error");
-		return FALSE;
-	}
-
-	msg = dbus_message_new_method_call(dest, path, interface, method);
-	if (!msg) {
-		err("dbus_message_new_method_call(%s:%s-%s",
-				path, interface, method);
-		return FALSE;
-	}
-	dbus_message_iter_init_append(msg, &iter);
-	r = __callui_common_dvc_append_variant(&iter, sig, param);
-	if (r < 0) {
-		err("append_variant error : %d", r);
-		goto EXIT;
-	}
-
-	ret = dbus_connection_send_with_reply(conn, msg, &c, DBUS_REPLY_TIMEOUT);
-	if (!ret) {
-		err("dbus_connection_send_ error (False returned)");
-	}
-	dbus_pending_call_set_notify(c, __callui_common_dvc_dbus_reply_cb,	NULL, NULL);
-
-EXIT:
-	dbus_message_unref(msg);
-
-	return ret;
-	return true;
-}
-
-void _callui_common_dvc_set_lcd_timeout(callui_lcd_timeout_t state)
-{
-	int powerkey_mode = 0;
-	char str_on[32];
-	char str_dim[32];
-	char str_holdkey[2];
-	char *ar[3];
-	int ret = vconf_get_bool(VCONFKEY_CISSAPPL_POWER_KEY_ENDS_CALL_BOOL, &powerkey_mode);
-	if (ret < 0) {
-		err("vconf_get_int failed..[%d]\n", ret);
-	}
-
-	dbg("set timeout : %d, powerkeymode : %d", state, powerkey_mode);
-	if (state == LCD_TIMEOUT_SET) {
-		snprintf(str_on, sizeof(str_on), "%d", 10);
-		snprintf(str_dim, sizeof(str_dim), "%d", 20);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", powerkey_mode);
-	} else if (state == LCD_TIMEOUT_UNSET) {
-		snprintf(str_on, sizeof(str_on), "%d", 0);
-		snprintf(str_dim, sizeof(str_dim), "%d", 0);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", powerkey_mode);
-	} else if (state == LCD_TIMEOUT_LOCKSCREEN_SET) { /*After lock-screen comes in Connected state LCD goes to OFF in 5 secs*/
-		snprintf(str_on, sizeof(str_on), "%d", 5);
-		snprintf(str_dim, sizeof(str_dim), "%d", 0);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", powerkey_mode);
-	} else if (state == LCD_TIMEOUT_KEYPAD_SET) {
-		snprintf(str_on, sizeof(str_on), "%d", 3);
-		snprintf(str_dim, sizeof(str_dim), "%d", 5);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", powerkey_mode);
+	app_control_h app_control = NULL;
+	int ret;
+	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_create() failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_COMPOSE)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_operation() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_set_uri(app_control, str)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_set_uri() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	} else {
-		snprintf(str_on, sizeof(str_on), "%d", 0);
-		snprintf(str_dim, sizeof(str_dim), "%d", 0);
-		snprintf(str_holdkey, sizeof(str_holdkey), "%d", 0);
+		__reset_visibility_properties(ad);
 	}
-
-	dbg("on(%s), dim(%s), hold(%s)", str_on, str_dim, str_holdkey);
-
-	ar[0] = str_on;
-	ar[1] = str_dim;
-	ar[2] = str_holdkey;
-
-	__callui_common_dvc_invoke_dbus_method_async(BUS_NAME,
-				DEVICED_PATH_DISPLAY,
-				DEVICED_INTERFACE_DISPLAY,
-				METHOD_SET_LCDTIMEOUT, "iii", ar);
+	if (app_control) {
+		app_control_destroy(app_control);
+	}
 }
-
-#endif
 
 void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
 {
@@ -568,13 +279,13 @@ void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
 	CALLUI_RETURN_IF_FAIL(contents);
 	Evas_Object *caller_info = NULL;
 
-	edje_object_part_text_set(_EDJ(contents), "call_txt_status", "");
-	edje_object_part_text_set(_EDJ(contents), "txt_timer", "");
+	elm_object_part_text_set(contents, "call_txt_status", "");
+	elm_object_part_text_set(contents, "txt_timer", "");
 
 	caller_info = elm_object_part_content_get(contents, "caller_info");
 	if (caller_info) {
-		edje_object_part_text_set(_EDJ(caller_info), "txt_call_name", "");
-		edje_object_part_text_set(_EDJ(caller_info), "txt_phone_num", "");
+		elm_object_part_text_set(caller_info, "contact_name", "");
+		elm_object_part_text_set(caller_info, "phone_number", "");
 	}
 }
 
@@ -631,9 +342,9 @@ static void __callui_common_lock_state_cb (system_settings_key_e key, void *user
 {
 	callui_app_data_t *ad = _callui_get_app_data();
 	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK) {
-		_callui_common_win_set_noti_type(ad, EINA_FALSE);
+		_callui_common_win_set_noti_type(ad, false);
 	} else {
-		_callui_common_win_set_noti_type(ad, EINA_TRUE);
+		_callui_common_win_set_noti_type(ad, true);
 	}
 }
 
@@ -797,7 +508,7 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 	int res = CALLUI_RESULT_FAIL;
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 
-	const callui_call_state_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_TYPE_INCOMING);
+	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 
 	CALLUI_RETURN_VALUE_IF_FAIL(incom, CALLUI_RESULT_FAIL);
 
@@ -833,7 +544,7 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 	msg_set_int_value(msgInfo, MSG_MESSAGE_SIM_INDEX_INT, slot_id);
 
 	/* No setting send option */
-	msg_set_bool_value(sendOpt, MSG_SEND_OPT_SETTING_BOOL, FALSE);
+	msg_set_bool_value(sendOpt, MSG_SEND_OPT_SETTING_BOOL, false);
 
 	/* Set message body */
 	if (msg_set_str_value(msgInfo, MSG_MESSAGE_SMS_DATA_STR, reject_msg, strlen(reject_msg)) != MSG_SUCCESS) {
@@ -894,7 +605,7 @@ void _callui_common_set_call_duration_time(struct tm *cur_time,
 	CALLUI_RETURN_IF_FAIL(part);
 
 	char *tmp = _callui_common_get_time_string(cur_time);
-	elm_object_part_text_set(obj, part, _(tmp));
+	elm_object_part_text_set(obj, part, tmp);
 	free(tmp);
 }
 
@@ -946,15 +657,4 @@ struct tm *_callui_common_get_current_time_diff_in_tm(long time)
 	gmtime_r((const time_t *)&call_time, time_tm);
 
 	return time_tm;
-}
-
-void _callui_common_eo_txt_part_set_translatable_text(Evas_Object *obj,
-		const char *part,
-		const char *ids_string)
-{
-	CALLUI_RETURN_IF_FAIL(obj);
-	CALLUI_RETURN_IF_FAIL(part);
-	CALLUI_RETURN_IF_FAIL(ids_string);
-
-	elm_object_domain_translatable_part_text_set(obj, part, CALLUI_TEXT_DOMAIN, ids_string);
 }

@@ -23,19 +23,28 @@
 #include "callui-common-types.h"
 
 typedef enum {
-	CALLUI_CALL_ANSWER_TYPE_NORMAL = 0,					/**< Only single call exist, Accept the Incoming call*/
-	CALLUI_CALL_ANSWER_TYPE_HOLD_ACTIVE_AND_ACCEPT,		/**< Put the active call on hold and accepts the call*/
-	CALLUI_CALL_ANSWER_TYPE_RELEASE_ACTIVE_AND_ACCEPT,	/**< Releases the active call and accept the call*/
-	CALLUI_CALL_ANSWER_TYPE_RELEASE_HOLD_AND_ACCEPT,	/**< Releases the held call and accept the call*/
-	CALLUI_CALL_ANSWER_TYPE_RELEASE_ALL_AND_ACCEPT		/**< Releases all calls and accept the call*/
+	CALLUI_CALL_ANSWER_NORMAL = 0,					/**< Only single call exist, Accept the Incoming call */
+	CALLUI_CALL_ANSWER_HOLD_ACTIVE_AND_ACCEPT,		/**< Put the active call on hold and accepts the call */
+	CALLUI_CALL_ANSWER_RELEASE_ACTIVE_AND_ACCEPT,	/**< Releases the active call and accept the call */
+	CALLUI_CALL_ANSWER_RELEASE_HOLD_AND_ACCEPT,		/**< Releases the held call and accept the call */
+	CALLUI_CALL_ANSWER_RELEASE_ALL_AND_ACCEPT		/**< Releases all calls and accept the call */
 } callui_call_answer_type_e;
 
 typedef enum {
-	CALLUI_CALL_RELEASE_TYPE_BY_CALL_HANDLE = 0,	/**< Release call using given call_handle*/
-	CALLUI_CALL_RELEASE_TYPE_ALL_CALLS,				/**< Release all Calls*/
-	CALLUI_CALL_RELEASE_TYPE_ALL_HOLD_CALLS,		/**< Releases all hold calls*/
-	CALLUI_CALL_RELEASE_TYPE_ALL_ACTIVE_CALLS,		/**< Releases all active calls*/
+	CALLUI_CALL_RELEASE_BY_CALL_HANDLE = 0,	/**< Release call using given call_handle */
+	CALLUI_CALL_RELEASE_ALL,				/**< Release all calls */
+	CALLUI_CALL_RELEASE_ALL_HOLD,			/**< Release all hold calls */
+	CALLUI_CALL_RELEASE_ALL_ACTIVE,			/**< Release all active calls */
 } callui_call_release_type_e;
+
+typedef enum {
+	CALLUI_DIAL_SUCCESS = 0,
+	CALLUI_DIAL_CANCEL,
+	CALLUI_DIAL_FAIL,
+	CALLUI_DIAL_FAIL_SS,
+	CALLUI_DIAL_FAIL_FDN,
+	CALLUI_DIAL_FAIL_FLIGHT_MODE,
+} callui_dial_status_e;
 
 typedef enum {
 	CALLUI_SIM_SLOT_1 = 0,
@@ -54,14 +63,18 @@ typedef struct __callui_sound_manager *callui_sound_manager_h;
 typedef void (*callui_end_call_called_cb)(void *user_data,
 		unsigned int call_id,
 		callui_call_release_type_e release_type);
+typedef void (*callui_dial_status_cb)(void *user_data, callui_dial_status_e dial_status);
+
 
 callui_manager_h _callui_manager_create();
 
 void _callui_manager_destroy(callui_manager_h cm_handler);
 
-callui_result_e _callui_manager_dial_voice_call(callui_manager_h cm_handler, const char *number, callui_sim_slot_type_e sim_slot);
+callui_result_e _callui_manager_dial_voice_call(callui_manager_h cm_handler,
+		const char *number, callui_sim_slot_type_e sim_slot);
 
-callui_result_e _callui_manager_end_call(callui_manager_h cm_handler, unsigned int call_id, callui_call_release_type_e release_type);
+callui_result_e _callui_manager_end_call(callui_manager_h cm_handler,
+		unsigned int call_id, callui_call_release_type_e release_type);
 
 callui_result_e _callui_manager_swap_call(callui_manager_h cm_handler);
 
@@ -88,5 +101,11 @@ callui_result_e _callui_manager_add_end_call_called_cb(callui_manager_h cm_handl
 
 callui_result_e _callui_manager_remove_end_call_called_cb(callui_manager_h cm_handler,
 		callui_end_call_called_cb cb_func, void *cb_data);
+
+callui_result_e _callui_manager_add_dial_status_cb(callui_manager_h cm_handler,
+		callui_dial_status_cb cb_func, void *cb_data);
+
+callui_result_e _callui_manager_remove_dial_status_cb(callui_manager_h cm_handler,
+		callui_dial_status_cb cb_func, void *cb_data);
 
 #endif /* __CALLUI_CALL_MANAGER_H__ */
