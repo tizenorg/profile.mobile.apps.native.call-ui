@@ -162,8 +162,6 @@ static Eina_Bool __call_duration_timer_cb(void* data)
 static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
-	const char *file_path = NULL;
-
 	Eina_Bool is_held = EINA_FALSE;
 
 	const callui_call_data_t *call_data = _callui_stp_get_call_data(ad->state_provider,
@@ -176,16 +174,6 @@ static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 
 	DELETE_ECORE_TIMER(vd->base_view.call_duration_timer);
 	FREE(vd->base_view.call_duration_tm);
-
-	file_path = call_data->call_ct_info.caller_id_path;
-
-	if (call_data->is_emergency) {
-		elm_object_signal_emit(vd->caller_info, "set_emergency_mode", "");
-	} else {
-		if (strcmp(file_path, "default") != 0) {
-			_callui_show_caller_id(vd->caller_info, file_path);
-		}
-	}
 
 	if (is_held) {
 		_callui_show_caller_info_status(ad, "IDS_CALL_BODY_ON_HOLD_ABB");
@@ -207,7 +195,6 @@ static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 	} else {
 		disp_number = call_data->call_num;
 	}
-
 	if (call_data->is_emergency) {
 		call_name = _("IDS_COM_BODY_EMERGENCY_NUMBER");
 		disp_number = "";
@@ -224,6 +211,8 @@ static callui_result_e __update_displayed_data(call_view_single_call_h vd)
 		_callui_show_caller_info_number(ad, disp_number);
 		elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
 	}
+
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, call_data), CALLUI_RESULT_FAIL);
 
 	elm_object_signal_emit(vd->base_view.contents, "SHOW_EFFECT", "ALLBTN");
 

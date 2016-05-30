@@ -87,7 +87,6 @@ static void __reject_msg_bg_mouse_down_cb(void *data, Evas *evas, Evas_Object *o
 static void __reject_msg_bg_mouse_move_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 
 static void __reject_msg_list_height_update(callui_view_incoming_call_h vd);
-static Eina_Bool __reject_msg_check_tel_num(const char *call_num);
 
 static void __create_reject_msg_genlist(callui_view_incoming_call_h vd);
 
@@ -694,12 +693,6 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 		DELETE_EVAS_OBJECT(ad->second_call_popup);
 	}
 
-	const char *file_path = incom->call_ct_info.caller_id_path;
-
-	if (strcmp(file_path, "default") != 0) {
-		_callui_show_caller_id(vd->caller_info, file_path);
-	}
-
 	const char *call_name = incom->call_ct_info.call_disp_name;
 	const char *call_number = NULL;
 	if (incom->call_disp_num[0] != '\0') {
@@ -707,16 +700,23 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 	} else {
 		call_number = incom->call_num;
 	}
-	if (strlen(call_name) == 0) {
-		_callui_show_caller_info_name(ad, call_number);
+
+	if (STRING_EMPTY(call_name)) {
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
+		if (STRING_EMPTY(call_number)) {
+			_callui_show_caller_info_name(ad, "IDS_CALL_BODY_UNKNOWN");
+		} else {
+			_callui_show_caller_info_name(ad, call_number);
+		}
 	} else {
+		elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
 		_callui_show_caller_info_name(ad, call_name);
 		_callui_show_caller_info_number(ad, call_number);
-		elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
 	}
 
-	if (!__reject_msg_check_tel_num(call_number)) {
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, incom), CALLUI_RESULT_FAIL);
+
+	if (STRING_EMPTY(call_number)) {
 		__destroy_reject_msg_layout(vd);
 	} else {
 		__create_reject_msg_genlist(vd);
@@ -725,18 +725,6 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 	evas_object_show(vd->base_view.contents);
 
 	return CALLUI_RESULT_OK;
-}
-
-static Eina_Bool __reject_msg_check_tel_num(const char *call_num)
-{
-	CALLUI_RETURN_VALUE_IF_FAIL(call_num, EINA_FALSE);
-
-	if (strlen(call_num) <= 0) {
-		info("Invalid number");
-		return EINA_FALSE;
-	}
-
-	return EINA_TRUE;
 }
 
 static void __destroy_reject_msg_layout(callui_view_incoming_call_h vd)

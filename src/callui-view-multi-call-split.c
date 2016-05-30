@@ -213,33 +213,33 @@ static void __update_hold_active_layout(Evas_Object *layout, const callui_call_d
 	} else {
 		__fill_conference_layout(layout, call_data);
 	}
+
+	_callui_show_caller_id(layout, call_data);
 }
 
 static void __fill_one_contact_layout(Evas_Object *parent, const callui_call_data_t *call_data)
 {
-	const char *pic_path = call_data->call_ct_info.caller_id_path;
 	const char *main_text = call_data->call_ct_info.call_disp_name;
 	const char *sub_text = call_data->call_num;
 
-	Evas_Object *thumbnail = _callui_create_thumbnail(parent, pic_path, THUMBNAIL_138);
-	elm_object_part_content_set(parent, PART_SWALLOW_CALLER_ID, thumbnail);
-
-	if (main_text && *main_text) {
+	if (call_data->is_emergency) {
+		elm_object_translatable_part_text_set(parent, PART_TEXT_MAIN, "IDS_COM_BODY_EMERGENCY_NUMBER");
+		elm_object_part_text_set(parent, PART_TEXT_SUB, "");
+	} else if (!STRING_EMPTY(main_text)) {
 		elm_object_part_text_set(parent, PART_TEXT_MAIN, main_text);
 		elm_object_part_text_set(parent, PART_TEXT_SUB, sub_text);
-	} else {
+	} else if (!STRING_EMPTY(sub_text)) {
 		elm_object_part_text_set(parent, PART_TEXT_MAIN, sub_text);
+		elm_object_part_text_set(parent, PART_TEXT_SUB, "");
+	} else {
+		elm_object_translatable_part_text_set(parent, PART_TEXT_MAIN, "IDS_CALL_BODY_UNKNOWN");
 		elm_object_part_text_set(parent, PART_TEXT_SUB, "");
 	}
 }
 
 static void __fill_conference_layout(Evas_Object *parent, const callui_call_data_t *call_data)
 {
-	Evas_Object *thumbnail = _callui_create_thumbnail(parent, NULL, CONFERENCE_THUMBNAIL_138);
-	elm_object_part_content_set(parent, PART_SWALLOW_CALLER_ID, thumbnail);
-
-	elm_object_translatable_part_text_set(parent,
-			PART_TEXT_MAIN, "IDS_CALL_BODY_CONFERENCE");
+	elm_object_translatable_part_text_set(parent, PART_TEXT_MAIN, "IDS_CALL_BODY_CONFERENCE");
 
 	char buffer[BUF_SIZE] = { 0 };
 	const char *fmt = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");

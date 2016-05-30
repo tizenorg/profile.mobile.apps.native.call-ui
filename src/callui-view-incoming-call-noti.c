@@ -443,13 +443,11 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 	} else {
 		call_number = call_data->call_num;
 	}
-	const char *file_path = call_data->call_ct_info.caller_id_path;
 
-	if (!(call_name && call_name[0] != '\0') && !(call_number && call_number[0] != '\0')) {
+	if (STRING_EMPTY(call_name) && STRING_EMPTY(call_number)) {
 		elm_object_signal_emit(vd->base_view.contents, "big_buttons", "main_active_noti_call");
-		elm_object_translatable_part_text_set(vd->base_view.contents,
-				"text.contact_name", "IDS_CALL_BODY_UNKNOWN");
-	} else if (!(call_name && call_name[0] != '\0')) {
+		elm_object_translatable_part_text_set(vd->base_view.contents, "text.contact_name", "IDS_CALL_BODY_UNKNOWN");
+	} else if (STRING_EMPTY(call_name)) {
 		elm_object_signal_emit(vd->base_view.contents, "small_buttons", "main_active_noti_call");
 		elm_object_part_text_set(vd->base_view.contents, "text.contact_name", call_number);
 	} else {
@@ -458,13 +456,7 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_noti_h 
 		elm_object_part_text_set(vd->base_view.contents, "text.contact_number", call_number);
 	}
 
-	if (strcmp(file_path, "default") != 0) {
-		Evas_Object *layout = _callui_create_thumbnail(vd->base_view.contents, file_path, THUMBNAIL_98);
-		elm_object_part_content_set(vd->base_view.contents, "contact_icon", layout);
-		elm_object_signal_emit(vd->base_view.contents, "hide_def_caller_id", "main_active_noti_call");
-	} else {
-		elm_object_signal_emit(vd->base_view.contents, "show_def_caller_id", "main_active_noti_call");
-	}
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->base_view.contents, call_data), CALLUI_RESULT_FAIL);
 
 	evas_object_show(vd->base_view.contents);
 

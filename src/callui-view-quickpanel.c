@@ -321,9 +321,8 @@ static void __update_caller_info(Evas_Object *eo, const callui_call_data_t *call
 	CALLUI_RETURN_IF_FAIL(call_data);
 
 	const char *call_name = call_data->call_ct_info.call_disp_name;
-	const char *file_path = call_data->call_ct_info.caller_id_path;
-
 	const char *call_number = NULL;
+
 	if (strlen(call_data->call_disp_num) > 0) {
 		call_number = call_data->call_disp_num;
 	} else {
@@ -348,11 +347,7 @@ static void __update_caller_info(Evas_Object *eo, const callui_call_data_t *call
 		}
 	}
 
-	if (strcmp(file_path, "default") != 0) {
-		_callui_show_caller_id(eo, file_path);
-	} else {
-		elm_object_signal_emit(eo, "show_image", "");
-	}
+	CALLUI_RETURN_IF_FAIL(_callui_show_caller_id(eo, call_data));
 }
 
 static void __update_comp_status(callui_qp_mc_h qp,

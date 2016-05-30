@@ -180,56 +180,12 @@ group{
 				align: 0.0 0.0;
 			}
 		)
-		CU_PART_SWALLOW( "contact_icon",
+		CU_PART_SWALLOW( "swallow.caller_id",
 			description { state: "default" 0.0;
 				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
 				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
 				aspect: 1 1;
 				aspect_preference: VERTICAL;
-			}
-		)
-		CU_PART_IMAGE( "contact_icon_bg",
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
-				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
-				image.normal: IMG_SRC_DIR/"call_photo_id_bg.png";
-				aspect_preference: SOURCE;
-			}
-			description { state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-			description { state: "emergency" 0.0;
-				inherit: "default" 0.0;
-				color_class: "AO036";
-			}
-		)
-		CU_PART_IMAGE( "contact_icon_def",
-			description { state: "default" 0.0;
-				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
-				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
-				image.normal: IMG_SRC_DIR/"call_photo_id.png";
-				aspect_preference: SOURCE;
-				color_class: "AO003L2";
-			}
-			description { state: "emergency" 0.0;
-				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
-				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
-				image.normal: IMG_SRC_DIR/"call_photo_id_emergency.png";
-				aspect_preference: SOURCE;
-				//color: 255 255 255 255;
-			}
-			description { state: "conference" 0.0;
-				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
-				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
-				image.normal: IMG_SRC_DIR/"call_photo_id_conference.png";
-				aspect_preference: SOURCE;
-				color_class: "AO003L2";
-			}
-			description { state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
 			}
 		)
 		CU_PART_SWALLOW( "manage_calls_btn",
@@ -342,34 +298,6 @@ group{
 			script {
 				public show_ec_add_cont_btn;
 				public cont_info_2line;
-			}
-			program { name: "show_emergency_icon";
-				signal: "set_emergency_mode";
-				source: "";
-				action: STATE_SET "emergency" 0.0;
-				target: "contact_icon_bg";
-				target: "contact_icon_def";
-			}
-			program { name: "show_conference_icon";
-				signal: "set_conference_mode";
-				source: "";
-				action: STATE_SET "conference" 0.0;
-				target: "contact_icon_def";
-				after: "caller_name_2line";
-			}
-			program { name: "hide_default_cid";
-				signal: "hide_default_cid";
-				source: "";
-				action: STATE_SET "hide" 0.0;
-				target: "contact_icon_bg";
-				target: "contact_icon_def";
-			}
-			program { name: "show_default_cid";
-				signal: "show_default_cid";
-				source: "";
-				action: STATE_SET "default" 0.0;
-				target: "contact_icon_bg";
-				target: "contact_icon_def";
 			}
 			program { name: "caller_name_1line";
 				signal: "1line";

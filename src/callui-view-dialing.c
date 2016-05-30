@@ -146,21 +146,19 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
-	const callui_call_data_t *now_call_data = _callui_stp_get_call_data(ad->state_provider,
+	const callui_call_data_t *active = _callui_stp_get_call_data(ad->state_provider,
 			CALLUI_CALL_DATA_ACTIVE);
-	CALLUI_RETURN_VALUE_IF_FAIL(now_call_data, CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(active, CALLUI_RESULT_FAIL);
 
-	const char *file_path = now_call_data->call_ct_info.caller_id_path;
-	const char *call_name = now_call_data->call_ct_info.call_disp_name;
+	const char *call_name = active->call_ct_info.call_disp_name;
 	const char *disp_number = NULL;
 
-	if (strlen(now_call_data->call_disp_num) > 0) {
-		disp_number = now_call_data->call_disp_num;
+	if (strlen(active->call_disp_num) > 0) {
+		disp_number = active->call_disp_num;
 	} else {
-		disp_number = now_call_data->call_num;
+		disp_number = active->call_num;
 	}
-
-	if (now_call_data->is_emergency) {
+	if (active->is_emergency) {
 		call_name = "IDS_COM_BODY_EMERGENCY_NUMBER";
 		disp_number = "";
 	}
@@ -168,7 +166,7 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 	if (strlen(call_name) == 0) {
 		_callui_show_caller_info_name(ad, disp_number);
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
-	} else if (now_call_data->is_emergency) {
+	} else if (active->is_emergency) {
 		_callui_show_caller_info_name(ad, call_name);
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
 	} else {
@@ -177,15 +175,9 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 		elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
 	}
 
-	_callui_show_caller_info_status(ad, "IDS_CALL_POP_DIALLING");
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, active), CALLUI_RESULT_FAIL);
 
-	if (now_call_data->is_emergency) {
-		elm_object_signal_emit(vd->caller_info, "set_emergency_mode", "");
-	} else {
-		if (strcmp(file_path, "default") != 0) {
-			_callui_show_caller_id(vd->caller_info, file_path);
-		}
-	}
+	_callui_show_caller_info_status(ad, "IDS_CALL_POP_DIALLING");
 
 	elm_object_signal_emit(vd->base_view.contents, "SHOW_EFFECT", "ALLBTN");
 

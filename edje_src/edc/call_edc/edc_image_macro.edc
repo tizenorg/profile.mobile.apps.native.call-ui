@@ -47,66 +47,10 @@
       } \
    }
 
-#define RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE( GROUP_NAME, IMAGE_PATH, BG_IMAGE_PATH, COLOR_CODE, BG_COLOR_CODE ) \
-	group { \
-		name: GROUP_NAME; \
-		images.image: BG_IMAGE_PATH COMP; \
-		images.image: IMAGE_PATH COMP; \
-		parts { \
-			part { \
-				name: "image_bg"; \
-				description { \
-					state: "default" 0.0; \
-					image.normal: BG_IMAGE_PATH; \
-					color_class: BG_COLOR_CODE; \
-					aspect: 1 1; \
-					aspect_preference: SOURCE; \
-				} \
-			} \
-		} \
-		parts { \
-			part { \
-				name: "image"; \
-				description { \
-					state: "default" 0.0; \
-					image.normal: IMAGE_PATH; \
-					color_class: COLOR_CODE; \
-					aspect: 1 1; \
-					aspect_preference: SOURCE; \
-				} \
-			} \
-		} \
-	}
-
-#define RESOURCE_IMAGE_WITH_MASK(GROUP_NAME, MASK_PATH, SWALLOW_PART_NAME) \
-	group { \
-		name: GROUP_NAME; \
-		images.image: MASK_PATH COMP; \
-		parts { \
-			part { name: "mask"; \
-				type: IMAGE; \
-				precise_is_inside: 1; \
-				description { \
-					state: "default" 0.0; \
-					image.normal: MASK_PATH; \
-					aspect: 1.0 1.0; \
-					aspect_preference: SOURCE; \
-				} \
-			} \
-			part { name: SWALLOW_PART_NAME; \
-				type: SWALLOW; \
-				clip_to: "mask"; \
-				description { \
-					state: "default" 0.0; \
-				} \
-			} \
-		} \
-	}
-
 #define REL_PAD_LT(size, bg_size) ((bg_size-size)/2/bg_size)
 #define REL_PAD_RB(size, bg_size) (1 - REL_PAD_LT(size, bg_size))
 
-#define RESOURCE_IMAGE_WITH_BG_AND_TOUCH( GROUP_NAME, IMAGE_PATH, BG_IMAGE_PATH, IMAGE_SIZE, BG_IMAGE_SIZE, COLOR_CODE, BG_COLOR_CODE, BG_COLOR_CODE_P ) \
+#define RES_IMG_WITH_BG_AND_TOUCH( GROUP_NAME, IMAGE_PATH, BG_IMAGE_PATH, IMAGE_SIZE, BG_IMAGE_SIZE, COLOR_CODE, BG_COLOR_CODE, BG_COLOR_CODE_P ) \
 	group { \
 	name: GROUP_NAME; \
 	images.image: BG_IMAGE_PATH COMP; \

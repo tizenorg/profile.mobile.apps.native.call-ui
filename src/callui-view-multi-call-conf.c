@@ -206,14 +206,13 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 		CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_timer, CALLUI_RESULT_ALLOCATION_FAIL);
 	}
 
-	elm_object_signal_emit(vd->caller_info, "set_conference_mode", "");
 	_callui_show_caller_info_name(ad, "IDS_CALL_BODY_CONFERENCE");
 
 	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
 	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->conf_member_count);
 	_callui_show_caller_info_number(ad, buf);
 
-	elm_object_signal_emit(vd->base_view.contents, "SHOW_NO_EFFECT", "ALLBTN");
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, call_data), CALLUI_RESULT_FAIL);
 
 	evas_object_show(vd->base_view.contents);
 

@@ -236,7 +236,7 @@ static callui_result_e __create_single_contact_info(callui_view_callend_h vd, co
 {
 	const char *call_name = call_data->call_ct_info.call_disp_name;
 
-	if (!(call_name && call_name[0] != '\0')) {
+	if (STRING_EMPTY(call_name)) {
 		Evas_Object *add_contact_btn = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_ENDCALL_ADD_CONTACT_BTN);
 		CALLUI_RETURN_VALUE_IF_FAIL(add_contact_btn,  CALLUI_RESULT_ALLOCATION_FAIL);
 		evas_object_event_callback_add(add_contact_btn, EVAS_CALLBACK_MOUSE_UP, __add_contact_btn_click_cb, vd);
@@ -307,31 +307,21 @@ static callui_result_e __create_reply_btns_panel(callui_view_callend_h vd)
 
 static callui_result_e __set_single_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
-	const char *file_path = call_data->call_ct_info.caller_id_path;
 	const char *call_name = call_data->call_ct_info.call_disp_name;
 	const char *call_number = NULL;
 
-	if (call_data->call_disp_num[0] != '\0') {
+	if (!STRING_EMPTY(call_data->call_disp_num)) {
 		call_number = call_data->call_disp_num;
 	} else {
 		call_number = call_data->call_num;
 	}
 
-	if (strcmp(file_path, "default") != 0) {
-		Evas_Object *layout = _callui_create_thumbnail(vd->base_view.contents, file_path, THUMBNAIL_138);
-		elm_object_part_content_set(vd->caller_info, "contact_icon", layout);
-		elm_object_signal_emit(vd->caller_info, "hide_default_cid", "");
-	} else {
-		elm_object_signal_emit(vd->caller_info, "show_default_cid", "");
-	}
-
-	if (!(call_name && call_name[0] != '\0') && !(call_number && call_number[0] != '\0')) {
+	if (STRING_EMPTY(call_name) && STRING_EMPTY(call_number)) {
 		elm_object_translatable_part_text_set(vd->caller_info, "contact_name", "IDS_CALL_BODY_UNKNOWN");
 		elm_object_translatable_part_text_set(vd->caller_info, "ec_contact_name", "IDS_CALL_BODY_UNKNOWN");
 		return CALLUI_RESULT_OK;
 	}
 	strncpy(vd->call_number, call_number, sizeof(vd->call_number));
-
 
 	callui_result_e res = __create_single_contact_info(vd, call_data);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
@@ -346,8 +336,6 @@ static callui_result_e __set_single_call_info(callui_view_callend_h vd, const ca
 
 static void __set_emergency_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
-	elm_object_signal_emit(vd->caller_info, "set_emergency_mode", "");
-
 	// maximized contact info
 	elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
 	elm_object_translatable_part_text_set(vd->caller_info, "contact_name", "IDS_COM_BODY_EMERGENCY_NUMBER");
@@ -358,8 +346,6 @@ static void __set_emergency_call_info(callui_view_callend_h vd, const callui_cal
 
 static void __set_conference_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
-	elm_object_signal_emit(vd->caller_info, "set_conference_mode", "");
-
 	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
 	char buf[CALLUI_BUF_MEMBER_SIZE] = { 0 };
 	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->conf_member_count);
@@ -456,6 +442,8 @@ static callui_result_e __update_displayed_data(callui_view_callend_h vd)
 	}
 	res = __set_ended_call_duration_sting(vd, call_data);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, call_data), CALLUI_RESULT_FAIL);
 
 	evas_object_show(vd->base_view.contents);
 

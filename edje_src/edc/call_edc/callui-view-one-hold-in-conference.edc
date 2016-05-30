@@ -149,9 +149,7 @@ group { \
 	name: _name; \
 	parts { \
 		_bg_part \
-		part { name: "pad.top"; \
-			type: SPACER; \
-			scale: 1; \
+		CU_PART_SPACER( "pad.top", \
 			description { \
 				state: "default" 0.0; \
 				min: 0 _status_pad_top; \
@@ -159,20 +157,16 @@ group { \
 				rel2.relative: 1.0 0.0; \
 				align: 0.0 0.0; \
 			} \
-		} \
-		part { name: "pad.left"; \
-			type: SPACER; \
-			scale: 1; \
+		) \
+		CU_PART_SPACER( "pad.left", \
 			description { state: "default" 0.0; \
 				min: BG_PADDING_LEFT_MIN_X 0; \
 				fixed: 1 0; \
 				rel2.relative: 0.0 1.0; \
 				align: 0.0 0.0; \
 			} \
-		} \
-		part { name: "pad.right"; \
-			type: SPACER; \
-			scale: 1; \
+		) \
+		CU_PART_SPACER( "pad.right", \
 			description { state: "default" 0.0; \
 				min: BG_WITHOUT_ARROW_PAD_RIGHT_W 0; \
 				fixed: 1 0; \
@@ -189,19 +183,13 @@ group { \
 			description { state: "hide_arrow" 0.0; \
 				inherit: "default" 0.0; \
 			} \
-		} \
-		part { name: PART_TEXT_STATUS; \
-			type: TEXTBLOCK; \
-			scale: 1; \
+		) \
+		CU_PART_TEXTBLOCK( PART_TEXT_STATUS, \
 			description { state: "default" 0.0; \
 				min: 0 STATUS_TXT_MIN_HEIGHT; \
 				max: -1 STATUS_TXT_MIN_HEIGHT; \
 				fixed: 0 1; \
-				rel1 { \
-					relative: 1.0 1.0; \
-					to_x: "pad.left"; \
-					to_y: "pad.top"; \
-				} \
+				rel1 { relative: 1.0 1.0; to_x: "pad.left"; to_y: "pad.top"; } \
 				rel2 { relative: 0.0 1.0; to_x: "pad.right"; } \
 				text { \
 					align: 0.0 0.0; \
@@ -209,10 +197,8 @@ group { \
 				} \
 				align: 0.0 0.0; \
 			} \
-		} \
-		part { name: "text.status.pad.bottom"; \
-			type: SPACER; \
-			scale: 1; \
+		) \
+		CU_PART_SPACER( "text.status.pad.bottom", \
 			description { state: "default" 0.0; \
 				fixed: 0 1; \
 				min: 0 _status_pad_bottom; \
@@ -220,28 +206,18 @@ group { \
 				rel2 { relative: 1.0 1.0; to: PART_TEXT_STATUS; } \
 				align: 0.5 0.0; \
 			} \
-		} \
-		part { name: PART_SWALLOW_CALLER_ID; \
-			type: SWALLOW; \
-			scale: 1; \
+		) \
+		CU_PART_SWALLOW( PART_SWALLOW_CALLER_ID, \
 			description { state: "default" 0.0; \
 				min: CALLER_ID_SIZE; \
 				max: CALLER_ID_SIZE; \
 				fixed: 1 1; \
-				rel1 { relative: 1.0 1.0; \
-					to_x: "pad.left"; \
-					to_y: "text.status.pad.bottom"; \
-				} \
-				rel2 { relative: 1.0 1.0; \
-					to_x: "pad.left"; \
-					to_y: "text.status.pad.bottom"; \
-				} \
+				rel1 { relative: 1.0 1.0; to_x: "pad.left"; to_y: "text.status.pad.bottom"; } \
+				rel2 { relative: 1.0 1.0; to_x: "pad.left"; to_y: "text.status.pad.bottom"; } \
 				align: 0.0 0.0; \
 			} \
-		} \
-		part { name: "swallow.caller_id.pad.left"; \
-			type: SPACER; \
-			scale: 1; \
+		) \
+		CU_PART_SPACER( "caller_id.pad.left", \
 			description { state: "default" 0.0; \
 				min: CALLER_ID_PAD_LEFT_W 0; \
 				fixed: 1 0; \
@@ -249,19 +225,13 @@ group { \
 				rel2 { relative: 1.0 1.0; to_x: PART_SWALLOW_CALLER_ID; } \
 				align: 0.0 0.5; \
 			} \
-		} \
-		part { name: PART_TEXT_MAIN; \
-			type: TEXTBLOCK; \
-			scale: 1; \
+		) \
+		CU_PART_TEXTBLOCK( PART_TEXT_MAIN, \
 			description { state: "default" 0.0; \
 				min: 0 TXT_MAIN_H; \
 				max: -1 TXT_MAIN_H; \
 				fixed: 0 1; \
-				rel1 { \
-					relative: 1.0 1.0; \
-					to_x: "swallow.caller_id.pad.left"; \
-					to_y: "text.status.pad.bottom"; \
-				} \
+				rel1 { relative: 1.0 1.0; to_x: "caller_id.pad.left"; to_y: "text.status.pad.bottom"; } \
 				rel2 { relative: 0.0 1.0; to_x: "pad.right"; } \
 				text { \
 					align: 0.0 0.0; \
@@ -269,10 +239,8 @@ group { \
 				} \
 				align: 0.0 0.0; \
 			} \
-		} \
-		part { name: "text.main.pad.bottom"; \
-			type: SPACER; \
-			scale: 1; \
+		) \
+		CU_PART_SPACER( "text.main.pad.bottom", \
 			description { state: "default" 0.0; \
 				fixed: 0 1; \
 				min: 0 TXT_MAIN_PAD_BOTTOM_H; \
@@ -280,19 +248,13 @@ group { \
 				rel2 { relative: 1.0 1.0; to: PART_TEXT_MAIN; } \
 				align: 0.5 0.0; \
 			} \
-		} \
-		part { name: PART_TEXT_SUB; \
-			type: TEXTBLOCK; \
-			scale: 1; \
+		) \
+		CU_PART_TEXTBLOCK( PART_TEXT_SUB, \
 			description { state: "default" 0.0; \
 				min: 0 TXT_SUB_MIN_H; \
 				max: -1 TXT_SUB_MIN_H; \
 				fixed: 0 1; \
-				rel1 { \
-					relative: 1.0 1.0; \
-					to_x: "swallow.caller_id.pad.left"; \
-					to_y: "text.main.pad.bottom"; \
-				} \
+				rel1 { relative: 1.0 1.0; to_x: "caller_id.pad.left"; to_y: "text.main.pad.bottom"; } \
 				rel2 { relative: 0.0 1.0; to_x: "pad.right"; } \
 				text { \
 					align: 0.0 0.0; \
@@ -300,10 +262,8 @@ group { \
 				} \
 				align: 0.0 0.0; \
 			} \
-		} \
-		part { name: "arrow.padding.left"; \
-			type: SPACER; \
-			scale: 1; \
+		) \
+		CU_PART_SPACER( "arrow.padding.left", \
 			description { state: "default" 0.0; \
 				fixed: 1 0; \
 				min: MANAGE_ARROW_PADDING_LEFT 0; \
@@ -312,32 +272,20 @@ group { \
 				rel2 { relative: 0 1; to_x: "pad.right"; } \
 				align: 0.0 0.5; \
 			} \
-		} \
-		part { name: "arrow.padding.bottom"; \
-			type: SPACER; \
-			scale: 1; \
+		) \
+		CU_PART_SPACER( "arrow.padding.bottom", \
 			description { state: "default" 0.0; \
 				min: 0 MANAGE_ARROW_PADDING_BOTTOM; \
 				fixed: 0 1; \
 				rel1.relative: 0.0 1.0; \
 				align: 0.0 1.0; \
 			} \
-		} \
-		part { name: "arrow"; \
-			type: IMAGE; \
-			scale: 1; \
+		) \
+		CU_PART_IMAGE( "arrow", \
 			description { state: "default" 0.0; \
 				visible: 0; \
-				rel1 { \
-					relative: 1.0 0.0; \
-					to_x: "arrow.padding.left"; \
-					to_y: "arrow.padding.bottom"; \
-				} \
-				rel2 { \
-					relative: 1.0 0.0; \
-					to_x: "arrow.padding.left"; \
-					to_y: "arrow.padding.bottom"; \
-				} \
+				rel1 { relative: 1.0 0.0; to_x: "arrow.padding.left"; to_y: "arrow.padding.bottom"; } \
+				rel2 { relative: 1.0 0.0; to_x: "arrow.padding.left"; to_y: "arrow.padding.bottom"; } \
 				min: MANAGE_ARROW_SIZE; \
 				max: MANAGE_ARROW_SIZE; \
 				fixed: 1 1; \
@@ -355,42 +303,36 @@ group { \
 				inherit: "show" 0.0; \
 				color_class: "pressed"; \
 			} \
-		} \
+		) \
 	} \
 	programs{ \
-		program { \
-			name: "max_pad_right"; \
+		program { name: "max_pad_right"; \
 			action: STATE_SET "show_arrow" 0.0; \
 			target: "pad.right"; \
 		} \
-		program { \
-			name: "min_pad_right"; \
+		program { name: "min_pad_right"; \
 			action: STATE_SET "hide_arrow" 0.0; \
 			target: "pad.right"; \
 		} \
-		program { \
-			name: "show_arrow"; \
+		program { name: "show_arrow"; \
 			signal: SIGNAL_SHOW_ARROW; \
 			action: STATE_SET "show" 0.0; \
 			target: "arrow"; \
 			after: "max_pad_right"; \
 		} \
-		program { \
-			name: "hide_arrow"; \
+		program { name: "hide_arrow"; \
 			signal: SIGNAL_HIDE_ARROW; \
 			action: STATE_SET "hide" 0.0; \
 			target: "arrow"; \
 			after: "min_pad_right"; \
 		} \
-		program { \
-			name: "arrow_pressed"; \
+		program { name: "arrow_pressed"; \
 			signal: "mouse,down,*"; \
 			source: "arrow"; \
 			action: STATE_SET "pressed" 0.0; \
 			target: "arrow"; \
 		} \
-		program { \
-			name: "arrow_unpressed"; \
+		program { name: "arrow_unpressed"; \
 			signal: "mouse,up,*"; \
 			source: "arrow"; \
 			action: STATE_SET "default" 0.0; \

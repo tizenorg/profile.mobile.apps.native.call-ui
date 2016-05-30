@@ -130,4 +130,7 @@
 		} \
 	} while (0)
 
+#undef STRING_EMPTY
+#define STRING_EMPTY(x) !(x && x[0] != '\0')
+
 #endif /* __CALLUI_COMMON_DEFINES_H__ */

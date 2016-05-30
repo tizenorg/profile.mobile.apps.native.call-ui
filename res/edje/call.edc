@@ -23,13 +23,13 @@
 #include "../../edje_src/edc/callui-parts.edc"
 #include "../../edje_src/edc/call_edc/edc_image_macro.edc"
 
-#define	IMG_SRC_DIR "call_edc"
+#define	IMG_SRC_DIR			"call_edc"
+#define	CALLID_IMG_SRC_DIR	IMG_SRC_DIR/"Caller_ID"
 
 images {
 	image: IMG_SRC_DIR/"call_inline_btn_open.png" COMP;
 	image: IMG_SRC_DIR/"call_inline_btn_close.png" COMP;
-	image: IMG_SRC_DIR/"call_photo_id.png" COMP;
-	image: IMG_SRC_DIR/"call_photo_id_mask.png" COMP;
+
 	image: IMG_SRC_DIR/"call_button_div_01.png" COMP;
 	image: IMG_SRC_DIR/"call_btn_circle.png" COMP;
 	image: IMG_SRC_DIR/"call_button_bg_accept_reject.png" COMP;
@@ -56,21 +56,30 @@ images {
 	image: IMG_SRC_DIR/"keypad_english_07.png" COMP;
 	image: IMG_SRC_DIR/"keypad_english_08.png" COMP;
 	image: IMG_SRC_DIR/"call_lock_icon.png" COMP;
-	image: IMG_SRC_DIR/"call_photo_id_emergency.png" COMP;
-	image: IMG_SRC_DIR/"call_photo_id_conference.png" COMP;
+
 	image: IMG_SRC_DIR/"call_multi_ic_merge.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_ic_swap.png" COMP;
 	image: IMG_SRC_DIR/"call_multi_ic_arrow.png" COMP;
 	image: IMG_SRC_DIR/"call_open_arrow_01.png" COMP;
 	image: IMG_SRC_DIR/"call_open_arrow_02.png" COMP;
-	image: IMG_SRC_DIR/"call_photo_id_bg.png" COMP;
 	image: IMG_SRC_DIR/"call_button_bg_line_accept_reject.png" COMP;
 	image: IMG_SRC_DIR/"without_proximity_seneor_bg.png" COMP;
 	image: IMG_SRC_DIR/"button_edit_bg_new.png" COMP;
-	image: IMG_SRC_DIR/"call_btn_circle_98.png" COMP;
 	image: IMG_SRC_DIR/"background.png" COMP;
 	image: IMG_SRC_DIR/"background_dim.png" COMP;
 	image: IMG_SRC_DIR/"call_button_add.png" COMP;
+
+	image: CALLID_IMG_SRC_DIR/"call_active_photo_id_bg.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_active_photo_id_default.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_multi_photo_id_bg.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_multi_photo_id_conference.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_multi_photo_id.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_end_photo_id_bg.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_end_photo_id_default.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_photo_id_bg.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_photo_id_conference.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_photo_id.png" COMP;
+	image: CALLID_IMG_SRC_DIR/"call_photo_id_emergency.png" COMP;
 }
 
 collections {

@@ -265,11 +265,10 @@ static Evas_Object *__caller_genlist_content_cb(void *data, Evas_Object *obj, co
 		evas_object_smart_callback_add(img, "clicked", __split_call_btn_click_cb, call_data);
 		evas_object_data_set(img, CALLUI_APP_DATA_NAME, ad);
 	} else if ((strcmp(part, "elm.swallow.icon.0") == 0)) {
-		char *file_path = "default";
-		if (strlen(call_data->call_ct_info.caller_id_path) > 0) {
-			file_path = call_data->call_ct_info.caller_id_path;
-		}
-		img = _callui_create_thumbnail_with_size(obj, file_path, THUMBNAIL_98, true);
+		img = _callui_create_cid_thumbnail_with_size(obj,
+				CALLUI_CID_TYPE_SINGLE,
+				CALLUI_CID_SIZE_TINY,
+				call_data->call_ct_info.caller_id_path);
 	}
 	return img;
 }
