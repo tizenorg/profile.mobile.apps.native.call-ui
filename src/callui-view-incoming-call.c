@@ -61,11 +61,11 @@ struct _callui_view_incoming_call {
 };
 typedef struct _callui_view_incoming_call _callui_view_incoming_call_t;
 
-static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_t *view_data, void *appdata);
+static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata);
 static callui_result_e __callui_view_incoming_call_onupdate(call_view_data_base_t *view_data);
 static callui_result_e __callui_view_incoming_call_ondestroy(call_view_data_base_t *view_data);
 
-static callui_result_e __create_main_content(callui_view_incoming_call_h vd);
+static callui_result_e __create_main_content(callui_view_incoming_call_h vd, Evas_Object *parent);
 static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd);
 
 static char *__callui_view_incoming_call_reject_msg_gl_label_get_msg(void *data, Evas_Object *obj, const char *part);
@@ -109,9 +109,10 @@ callui_view_incoming_call_h _callui_view_incoming_call_new()
 	return incoming_lock_view;
 }
 
-static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_t *view_data, void *appdata)
+static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_t *view_data, Evas_Object *parent, void *appdata)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(view_data, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(parent, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
 
 	callui_view_incoming_call_h vd = (callui_view_incoming_call_h)view_data;
@@ -123,16 +124,17 @@ static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_
 		_callui_lock_manager_force_stop(ad->lock_handle);
 	}
 
-	evas_object_resize(ad->win, ad->root_w,  ad->root_h);
-	_callui_common_win_set_noti_type(ad, true);
+	_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_FULLSCREEN);
+	_callui_window_set_rotation_locked(ad->window, true);
+	_callui_window_set_top_level_priority(ad->window, true);
 
-	evas_object_pointer_mode_set(ad->win, EVAS_OBJECT_POINTER_MODE_NOGRAB);
+//	evas_object_pointer_mode_set(ad->win, EVAS_OBJECT_POINTER_MODE_NOGRAB);
 
-	if (!elm_win_keygrab_set(ad->win, CALLUI_KEY_SELECT, 0, 0, 0, ELM_WIN_KEYGRAB_TOPMOST)) {
+	if (_callui_window_set_keygrab_mode(ad->window, CALLUI_KEY_SELECT, CALLUI_WIN_KEYGRAB_TOPMOST) != CALLUI_RESULT_OK) {
 		dbg("KEY_SELECT key grab failed");
 	}
 
-	callui_result_e res = __create_main_content(vd);
+	callui_result_e res = __create_main_content(vd, parent);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	return __update_displayed_data(vd);
@@ -163,9 +165,9 @@ static callui_result_e __callui_view_incoming_call_ondestroy(call_view_data_base
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
 
-	_callui_common_win_set_noti_type(ad, false);
+	_callui_window_set_top_level_priority(ad->window, false);
 
-	elm_win_keygrab_unset(ad->win, CALLUI_KEY_SELECT, 0, 0);
+	_callui_window_unset_keygrab_mode(ad->window, CALLUI_KEY_SELECT);
 
 	free(vd);
 
@@ -644,7 +646,8 @@ static void __reject_msg_list_height_update(callui_view_incoming_call_h vd)
 
 	int win_h = 0;
 	callui_app_data_t *ad = vd->base_view.ad;
-	elm_win_screen_size_get(ad->win, NULL, NULL, NULL, &win_h);
+
+	_callui_window_get_screen_size(ad->window, NULL, NULL, NULL, &win_h);
 
 	vd->reject_msg_height = SCALE_SIZE((REJ_MSG_LIST_CREATE_MSG_BTN_H + ((ITEM_SIZE_H) * msg_cnt)), win_h);/* bottom btn height + (genlist item height * msg count) */
 	if (vd->reject_msg_height > (SCALE_SIZE((MTLOCK_REJECT_MSG_LIST_HEIGHT + REJ_MSG_LIST_CREATE_MSG_BTN_H), win_h))) {
@@ -721,9 +724,6 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 
 	evas_object_show(vd->base_view.contents);
 
-	evas_object_hide(ad->main_ly);
-	evas_object_show(ad->main_ly);
-
 	return CALLUI_RESULT_OK;
 }
 
@@ -772,13 +772,13 @@ static void __create_reject_msg_layout(callui_view_incoming_call_h vd)
 	evas_object_show(vd->reject_msg_layout);
 }
 
-static callui_result_e __create_main_content(callui_view_incoming_call_h vd)
+static callui_result_e __create_main_content(callui_view_incoming_call_h vd, Evas_Object *parent)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	vd->base_view.contents = _callui_load_edj(ad->main_ly, EDJ_NAME, GRP_VIEW_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME, GRP_VIEW_MAIN_LY);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(ad->main_ly, "elm.swallow.content",  vd->base_view.contents);
+	elm_object_part_content_set(parent, "elm.swallow.content",  vd->base_view.contents);
 
 	vd->caller_info = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_CALLER_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);

@@ -205,7 +205,7 @@ static bool __callui_lock_screen_create_layout(lock_screen_data_t *priv)
 	CALLUI_RETURN_VALUE_IF_FAIL(priv, false);
 
 	/* Make Hit rectangle to refresh lock timer */
-	hit_rect = evas_object_rectangle_add(evas_object_evas_get(ad->win));
+	hit_rect = evas_object_rectangle_add(evas_object_evas_get(_callui_window_get_eo(ad->window)));
 	evas_object_color_set(hit_rect, 0, 0, 0, 0);
 	evas_object_resize(hit_rect, ad->root_w, ad->root_h);
 	evas_object_move(hit_rect, 0, 0);
@@ -215,7 +215,7 @@ static bool __callui_lock_screen_create_layout(lock_screen_data_t *priv)
 	evas_object_show(hit_rect);
 	priv->hit_rect = hit_rect;
 
-	layout = __callui_lock_screen_create_contents(ad->main_ly, "lock-screen");
+	layout = __callui_lock_screen_create_contents(_callui_vm_get_main_ly(ad->view_manager), "lock-screen");
 	if (NULL == layout) {
 		warn("layout NULL!!!");
 	}

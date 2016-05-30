@@ -104,7 +104,7 @@ static Evas_Object *__callui_get_caller_info_layout(void *data)
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 	CALLUI_RETURN_VALUE_IF_FAIL(ad, NULL);
 
-	layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
+	layout = elm_object_part_content_get(_callui_vm_get_main_ly(ad->view_manager), "elm.swallow.content");
 	CALLUI_RETURN_VALUE_IF_FAIL(layout, NULL);
 	caller_info = elm_object_part_content_get(layout, "caller_info");
 
@@ -185,7 +185,7 @@ void _callui_show_caller_info_number(void *data, const char *number)
 Evas_Object *_callui_show_caller_info_status(void *data, const char *status)
 {
 	callui_app_data_t *ad = (callui_app_data_t *)data;
-	Evas_Object *layout = elm_object_part_content_get(ad->main_ly, "elm.swallow.content");
+	Evas_Object *layout = elm_object_part_content_get(_callui_vm_get_main_ly(ad->view_manager), "elm.swallow.content");
 	elm_object_translatable_part_text_set(layout, "call_txt_status", status);
 
 	return layout;
@@ -235,8 +235,8 @@ static void __callui_move_more_option(callui_app_data_t *ad, Evas_Object *ctxpop
 	Evas_Coord w = 0, h = 0;
 	int pos = -1;
 
-	elm_win_screen_size_get(ad->win, NULL, NULL, &w, &h);
-	pos = elm_win_rotation_get(ad->win);
+	_callui_window_get_screen_size(ad->window, NULL, NULL, &w, &h);
+	pos = _callui_window_get_rotation(ad->window);
 	dbg("w: %d, h: %d", w, h);
 
 	switch (pos) {
@@ -289,7 +289,7 @@ void _callui_load_more_option(void *data)
 	}
 
 	if (ad->ctxpopup == NULL) {
-		Evas_Object *ctxpopup = elm_ctxpopup_add(ad->main_ly);
+		Evas_Object *ctxpopup = elm_ctxpopup_add(_callui_vm_get_main_ly(ad->view_manager));
 		elm_object_style_set(ctxpopup, "more/default");
 		elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
 		evas_object_smart_callback_add(ctxpopup, "dismissed", __callui_more_option_dismissed_cb, ad);
@@ -452,7 +452,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 
 	__callui_unload_second_call_popup(ad);
 
-	ad->second_call_popup = elm_popup_add(ad->win);
+	ad->second_call_popup = elm_popup_add(_callui_window_get_eo(ad->window));
 	CALLUI_RETURN_IF_FAIL(ad->second_call_popup);
 	elm_popup_align_set(ad->second_call_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	elm_object_translatable_part_text_set(ad->second_call_popup, "title,text", "IDS_CALL_HEADER_ANSWER_CALL_ABB");
@@ -714,7 +714,7 @@ void _callui_load_bluetooth_popup(callui_app_data_t *ad)
 	CALLUI_RETURN_IF_FAIL(ad);
 
 	__callui_unload_bt_popup(ad);
-	ad->bt_popup = elm_popup_add(ad->win);
+	ad->bt_popup = elm_popup_add(_callui_window_get_eo(ad->window));
 	elm_popup_align_set(ad->bt_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	evas_object_size_hint_weight_set(ad->bt_popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
