@@ -569,19 +569,15 @@ static void __app_service(app_control_h app_control, void *data)
 
 static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 {
-	dbg("..");
+	debug_enter();
 
-	callui_app_data_t *ad = (callui_app_data_t *)data;
+	CALLUI_RETURN_VALUE_IF_FAIL(data, EINA_FALSE);
+	CALLUI_RETURN_VALUE_IF_FAIL(event, EINA_FALSE);
+
+	callui_app_data_t *ad = data;
 	Ecore_Event_Key *ev = event;
 
-	if (ev == NULL) {
-		err("ERROR!!! Event is NULL!!!");
-		return EINA_FALSE;
-	}
-
 	callui_view_type_e view_type = _callui_vm_get_cur_view_type(ad->view_manager);
-
-	dbg("Current view type [%d]", view_type);
 
 	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider,
 					CALLUI_CALL_DATA_INCOMING);
@@ -596,18 +592,15 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 		int is_powerkey_enabled = _callui_common_is_powerkey_mode_on();
 		dbg("[KEY]KEY_POWER pressed, is_powerkey_enabled(%d)", is_powerkey_enabled);
 
-		if (is_powerkey_enabled && !_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
+		callui_display_control_e state = CALLUI_DISPLAY_OFF;
+		callui_result_e res = _callui_display_get_control_state(ad->display, &state);
+		CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, EINA_FALSE);
 
+		if (is_powerkey_enabled && state == CALLUI_DISPLAY_ON) {
 			if (view_type == CALLUI_VIEW_DIALLING) {
 				if (active) {
-					_callui_manager_end_call(ad->call_manager,
-							active->call_id, CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
-				}
-			} else if (view_type == CALLUI_VIEW_INCOMING_CALL ||
-					view_type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
-				if (incom) {
-					_callui_manager_end_call(ad->call_manager,
-							incom->call_id, CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
+					_callui_manager_end_call(ad->call_manager, active->call_id,
+							CALLUI_CALL_RELEASE_BY_CALL_HANDLE);
 				}
 			} else if (view_type == CALLUI_VIEW_SINGLECALL ||
 					view_type == CALLUI_VIEW_MULTICALL_CONF) {
@@ -615,6 +608,8 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 			} else if (view_type == CALLUI_VIEW_MULTICALL_SPLIT ||
 					view_type == CALLUI_VIEW_MULTICALL_LIST) {
 				_callui_manager_end_call(ad->call_manager, 0, CALLUI_CALL_RELEASE_ALL_ACTIVE);
+			} else if (view_type == CALLUI_VIEW_INCOMING_CALL_NOTI) {
+				_callui_vm_change_view(ad->view_manager, CALLUI_VIEW_INCOMING_CALL);
 			}
 		} else {
 			if (incom && !active && !held) {
