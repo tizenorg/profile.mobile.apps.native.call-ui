@@ -367,7 +367,7 @@ static callui_result_e __set_ended_call_duration_sting(callui_view_callend_h vd,
 	} else {
 		struct tm *call_time = _callui_common_get_current_time_diff_in_tm(call_data->start_time);
 		CALLUI_RETURN_VALUE_IF_FAIL(call_time, CALLUI_RESULT_ALLOCATION_FAIL);
-		vd->time_string = _callui_common_get_time_string(call_time);
+		vd->time_string = _callui_common_get_duration_time_string(call_time);
 		free(call_time);
 	}
 	return CALLUI_RESULT_OK;

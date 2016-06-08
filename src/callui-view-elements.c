@@ -198,6 +198,9 @@ Evas_Object *_callui_create_cid_thumbnail_with_size(Evas_Object *parent,
 	case CALLUI_CID_TYPE_EMERGENCY:
 		elm_object_signal_emit(layout, "show_emergency_cid", "");
 		break;
+	case CALLUI_CID_TYPE_MESSAGE:
+			elm_object_signal_emit(layout, "show_message_cid", "");
+			break;
 	default:
 		DELETE_EVAS_OBJECT(layout);
 		return NULL;
@@ -235,6 +238,13 @@ void _callui_show_caller_info_number(void *data, const char *number)
 {
 	Evas_Object *layout = __callui_get_caller_info_layout(data);
 	elm_object_part_text_set(layout, "phone_number", number);
+}
+
+/* Caller info message */
+void _callui_show_caller_info_message(void *data, const char *txt)
+{
+	Evas_Object *layout = __callui_get_caller_info_layout(data);
+	elm_object_part_text_set(layout, "message", txt);
 }
 
 /* Caller info status*/

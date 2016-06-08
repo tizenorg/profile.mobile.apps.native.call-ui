@@ -685,10 +685,9 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 	CALLUI_RETURN_VALUE_IF_FAIL(incom, CALLUI_RESULT_FAIL);
 
-	const callui_call_data_t *active =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
-	const callui_call_data_t *held =
-			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
+	const callui_call_data_t *active = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
+	const callui_call_data_t *held = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_HELD);
+
 	if (ad->second_call_popup && (!active && !held)) {
 		DELETE_EVAS_OBJECT(ad->second_call_popup);
 	}
@@ -701,11 +700,22 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 		call_number = incom->call_num;
 	}
 
-	if (STRING_EMPTY(call_name)) {
+	bool show_msg_icon = false;
+	if (STRING_EMPTY(call_number)) {
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
-		if (STRING_EMPTY(call_number)) {
-			_callui_show_caller_info_name(ad, "IDS_CALL_BODY_UNKNOWN");
+		_callui_show_caller_info_name(ad, "IDS_CALL_BODY_UNKNOWN");
+	} else if (STRING_EMPTY(call_name)) {
+		callui_msg_data_t msg_data;
+		if(_callui_common_get_last_msg_data(ad, incom->call_num, &msg_data) == CALLUI_RESULT_OK) {
+			elm_object_signal_emit(vd->caller_info, "3line", "caller_name");
+			_callui_show_caller_info_name(ad, call_number);
+			char *date = _callui_common_get_date_string_representation(msg_data.date);
+			_callui_show_caller_info_number(ad, date);
+			free(date);
+			_callui_show_caller_info_message(ad, msg_data.text);
+			show_msg_icon = true;
 		} else {
+			elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
 			_callui_show_caller_info_name(ad, call_number);
 		}
 	} else {
@@ -714,7 +724,13 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 		_callui_show_caller_info_number(ad, call_number);
 	}
 
-	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, incom), CALLUI_RESULT_FAIL);
+	if (show_msg_icon) {
+		Evas_Object *thumbnail = _callui_create_cid_thumbnail(vd->caller_info, CALLUI_CID_TYPE_MESSAGE, NULL);
+		CALLUI_RETURN_VALUE_IF_FAIL(thumbnail, CALLUI_RESULT_FAIL);
+		elm_object_part_content_set(vd->caller_info, "swallow.caller_id", thumbnail);
+	} else {
+		CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, incom), CALLUI_RESULT_FAIL);
+	}
 
 	if (STRING_EMPTY(call_number)) {
 		__destroy_reject_msg_layout(vd);

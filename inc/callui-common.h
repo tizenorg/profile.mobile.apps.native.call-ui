@@ -177,12 +177,36 @@ char *_callui_common_get_reject_msg_by_index(int index);
 void _callui_common_exit_app();
 
 /**
+ * @brief Initializes message framework client
+ * @param[in] appdata		application data
+ * @return result of operation: CALLUI_RESULT_OK on success;
+ * 								CALLUI_RESULT_ALREADY_REGISTERED if client is already registered;
+ * 								CALLUI_RESULT_FAIL on error;
+ */
+callui_result_e _callui_common_init_msg_client(void *appdata);
+
+/**
+ * @brief Deinitializes message framework client
+ * @param[in] appdata		application data
+ */
+void _callui_common_deinit_msg_client(void *appdata);
+
+/**
+ * @brief Gets last message data if it is available
+ * @param[in] appdata		application data
+ * @param[in] tel_number	telephone number of message sender
+ * @param[in/out] msg_data		last message data of person with @tel_number
+ * @return CALLUI_RESULT_OK on success and error result otherwise
+ */
+callui_result_e _callui_common_get_last_msg_data(void *appdata, const char *tel_number, callui_msg_data_t *msg_data);
+
+/**
  * @brief Sends reject message to incoming call recipient
  * @param[in] appdata		application data
  * @param[in] reject_msg	reject message txt
  * @return result CALLUI_RESULT_OK on success and error result otherwise
  */
-int _callui_common_send_reject_msg(void *appdata, char *reject_msg);
+int _callui_common_send_reject_msg(void *appdata, const char *reject_msg);
 
 /**
  * @brief Gets audio mode
@@ -226,7 +250,7 @@ void _callui_common_try_update_call_duration_time(struct tm *cur_time,
  * @param[in] time		time structure to process
  * @return string with time (must be free internally)
  */
-char *_callui_common_get_time_string(struct tm *time);
+char *_callui_common_get_duration_time_string(struct tm *time);
 
 /**
  * @brief Gets difference between curent time and @time
@@ -234,5 +258,15 @@ char *_callui_common_get_time_string(struct tm *time);
  * @return time stucture on success with time difference
  */
 struct tm *_callui_common_get_current_time_diff_in_tm(long time);
+
+/**
+ * @brief Converts time_t time representation into a date string with consideration of system time format
+ * @remark returned value is allocated memory so user must free it after use.
+ *
+ * @param[in]	last_update_time	Time to convert
+ *
+ * @return Date string on success or NULL otherwise
+ */
+char *_callui_common_get_date_string_representation(time_t last_update_time);
 
 #endif /*__CALLUI_COMMON_H_ */

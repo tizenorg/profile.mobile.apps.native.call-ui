@@ -18,6 +18,9 @@
 #ifndef __CALLUI_COMMON_TYPES_H__
 #define __CALLUI_COMMON_TYPES_H__
 
+#include <msg_types.h>
+#include <time.h>
+
 typedef enum {
 
    CALLUI_RESULT_OK,
@@ -34,10 +37,15 @@ typedef enum {
 
 } callui_result_e;
 
-typedef struct rgb_color_data {
+typedef struct {
 	int r;
 	int g;
 	int b;
 } callui_rgb_color_t;
+
+typedef struct {
+	char text[MAX_MSG_TEXT_LEN];
+	time_t date;
+} callui_msg_data_t;
 
 #endif /* __CALLUI_COMMON_TYPES_H__ */
