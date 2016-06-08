@@ -70,6 +70,12 @@ group { name: "caller_id";
 				size: 0 0 721 721;
 			}
 		}
+		set { name: "cid_message";
+			image {
+				image: CALLID_IMG_SRC_DIR/"messages.png" COMP;
+				size: 0 0 721 721;
+			}
+		}
 	}
 	parts {
 		CU_PART_IMAGE( "cid_clipper",
@@ -116,6 +122,9 @@ group { name: "caller_id";
 			description { state: "conference" 0.0;
 				inherit: "default" 0.0;
 			}
+			description { state: "message" 0.0;
+				inherit: "hide" 0.0;
+			}
 		)
 		CU_PART_IMAGE( "cid_def",
 			description { state: "default" 0.0;
@@ -137,6 +146,12 @@ group { name: "caller_id";
 				aspect_preference: SOURCE;
 				color_class: "AO003L2";
 			}
+			description { state: "message" 0.0;
+				inherit: "default" 0.0;
+				image.normal: "cid_message";
+				aspect_preference: SOURCE;
+				color_class: AO036;
+			}
 			description { state: "hide" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
@@ -156,6 +171,14 @@ group { name: "caller_id";
 			signal: "show_conference_cid";
 			source: "";
 			action: STATE_SET "conference" 0.0;
+			target: "cid_bg";
+			target: "cid_def";
+			after: "hide_cid_img";
+		}
+		program { name: "show_message_icon";
+			signal: "show_message_cid";
+			source: "";
+			action: STATE_SET "message" 0.0;
 			target: "cid_bg";
 			target: "cid_def";
 			after: "hide_cid_img";

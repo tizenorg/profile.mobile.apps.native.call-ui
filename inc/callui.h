@@ -20,6 +20,7 @@
 
 #include <Elementary.h>
 #include <app_common.h>
+#include <msg_types.h>
 
 #include "callui-view-manager.h"
 #include "callui-lock-manager.h"
@@ -68,6 +69,8 @@ struct appdata {
 	callui_call_data_t *end_call_data;
 
 	app_event_handler_h app_event_handlers[APP_HANDLERS_COUNT];
+
+	msg_handle_t msg_handle;
 };
 
 callui_app_data_t *_callui_get_app_data();

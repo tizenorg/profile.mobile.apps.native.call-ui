@@ -313,7 +313,7 @@ static void __update_call_duration_time(callui_view_mc_split_h vd, struct tm *co
 	if (sec_diff != 0) {
 		memcpy(cur_time, comp_time, sizeof(struct tm));
 
-		char *tmp = _callui_common_get_time_string(cur_time);
+		char *tmp = _callui_common_get_duration_time_string(cur_time);
 
 		elm_object_part_text_set(vd->active_layout, PART_TEXT_STATUS, tmp);
 		elm_object_part_text_set(vd->base_view.contents, PART_TEXT_CALL_DURATION, tmp);
