@@ -393,6 +393,10 @@ static void __app_deinit(callui_app_data_t *ad)
 
 	__unset_main_win_key_grab(ad);
 
+	if (ad->msg_handle) {
+		_callui_common_deinit_msg_client(ad);
+	}
+
 	if (ad->lock_handle) {
 		_callui_lock_manager_destroy(ad->lock_handle);
 		ad->lock_handle = NULL;

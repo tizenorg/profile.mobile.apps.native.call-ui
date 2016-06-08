@@ -27,6 +27,7 @@ typedef enum {
 	CALLUI_CID_TYPE_SINGLE,
 	CALLUI_CID_TYPE_CONFERENCE,
 	CALLUI_CID_TYPE_EMERGENCY,
+	CALLUI_CID_TYPE_MESSAGE,
 	CALLUI_CID_TYPE_COUNT
 } callui_cid_type_e;
 
@@ -119,6 +120,15 @@ void _callui_show_caller_info_name(void *data, const char *name);
  *
  */
 void _callui_show_caller_info_number(void *data, const char *number);
+
+/**
+ * @brief Create info message
+ *
+ * @param[in]    data        App data
+ * @param[in]    txt         Text of message
+ *
+ */
+void _callui_show_caller_info_message(void *data, const char *txt);
 
 /**
  * @brief Show caller info status

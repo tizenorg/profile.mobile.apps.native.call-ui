@@ -27,36 +27,58 @@
 #include <efl_util.h>
 #include <msg.h>
 #include <msg_transport.h>
+#include <msg_storage.h>
+#include <utils_i18n_ulocale.h>
+#include <utils_i18n.h>
+#include <glib.h>
 
 #include "callui-common.h"
 #include "callui-debug.h"
 #include "callui-view-elements.h"
 #include "callui.h"
-#include "callui-view-dialing.h"
-#include "callui-view-single-call.h"
-#include "callui-view-callend.h"
-#include "callui-view-manager.h"
-#include "callui-view-multi-call-list.h"
-#include "callui-view-multi-call-split.h"
-#include "callui-view-multi-call-conf.h"
-#include "callui-view-quickpanel.h"
 #include "callui-view-caller-info-defines.h"
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
 
-#define BLUETOOTH_PKG	"ug-bluetooth-efl"
-#define CONTACTS_PKG		"org.tizen.contacts"
+#define CALLUI_CSTM_I18N_UDATE_IGNORE	-2 /* Used temporarily since there is no substitute of UDATE_IGNORE in base-utils */
+#define CALLUI_TIME_STRING_BUFF_SIZE	512
 
-#define PHONE_TELEPHONE_URI				"tel:"
-#define PHONE_LAUNCH_TYPE_PARAM_NAME	"launch_type"
-#define PHONE_LAUNCH_TYPE_VALUE			"add_call"
+#define CALLUI_TIME_FORMAT_12		"hm"
+#define CALLUI_TIME_FORMAT_24		"Hm"
+#define CALLUI_DATETIME_FORMAT_12	"yMdhm"
+#define CALLUI_DATETIME_FORMAT_24	"yMdHm"
 
-#define MESSAGE_SMS_URI					"sms:"
+#define CALLUI_BUFF_SIZE_BIG	128
+#define CALLUI_BUFF_SIZE_MID	64
+#define CALLUI_BUFF_SIZE_SML	32
+#define CALLUI_BUFF_SIZE_TINY	16
 
-#define TIME_BUF_LEN (16)
-#define CONTACT_NUMBER_BUF_LEN 32
+#define CALLUI_BLUETOOTH_PKG	"ug-bluetooth-efl"
+#define CALLUI_CONTACTS_PKG		"org.tizen.contacts"
+
+#define CALLUI_PHONE_TELEPHONE_URI			"tel:"
+#define CALLUI_PHONE_LAUNCH_TYPE_PARAM_NAME	"launch_type"
+#define CALLUI_PHONE_LAUNCH_TYPE_VALUE		"add_call"
+#define CALLUI_MESSAGE_SMS_URI				"sms:"
 
 static bool g_is_headset_connected;
+
+static bool __bt_device_connected_profile(bt_profile_e profile, void *user_data);
+static bool __bt_adapter_bonded_device_cb(bt_device_info_s *device_info, void *user_data);
+static void __reset_visibility_properties(callui_app_data_t *ad);
+static void __lock_state_cb (system_settings_key_e key, void *user_data);
+static const char *__get_res_path();
+static const char *__get_resource(const char *res_name);
+static char *__vconf_get_str(const char *in_key);
+static char *__parse_vconf_string(char *input_string);
+static void __send_reject_msg_status_cb(msg_handle_t Handle, msg_struct_t pStatus, void *pUserParam);
+static callui_result_e __init_msg_client(void *appdata);
+static i18n_udatepg_h __create_pattern_generator();
+static void __destroy_pattern_generator(i18n_udatepg_h pattern_generator);
+static bool __check_date_on_today(const time_t req_time);
+static bool __check_date_on_yesterday(const time_t req_time);
+static void __generate_best_pattern(i18n_udatepg_h pattern_generator, const char *locale, i18n_uchar *skeleton, char *formatted_string, time_t *time);
+static char *__get_date_text(i18n_udatepg_h pattern_generator, const char *locale, char *skeleton, time_t *time);
 
 Eina_Bool _callui_common_is_earjack_connected(void)
 {
@@ -76,7 +98,7 @@ Eina_Bool _callui_common_is_earjack_connected(void)
 	return result;
 }
 
-static bool __callui_common_bt_device_connected_profile(bt_profile_e profile, void *user_data)
+static bool __bt_device_connected_profile(bt_profile_e profile, void *user_data)
 {
 	dbg("..");
 	if ((profile == BT_PROFILE_A2DP) || (profile == BT_PROFILE_HSP)) {
@@ -87,12 +109,12 @@ static bool __callui_common_bt_device_connected_profile(bt_profile_e profile, vo
 	return true;
 }
 
-static bool __callui_common_bt_adapter_bonded_device_cb(bt_device_info_s *device_info, void *user_data)
+static bool __bt_adapter_bonded_device_cb(bt_device_info_s *device_info, void *user_data)
 {
 	dbg("..");
 	callui_app_data_t *ad = (callui_app_data_t *)user_data;
 	if (device_info->is_connected) {
-		bt_device_foreach_connected_profiles(device_info->remote_address, __callui_common_bt_device_connected_profile, ad);
+		bt_device_foreach_connected_profiles(device_info->remote_address, __bt_device_connected_profile, ad);
 	}
 	return true;
 }
@@ -104,7 +126,7 @@ Eina_Bool _callui_common_is_headset_conected(void *appdata)
 
 	callui_app_data_t *ad = (callui_app_data_t *)appdata;
 	g_is_headset_connected = false;
-	bt_adapter_foreach_bonded_device(__callui_common_bt_adapter_bonded_device_cb, ad);
+	bt_adapter_foreach_bonded_device(__bt_adapter_bonded_device_cb, ad);
 
 	return g_is_headset_connected;
 }
@@ -168,7 +190,7 @@ void _callui_common_launch_setting_bluetooth(void *appdata)
 	int ret;
 	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_create() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_set_app_id(app_control, BLUETOOTH_PKG)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_set_app_id(app_control, CALLUI_BLUETOOTH_PKG)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_app_id() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_PICK)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_operation() is failed. ret[%d]", ret);
@@ -194,9 +216,9 @@ void _callui_common_launch_dialer(void *appdata)
 		err("app_control_create() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_DIAL)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_operation() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_set_uri(app_control, PHONE_TELEPHONE_URI)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_set_uri(app_control, CALLUI_PHONE_TELEPHONE_URI)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_uri() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_add_extra_data(app_control, PHONE_LAUNCH_TYPE_PARAM_NAME, PHONE_LAUNCH_TYPE_VALUE)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_add_extra_data(app_control, CALLUI_PHONE_LAUNCH_TYPE_PARAM_NAME, CALLUI_PHONE_LAUNCH_TYPE_VALUE)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_add_extra_data() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_send_launch_request() is failed. ret[%d]", ret);
@@ -218,7 +240,7 @@ void _callui_common_launch_contacts(void *appdata)
 	int ret;
 	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_create() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_set_app_id(app_control, CONTACTS_PKG)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_set_app_id(app_control, CALLUI_CONTACTS_PKG)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_app_id() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_DEFAULT)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_operation() is failed. ret[%d]", ret);
@@ -238,8 +260,8 @@ void _callui_common_launch_msg_composer(void *appdata, const char *number)
 
 	callui_app_data_t *ad = appdata;
 
-	char str[CONTACT_NUMBER_BUF_LEN];
-	snprintf(str, sizeof(str), "%s%s", MESSAGE_SMS_URI, number);
+	char str[CALLUI_BUFF_SIZE_SML];
+	snprintf(str, sizeof(str), "%s%s", CALLUI_MESSAGE_SMS_URI, number);
 
 	app_control_h app_control = NULL;
 	int ret;
@@ -324,7 +346,7 @@ int _callui_common_is_powerkey_mode_on(void)
 	return powerkey_mode;
 }
 
-static void __callui_common_lock_state_cb (system_settings_key_e key, void *user_data)
+static void __lock_state_cb (system_settings_key_e key, void *user_data)
 {
 	callui_app_data_t *ad = _callui_get_app_data();
 	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK) {
@@ -336,7 +358,7 @@ static void __callui_common_lock_state_cb (system_settings_key_e key, void *user
 
 void _callui_common_set_lock_state_changed_cb(void *user_data)
 {
-	system_settings_set_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE, __callui_common_lock_state_cb, NULL);
+	system_settings_set_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE, __lock_state_cb, NULL);
 }
 
 void _callui_common_unset_lock_state_changed_cb()
@@ -344,7 +366,7 @@ void _callui_common_unset_lock_state_changed_cb()
 	system_settings_unset_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE);
 }
 
-static const char *__callui_common_get_res_path()
+static const char *__get_res_path()
 {
 	static char res_folder_path[PATH_MAX] = {'\0'};
 	if (res_folder_path[0] == '\0') {
@@ -355,7 +377,7 @@ static const char *__callui_common_get_res_path()
 	return res_folder_path;
 }
 
-static const char *__callui_common_get_resource(const char *res_name)
+static const char *__get_resource(const char *res_name)
 {
 	if (res_name == NULL) {
 		err("res_name is NULL");
@@ -363,21 +385,21 @@ static const char *__callui_common_get_resource(const char *res_name)
 	}
 
 	static char res_path[PATH_MAX] = {'\0'};
-	snprintf(res_path, PATH_MAX, "%s%s", __callui_common_get_res_path(), res_name);
+	snprintf(res_path, PATH_MAX, "%s%s", __get_res_path(), res_name);
 	return res_path;
 }
 
 const char *_callui_common_get_call_edj_path()
 {
-	return __callui_common_get_resource(CALL_EDJ_NAME);
+	return __get_resource(CALL_EDJ_NAME);
 }
 
 const char *_callui_common_get_call_theme_path()
 {
-	return __callui_common_get_resource(CALL_THEME_EDJ_NAME);
+	return __get_resource(CALL_THEME_EDJ_NAME);
 }
 
-static char *__callui_common_vconf_get_str(const char *in_key)
+static char *__vconf_get_str(const char *in_key)
 {
 	char *result = vconf_get_str(in_key);
 	if (result == NULL) {
@@ -386,7 +408,7 @@ static char *__callui_common_vconf_get_str(const char *in_key)
 	return result;
 }
 
-static char *__callui_common_parse_vconf_string(char *input_string)
+static char *__parse_vconf_string(char *input_string)
 {
 	if (NULL == input_string) {
 		err("Input string is NULL");
@@ -437,22 +459,22 @@ char *_callui_common_get_reject_msg_by_index(int index)
 
 	switch (index) {
 	case 0:
-		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG1_STR);
+		message = __vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG1_STR);
 		break;
 	case 1:
-		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG2_STR);
+		message = __vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG2_STR);
 		break;
 	case 2:
-		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG3_STR);
+		message = __vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG3_STR);
 		break;
 	case 3:
-		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG4_STR);
+		message = __vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG4_STR);
 		break;
 	case 4:
-		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG5_STR);
+		message = __vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG5_STR);
 		break;
 	case 5:
-		message = __callui_common_vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG6_STR);
+		message = __vconf_get_str(VCONFKEY_CISSAPPL_USER_CREATE_MSG6_STR);
 		break;
 	default:
 		return NULL;
@@ -463,7 +485,7 @@ char *_callui_common_get_reject_msg_by_index(int index)
 	}
 
 	markup_converted_message = elm_entry_utf8_to_markup(message);
-	parsed_message = __callui_common_parse_vconf_string(markup_converted_message);
+	parsed_message = __parse_vconf_string(markup_converted_message);
 	return_str = strdup(_(parsed_message));
 
 	free(parsed_message);
@@ -478,7 +500,132 @@ void _callui_common_exit_app()
 	ui_app_exit();
 }
 
-static void ___callui_common_send_reject_msg_status_cb(msg_handle_t Handle, msg_struct_t pStatus, void *pUserParam)
+static callui_result_e __init_msg_client(void *appdata)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
+
+	callui_app_data_t *ad = appdata;
+
+	CALLUI_RETURN_VALUE_IF_FAIL(!ad->msg_handle, CALLUI_RESULT_ALREADY_REGISTERED);
+
+	msg_error_t err = msg_open_msg_handle(&ad->msg_handle);
+	if (err != MSG_SUCCESS) {
+		dbg("msg_open_msg_handle() failed. err[%d]", err);
+		return CALLUI_RESULT_FAIL;
+	}
+	return CALLUI_RESULT_OK;
+}
+
+callui_result_e _callui_common_init_msg_client(void *appdata)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
+
+	return __init_msg_client(appdata);
+}
+
+void _callui_common_deinit_msg_client(void *appdata)
+{
+	CALLUI_RETURN_IF_FAIL(appdata);
+
+	callui_app_data_t *ad = appdata;
+
+	if (ad->msg_handle) {
+		msg_close_msg_handle(&ad->msg_handle);
+		ad->msg_handle = NULL;
+	}
+}
+
+callui_result_e _callui_common_get_last_msg_data(void *appdata, const char *tel_number, callui_msg_data_t *msg_data)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(tel_number, CALLUI_RESULT_INVALID_PARAM);
+
+	callui_app_data_t *ad = appdata;
+
+	callui_result_e res = __init_msg_client(appdata);
+	CALLUI_RETURN_VALUE_IF_FAIL((res == CALLUI_RESULT_OK) || (res == CALLUI_RESULT_ALREADY_REGISTERED), res);
+
+	/* Create msg info to get address list handle */
+    msg_struct_t msg_info = msg_create_struct(MSG_STRUCT_MESSAGE_INFO);
+	if (!msg_info) {
+		dbg("msg_create_struct() failed");
+		return CALLUI_RESULT_ALLOCATION_FAIL;
+	}
+
+	msg_struct_t temp_msg = NULL;
+	msg_error_t err = msg_list_add_item(msg_info, MSG_MESSAGE_ADDR_LIST_HND, &temp_msg);
+	if (err != MSG_SUCCESS) {
+		dbg("msg_list_add_item() failed. err[%d]", err);
+		msg_release_struct(&msg_info);
+		return CALLUI_RESULT_FAIL;
+	}
+
+	dbg("tel_number [%s]", tel_number);
+
+	msg_set_int_value(temp_msg, MSG_ADDRESS_INFO_ADDRESS_TYPE_INT, MSG_ADDRESS_INFO_ADDRESS_TYPE_INT);
+	msg_set_int_value(temp_msg, MSG_ADDRESS_INFO_RECIPIENT_TYPE_INT, MSG_RECIPIENTS_TYPE_TO);
+	msg_set_str_value(temp_msg, MSG_ADDRESS_INFO_ADDRESS_VALUE_STR, tel_number, strlen(tel_number));
+
+	msg_list_handle_t addr_list = NULL;
+	err = msg_get_list_handle(msg_info, MSG_MESSAGE_ADDR_LIST_HND, (void **)&addr_list);
+	if (err != MSG_SUCCESS) {
+		dbg("msg_get_list_handle() failed. err[%d]", err);
+		msg_release_struct(&msg_info);
+		return CALLUI_RESULT_FAIL;
+	}
+
+	/* Get thead id by address handle */
+	msg_thread_id_t thread_id = -1;
+	err = msg_get_thread_id_by_address2(ad->msg_handle, addr_list, &thread_id);
+	if (err != MSG_SUCCESS) {
+		dbg("msg_get_thread_id_by_address() failed. err[%d]", err);
+		msg_release_struct(&msg_info);
+		return CALLUI_RESULT_FAIL;
+	}
+	dbg("thread_id [%d]", thread_id);
+
+	msg_release_struct(&msg_info);
+
+	/* Get conversation list by thread id */
+	msg_struct_list_s msg_conv_list;
+	err = msg_get_conversation_view_list(ad->msg_handle, thread_id, &msg_conv_list);
+	if (err != MSG_SUCCESS) {
+		dbg("msg_get_conversation_view_list() failed. err[%d]", err);
+		return CALLUI_RESULT_FAIL;
+	}
+
+	dbg("conversation - msg count [%d]", msg_conv_list.nCount);
+
+	char msg_txt[MAX_MSG_TEXT_LEN + 1] = { 0 };
+	int msg_txt_size;
+	int msg_direct;
+	int msg_time;
+
+	int i = msg_conv_list.nCount - 1;
+	for (; i >= 0 ; --i) {
+		msg_direct = -1;
+		msg_get_int_value(msg_conv_list.msg_struct_info[i], MSG_CONV_MSG_DIRECTION_INT, &msg_direct);
+		dbg("conversation - msg[%d], direction [%d]", i, msg_direct);
+
+		if (msg_direct == MSG_DIRECTION_TYPE_MT) {
+			msg_get_int_value(msg_conv_list.msg_struct_info[i], MSG_CONV_MSG_DISPLAY_TIME_INT, &msg_time);
+			msg_get_str_value(msg_conv_list.msg_struct_info[i], MSG_CONV_MSG_TEXT_STR, msg_txt, MAX_MSG_TEXT_LEN);
+			msg_get_int_value(msg_conv_list.msg_struct_info[i], MSG_CONV_MSG_TEXT_SIZE_INT, &msg_txt_size);
+			break;
+		}
+	}
+	msg_release_list_struct(&msg_conv_list);
+
+	if (!STRING_EMPTY(msg_txt)) {
+		dbg("last incoming msg found - txt[%s], txt_size[%d], time[%d]", msg_txt, msg_txt_size, msg_time);
+		snprintf(msg_data->text, msg_txt_size, "%s", msg_txt);
+		msg_data->date = msg_time;
+		return CALLUI_RESULT_OK;
+	}
+	return CALLUI_RESULT_FAIL;
+}
+
+static void __send_reject_msg_status_cb(msg_handle_t Handle, msg_struct_t pStatus, void *pUserParam)
 {
 	CALLUI_RETURN_IF_FAIL(pStatus != NULL);
 	int status = MSG_NETWORK_SEND_FAIL;
@@ -487,58 +634,47 @@ static void ___callui_common_send_reject_msg_status_cb(msg_handle_t Handle, msg_
 	dbg("status:[%d]", status);
 }
 
-int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
+int _callui_common_send_reject_msg(void *appdata, const char *reject_msg)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(reject_msg, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(appdata, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(!STRING_EMPTY(reject_msg), CALLUI_RESULT_INVALID_PARAM);
 
-	int res = CALLUI_RESULT_FAIL;
-	callui_app_data_t *ad = (callui_app_data_t *)appdata;
+	callui_app_data_t *ad = appdata;
 
 	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
-
 	CALLUI_RETURN_VALUE_IF_FAIL(incom, CALLUI_RESULT_FAIL);
 
-	if (strlen(reject_msg) == 0) {
-		err("Is not reject with message case");
-		return res;
-	}
+	callui_result_e res = __init_msg_client(ad);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK || res == CALLUI_RESULT_ALREADY_REGISTERED, res);
 
-	msg_handle_t msgHandle = NULL;
-	msg_error_t err = msg_open_msg_handle(&msgHandle);
+	msg_error_t err = msg_reg_sent_status_callback(ad->msg_handle, __send_reject_msg_status_cb, NULL);
 	if (err != MSG_SUCCESS) {
-		dbg("msg_open_msg_handle()- failed [%d]", err);
+		dbg("msg_reg_sent_status_callback() failed. err[%d]", err);
 		return res;
 	}
 
-	err = msg_reg_sent_status_callback(msgHandle, ___callui_common_send_reject_msg_status_cb, NULL);
-	if (err != MSG_SUCCESS) {
-		dbg("msg_reg_sent_status_callback()- failed [%d]", err);
-		msg_close_msg_handle(&msgHandle);
-		return res;
-	}
-
-	msg_struct_t msgInfo = msg_create_struct(MSG_STRUCT_MESSAGE_INFO);
-	msg_struct_t sendOpt = msg_create_struct(MSG_STRUCT_SENDOPT);
-	msg_struct_t pReq = msg_create_struct(MSG_STRUCT_REQUEST_INFO);
+	msg_struct_t msg_info = msg_create_struct(MSG_STRUCT_MESSAGE_INFO);
+	msg_struct_t send_opt = msg_create_struct(MSG_STRUCT_SENDOPT);
+	msg_struct_t req = msg_create_struct(MSG_STRUCT_REQUEST_INFO);
 
 	/* Set message type to SMS reject*/
-	msg_set_int_value(msgInfo, MSG_MESSAGE_TYPE_INT, MSG_TYPE_SMS_REJECT);
+	msg_set_int_value(msg_info, MSG_MESSAGE_TYPE_INT, MSG_TYPE_SMS_REJECT);
 
 	int slot_id = CALLUI_SIM_SLOT_DEFAULT;
 	dbg("msg_sms_send_message() Sim slot [%d]", slot_id);
 	slot_id++;
-	msg_set_int_value(msgInfo, MSG_MESSAGE_SIM_INDEX_INT, slot_id);
+	msg_set_int_value(msg_info, MSG_MESSAGE_SIM_INDEX_INT, slot_id);
 
 	/* No setting send option */
-	msg_set_bool_value(sendOpt, MSG_SEND_OPT_SETTING_BOOL, false);
+	msg_set_bool_value(send_opt, MSG_SEND_OPT_SETTING_BOOL, false);
 
 	/* Set message body */
-	if (msg_set_str_value(msgInfo, MSG_MESSAGE_SMS_DATA_STR, reject_msg, strlen(reject_msg)) != MSG_SUCCESS) {
-		err("msg_set_str_value() - failed");
+	if (msg_set_str_value(msg_info, MSG_MESSAGE_SMS_DATA_STR, reject_msg, strlen(reject_msg)) != MSG_SUCCESS) {
+		err("msg_set_str_value() failed");
 	} else {
 		/* Create address list*/
 		msg_struct_list_s *addr_list;
-		msg_get_list_handle(msgInfo, MSG_MESSAGE_ADDR_LIST_STRUCT, (void **)&addr_list);
+		msg_get_list_handle(msg_info, MSG_MESSAGE_ADDR_LIST_STRUCT, (void **)&addr_list);
 		msg_struct_t addr_info = addr_list->msg_struct_info[0];
 		const char *call_number = incom->call_num;
 
@@ -548,22 +684,21 @@ int _callui_common_send_reject_msg(void *appdata, char *reject_msg)
 		addr_list->nCount = 1;
 
 		/* Set message struct to Request*/
-		msg_set_struct_handle(pReq, MSG_REQUEST_MESSAGE_HND, msgInfo);
-		msg_set_struct_handle(pReq, MSG_REQUEST_SENDOPT_HND, sendOpt);
+		msg_set_struct_handle(req, MSG_REQUEST_MESSAGE_HND, msg_info);
+		msg_set_struct_handle(req, MSG_REQUEST_SENDOPT_HND, send_opt);
 
 		/* Send message */
-		err = msg_sms_send_message(msgHandle, pReq);
+		err = msg_sms_send_message(ad->msg_handle, req);
 		if (err != MSG_SUCCESS) {
-			err("msg_sms_send_message() - failed [%d]", err);
+			err("msg_sms_send_message() failed. err[%d]", err);
 		} else {
 			dbg("Sending...");
 			res = CALLUI_RESULT_OK;
 		}
 	}
-	msg_close_msg_handle(&msgHandle);
-	msg_release_struct(&pReq);
-	msg_release_struct(&msgInfo);
-	msg_release_struct(&sendOpt);
+	msg_release_struct(&req);
+	msg_release_struct(&msg_info);
+	msg_release_struct(&send_opt);
 
 	return res;
 }
@@ -590,19 +725,19 @@ void _callui_common_set_call_duration_time(struct tm *cur_time,
 	CALLUI_RETURN_IF_FAIL(obj);
 	CALLUI_RETURN_IF_FAIL(part);
 
-	char *tmp = _callui_common_get_time_string(cur_time);
+	char *tmp = _callui_common_get_duration_time_string(cur_time);
 	elm_object_part_text_set(obj, part, tmp);
 	free(tmp);
 }
 
-char *_callui_common_get_time_string(struct tm *time)
+char *_callui_common_get_duration_time_string(struct tm *time)
 {
-	char *tm_string = calloc(1, TIME_BUF_LEN);
+	char *tm_string = calloc(1, CALLUI_BUFF_SIZE_TINY);
 
 	if (time->tm_hour > 0) {
-		snprintf(tm_string, TIME_BUF_LEN, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
+		snprintf(tm_string, CALLUI_BUFF_SIZE_TINY, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
 	} else {
-		snprintf(tm_string, TIME_BUF_LEN, "%02d:%02d", time->tm_min, time->tm_sec);
+		snprintf(tm_string, CALLUI_BUFF_SIZE_TINY, "%02d:%02d", time->tm_min, time->tm_sec);
 	}
 	return tm_string;
 }
@@ -643,4 +778,170 @@ struct tm *_callui_common_get_current_time_diff_in_tm(long time)
 	gmtime_r((const time_t *)&call_time, time_tm);
 
 	return time_tm;
+}
+
+static i18n_udatepg_h __create_pattern_generator()
+{
+	i18n_error_code_e status = I18N_ERROR_NONE;
+
+	status = i18n_ulocale_set_default(getenv("LC_TIME"));
+	CALLUI_RETURN_NULL_IF_FAIL(status == I18N_ERROR_NONE);
+
+	const char *locale = NULL;
+	i18n_ulocale_get_default(&locale);
+
+	/* remove ".UTF-8" in locale */
+	char locale_tmp[CALLUI_BUFF_SIZE_SML] = { '\0' };
+	strncpy(locale_tmp, locale, sizeof(locale_tmp) - 1);
+	char *p = g_strstr_len(locale_tmp, strlen(locale_tmp), ".UTF-8");
+	if (p) {
+		*p = 0;
+	}
+
+	i18n_udatepg_h pattern_generator = NULL;
+	status = i18n_udatepg_create(locale_tmp, &pattern_generator);
+	CALLUI_RETURN_NULL_IF_FAIL(pattern_generator && status == I18N_ERROR_NONE);
+
+	return pattern_generator;
+}
+
+static void __destroy_pattern_generator(i18n_udatepg_h pattern_generator)
+{
+	if (pattern_generator) {
+		i18n_udatepg_destroy(pattern_generator);
+		pattern_generator = NULL;
+	}
+}
+
+static bool __check_date_on_today(const time_t req_time)
+{
+	time_t now_time = time(NULL);
+
+	struct tm tm_buff = { '\0' };
+
+	struct tm *dummy = localtime_r(&now_time, &tm_buff);
+	CALLUI_RETURN_VALUE_IF_FAIL(dummy, false);
+
+	struct tm now_tm;
+	memcpy(&now_tm, dummy, sizeof(struct tm));
+
+	dummy = localtime_r(&req_time, &tm_buff);
+	CALLUI_RETURN_VALUE_IF_FAIL(dummy, false);
+	struct tm req_tm;
+	memcpy(&req_tm, dummy, sizeof(struct tm));
+
+	return (req_tm.tm_year == now_tm.tm_year && req_tm.tm_yday == now_tm.tm_yday);
+}
+
+static bool __check_date_on_yesterday(const time_t req_time)
+{
+	time_t now_time = time(NULL);
+
+	struct tm tm_buff = { '\0' };
+
+	struct tm *dummy = localtime_r(&now_time, &tm_buff);
+	CALLUI_RETURN_VALUE_IF_FAIL(dummy, false);
+	struct tm now_tm;
+	memcpy(&now_tm, dummy, sizeof(struct tm));
+
+	dummy = localtime_r(&req_time, &tm_buff);
+	CALLUI_RETURN_VALUE_IF_FAIL(dummy, false);
+	struct tm req_tm;
+	memcpy(&req_tm, dummy, sizeof(struct tm));
+
+	if (now_tm.tm_yday == 0) { /* It is the first day of year */
+		return (req_tm.tm_year == now_tm.tm_year - 1 && req_tm.tm_mon == 12 && req_tm.tm_mday == 31);
+	} else {
+		return (req_tm.tm_year == now_tm.tm_year && req_tm.tm_yday == now_tm.tm_yday - 1);
+	}
+}
+
+static void __generate_best_pattern(i18n_udatepg_h pattern_generator,
+		const char *locale,
+		i18n_uchar *skeleton,
+		char *formatted_string,
+		time_t *time)
+{
+	i18n_uchar best_pattern[CALLUI_BUFF_SIZE_MID] = { '\0' };
+	int32_t best_pattern_capacity = (int32_t) (sizeof(best_pattern) / sizeof(best_pattern[0]));
+	int32_t skeleton_len = i18n_ustring_get_length(skeleton);
+
+	int32_t best_pattern_len;
+	i18n_error_code_e status = i18n_udatepg_get_best_pattern(pattern_generator, skeleton, skeleton_len, best_pattern, best_pattern_capacity, &best_pattern_len);
+	CALLUI_RETURN_IF_FAIL(status == I18N_ERROR_NONE)
+
+	i18n_udate_format_h formatter;
+	status = i18n_udate_create(CALLUI_CSTM_I18N_UDATE_IGNORE, CALLUI_CSTM_I18N_UDATE_IGNORE, locale, NULL, -1, best_pattern, -1, &formatter);
+	CALLUI_RETURN_IF_FAIL(status == I18N_ERROR_NONE)
+
+	i18n_uchar formatted[CALLUI_BUFF_SIZE_MID] = {'\0'};
+	int32_t formatted_capacity = (int32_t) (sizeof(formatted) / sizeof(formatted[0]));
+	i18n_udate date = (i18n_udate)(*time) * 1000;
+	int32_t formatted_length;
+	status = i18n_udate_format_date(formatter, date, formatted, formatted_capacity, NULL, &formatted_length);
+	CALLUI_RETURN_IF_FAIL(status == I18N_ERROR_NONE)
+
+	i18n_ustring_copy_au_n(formatted_string, formatted, CALLUI_BUFF_SIZE_BIG);
+	i18n_udate_destroy(formatter);
+}
+
+static char *__get_date_text(i18n_udatepg_h pattern_generator, const char *locale, char *skeleton, time_t *time)
+{
+	debug_enter();
+	char formatted_string[CALLUI_BUFF_SIZE_BIG] = { '\0' };
+	i18n_uchar custom_skeleton[CALLUI_BUFF_SIZE_MID] = { '\0' };
+	int skeletonLength = strlen(skeleton);
+
+	i18n_ustring_copy_ua_n(custom_skeleton, skeleton, skeletonLength);
+	__generate_best_pattern(pattern_generator, locale, custom_skeleton, formatted_string, time);
+
+	CALLUI_RETURN_NULL_IF_FAIL(!STRING_EMPTY(formatted_string));
+	return strdup(formatted_string);
+}
+
+char *_callui_common_get_date_string_representation(time_t last_update_time)
+{
+	char update_time[CALLUI_TIME_STRING_BUFF_SIZE] = { '\0' };
+	bool is_format_24h;
+
+	int ret = system_settings_get_value_bool( SYSTEM_SETTINGS_KEY_LOCALE_TIMEFORMAT_24HOUR, &is_format_24h);
+	CALLUI_RETURN_NULL_IF_FAIL(ret == SYSTEM_SETTINGS_ERROR_NONE);
+
+	i18n_udatepg_h pattern_generator = __create_pattern_generator();
+	CALLUI_RETURN_NULL_IF_FAIL(pattern_generator);
+
+	const char *icu_locale = NULL;
+	ret = i18n_ulocale_get_default(&icu_locale);
+	if (ret != I18N_ERROR_NONE) {
+		__destroy_pattern_generator(pattern_generator);
+		return NULL;
+	}
+
+	char *skeleton = NULL;
+	char *formatted_text = NULL;
+	if (__check_date_on_today(last_update_time)) {
+		skeleton = (is_format_24h) ? CALLUI_TIME_FORMAT_24 : CALLUI_TIME_FORMAT_12;
+		formatted_text = __get_date_text(pattern_generator, icu_locale, skeleton, &last_update_time);
+		snprintf(update_time, sizeof(update_time), "%s %s", "Today" , formatted_text);		// TODO: need IDS string
+	} else if (__check_date_on_yesterday(last_update_time)) {
+		skeleton = (is_format_24h) ? CALLUI_TIME_FORMAT_24 : CALLUI_TIME_FORMAT_12;
+		formatted_text = __get_date_text(pattern_generator, icu_locale, skeleton, &last_update_time);
+		snprintf(update_time, sizeof(update_time), "%s %s", "Yesterday", formatted_text);	// TODO: need IDS string
+	} else {
+		skeleton = (is_format_24h) ? CALLUI_DATETIME_FORMAT_24 : CALLUI_DATETIME_FORMAT_12;
+		formatted_text = __get_date_text(pattern_generator, icu_locale, skeleton, &last_update_time);
+		snprintf(update_time, sizeof(update_time), "%s", formatted_text);
+	}
+	FREE(formatted_text);
+
+	char *result_txt = calloc(1, CALLUI_TIME_STRING_BUFF_SIZE);
+	if (!result_txt) {
+		__destroy_pattern_generator(pattern_generator);
+		return NULL;
+	}
+
+	memcpy(result_txt, update_time, CALLUI_TIME_STRING_BUFF_SIZE);
+	__destroy_pattern_generator(pattern_generator);
+
+	return result_txt;
 }
