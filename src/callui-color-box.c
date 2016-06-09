@@ -17,7 +17,7 @@
 
 #include "callui-color-box.h"
 #include "callui-debug.h"
-#include "callui-common-def.h"
+#include "callui-common-defines.h"
 
 #define CALLUI_COLOR_BOX_BG_PART_NAME "callui.swallow.bg"
 #define CALLUI_COLOR_BOX_TIMER_INTERVAL_SEC 0.067

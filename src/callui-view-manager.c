@@ -31,6 +31,8 @@
 #include "callui-manager.h"
 #include "callui-state-provider.h"
 
+#define CALLUI_GROUP_APP_MAIN_LY	"app_main_ly"
+
 typedef call_view_data_base_t *(*new_view_data_cb) ();
 
 struct _callui_vm {
@@ -134,7 +136,7 @@ static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_data_t *ca
 	if (incom) {
 		callui_view_type_e type = CALLUI_VIEW_INCOMING_CALL;
 		callui_view_type_e cur_type = _callui_vm_get_cur_view_type(ad->view_manager);
-		if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK &&
+		if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_UNLOCK &&
 				active == NULL &&
 				held == NULL &&
 				(cur_type == CALLUI_VIEW_UNDEFINED || cur_type == CALLUI_VIEW_ENDCALL)) {
@@ -235,7 +237,7 @@ static void __end_call_called_cb(void *user_data, unsigned int call_id, callui_c
 
 static Evas_Object *__create_eo_layout(Evas_Object *parent)
 {
-	Evas_Object *layout = _callui_load_edj(parent, EDJ_NAME,  "app_main_ly");
+	Evas_Object *layout = _callui_load_edj(parent, CALLUI_CALL_EDJ_PATH,  CALLUI_GROUP_APP_MAIN_LY);
 	elm_object_content_set(parent, layout);
 	evas_object_show(layout);
 

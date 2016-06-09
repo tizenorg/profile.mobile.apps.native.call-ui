@@ -15,6 +15,8 @@
  *
  */
 
+#define CALL_BTN_IC_SIZE	64
+
 // Caller id layout
 group { name: "caller_id";
 	images {
@@ -213,5 +215,5 @@ group { name: "caller_id";
 }
 
 // Layouts with touchable buttons for multicall list view
-RES_IMG_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_SPLIT, IMG_SRC_DIR/"call_btn_ic_split.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_split_bg", "btn_ic_split_bg_pressed")
-RES_IMG_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_END, IMG_SRC_DIR/"call_btn_ic_end.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_end_bg", "btn_ic_end_bg_pressed")
+RES_IMG_WITH_BG_AND_TOUCH("call_btn_ic_split", IMG_SRC_DIR/"call_btn_ic_split.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, MULTI_LIST_LIST_ICON_BG_SIZE, "btn_ic", "btn_ic_split_bg", "btn_ic_split_bg_pressed")
+RES_IMG_WITH_BG_AND_TOUCH("call_btn_ic_end", IMG_SRC_DIR/"call_btn_ic_end.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, MULTI_LIST_LIST_ICON_BG_SIZE, "btn_ic", "btn_ic_end_bg", "btn_ic_end_bg_pressed")

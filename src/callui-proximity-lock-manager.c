@@ -21,7 +21,7 @@
 #include "callui-debug.h"
 #include "callui-common.h"
 
-#define SENSOR_INTERVAL 100
+#define CALLUI_SENSOR_INTERVAL 100
 
 typedef enum {
 	CALLUI_PLM_LCD_NONE,
@@ -111,7 +111,7 @@ static int __callui_proximity_lock_manager_create_listener(proximity_lock_t *pro
 		return ret;
 	}
 	sensor_listener_set_option(proximity_h->sensor_listener, SENSOR_OPTION_ALWAYS_ON);
-	sensor_listener_set_event_cb(proximity_h->sensor_listener, SENSOR_INTERVAL, __callui_proximity_lock_manager_cb, proximity_h);
+	sensor_listener_set_event_cb(proximity_h->sensor_listener, CALLUI_SENSOR_INTERVAL, __callui_proximity_lock_manager_cb, proximity_h);
 	return ret;
 }
 

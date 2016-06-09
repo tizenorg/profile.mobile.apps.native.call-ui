@@ -36,7 +36,6 @@
 #include "callui-debug.h"
 #include "callui-view-elements.h"
 #include "callui.h"
-#include "callui-view-caller-info-defines.h"
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
 
@@ -47,11 +46,6 @@
 #define CALLUI_TIME_FORMAT_24		"Hm"
 #define CALLUI_DATETIME_FORMAT_12	"yMdhm"
 #define CALLUI_DATETIME_FORMAT_24	"yMdHm"
-
-#define CALLUI_BUFF_SIZE_BIG	128
-#define CALLUI_BUFF_SIZE_MID	64
-#define CALLUI_BUFF_SIZE_SML	32
-#define CALLUI_BUFF_SIZE_TINY	16
 
 #define CALLUI_BLUETOOTH_PKG	"ug-bluetooth-efl"
 #define CALLUI_CONTACTS_PKG		"org.tizen.contacts"
@@ -136,7 +130,7 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void)
 	int lock_state = -1;
 	int lock_type = SETTING_SCREEN_LOCK_TYPE_NONE;
 	int ret = 0;
-	callui_idle_lock_type_t ret_val = LOCK_TYPE_UNLOCK;
+	callui_idle_lock_type_t ret_val = CALLUI_LOCK_TYPE_UNLOCK;
 
 	ret = system_settings_get_value_int(SYSTEM_SETTINGS_KEY_LOCK_STATE, &lock_state);
 	if (ret < 0) {
@@ -151,12 +145,12 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void)
 	if (lock_state == SYSTEM_SETTINGS_LOCK_STATE_LOCK) {
 		if (lock_type == SETTING_SCREEN_LOCK_TYPE_SIMPLE_PASSWORD
 			|| lock_type == SETTING_SCREEN_LOCK_TYPE_PASSWORD) {
-			ret_val = LOCK_TYPE_SECURITY_LOCK;
+			ret_val = CALLUI_LOCK_TYPE_SECURITY_LOCK;
 		} else {
-			ret_val = LOCK_TYPE_SWIPE_LOCK;
+			ret_val = CALLUI_LOCK_TYPE_SWIPE_LOCK;
 		}
 	} else {
-		ret_val = LOCK_TYPE_UNLOCK;
+		ret_val = CALLUI_LOCK_TYPE_UNLOCK;
 	}
 
 	info("Lock state : %d", ret_val);
@@ -290,7 +284,7 @@ void _callui_common_reset_main_ly_text_fields(Evas_Object *contents)
 	elm_object_part_text_set(contents, "call_txt_status", "");
 	elm_object_part_text_set(contents, "txt_timer", "");
 
-	caller_info = elm_object_part_content_get(contents, "caller_info");
+	caller_info = elm_object_part_content_get(contents, "swallow.caller_info");
 	if (caller_info) {
 		elm_object_part_text_set(caller_info, "contact_name", "");
 		elm_object_part_text_set(caller_info, "phone_number", "");
@@ -349,7 +343,7 @@ int _callui_common_is_powerkey_mode_on(void)
 static void __lock_state_cb (system_settings_key_e key, void *user_data)
 {
 	callui_app_data_t *ad = _callui_get_app_data();
-	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_UNLOCK) {
+	if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_UNLOCK) {
 		_callui_window_set_top_level_priority(ad->window, false);
 	} else {
 		_callui_window_set_top_level_priority(ad->window, true);
@@ -391,12 +385,12 @@ static const char *__get_resource(const char *res_name)
 
 const char *_callui_common_get_call_edj_path()
 {
-	return __get_resource(CALL_EDJ_NAME);
+	return __get_resource(CALLUI_CALL_EDJ_NAME);
 }
 
 const char *_callui_common_get_call_theme_path()
 {
-	return __get_resource(CALL_THEME_EDJ_NAME);
+	return __get_resource(CALLUI_CALL_THEME_EDJ_NAME);
 }
 
 static char *__vconf_get_str(const char *in_key)

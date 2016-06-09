@@ -26,7 +26,11 @@
 #include "callui-view-layout.h"
 #include "callui-state-provider.h"
 
-#define CALLUI_APP_DATA_NAME "multi_call_app_data"
+#define CALLUI_GROUP_MULTICALL			"multicall_list"
+#define CALLUI_GROUP_CALL_BTN_IC_SPLIT	"call_btn_ic_split"
+#define CALLUI_GROUP_CALL_BTN_IC_END	"call_btn_ic_end"
+
+#define CALLUI_APP_DATA_NAME			"app_data"
 
 struct _callui_view_mc_list {
 	call_view_data_base_t base_view;
@@ -181,7 +185,7 @@ static callui_result_e __create_main_content(callui_view_mc_list_h vd, Evas_Obje
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME, GRP_MULTICALL);
+	vd->base_view.contents = _callui_load_edj(parent, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_MULTICALL);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
 
@@ -243,8 +247,8 @@ static Evas_Object *__caller_genlist_content_cb(void *data, Evas_Object *obj, co
 	Evas_Object *img = NULL;
 	if ((strcmp(part, "elm.swallow.end") == 0)) {
 		img = elm_image_add(obj);
-		elm_image_file_set(img, EDJ_NAME, GROUP_CALL_BTN_IC_END);
-		evas_object_size_hint_min_set(img, ELM_SCALE_SIZE(CALL_BTN_IC_BG_SIZE), ELM_SCALE_SIZE(CALL_BTN_IC_BG_SIZE));
+		elm_image_file_set(img, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_CALL_BTN_IC_END);
+		evas_object_size_hint_min_set(img, ELM_SCALE_SIZE(MULTI_LIST_LIST_ICON_BG_SIZE), ELM_SCALE_SIZE(MULTI_LIST_LIST_ICON_BG_SIZE));
 		evas_object_propagate_events_set(img, EINA_FALSE);
 		evas_object_smart_callback_add(img, "clicked", __end_call_btn_click_cb, call_data);
 		evas_object_data_set(img, CALLUI_APP_DATA_NAME, ad);
@@ -259,8 +263,8 @@ static Evas_Object *__caller_genlist_content_cb(void *data, Evas_Object *obj, co
 			return NULL;
 		}
 		img = elm_image_add(obj);
-		elm_image_file_set(img, EDJ_NAME, GROUP_CALL_BTN_IC_SPLIT);
-		evas_object_size_hint_min_set(img, ELM_SCALE_SIZE(CALL_BTN_IC_BG_SIZE), ELM_SCALE_SIZE(CALL_BTN_IC_BG_SIZE));
+		elm_image_file_set(img, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_CALL_BTN_IC_SPLIT);
+		evas_object_size_hint_min_set(img, ELM_SCALE_SIZE(MULTI_LIST_LIST_ICON_BG_SIZE), ELM_SCALE_SIZE(MULTI_LIST_LIST_ICON_BG_SIZE));
 		evas_object_propagate_events_set(img, EINA_FALSE);
 		evas_object_smart_callback_add(img, "clicked", __split_call_btn_click_cb, call_data);
 		evas_object_data_set(img, CALLUI_APP_DATA_NAME, ad);
@@ -317,7 +321,6 @@ static callui_result_e __caller_genlist_add(callui_view_mc_list_h vd)
 	vd->call_genlist = genlist;
 
 	return CALLUI_RESULT_OK;
-
 }
 
 static void __caller_genlist_clear(callui_view_mc_list_h vd)

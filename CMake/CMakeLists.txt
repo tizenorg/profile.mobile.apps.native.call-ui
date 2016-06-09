@@ -70,8 +70,6 @@ ADD_CUSTOM_COMMAND(
 		${EDJE_DIR}/call.edc ${CMAKE_BINARY_DIR}/call.edj
 		DEPENDS ${EDJE_DIR}/call.edc
 			${INC_DIR}/callui-view-layout.h
-			${INC_DIR}/callui-view-caller-info-defines.h
-			${INC_DIR}/callui-view-elements-defines.h
 			${EDC_SRC_DIR}/callui-color-classes.edc
 			${EDC_SRC_DIR}/callui-parts.edc
 			${EDC_SRC_DIR}/call_edc/edc_image_macro.edc

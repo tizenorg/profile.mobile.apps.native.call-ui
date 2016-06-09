@@ -33,12 +33,16 @@
 #include "callui-sound-manager.h"
 #include "callui-color-box.h"
 
+#define CALLUI_GROUP_REJ_MSG_ITEM			"reject_msg_item"
+#define CALLUI_GROUP_REJ_MSG_SCROLLER_BG	"reject_msg_scroller_bg"
+#define CALLUI_GROUP_MAIN_ACTIVE_NOTI_CALL	"main_active_noti_call"
+
 #define CALLUI_DURING_ICON	"call_button_icon_03.png"
 #define CALLUI_END_ICON		"call_button_icon_01.png"
 
 #define CALLUI_MOVE_TRANSITION_TIME_SEC		0.3
 
-#define CALLUI_REJ_MSG_GENLIST_DATA			"VIEW_DATA"
+#define CALLUI_REJ_MSG_GENLIST_DATA			"view_data"
 #define CALLUI_REJ_MSG_ADD_BTN_SIZE			60
 #define CALLUI_REJ_MSG_ADD_BTN_COLOR		255, 255, 255, 255
 
@@ -534,7 +538,7 @@ static void _rm_compose_item_clicked_cb(void *data, Evas_Object *obj, const char
 
 static void _rm_message_item_clicked_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
-	int index = CALLUI_SAFE_C_CAST(int, data);
+	int index = SAFE_C_CAST(int, data);
 
 	callui_view_incoming_call_noti_h vd = (callui_view_incoming_call_noti_h)evas_object_data_get(obj, CALLUI_REJ_MSG_GENLIST_DATA);
 	CALLUI_RETURN_IF_FAIL(vd);
@@ -565,12 +569,12 @@ static callui_result_e __rm_create_message_items(callui_view_incoming_call_noti_
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, -1);
 
 	for (int i = 0; i < item_count; i++) {
-		Evas_Object *item_ly = _callui_load_edj(box, EDJ_NAME, "reject_msg_item");
+		Evas_Object *item_ly = _callui_load_edj(box, CALLUI_CALL_EDJ_PATH, "reject_msg_item");
 		CALLUI_RETURN_VALUE_IF_FAIL(item_ly, CALLUI_RESULT_FAIL);
 
 		evas_object_size_hint_weight_set(item_ly, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(item_ly, EVAS_HINT_FILL, EVAS_HINT_FILL);
-		elm_layout_signal_callback_add(item_ly, "cu,action,clicked", "main_active_noti_call", _rm_message_item_clicked_cb, CALLUI_SAFE_C_CAST(void *, i));
+		elm_layout_signal_callback_add(item_ly, "cu,action,clicked", "main_active_noti_call", _rm_message_item_clicked_cb, SAFE_C_CAST(void *, i));
 
 		char *txt = _callui_common_get_reject_msg_by_index(i);
 		elm_object_part_text_set(item_ly, "callui.text.main", txt);
@@ -587,7 +591,7 @@ static callui_result_e __rm_create_message_items(callui_view_incoming_call_noti_
 
 static callui_result_e __rm_create_compose_item(callui_view_incoming_call_noti_h vd, Evas_Object *box)
 {
-	Evas_Object *item_ly = _callui_load_edj(vd->box, EDJ_NAME, "reject_msg_item");
+	Evas_Object *item_ly = _callui_load_edj(vd->box, CALLUI_CALL_EDJ_PATH, "reject_msg_item");
 	CALLUI_RETURN_VALUE_IF_FAIL(item_ly, CALLUI_RESULT_FAIL);
 
 	evas_object_size_hint_weight_set(item_ly, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -619,7 +623,7 @@ static int __rm_fill_box(callui_view_incoming_call_noti_h vd, Evas_Object *box)
 static void __rm_create_content(callui_view_incoming_call_noti_h vd)
 {
 	/* Reject message list background gradient color layout */
-	vd->rm_scroller_bg = _callui_load_edj(vd->box, EDJ_NAME, "reject_msg_scroller_bg");
+	vd->rm_scroller_bg = _callui_load_edj(vd->box, CALLUI_CALL_EDJ_PATH, "reject_msg_scroller_bg");
 	CALLUI_RETURN_IF_FAIL(vd->rm_scroller_bg);
 	evas_object_show(vd->rm_scroller_bg);
 
@@ -694,7 +698,7 @@ static void __call_action_btn_click_cb(void *data, Evas_Object *obj, void *event
 	int ret;
 	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_create() is failed. ret[%d]", ret);
-	} else if (app_control_set_app_id(app_control, PACKAGE) != APP_CONTROL_ERROR_NONE) {
+	} else if (app_control_set_app_id(app_control, CALLUI_PACKAGE) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_app_id() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_set_operation(app_control, key)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_operation() is failed. ret[%d]", ret);
@@ -759,7 +763,7 @@ static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd
 	elm_box_horizontal_set(vd->box, EINA_FALSE);
 	evas_object_show(vd->box);
 
-	vd->layout = _callui_load_edj(vd->box, EDJ_NAME,  "main_active_noti_call");
+	vd->layout = _callui_load_edj(vd->box, CALLUI_CALL_EDJ_PATH,  "main_active_noti_call");
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->layout, CALLUI_RESULT_ALLOCATION_FAIL);
 	evas_object_size_hint_weight_set(vd->layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(vd->layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -770,12 +774,12 @@ static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd
 	elm_box_pack_end(vd->box, vd->layout);
 
 	Evas_Object *answer_btn = __create_btn(vd, "answer_call_noti", CALLUI_DURING_ICON,
-			NULL, __call_action_btn_click_cb, APP_CONTROL_OPERATION_DURING_CALL);
+			NULL, __call_action_btn_click_cb, CALLUI_APP_CONTROL_OPERATION_DURING_CALL);
 	CALLUI_RETURN_VALUE_IF_FAIL(answer_btn, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->layout, "swallow.call_accept_btn", answer_btn);
 
 	Evas_Object *reject_btn = __create_btn(vd, "reject_call_noti", CALLUI_END_ICON,
-			NULL, __call_action_btn_click_cb, APP_CONTROL_OPERATION_END_CALL);
+			NULL, __call_action_btn_click_cb, CALLUI_APP_CONTROL_OPERATION_END_CALL);
 	CALLUI_RETURN_VALUE_IF_FAIL(reject_btn, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->layout, "swallow.call_reject_btn", reject_btn);
 
@@ -805,7 +809,7 @@ static Evas_Object *__create_btn(callui_view_incoming_call_noti_h vd,
 	if (icon_name) {
 		Evas_Object *icon = elm_image_add(button);
 		CALLUI_RETURN_NULL_IF_FAIL(icon);
-		elm_image_file_set(icon, EDJ_NAME, icon_name);
+		elm_image_file_set(icon, CALLUI_CALL_EDJ_PATH, icon_name);
 		elm_object_part_content_set(button, "elm.swallow.content", icon);
 	}
 	if (txt) {

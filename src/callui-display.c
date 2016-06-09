@@ -25,7 +25,7 @@
 #include "callui.h"
 #include "callui-display.h"
 #include "callui-debug.h"
-#include "callui-common-def.h"
+#include "callui-common-defines.h"
 
 struct __callui_display {
 	GDBusConnection *conn;
@@ -34,15 +34,15 @@ struct __callui_display {
 };
 typedef struct __callui_display __callui_display_t;
 
-#define BUS_NAME					"org.tizen.system.deviced"
-#define OBJECT_PATH					"/Org/Tizen/System/DeviceD"
-#define INTERFACE_NAME				BUS_NAME
-#define DEVICED_PATH_DISPLAY		OBJECT_PATH"/Display"
-#define DEVICED_INTERFACE_DISPLAY	INTERFACE_NAME".display"
-#define METHOD_SET_DISPLAY_TIMEOUT	"setlcdtimeout"
+#define CALLUI_BUS_NAME					"org.tizen.system.deviced"
+#define CALLUI_OBJECT_PATH					"/Org/Tizen/System/DeviceD"
+#define CALLUI_INTERFACE_NAME				CALLUI_BUS_NAME
+#define CALLUI_DEVICED_PATH_DISPLAY		CALLUI_OBJECT_PATH"/Display"
+#define CALLUI_DEVICED_INTERFACE_DISPLAY	CALLUI_INTERFACE_NAME".display"
+#define CALLUI_METHOD_SET_DISPLAY_TIMEOUT	"setlcdtimeout"
 
-#define TIMEOUT_PARAMS_COUNT	3
-#define DBUS_REPLY_TIMEOUT		(120 * 1000)
+#define CALLUI_TIMEOUT_PARAMS_COUNT	3
+#define CALLUI_DBUS_REPLY_TIMEOUT		(120 * 1000)
 
 static callui_result_e _callui_display_init(callui_display_h display, callui_app_data_t *appdata);
 static void _callui_display_deinit(callui_display_h display);
@@ -132,10 +132,10 @@ static callui_result_e __send_gdbus_msg_async(callui_display_h display, int *par
 		return CALLUI_RESULT_FAIL;
 	}
 
-	GDBusMessage *msg = g_dbus_message_new_method_call(BUS_NAME,
-			DEVICED_PATH_DISPLAY,
-			DEVICED_INTERFACE_DISPLAY,
-			METHOD_SET_DISPLAY_TIMEOUT);
+	GDBusMessage *msg = g_dbus_message_new_method_call(CALLUI_BUS_NAME,
+			CALLUI_DEVICED_PATH_DISPLAY,
+			CALLUI_DEVICED_INTERFACE_DISPLAY,
+			CALLUI_METHOD_SET_DISPLAY_TIMEOUT);
 	if (!msg) {
 		err("g_dbus_message_new_method_call() failed");
 		return CALLUI_RESULT_FAIL;
@@ -154,7 +154,7 @@ static callui_result_e __send_gdbus_msg_async(callui_display_h display, int *par
 			display->conn,
 			msg,
 			G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-			DBUS_REPLY_TIMEOUT,
+			CALLUI_DBUS_REPLY_TIMEOUT,
 			NULL,
 			display->cancel_obj,
 			__gdbus_reply_msg_async_cb,
@@ -181,7 +181,7 @@ callui_result_e _callui_display_set_timeout(callui_display_h display, callui_dis
 
 	dbg("timeout type [%d], powerkeymode [%d]", timeout_type, powerkey_mode);
 
-	int timeout_params[TIMEOUT_PARAMS_COUNT] = { 0 };
+	int timeout_params[CALLUI_TIMEOUT_PARAMS_COUNT] = { 0 };
 	timeout_params[2] = powerkey_mode;
 
 	switch(timeout_type) {

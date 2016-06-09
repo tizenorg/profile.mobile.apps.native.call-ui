@@ -34,20 +34,21 @@
 #include "callui-keypad.h"
 #include "callui-view-multi-call-conf.h"
 #include "callui-view-quickpanel.h"
-#include "callui-view-caller-info-defines.h"
 #include "callui-proximity-lock-manager.h"
 #include "callui-manager.h"
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
 
-#define	POPUP_LIST_W		300
-#define	POPUP_LIST_ITEM_H 	120
+#define	CALLUI_POPUP_LIST_W		300
+#define	CALLUI_POPUP_LIST_ITEM_H 	120
 
 #define CALLUI_CID_THUMBN_SIZE_DEFAULT	0
 #define CALLUI_CID_THUMBN_SIZE_TINY		98
 #define CALLUI_CID_THUMBN_SIZE_SMALL	138
 #define CALLUI_CID_THUMBN_SIZE_MEDIUM	168
 #define CALLUI_CID_THUMBN_SIZE_BIG		348
+
+#define CALLUI_PART_SWALLOW_END_BTN "swallow.end_btn"
 
 typedef struct {
 	int index;
@@ -115,7 +116,7 @@ static Evas_Object *__callui_get_caller_info_layout(void *data)
 
 	layout = elm_object_part_content_get(_callui_vm_get_main_ly(ad->view_manager), "elm.swallow.content");
 	CALLUI_RETURN_VALUE_IF_FAIL(layout, NULL);
-	caller_info = elm_object_part_content_get(layout, "caller_info");
+	caller_info = elm_object_part_content_get(layout, "swallow.caller_info");
 
 	return caller_info;
 }
@@ -124,15 +125,15 @@ Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb c
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(parent != NULL, NULL);
 
-	Evas_Object *btn = elm_object_part_content_get(parent, PART_END_BTN);
+	Evas_Object *btn = elm_object_part_content_get(parent, CALLUI_PART_SWALLOW_END_BTN);
 	if (!btn) {
 		btn = elm_button_add(parent);
 		elm_object_style_set(btn, "call_icon_only");
 
 		Evas_Object *icon = elm_image_add(btn);
-		elm_image_file_set(icon, EDJ_NAME, "call_button_icon_01.png");
+		elm_image_file_set(icon, CALLUI_CALL_EDJ_PATH, "call_button_icon_01.png");
 		elm_object_part_content_set(btn, "elm.swallow.content", icon);
-		elm_object_part_content_set(parent, PART_END_BTN, btn);
+		elm_object_part_content_set(parent, CALLUI_PART_SWALLOW_END_BTN, btn);
 
 		if (cb_func) {
 			evas_object_smart_callback_add(btn, "clicked", cb_func, data);
@@ -159,7 +160,7 @@ Evas_Object *_callui_create_cid_thumbnail_with_size(Evas_Object *parent,
 
 	Evas_Object *layout = elm_layout_add(parent);
 	CALLUI_RETURN_NULL_IF_FAIL(layout);
-	elm_layout_file_set(layout, EDJ_NAME, "caller_id");
+	elm_layout_file_set(layout, CALLUI_CALL_EDJ_PATH, "caller_id");
 	evas_object_show(layout);
 
 	Evas_Object *thumbnail = layout;
@@ -741,7 +742,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 	evas_object_show(genlist);
 	elm_genlist_item_class_free(itc);
 
-	evas_object_size_hint_min_set(box, ELM_SCALE_SIZE(POPUP_LIST_W), ELM_SCALE_SIZE(POPUP_LIST_ITEM_H * (item_data->index + 1)));
+	evas_object_size_hint_min_set(box, ELM_SCALE_SIZE(CALLUI_POPUP_LIST_W), ELM_SCALE_SIZE(CALLUI_POPUP_LIST_ITEM_H * (item_data->index + 1)));
 	evas_object_show(box);
 	elm_object_content_set(ad->second_call_popup, box);
 

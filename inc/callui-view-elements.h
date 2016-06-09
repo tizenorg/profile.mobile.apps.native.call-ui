@@ -21,7 +21,6 @@
 #include <Elementary.h>
 
 #include "callui.h"
-#include "callui-view-elements-defines.h"
 
 typedef enum {
 	CALLUI_CID_TYPE_SINGLE,

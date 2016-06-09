@@ -29,9 +29,10 @@
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
 
-#define TXT_TIMER_BUF_LEN 26
-#define CALL_NUMBER_ONE 1
-#define TIME_BUF_LEN 16
+#define CALLUI_GROUP_QUICKPANEL	"quickpanel"
+
+#define CALLUI_BUF_TIMER_TXT_LEN	26
+#define CALLUI_CALL_NUMBER_ONE		1
 
 typedef enum {
 	CALLUI_QP_BTN_CALL = 0,
@@ -292,9 +293,9 @@ static void __main_layout_mouse_up_cb(void *data, Evas *evas, Evas_Object *obj, 
 	int ret;
 	if ((ret = app_control_create(&app_control)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_create() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_set_app_id(app_control, PACKAGE)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_set_app_id(app_control, CALLUI_PACKAGE)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_app_id() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_QP_RESUME)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_set_operation(app_control, CALLUI_APP_CONTROL_OPERATION_QP_RESUME)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_operation() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_send_launch_request() is failed. ret[%d]", ret);
@@ -363,17 +364,17 @@ static void __update_comp_status(callui_qp_mc_h qp,
 
 static void __set_split_call_duration_time(struct tm *time, Evas_Object *obj, const char *txt_part)
 {
-	char dur[TIME_BUF_LEN];
+	char dur[CALLUI_BUFF_SIZE_TINY];
 	if (time->tm_hour > 0) {
-		snprintf(dur, TIME_BUF_LEN, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
+		snprintf(dur, CALLUI_BUFF_SIZE_TINY, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
 	} else {
-		snprintf(dur, TIME_BUF_LEN, "%02d:%02d", time->tm_min, time->tm_sec);
+		snprintf(dur, CALLUI_BUFF_SIZE_TINY, "%02d:%02d", time->tm_min, time->tm_sec);
 	}
 
-	char buf[TXT_TIMER_BUF_LEN] = {0};
-	char buf_tmp[TXT_TIMER_BUF_LEN] = {0};
+	char buf[CALLUI_BUF_TIMER_TXT_LEN] = {0};
+	char buf_tmp[CALLUI_BUF_TIMER_TXT_LEN] = {0};
 	snprintf(buf_tmp, sizeof(buf_tmp), "%s / %s", dur, _("IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"));
-	snprintf(buf, sizeof(buf), buf_tmp, CALL_NUMBER_ONE);
+	snprintf(buf, sizeof(buf), buf_tmp, CALLUI_CALL_NUMBER_ONE);
 
 	elm_object_part_text_set(obj, txt_part, buf);
 }
@@ -589,7 +590,7 @@ static callui_result_e __activate(callui_qp_mc_h qp)
 		qp->rotate_angle = elm_win_rotation_get(qp->win_quickpanel);
 		dbg("current rotate angle(%d)", qp->rotate_angle);
 
-		qp->quickpanel_layout = _callui_load_edj(qp->win_quickpanel, EDJ_NAME, GRP_QUICKPANEL);
+		qp->quickpanel_layout = _callui_load_edj(qp->win_quickpanel, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_QUICKPANEL);
 		if (qp->quickpanel_layout == NULL) {
 			err("__callui_qp_mc_create_contents() FAILED!");
 			return CALLUI_RESULT_FAIL;

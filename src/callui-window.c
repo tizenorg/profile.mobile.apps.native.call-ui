@@ -19,7 +19,7 @@
 
 #include "callui-window.h"
 #include "callui.h"
-#include "callui-common-def.h"
+#include "callui-common-defines.h"
 #include "callui-debug.h"
 #include "callui-view-layout.h"
 
@@ -118,7 +118,7 @@ static void __eo_win_rotation_changed_cb(void *data, Evas_Object *obj, void *eve
 
 static Evas_Object *__create_eo_window(callui_window_h win_handler)
 {
-	Evas_Object *eo = elm_win_add(NULL, PACKAGE, ELM_WIN_NOTIFICATION);
+	Evas_Object *eo = elm_win_add(NULL, CALLUI_PACKAGE, ELM_WIN_NOTIFICATION);
 	CALLUI_RETURN_NULL_IF_FAIL(eo);
 
 	elm_win_aux_hint_add(eo, "wm.policy.win.user.geometry", "1");

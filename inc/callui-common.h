@@ -15,18 +15,17 @@
  *
  */
 
-#ifndef __CALLUI_COMMON_H_
-#define __CALLUI_COMMON_H_
+#ifndef __CALLUI_COMMON_H__
+#define __CALLUI_COMMON_H__
 
-#include "callui-view-manager.h"
 #include "callui.h"
 #include "callui-common-types.h"
-#include "callui-common-def.h"
+#include "callui-common-defines.h"
 
 typedef enum {
-	LOCK_TYPE_UNLOCK = 1,
-	LOCK_TYPE_SWIPE_LOCK,
-	LOCK_TYPE_SECURITY_LOCK
+	CALLUI_LOCK_TYPE_UNLOCK = 1,
+	CALLUI_LOCK_TYPE_SWIPE_LOCK,
+	CALLUI_LOCK_TYPE_SECURITY_LOCK
 } callui_idle_lock_type_t;
 
 typedef void (*set_call_duration_time)(struct tm *cur_time, Evas_Object *obj, const char *part);
@@ -262,9 +261,7 @@ struct tm *_callui_common_get_current_time_diff_in_tm(long time);
 /**
  * @brief Converts time_t time representation into a date string with consideration of system time format
  * @remark returned value is allocated memory so user must free it after use.
- *
  * @param[in]	last_update_time	Time to convert
- *
  * @return Date string on success or NULL otherwise
  */
 char *_callui_common_get_date_string_representation(time_t last_update_time);

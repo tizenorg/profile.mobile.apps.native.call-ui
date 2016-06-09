@@ -16,8 +16,6 @@
  */
 
 #include "../../inc/callui-view-layout.h"
-#include "../../inc/callui-view-elements-defines.h"
-#include "../../inc/callui-view-caller-info-defines.h"
 
 #include "../../edje_src/edc/callui-color-classes.edc"
 #include "../../edje_src/edc/callui-parts.edc"

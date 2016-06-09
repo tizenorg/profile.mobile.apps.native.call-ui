@@ -32,7 +32,7 @@
 #include "callui-display.h"
 #include "callui-window.h"
 
-#define APP_HANDLERS_COUNT 1
+#define CALLUI_APP_HANDLERS_COUNT 1
 
 struct appdata {
 	callui_window_h window;
@@ -68,7 +68,7 @@ struct appdata {
 
 	callui_call_data_t *end_call_data;
 
-	app_event_handler_h app_event_handlers[APP_HANDLERS_COUNT];
+	app_event_handler_h app_event_handlers[CALLUI_APP_HANDLERS_COUNT];
 
 	msg_handle_t msg_handle;
 };

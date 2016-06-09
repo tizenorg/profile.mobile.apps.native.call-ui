@@ -151,7 +151,7 @@ static Evas_Object *__callui_lock_screen_create_contents(Evas_Object *parent, ch
 	Evas_Object *eo = NULL;
 
 	/* load edje */
-	eo = _callui_load_edj(parent, EDJ_NAME, grpname);
+	eo = _callui_load_edj(parent, CALLUI_CALL_EDJ_PATH, grpname);
 	if (eo == NULL)
 		return NULL;
 	return eo;
