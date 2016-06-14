@@ -776,6 +776,9 @@ struct tm *_callui_common_get_current_time_diff_in_tm(long time)
 	struct sysinfo info;
 	if (sysinfo(&info) == 0) {
 		curr_time = info.uptime;
+	} else {
+		free(time_tm);
+		return NULL;
 	}
 
 	long call_time = curr_time - time;
