@@ -568,7 +568,8 @@ static callui_result_e __rm_create_message_items(callui_view_incoming_call_noti_
 	callui_result_e res = _callui_common_get_reject_msg_count(&item_count);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, -1);
 
-	for (int i = 0; i < item_count; i++) {
+	int i = 0;
+	for (; i < item_count; i++) {
 		Evas_Object *item_ly = _callui_load_edj(box, CALLUI_CALL_EDJ_PATH, "reject_msg_item");
 		CALLUI_RETURN_VALUE_IF_FAIL(item_ly, CALLUI_RESULT_FAIL);
 

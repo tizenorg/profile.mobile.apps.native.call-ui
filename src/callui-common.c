@@ -600,7 +600,7 @@ callui_result_e _callui_common_get_last_msg_data(void *appdata, const char *tel_
 
 	dbg("conversation - msg count [%d]", msg_conv_list.nCount);
 
-	char msg_txt[MAX_MSG_TEXT_LEN + 1] = { 0 };
+	char msg_txt[MAX_MSG_TEXT_LEN + 1] = { '\0' };
 	int msg_txt_size;
 	int msg_direct;
 	int msg_time;
@@ -620,7 +620,7 @@ callui_result_e _callui_common_get_last_msg_data(void *appdata, const char *tel_
 	}
 	msg_release_list_struct(&msg_conv_list);
 
-	if (!STRING_EMPTY(msg_txt)) {
+	if (msg_txt[0] != '\0') {
 		dbg("last incoming msg found - txt[%s], txt_size[%d], time[%d]", msg_txt, msg_txt_size, msg_time);
 		snprintf(msg_data->text, msg_txt_size, "%s", msg_txt);
 		msg_data->date = msg_time;
@@ -902,7 +902,7 @@ static char *__get_date_text(i18n_udatepg_h pattern_generator, const char *local
 	i18n_ustring_copy_ua_n(custom_skeleton, skeleton, skeletonLength);
 	__generate_best_pattern(pattern_generator, locale, custom_skeleton, formatted_string, time);
 
-	CALLUI_RETURN_NULL_IF_FAIL(!STRING_EMPTY(formatted_string));
+	CALLUI_RETURN_NULL_IF_FAIL(formatted_string[0] != '\0');
 	return strdup(formatted_string);
 }
 

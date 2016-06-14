@@ -52,6 +52,7 @@ pkg_check_modules (pkgs REQUIRED
 	capi-system-sensor
 	capi-ui-efl-util
 	libtzplatform-config
+	capi-base-utils-i18n
 )
 
 FOREACH(flag ${pkgs_CFLAGS})

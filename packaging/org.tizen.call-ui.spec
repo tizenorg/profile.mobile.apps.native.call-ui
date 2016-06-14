@@ -18,6 +18,7 @@ BuildRequires:  pkgconfig(appsvc)
 BuildRequires:  pkgconfig(callmgr_client)
 BuildRequires:  pkgconfig(msg-service)
 BuildRequires:  pkgconfig(efl-extension)
+BuildRequires:  pkgconfig(capi-base-utils-i18n)
 BuildRequires:  cmake
 BuildRequires:  gettext-tools
 BuildRequires:  edje-tools
