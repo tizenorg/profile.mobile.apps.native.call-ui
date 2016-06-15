@@ -49,6 +49,7 @@ struct appdata {
 	lock_data_t *lock_handle;
 	bool start_lock_manager_on_resume;
 	bool on_background;
+	bool internal_unlock;
 
 	int root_w;	/**<Width of a root window */
 	int root_h;	/**<Height of a root window */

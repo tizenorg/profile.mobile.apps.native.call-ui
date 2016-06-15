@@ -260,6 +260,7 @@ static void __disappear_transit_del_cb(void *data, Elm_Transit *transit)
 	callui_view_incoming_call_noti_h vd = data;
 	_callui_window_set_top_level_priority(vd->base_view.ad->window, false);
 	_callui_window_minimize(vd->base_view.ad->window);
+	vd->base_view.ad->on_background = true;
 }
 
 static Eina_Bool __appear_effect_activated_cb(void *data)

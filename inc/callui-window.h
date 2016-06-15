@@ -183,4 +183,14 @@ callui_result_e _callui_window_set_keygrab_mode(callui_window_h win_handler,
  */
 callui_result_e _callui_window_unset_keygrab_mode(callui_window_h win_handler, const char *key);
 
+/**
+ * @brief Sets mode of displaying application window above lockscreen
+ *
+ * @param[in]	win_handler			Window handler
+ * @param[in]	is_above_lockscreen	Above lockscreen displaying state
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_window_set_above_lockscreen_mode(callui_window_h win_handler, bool is_above_lockscreen);
+
 #endif /* __CALLUI_WINDOW_H__ */

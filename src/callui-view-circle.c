@@ -61,10 +61,6 @@ static void __callui_view_circle_handle_accept(callui_app_data_t *ad)
 {
 	dbg("..");
 
-	if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
-		_callui_common_unlock_swipe_lock();
-	}
-
 	const callui_call_data_t *call_data =
 			_callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_ACTIVE);
 

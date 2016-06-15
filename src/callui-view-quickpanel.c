@@ -301,7 +301,7 @@ static void __main_layout_mouse_up_cb(void *data, Evas *evas, Evas_Object *obj, 
 		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	} else {
 		callui_app_data_t *ad = qp->ad;
-
+		ad->internal_unlock = true;
 		ad->on_background = false;
 		_callui_lock_manager_start(ad->lock_handle);
 		__hide_minicontrol(qp);

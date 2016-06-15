@@ -378,3 +378,23 @@ callui_result_e _callui_window_unset_keygrab_mode(callui_window_h win_handler, c
 	}
 	return CALLUI_RESULT_OK;
 }
+
+callui_result_e _callui_window_set_above_lockscreen_mode(callui_window_h win_handler, bool above_lockscreen)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(win_handler, CALLUI_RESULT_INVALID_PARAM);
+
+	int id = elm_win_aux_hint_id_get(win_handler->win, "wm.policy.win.above.lock");
+	if (above_lockscreen) {
+		if (id == -1) {
+			id = elm_win_aux_hint_add(win_handler->win, "wm.policy.win.above.lock", "1");
+		    CALLUI_RETURN_VALUE_IF_FAIL(id >= 0, CALLUI_RESULT_FAIL);
+		} else {
+			CALLUI_RETURN_VALUE_IF_FAIL(elm_win_aux_hint_val_set(win_handler->win, id, "1"), CALLUI_RESULT_FAIL);
+		}
+	} else {
+		if (id != -1) {
+		    CALLUI_RETURN_VALUE_IF_FAIL(elm_win_aux_hint_val_set(win_handler->win, id, "0"), CALLUI_RESULT_FAIL);
+		}
+	}
+	return CALLUI_RESULT_OK;
+}

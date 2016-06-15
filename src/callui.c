@@ -225,7 +225,7 @@ static void __reset_state_params(callui_app_data_t *ad)
 
 	ad->start_lock_manager_on_resume = false;
 	ad->on_background = false;
-
+	ad->internal_unlock = false;
 	return;
 }
 
@@ -353,6 +353,8 @@ static bool __app_init(callui_app_data_t *ad)
 
 	__set_text_classes_params();
 
+	_callui_common_set_lock_state_changed_cb(ad);
+
 	return true;
 }
 
@@ -391,6 +393,8 @@ static void __app_lang_changed_cb(app_event_info_h event_info, void *user_data)
 static void __app_deinit(callui_app_data_t *ad)
 {
 	debug_enter();
+
+	_callui_common_unset_lock_state_changed_cb();
 
 	_callui_stp_remove_call_state_event_cb(ad->state_provider, __call_state_change_cb, ad);
 	_callui_sdm_remove_audio_state_changed_cb(ad->sound_manager, __audio_state_changed_cb, ad);
@@ -467,13 +471,16 @@ static void __app_pause(void *data)
 {
 	debug_enter();
 
-	_callui_common_unset_lock_state_changed_cb();
-
 	callui_app_data_t *ad = data;
 
-	_callui_vm_pause(ad->view_manager);
+	if (_callui_lock_manager_is_started(ad->lock_handle)) {
+		_callui_lock_manager_stop(ad->lock_handle);
+		ad->start_lock_manager_on_resume = true;
+	}
 
-	debug_leave();
+	ad->on_background = true;
+
+	_callui_vm_pause(ad->view_manager);
 }
 
 static void __app_resume(void *data)
@@ -482,7 +489,8 @@ static void __app_resume(void *data)
 
 	callui_app_data_t *ad = data;
 
-	_callui_common_set_lock_state_changed_cb();
+	ad->on_background = false;
+	ad->internal_unlock = false;
 
 	if (ad->start_lock_manager_on_resume) {
 		ad->start_lock_manager_on_resume = false;
@@ -490,8 +498,6 @@ static void __app_resume(void *data)
 	}
 
 	_callui_vm_resume(ad->view_manager);
-
-	debug_leave();
 }
 
 static void __app_service(app_control_h app_control, void *data)
@@ -567,6 +573,9 @@ static void __app_service(app_control_h app_control, void *data)
 		if (CALLUI_RESULT_OK != ret) {
 			err("_callui_manager_reject_call() failed. ret[%d]", ret);
 		}
+	} else if (strcmp(operation, CALLUI_APP_CONTROL_OPERATION_LS_RESUME) == 0) {
+		_callui_window_activate(ad->window);
+		_callui_window_set_above_lockscreen_mode(ad->window, true);
 	}
 
 	free(operation);
@@ -656,12 +665,7 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 
 				if (unhold_call_count == 0) {
 					dbg("No Call Or Held call - Accept");
-
 					_callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_NORMAL);
-
-					if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
-						_callui_common_unlock_swipe_lock();
-					}
 				} else if (ad->second_call_popup == NULL) {
 					dbg("Show popup - 2nd MT call - test volume popup");
 					_callui_load_second_call_popup(ad);
@@ -673,14 +677,13 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 				}
 			}
 		} else {
-			// TODO Implement other way to verify focus window == current
-			//Ecore_X_Window focus_win = ecore_x_window_focus_get();
-			//if (ad->win != NULL && focus_win == elm_win_xwindow_get(ad->win)) {
-				/* ToDo: Use lock-screen interface to raise the home screen */
-				_callui_window_set_top_level_priority(ad->window, false);
-				_callui_lock_manager_stop(ad->lock_handle);
-				ad->on_background = true;
-			//}
+			if (ad->on_background) {
+				DELETE_ECORE_TIMER(ad->earset_key_longpress_timer);
+				return EINA_FALSE;
+			}
+			_callui_common_unlock_swipe_lock();
+			_callui_window_set_above_lockscreen_mode(ad->window, false);
+			_callui_window_minimize(ad->window);
 		}
 	} else if (!strcmp(ev->keyname, CALLUI_KEY_BACK)) {
 		/* todo*/

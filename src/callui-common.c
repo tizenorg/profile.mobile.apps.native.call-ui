@@ -60,7 +60,7 @@ static bool g_is_headset_connected;
 static bool __bt_device_connected_profile(bt_profile_e profile, void *user_data);
 static bool __bt_adapter_bonded_device_cb(bt_device_info_s *device_info, void *user_data);
 static void __reset_visibility_properties(callui_app_data_t *ad);
-static void __lock_state_cb (system_settings_key_e key, void *user_data);
+static void __lock_state_changed_cb (system_settings_key_e key, void *user_data);
 static const char *__get_res_path();
 static const char *__get_resource(const char *res_name);
 static char *__vconf_get_str(const char *in_key);
@@ -73,6 +73,8 @@ static bool __check_date_on_today(const time_t req_time);
 static bool __check_date_on_yesterday(const time_t req_time);
 static void __generate_best_pattern(i18n_udatepg_h pattern_generator, const char *locale, i18n_uchar *skeleton, char *formatted_string, time_t *time);
 static char *__get_date_text(i18n_udatepg_h pattern_generator, const char *locale, char *skeleton, time_t *time);
+static void __app_launch_reply_cb(app_control_h request, app_control_h reply, app_control_result_e result, void *user_data);
+static void __update_params_according_lockstate(callui_app_data_t *ad);
 
 Eina_Bool _callui_common_is_earjack_connected(void)
 {
@@ -157,21 +159,44 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void)
 	return ret_val;
 }
 
-int _callui_common_unlock_swipe_lock(void)
+callui_result_e _callui_common_unlock_swipe_lock(void)
 {
 	int res = vconf_set_int(VCONFKEY_IDLE_LOCK_STATE, VCONFKEY_IDLE_UNLOCK);
 	if (res != 0) {
 		err("Set flag IDLE_UNLOCK failed");
+		return CALLUI_RESULT_FAIL;
 	}
-	return 0;
+	return CALLUI_RESULT_OK;
 }
 
 static void __reset_visibility_properties(callui_app_data_t *ad)
 {
-	_callui_lock_manager_stop(ad->lock_handle);
-	ad->start_lock_manager_on_resume = true;
+	if (_callui_lock_manager_is_started(ad->lock_handle)) {
+		_callui_lock_manager_stop(ad->lock_handle);
+		ad->start_lock_manager_on_resume = true;
+	}
+}
 
-	_callui_window_set_top_level_priority(ad->window, false);
+static void __update_params_according_lockstate(callui_app_data_t *ad)
+{
+	callui_idle_lock_type_t type = _callui_common_get_idle_lock_type();
+	if (type == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
+		ad->internal_unlock = true;
+	} else if (type == CALLUI_LOCK_TYPE_SECURITY_LOCK) {
+		_callui_window_set_above_lockscreen_mode(ad->window, false);
+	}
+	_callui_common_unlock_swipe_lock();
+}
+
+static void __app_launch_reply_cb(app_control_h request, app_control_h reply, app_control_result_e result, void *user_data)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	if (result == APP_CONTROL_RESULT_APP_STARTED) {
+		callui_app_data_t *ad = user_data;
+		ad->on_background = true;
+		__update_params_according_lockstate(ad);
+	}
 }
 
 void _callui_common_launch_setting_bluetooth(void *appdata)
@@ -188,7 +213,9 @@ void _callui_common_launch_setting_bluetooth(void *appdata)
 		err("app_control_set_app_id() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_PICK)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_operation() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_enable_app_started_result_event(app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_enable_app_started_result_event() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, __app_launch_reply_cb, ad)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	} else {
 		__reset_visibility_properties(ad);
@@ -214,12 +241,14 @@ void _callui_common_launch_dialer(void *appdata)
 		err("app_control_set_uri() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_add_extra_data(app_control, CALLUI_PHONE_LAUNCH_TYPE_PARAM_NAME, CALLUI_PHONE_LAUNCH_TYPE_VALUE)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_add_extra_data() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_enable_app_started_result_event(app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_enable_app_started_result_event() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, __app_launch_reply_cb, ad)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	} else {
 		__reset_visibility_properties(ad);
 	}
-	if (app_control){
+	if (app_control) {
 		app_control_destroy(app_control);
 	}
 }
@@ -238,7 +267,9 @@ void _callui_common_launch_contacts(void *appdata)
 		err("app_control_set_app_id() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_set_operation(app_control, APP_CONTROL_OPERATION_DEFAULT)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_operation() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_enable_app_started_result_event(app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_enable_app_started_result_event() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, __app_launch_reply_cb, ad)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	} else {
 		__reset_visibility_properties(ad);
@@ -340,19 +371,37 @@ int _callui_common_is_powerkey_mode_on(void)
 	return powerkey_mode;
 }
 
-static void __lock_state_cb (system_settings_key_e key, void *user_data)
+static void __lock_state_changed_cb(system_settings_key_e key, void *user_data)
 {
-	callui_app_data_t *ad = _callui_get_app_data();
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	callui_app_data_t *ad = user_data;
+
 	if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_UNLOCK) {
-		_callui_window_set_top_level_priority(ad->window, false);
+		dbg("Device lock state [UNLOCKED]");
+		_callui_window_set_above_lockscreen_mode(ad->window, false);
+		if (!ad->internal_unlock) {
+			ad->on_background = true;
+		}
+		ad->internal_unlock = false;
 	} else {
-		_callui_window_set_top_level_priority(ad->window, true);
+		dbg("Device lock state [LOCKED]");
+		if (!ad->on_background) {
+			_callui_window_set_above_lockscreen_mode(ad->window, true);
+		} else {
+			if (_callui_lock_manager_is_started(ad->lock_handle)) {
+				_callui_lock_manager_stop(ad->lock_handle);
+				ad->start_lock_manager_on_resume = true;
+			}
+		}
 	}
 }
 
 void _callui_common_set_lock_state_changed_cb(void *user_data)
 {
-	system_settings_set_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE, __lock_state_cb, NULL);
+	CALLUI_RETURN_IF_FAIL(user_data);
+
+	system_settings_set_changed_cb(SYSTEM_SETTINGS_KEY_LOCK_STATE, __lock_state_changed_cb, user_data);
 }
 
 void _callui_common_unset_lock_state_changed_cb()

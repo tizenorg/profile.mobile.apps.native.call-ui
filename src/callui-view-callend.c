@@ -136,8 +136,6 @@ static callui_result_e __callui_view_callend_oncreate(call_view_data_base_t *vie
 
 	vd->base_view.ad = ad;
 
-	_callui_window_set_top_level_priority(ad->window, true);
-
 	callui_result_e res = __create_main_content(vd, parent);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
