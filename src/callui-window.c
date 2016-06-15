@@ -330,6 +330,8 @@ void _callui_window_activate(callui_window_h win_handler)
 
 void _callui_window_minimize(callui_window_h win_handler)
 {
+	debug_enter();
+
 	CALLUI_RETURN_IF_FAIL(win_handler);
 
 	elm_win_lower(win_handler->win);
@@ -382,6 +384,8 @@ callui_result_e _callui_window_unset_keygrab_mode(callui_window_h win_handler, c
 callui_result_e _callui_window_set_above_lockscreen_mode(callui_window_h win_handler, bool above_lockscreen)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(win_handler, CALLUI_RESULT_INVALID_PARAM);
+
+	dbg("Above lockscreen [%s]", above_lockscreen ? "YES" : "NO");
 
 	int id = elm_win_aux_hint_id_get(win_handler->win, "wm.policy.win.above.lock");
 	if (above_lockscreen) {

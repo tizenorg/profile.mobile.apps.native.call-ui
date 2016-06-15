@@ -49,7 +49,6 @@ struct appdata {
 	lock_data_t *lock_handle;
 	bool start_lock_manager_on_resume;
 	bool on_background;
-	bool internal_unlock;
 
 	int root_w;	/**<Width of a root window */
 	int root_h;	/**<Height of a root window */
@@ -72,6 +71,9 @@ struct appdata {
 	app_event_handler_h app_event_handlers[CALLUI_APP_HANDLERS_COUNT];
 
 	msg_handle_t msg_handle;
+
+	double app_pause_time;
+	bool need_win_minimize;
 };
 
 callui_app_data_t *_callui_get_app_data();

@@ -225,7 +225,7 @@ static void __reset_state_params(callui_app_data_t *ad)
 
 	ad->start_lock_manager_on_resume = false;
 	ad->on_background = false;
-	ad->internal_unlock = false;
+
 	return;
 }
 
@@ -478,9 +478,14 @@ static void __app_pause(void *data)
 		ad->start_lock_manager_on_resume = true;
 	}
 
-	ad->on_background = true;
-
 	_callui_vm_pause(ad->view_manager);
+
+	if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_UNLOCK) {
+		dbg("***** LOCKSCREEN UNLOCKED *****");
+		ad->on_background = true;
+		_callui_window_set_above_lockscreen_mode(ad->window, false);
+		ad->app_pause_time = ecore_time_get();
+	}
 }
 
 static void __app_resume(void *data)
@@ -490,7 +495,6 @@ static void __app_resume(void *data)
 	callui_app_data_t *ad = data;
 
 	ad->on_background = false;
-	ad->internal_unlock = false;
 
 	if (ad->start_lock_manager_on_resume) {
 		ad->start_lock_manager_on_resume = false;
@@ -681,9 +685,22 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 				DELETE_ECORE_TIMER(ad->earset_key_longpress_timer);
 				return EINA_FALSE;
 			}
-			_callui_common_unlock_swipe_lock();
-			_callui_window_set_above_lockscreen_mode(ad->window, false);
-			_callui_window_minimize(ad->window);
+
+			callui_idle_lock_type_t lock_type = _callui_common_get_idle_lock_type();
+			if (lock_type == CALLUI_LOCK_TYPE_SECURITY_LOCK) {
+				_callui_common_unlock_swipe_lock();
+				_callui_window_set_above_lockscreen_mode(ad->window, false);
+				_callui_window_minimize(ad->window);
+			} else if (lock_type == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
+				_callui_common_unlock_swipe_lock();
+				/*	TODO: This is spike to over step problem with
+				 * change window lock screen mode, swipe unlock and minimize
+				 * that does not lower window as suppose to be
+				 */
+				ad->need_win_minimize = true;
+			} else {
+				_callui_window_minimize(ad->window);
+			}
 		}
 	} else if (!strcmp(ev->keyname, CALLUI_KEY_BACK)) {
 		/* todo*/

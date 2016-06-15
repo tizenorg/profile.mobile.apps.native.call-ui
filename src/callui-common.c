@@ -41,6 +41,7 @@
 
 #define CALLUI_CSTM_I18N_UDATE_IGNORE	-2 /* Used temporarily since there is no substitute of UDATE_IGNORE in base-utils */
 #define CALLUI_TIME_STRING_BUFF_SIZE	512
+#define CALLUI_PAUSE_LOCK_TIMEOUT_LIMIT	0.35
 
 #define CALLUI_TIME_FORMAT_12		"hm"
 #define CALLUI_TIME_FORMAT_24		"Hm"
@@ -161,6 +162,8 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void)
 
 callui_result_e _callui_common_unlock_swipe_lock(void)
 {
+	debug_enter();
+
 	int res = vconf_set_int(VCONFKEY_IDLE_LOCK_STATE, VCONFKEY_IDLE_UNLOCK);
 	if (res != 0) {
 		err("Set flag IDLE_UNLOCK failed");
@@ -180,9 +183,7 @@ static void __reset_visibility_properties(callui_app_data_t *ad)
 static void __update_params_according_lockstate(callui_app_data_t *ad)
 {
 	callui_idle_lock_type_t type = _callui_common_get_idle_lock_type();
-	if (type == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
-		ad->internal_unlock = true;
-	} else if (type == CALLUI_LOCK_TYPE_SECURITY_LOCK) {
+	if (type == CALLUI_LOCK_TYPE_SECURITY_LOCK) {
 		_callui_window_set_above_lockscreen_mode(ad->window, false);
 	}
 	_callui_common_unlock_swipe_lock();
@@ -380,15 +381,21 @@ static void __lock_state_changed_cb(system_settings_key_e key, void *user_data)
 	if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_UNLOCK) {
 		dbg("Device lock state [UNLOCKED]");
 		_callui_window_set_above_lockscreen_mode(ad->window, false);
-		if (!ad->internal_unlock) {
-			ad->on_background = true;
+		if (ad->need_win_minimize) {
+			ad->need_win_minimize = false;
+			_callui_window_minimize(ad->window);
 		}
-		ad->internal_unlock = false;
 	} else {
 		dbg("Device lock state [LOCKED]");
 		if (!ad->on_background) {
 			_callui_window_set_above_lockscreen_mode(ad->window, true);
 		} else {
+			double time_diff = ecore_time_get() - ad->app_pause_time;
+			if (time_diff <= CALLUI_PAUSE_LOCK_TIMEOUT_LIMIT) {
+				dbg("App_pause -> lock_device time diff [%ld]", time_diff);
+				_callui_window_set_above_lockscreen_mode(ad->window, true);
+				ad->app_pause_time = 0.0;
+			}
 			if (_callui_lock_manager_is_started(ad->lock_handle)) {
 				_callui_lock_manager_stop(ad->lock_handle);
 				ad->start_lock_manager_on_resume = true;
