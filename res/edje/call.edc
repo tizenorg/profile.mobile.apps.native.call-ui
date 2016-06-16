@@ -65,7 +65,6 @@ images {
 	image: IMG_SRC_DIR/"button_edit_bg_new.png" COMP;
 	image: IMG_SRC_DIR/"background.png" COMP;
 	image: IMG_SRC_DIR/"background_dim.png" COMP;
-	image: IMG_SRC_DIR/"call_button_add.png" COMP;
 	image: IMG_SRC_DIR/"call_active_ic_call.png" COMP;
 	image: IMG_SRC_DIR/"core_button_add.png" COMP;
 
@@ -92,7 +91,6 @@ collections {
 
 	base_scale: 2.6;
 
-	RESOURCE_IMAGE("call_button_add.png", IMG_SRC_DIR/"call_button_add.png");
 	RESOURCE_IMAGE("call_button_icon_01.png", IMG_SRC_DIR/"call_button_icon_01.png");
 	RESOURCE_IMAGE("call_button_icon_03.png", IMG_SRC_DIR/"call_button_icon_03.png");
 	RESOURCE_IMAGE("call_button_icon_04.png", IMG_SRC_DIR/"call_button_icon_04.png");

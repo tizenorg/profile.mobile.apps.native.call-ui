@@ -57,8 +57,8 @@
 #define CALLUI_REJ_MSG_SCREEN_USED_H		(CALLUI_AN_CONTACT_INFO_BG_H + CALLUI_AN_ACTION_BG_W_REJECT_MSG_H + CALLUI_AN_STROKE_H)
 #define CALLUI_REJ_MSG_FLICK_TIME_LIMIT_MS	500
 
-#define CALLUI_REJ_MSG_DIMMER_ALFA_START	0
-#define CALLUI_REJ_MSG_DIMMER_ALFA_END		77
+#define CALLUI_REJ_MSG_DIMMER_ALPHA_START	0
+#define CALLUI_REJ_MSG_DIMMER_ALPHA_END		77
 #define CALLUI_REJ_MSG_DIMMER_COLOR			0, 0, 0
 
 #define CALLUI_REJ_MSG_OPACITY				(0.3 - 0.04)
@@ -109,8 +109,8 @@ struct _callui_view_incoming_call_noti {
 	int rm_actualize_state;
 
 	Ecore_Animator *rm_animator;
-	int rm_dimmer_alfa;
-	int rm_dimmer_alfa_start;
+	int rm_dimmer_alpha;
+	int rm_dimmer_alpha_start;
 };
 
 typedef struct _callui_view_incoming_call_noti _callui_view_incoming_call_noti_t;
@@ -473,18 +473,18 @@ static Eina_Bool __rm_animation_cb(void *data, double pos)
 	Evas_Coord new_scroller_h = 0;
 
 	int dim_step = 0;
-	if (CALLUI_REJ_MSG_DIMMER_ALFA_END == vd->rm_dimmer_alfa_start) {
-		dim_step = dtoi(CALLUI_REJ_MSG_DIMMER_ALFA_END * pos);
+	if (CALLUI_REJ_MSG_DIMMER_ALPHA_END == vd->rm_dimmer_alpha_start) {
+		dim_step = dtoi(CALLUI_REJ_MSG_DIMMER_ALPHA_END * pos);
 	} else {
-		dim_step = dtoi((CALLUI_REJ_MSG_DIMMER_ALFA_END - vd->rm_dimmer_alfa_start) * pos);
+		dim_step = dtoi((CALLUI_REJ_MSG_DIMMER_ALPHA_END - vd->rm_dimmer_alpha_start) * pos);
 	}
 
 	if (vd->rm_state == CALLUI_REJ_MSG_SHOW_IN_PROG) {
 		new_scroller_h = vd->rm_scroller_anim_start_h + path_step;
-		vd->rm_dimmer_alfa = vd->rm_dimmer_alfa_start + dim_step;
+		vd->rm_dimmer_alpha = vd->rm_dimmer_alpha_start + dim_step;
 	} else if (vd->rm_state == CALLUI_REJ_MSG_HIDE_IN_PROG) {
 		new_scroller_h = vd->rm_scroller_anim_start_h - path_step;
-		vd->rm_dimmer_alfa = vd->rm_dimmer_alfa_start - dim_step;
+		vd->rm_dimmer_alpha = vd->rm_dimmer_alpha_start - dim_step;
 	} else {
 		err("Invalid state for animation. rm_state[%d]", vd->rm_state);
 		__rm_reset_anim_params(vd);
@@ -492,7 +492,7 @@ static Eina_Bool __rm_animation_cb(void *data, double pos)
 	}
 	dbg("anim pos[%f], RM scroller new size [%d][%d]", pos,  vd->rm_scroller_anim_start_w, new_scroller_h);
 
-	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alfa);
+	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alpha);
 
 	evas_object_resize(vd->rm_scroller, vd->rm_scroller_anim_start_w, new_scroller_h);
 	evas_object_geometry_set(vd->rm_scroller_bg, vd->rm_scroller_x, vd->rm_scroller_y, vd->rm_scroller_anim_start_w, new_scroller_h);
@@ -754,7 +754,7 @@ static callui_result_e __create_main_content(callui_view_incoming_call_noti_h vd
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	evas_object_size_hint_weight_set(vd->base_view.contents, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(vd->base_view.contents, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, CALLUI_REJ_MSG_DIMMER_ALFA_START);
+	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, CALLUI_REJ_MSG_DIMMER_ALPHA_START);
 	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
 	evas_object_show(vd->base_view.contents);
 
@@ -874,7 +874,7 @@ static void __rm_prepare_animator(callui_view_incoming_call_noti_h vd)
 	dbg("Animation start params: path[%f], time[%f], w[%d], h[%d]",
 			vd->rm_anim_path, anim_time, vd->rm_scroller_anim_start_w, vd->rm_scroller_anim_start_h);
 
-	vd->rm_dimmer_alfa_start = vd->rm_dimmer_alfa;
+	vd->rm_dimmer_alpha_start = vd->rm_dimmer_alpha;
 	vd->rm_animator = ecore_animator_timeline_add(anim_time, __rm_animation_cb, vd);
 	if (!vd->rm_animator) {
 		err("Failed to create animator.");
@@ -933,8 +933,8 @@ static void __rm_hide_instantly(callui_view_incoming_call_noti_h vd)
 {
 	__rm_reset_anim_params(vd);
 
-	vd->rm_dimmer_alfa = CALLUI_REJ_MSG_DIMMER_ALFA_START;
-	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alfa);
+	vd->rm_dimmer_alpha = CALLUI_REJ_MSG_DIMMER_ALPHA_START;
+	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alpha);
 
 	__rm_close_cb(vd);
 
@@ -945,8 +945,8 @@ static void __rm_show_instantly(callui_view_incoming_call_noti_h vd)
 {
 	__rm_reset_anim_params(vd);
 
-	vd->rm_dimmer_alfa = CALLUI_REJ_MSG_DIMMER_ALFA_END;
-	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alfa);
+	vd->rm_dimmer_alpha = CALLUI_REJ_MSG_DIMMER_ALPHA_END;
+	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alpha);
 
 	__rm_recalculate(vd);
 

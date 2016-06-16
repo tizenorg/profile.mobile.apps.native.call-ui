@@ -28,7 +28,6 @@
 
 #define CALLUI_GROUP_CALL_BACK_BTN		"call_back"
 #define CALLUI_GROUP_MSG_BTN			"message_button"
-#define CALLUI_GROUP_ADD_CONTACT_BTN	"add_contact_button"
 
 #define CALLUI_APP_CONTROL_MIME_CONTACT	"application/vnd.tizen.contact"
 #define CALLUI_OUTGOING_CALL_TIME_DURATION_STR	"00:00"
@@ -73,7 +72,7 @@ static char *__vcui_endcall_get_item_text(void *data, Evas_Object *obj, const ch
 static void __create_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __popup_back_click_cb(void *data, Evas_Object *obj, void *event_info);
-static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+static void __add_contact_click_cb(void *data, Evas_Object *obj, const char *emission, const char *source);
 
 static Eina_Bool __ending_timer_expired_cb(void *data);
 static Eina_Bool __ending_timer_blink_cb(void *data);
@@ -199,6 +198,8 @@ static callui_result_e __create_main_content(callui_view_callend_h vd, Evas_Obje
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->base_view.contents, "swallow.caller_info", vd->caller_info);
 
+	elm_object_signal_callback_add(vd->caller_info, "add_contact.clicked", "caller_info", __add_contact_click_cb, vd);
+
 	_callui_action_bar_show(ad->action_bar);
 	_callui_action_bar_set_disabled_state(ad->action_bar, true);
 
@@ -242,11 +243,6 @@ static callui_result_e __create_single_contact_info(callui_view_callend_h vd, co
 	const char *call_name = call_data->call_ct_info.call_disp_name;
 
 	if (STRING_EMPTY(call_name)) {
-		Evas_Object *add_contact_btn = _callui_load_edj(vd->base_view.contents, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_ADD_CONTACT_BTN);
-		CALLUI_RETURN_VALUE_IF_FAIL(add_contact_btn,  CALLUI_RESULT_ALLOCATION_FAIL);
-		evas_object_event_callback_add(add_contact_btn, EVAS_CALLBACK_MOUSE_UP, __add_contact_btn_click_cb, vd);
-
-		elm_object_part_content_set(vd->caller_info, "ec_add_contact_btn", add_contact_btn);
 		elm_object_signal_emit(vd->caller_info, "set_ec_add_cont_btn_enabled", "caller_info");
 
 		/* maximized contact info */
@@ -528,10 +524,11 @@ static void __popup_back_click_cb(void *data, Evas_Object *obj, void *event_info
 	}
 }
 
-static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __add_contact_click_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	CALLUI_RETURN_IF_FAIL(data);
-	callui_view_callend_h vd = (callui_view_callend_h)data;
+
+	callui_view_callend_h vd = data;
 
 	if (vd->ending_timer) {
 		ecore_timer_freeze(vd->ending_timer);
@@ -544,14 +541,15 @@ static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj,
 
 	vd->create_update_popup = elm_popup_add(parent);
 	eext_object_event_callback_add(vd->create_update_popup, EEXT_CALLBACK_BACK, __popup_back_click_cb, vd);
-
 	elm_popup_align_set(vd->create_update_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
+
 	elm_object_part_text_set(vd->create_update_popup, "title,text",  vd->call_number);
 
 	Evas_Object *genlist = elm_genlist_add(vd->create_update_popup);
 	elm_genlist_homogeneous_set(genlist, EINA_TRUE);
 	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
 	elm_scroller_content_min_limit(genlist, EINA_FALSE, EINA_TRUE);
+	evas_object_show(genlist);
 
 	Elm_Genlist_Item_Class *itc = elm_genlist_item_class_new();
 	CALLUI_RETURN_IF_FAIL(itc);
@@ -564,8 +562,10 @@ static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj,
 			NULL, ELM_GENLIST_ITEM_NONE, __update_contact_btn_click_cb, vd);
 
 	elm_genlist_item_class_free(itc);
-	elm_object_content_set(vd->create_update_popup, genlist);
+
+	elm_object_part_content_set(vd->create_update_popup, "elm.swallow.content", genlist);
 	elm_popup_orient_set(vd->create_update_popup, ELM_POPUP_ORIENT_CENTER);
+
 	evas_object_show(vd->create_update_popup);
 }
 
