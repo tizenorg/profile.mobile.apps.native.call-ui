@@ -222,7 +222,7 @@ group{
 				align: 0 1;
 			}
 		}
-		part { name: PART_SWALLOW_TEXTBLOCK_AREA;
+		part { name: "swallow.textarea";
 			type: SWALLOW;
 			scale: 1;
 			description {
@@ -245,7 +245,7 @@ group{
 				visible: 0;
 			}
 		}
-		part { name: PART_SWALLOW_KEYPAD;
+		part { name: "swallow.keypad_region";
 			type: SWALLOW;
 			scale: 1;
 			description {
@@ -270,29 +270,29 @@ group{
 	}
 	programs {
 		program { name: "show_keypadbtn_anim";
-			signal: "SHOW";
-			source: "KEYPAD_BTN";
+			signal: "show";
+			source: "keypad_btn";
 			after: "show_entry";
 			after: "show_keypadbtn";
 		}
 		program {
 			name: "show_entry";
 			action: STATE_SET "show" 0.0;
-			target: PART_SWALLOW_TEXTBLOCK_AREA;
+			target: "swallow.textarea";
 		}
 		program { name: "show_keypadbtn";
 			action: STATE_SET "show" 0.0;
 			transition: LINEAR 0.25;
-			target: PART_SWALLOW_KEYPAD;
+			target: "swallow.keypad_region";
 		}
 		program { name: "hide_keypadbtn_anim";
-			signal: "HIDE";
-			source: "KEYPAD_BTN";
+			signal: "hide";
+			source: "keypad_btn";
 			after: "hide_keypadbtn_with_anim";
 		}
 		program { name: "hide_keypadbtn_no_anim";
-			signal: "QUICK_HIDE";
-			source: "KEYPAD_BTN";
+			signal: "quick_hide";
+			source: "keypad_btn";
 			after: "hide_keypadbtn_without_anim";
 		}
 		program {
@@ -302,20 +302,20 @@ group{
 		program {
 			name: "hide_entry";
 			action: STATE_SET "hide" 0.0;
-			target: PART_SWALLOW_TEXTBLOCK_AREA;
+			target: "swallow.textarea";
 		}
 		program {
 			name: "hide_keypadbtn_with_anim";
 			action: STATE_SET "default" 0.0;
 			transition: LINEAR 0.25;
-			target: PART_SWALLOW_KEYPAD;
+			target: "swallow.keypad_region";
 			after: "hide_entry";
 			after: "hide_complete_notify";
 		}
 		program {
 			name: "hide_keypadbtn_without_anim";
 			action: STATE_SET "default" 0.0;
-			target: PART_SWALLOW_KEYPAD;
+			target: "swallow.keypad_region";
 			after: "hide_entry";
 			after: "hide_complete_notify";
 		}

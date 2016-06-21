@@ -26,12 +26,16 @@
 #include "callui-manager.h"
 #include "callui-state-provider.h"
 
-#define APP_CONTROL_MIME_CONTACT "application/vnd.tizen.contact"
-#define OUTGOING_CALL_TIME_DURATION_STR "00:00"
-#define ENDING_TIMER_INTERVAL 2.0
-#define BLINKING_TIMER_INTERVAL 0.5
-#define BLINKING_MAX_COUNT 5
-#define REPLY_BTNS_DIVIDER_WIDTH 2
+#define CALLUI_GROUP_CALL_BACK_BTN		"call_back"
+#define CALLUI_GROUP_MSG_BTN			"message_button"
+
+#define CALLUI_APP_CONTROL_MIME_CONTACT	"application/vnd.tizen.contact"
+#define CALLUI_OUTGOING_CALL_TIME_DURATION_STR	"00:00"
+
+#define CALLUI_ENDING_TIMER_INTERVAL		2.0
+#define CALLUI_BLINKING_TIMER_INTERVAL		0.5
+#define CALLUI_BLINKING_MAX_COUNT			5
+#define CALLUI_REPLY_BTNS_DIVIDER_WIDTH		2
 
 #define AO016 217, 217, 217, 255
 
@@ -68,7 +72,7 @@ static char *__vcui_endcall_get_item_text(void *data, Evas_Object *obj, const ch
 static void __create_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __popup_back_click_cb(void *data, Evas_Object *obj, void *event_info);
-static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+static void __add_contact_click_cb(void *data, Evas_Object *obj, const char *emission, const char *source);
 
 static Eina_Bool __ending_timer_expired_cb(void *data);
 static Eina_Bool __ending_timer_blink_cb(void *data);
@@ -179,7 +183,7 @@ static callui_result_e __create_main_content(callui_view_callend_h vd, Evas_Obje
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME, GRP_VIEW_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(parent, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_VIEW_MAIN_LY);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
 
@@ -190,9 +194,11 @@ static callui_result_e __create_main_content(callui_view_callend_h vd, Evas_Obje
 	elm_object_signal_callback_add(vd->base_view.contents,
 			"maximize.anim.finished", "view_main_ly", __maximize_anim_completed_cb, vd);
 
-	vd->caller_info = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_CALLER_INFO);
+	vd->caller_info = _callui_load_edj(vd->base_view.contents, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_CALLER_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(vd->base_view.contents, "caller_info", vd->caller_info);
+	elm_object_part_content_set(vd->base_view.contents, "swallow.caller_info", vd->caller_info);
+
+	elm_object_signal_callback_add(vd->caller_info, "add_contact.clicked", "caller_info", __add_contact_click_cb, vd);
 
 	_callui_action_bar_show(ad->action_bar);
 	_callui_action_bar_set_disabled_state(ad->action_bar, true);
@@ -206,7 +212,7 @@ static callui_result_e __create_main_content(callui_view_callend_h vd, Evas_Obje
 
 static Evas_Object *__create_call_back_btn(callui_view_callend_h vd)
 {
-	Evas_Object *button_call_back = _callui_load_edj(vd->reply_btns_box, EDJ_NAME, GRP_ENDCALL_CALL_BACK_BTN);
+	Evas_Object *button_call_back = _callui_load_edj(vd->reply_btns_box, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_CALL_BACK_BTN);
 	CALLUI_RETURN_NULL_IF_FAIL(button_call_back);
 	edje_object_signal_callback_add(_EDJ(button_call_back), "clicked", "edje", __call_back_btn_click_cb, vd);
 	elm_object_translatable_part_text_set(button_call_back, "text", "IDS_CALL_BUTTON_CALL");
@@ -220,7 +226,7 @@ static Evas_Object *__create_call_back_btn(callui_view_callend_h vd)
 
 static Evas_Object *__create_message_btn(callui_view_callend_h vd)
 {
-	Evas_Object *button_message = _callui_load_edj(vd->reply_btns_box, EDJ_NAME, GRP_ENDCALL_MSG_BTN);
+	Evas_Object *button_message = _callui_load_edj(vd->reply_btns_box, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_MSG_BTN);
 	CALLUI_RETURN_NULL_IF_FAIL(button_message);
 	edje_object_signal_callback_add(_EDJ(button_message), "clicked", "edje", __msg_btn_click_cb, vd);
 	elm_object_translatable_part_text_set(button_message, "text", "IDS_COM_BODY_MESSAGE");
@@ -236,12 +242,7 @@ static callui_result_e __create_single_contact_info(callui_view_callend_h vd, co
 {
 	const char *call_name = call_data->call_ct_info.call_disp_name;
 
-	if (!(call_name && call_name[0] != '\0')) {
-		Evas_Object *add_contact_btn = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_ENDCALL_ADD_CONTACT_BTN);
-		CALLUI_RETURN_VALUE_IF_FAIL(add_contact_btn,  CALLUI_RESULT_ALLOCATION_FAIL);
-		evas_object_event_callback_add(add_contact_btn, EVAS_CALLBACK_MOUSE_UP, __add_contact_btn_click_cb, vd);
-
-		elm_object_part_content_set(vd->caller_info, "ec_add_contact_btn", add_contact_btn);
+	if (STRING_EMPTY(call_name)) {
 		elm_object_signal_emit(vd->caller_info, "set_ec_add_cont_btn_enabled", "caller_info");
 
 		/* maximized contact info */
@@ -273,7 +274,7 @@ static Evas_Object *__create_reply_btns_divider(callui_view_callend_h vd)
 
 	evas_object_size_hint_fill_set(divider, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_color_set(divider, AO016);
-	evas_object_size_hint_min_set(divider, ELM_SCALE_SIZE(REPLY_BTNS_DIVIDER_WIDTH), 0);
+	evas_object_size_hint_min_set(divider, ELM_SCALE_SIZE(CALLUI_REPLY_BTNS_DIVIDER_WIDTH), 0);
 	evas_object_show(divider);
 
 	return divider;
@@ -307,31 +308,21 @@ static callui_result_e __create_reply_btns_panel(callui_view_callend_h vd)
 
 static callui_result_e __set_single_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
-	const char *file_path = call_data->call_ct_info.caller_id_path;
 	const char *call_name = call_data->call_ct_info.call_disp_name;
 	const char *call_number = NULL;
 
-	if (call_data->call_disp_num[0] != '\0') {
+	if (!STRING_EMPTY(call_data->call_disp_num)) {
 		call_number = call_data->call_disp_num;
 	} else {
 		call_number = call_data->call_num;
 	}
 
-	if (strcmp(file_path, "default") != 0) {
-		Evas_Object *layout = _callui_create_thumbnail(vd->base_view.contents, file_path, THUMBNAIL_138);
-		elm_object_part_content_set(vd->caller_info, "contact_icon", layout);
-		elm_object_signal_emit(vd->caller_info, "hide_default_cid", "");
-	} else {
-		elm_object_signal_emit(vd->caller_info, "show_default_cid", "");
-	}
-
-	if (!(call_name && call_name[0] != '\0') && !(call_number && call_number[0] != '\0')) {
+	if (STRING_EMPTY(call_name) && STRING_EMPTY(call_number)) {
 		elm_object_translatable_part_text_set(vd->caller_info, "contact_name", "IDS_CALL_BODY_UNKNOWN");
 		elm_object_translatable_part_text_set(vd->caller_info, "ec_contact_name", "IDS_CALL_BODY_UNKNOWN");
 		return CALLUI_RESULT_OK;
 	}
 	strncpy(vd->call_number, call_number, sizeof(vd->call_number));
-
 
 	callui_result_e res = __create_single_contact_info(vd, call_data);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
@@ -346,8 +337,6 @@ static callui_result_e __set_single_call_info(callui_view_callend_h vd, const ca
 
 static void __set_emergency_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
-	elm_object_signal_emit(vd->caller_info, "set_emergency_mode", "");
-
 	// maximized contact info
 	elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
 	elm_object_translatable_part_text_set(vd->caller_info, "contact_name", "IDS_COM_BODY_EMERGENCY_NUMBER");
@@ -358,11 +347,9 @@ static void __set_emergency_call_info(callui_view_callend_h vd, const callui_cal
 
 static void __set_conference_call_info(callui_view_callend_h vd, const callui_call_data_t *call_data)
 {
-	elm_object_signal_emit(vd->caller_info, "set_conference_mode", "");
-
 	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
-	char buf[CALLUI_BUF_MEMBER_SIZE] = { 0 };
-	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->conf_member_count);
+	char buf[CALLUI_BUFF_SIZE_HUG] = { 0 };
+	snprintf(buf, CALLUI_BUFF_SIZE_HUG, status, call_data->conf_member_count);
 
 	// maximized contact info
 	elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
@@ -377,11 +364,11 @@ static void __set_conference_call_info(callui_view_callend_h vd, const callui_ca
 static callui_result_e __set_ended_call_duration_sting(callui_view_callend_h vd, callui_call_data_t *call_data)
 {
 	if (call_data->is_dialing) {
-		vd->time_string = strdup(OUTGOING_CALL_TIME_DURATION_STR);
+		vd->time_string = strdup(CALLUI_OUTGOING_CALL_TIME_DURATION_STR);
 	} else {
 		struct tm *call_time = _callui_common_get_current_time_diff_in_tm(call_data->start_time);
 		CALLUI_RETURN_VALUE_IF_FAIL(call_time, CALLUI_RESULT_ALLOCATION_FAIL);
-		vd->time_string = _callui_common_get_time_string(call_time);
+		vd->time_string = _callui_common_get_duration_time_string(call_time);
 		free(call_time);
 	}
 	return CALLUI_RESULT_OK;
@@ -457,6 +444,8 @@ static callui_result_e __update_displayed_data(callui_view_callend_h vd)
 	res = __set_ended_call_duration_sting(vd, call_data);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, call_data), CALLUI_RESULT_FAIL);
+
 	evas_object_show(vd->base_view.contents);
 
 	return CALLUI_RESULT_OK;
@@ -486,7 +475,7 @@ static void __launch_contact_app(const char *operation, const char *call_number)
 		err("app_control_create() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_set_operation(app_control, operation)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_operation() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_set_mime(app_control, APP_CONTROL_MIME_CONTACT)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_set_mime(app_control, CALLUI_APP_CONTROL_MIME_CONTACT)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_mime() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_add_extra_data(app_control, APP_CONTROL_DATA_PHONE, call_number)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_add_extra_data() is failed. ret[%d]", ret);
@@ -535,10 +524,11 @@ static void __popup_back_click_cb(void *data, Evas_Object *obj, void *event_info
 	}
 }
 
-static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info)
+static void __add_contact_click_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	CALLUI_RETURN_IF_FAIL(data);
-	callui_view_callend_h vd = (callui_view_callend_h)data;
+
+	callui_view_callend_h vd = data;
 
 	if (vd->ending_timer) {
 		ecore_timer_freeze(vd->ending_timer);
@@ -551,14 +541,15 @@ static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj,
 
 	vd->create_update_popup = elm_popup_add(parent);
 	eext_object_event_callback_add(vd->create_update_popup, EEXT_CALLBACK_BACK, __popup_back_click_cb, vd);
-
 	elm_popup_align_set(vd->create_update_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
+
 	elm_object_part_text_set(vd->create_update_popup, "title,text",  vd->call_number);
 
 	Evas_Object *genlist = elm_genlist_add(vd->create_update_popup);
 	elm_genlist_homogeneous_set(genlist, EINA_TRUE);
 	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
 	elm_scroller_content_min_limit(genlist, EINA_FALSE, EINA_TRUE);
+	evas_object_show(genlist);
 
 	Elm_Genlist_Item_Class *itc = elm_genlist_item_class_new();
 	CALLUI_RETURN_IF_FAIL(itc);
@@ -571,8 +562,10 @@ static void __add_contact_btn_click_cb(void *data, Evas *evas, Evas_Object *obj,
 			NULL, ELM_GENLIST_ITEM_NONE, __update_contact_btn_click_cb, vd);
 
 	elm_genlist_item_class_free(itc);
-	elm_object_content_set(vd->create_update_popup, genlist);
+
+	elm_object_part_content_set(vd->create_update_popup, "elm.swallow.content", genlist);
 	elm_popup_orient_set(vd->create_update_popup, ELM_POPUP_ORIENT_CENTER);
+
 	evas_object_show(vd->create_update_popup);
 }
 
@@ -614,12 +607,12 @@ static Eina_Bool __ending_timer_blink_cb(void *data)
 	}
 
 	vd->blink_cnt++;
-	if (vd->blink_cnt == BLINKING_MAX_COUNT) {
+	if (vd->blink_cnt == CALLUI_BLINKING_MAX_COUNT) {
 		/* Run a timer of 2 sec for destroying the end selection menu */
 		DELETE_ECORE_TIMER(vd->ending_timer);
 		elm_object_translatable_part_text_set(vd->base_view.contents,
 				"call_txt_status", "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB");
-		vd->ending_timer = ecore_timer_add(ENDING_TIMER_INTERVAL, __ending_timer_expired_cb, vd);
+		vd->ending_timer = ecore_timer_add(CALLUI_ENDING_TIMER_INTERVAL, __ending_timer_expired_cb, vd);
 
 		vd->blink_timer = NULL;
 		return ECORE_CALLBACK_CANCEL;
@@ -631,7 +624,7 @@ static callui_result_e __create_ending_timer(callui_view_callend_h vd)
 {
 	vd->blink_cnt = 0;
 	DELETE_ECORE_TIMER(vd->blink_timer);
-	vd->blink_timer = ecore_timer_add(BLINKING_TIMER_INTERVAL, __ending_timer_blink_cb, vd);
+	vd->blink_timer = ecore_timer_add(CALLUI_BLINKING_TIMER_INTERVAL, __ending_timer_blink_cb, vd);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->blink_timer, CALLUI_RESULT_ALLOCATION_FAIL);
 	return CALLUI_RESULT_OK;
 }

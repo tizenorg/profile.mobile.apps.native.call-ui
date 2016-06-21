@@ -22,14 +22,21 @@
 #include "callui-action-bar.h"
 #include "callui-common-types.h"
 #include "callui-debug.h"
-#include "callui-view-elements.h"
 #include "callui-keypad.h"
+#include "callui-view-elements.h"
 #include "callui-common.h"
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
-#include "callui-view-caller-info-defines.h"
 
-#define PART_SWALLOW_ACTION_BAR	"action_bar"
+#define CALLUI_GROUP_BUTTON_LAYOUT			"action_bar"
+
+#define CALLUI_PART_SWALLOW_TOP_FIRST		"swallow.top_first_btn"
+#define CALLUI_PART_SWALLOW_TOP_SECOND		"swallow.top_second_btn"
+#define CALLUI_PART_SWALLOW_TOP_THIRD		"swallow.top_third_btn"
+#define CALLUI_PART_SWALLOW_BOTTOM_FIRST	"swallow.bottom_first_btn"
+#define CALLUI_PART_SWALLOW_BOTTOM_SECOND	"swallow.bottom_second_btn"
+#define CALLUI_PART_SWALLOW_BOTTOM_THIRD	"swallow.bottom_third_btn"
+#define CALLUI_PART_SWALLOW_ACTION_BAR		"swallow.action_bar"
 
 typedef enum {
 	CALLUI_ACTION_BTN_SPEAKER = 0,
@@ -84,7 +91,7 @@ static callui_result_e __update_contacts_btn(callui_action_bar_h action_bar);
 
 static __action_btn_params_t btn_params[CALLUI_ACTION_BTN_COUNT] = {
 		{
-				"IDS_CALL_BUTTON_SPEAKER", PART_TOP_FIRST_BTN,
+				"IDS_CALL_BUTTON_SPEAKER", CALLUI_PART_SWALLOW_TOP_FIRST,
 				__update_speaker_btn, __speaker_btn_click_cb,
 				{
 						"callui_action_btn_speaker",
@@ -93,7 +100,7 @@ static __action_btn_params_t btn_params[CALLUI_ACTION_BTN_COUNT] = {
 				}
 		},
 		{
-				"IDS_CALL_SK3_KEYPAD", PART_TOP_SECOND_BTN,
+				"IDS_CALL_SK3_KEYPAD", CALLUI_PART_SWALLOW_TOP_SECOND,
 				__update_keypad_btn, __keypad_btn_click_cb,
 				{
 						"callui_action_btn_keypad",
@@ -102,7 +109,7 @@ static __action_btn_params_t btn_params[CALLUI_ACTION_BTN_COUNT] = {
 				}
 		},
 		{
-				"IDS_CALL_BUTTON_BLUETOOTH_ABB", PART_TOP_THIRD_BTN,
+				"IDS_CALL_BUTTON_BLUETOOTH_ABB", CALLUI_PART_SWALLOW_TOP_THIRD,
 				__update_bluetooth_btn, __bluetooth_btn_click_cb,
 				{
 						"callui_action_btn_headset",
@@ -111,7 +118,7 @@ static __action_btn_params_t btn_params[CALLUI_ACTION_BTN_COUNT] = {
 				}
 		},
 		{
-				"IDS_CALL_BUTTON_ADD_CALL", PART_BOTTOM_FIRST_BTN,
+				"IDS_CALL_BUTTON_ADD_CALL", CALLUI_PART_SWALLOW_BOTTOM_FIRST,
 				__update_add_call_btn, __add_call_btn_click_cb,
 				{
 						"callui_action_btn_add",
@@ -120,7 +127,7 @@ static __action_btn_params_t btn_params[CALLUI_ACTION_BTN_COUNT] = {
 				}
 		},
 		{
-				"IDS_CALL_BUTTON_MUTE_ABB", PART_BOTTOM_SECOND_BTN,
+				"IDS_CALL_BUTTON_MUTE_ABB", CALLUI_PART_SWALLOW_BOTTOM_SECOND,
 				__update_mute_btn, __mute_btn_click_cb,
 				{
 						"callui_action_btn_mute",
@@ -129,7 +136,7 @@ static __action_btn_params_t btn_params[CALLUI_ACTION_BTN_COUNT] = {
 				}
 		},
 		{
-				"IDS_CALL_BUTTON_CONTACTS", PART_BOTTOM_THIRD_BTN,
+				"IDS_CALL_BUTTON_CONTACTS", CALLUI_PART_SWALLOW_BOTTOM_THIRD,
 				__update_contacts_btn, __contacts_btn_click_cb,
 				{
 						"callui_action_btn_contacts",
@@ -384,7 +391,7 @@ static void __main_layout_del_cb(void *data, Evas *evas, Evas_Object *obj, void 
 
 static Evas_Object *__create_main_layout(callui_action_bar_h action_bar, Evas_Object *parent)
 {
-	Evas_Object *layout = _callui_load_edj(parent, EDJ_NAME, GRP_BUTTON_LAYOUT);
+	Evas_Object *layout = _callui_load_edj(parent, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_BUTTON_LAYOUT);
 	CALLUI_RETURN_NULL_IF_FAIL(layout);
 	evas_object_event_callback_add(layout, EVAS_CALLBACK_DEL, __main_layout_del_cb, action_bar);
 
@@ -582,7 +589,7 @@ void _callui_action_bar_show(callui_action_bar_h action_bar)
 	CALLUI_RETURN_IF_FAIL(action_bar);
 
 	__update_btns_txt(action_bar);
-	elm_object_part_content_set(_callui_vm_get_main_ly(action_bar->ad->view_manager), PART_SWALLOW_ACTION_BAR, action_bar->main_layout);
+	elm_object_part_content_set(_callui_vm_get_main_ly(action_bar->ad->view_manager), CALLUI_PART_SWALLOW_ACTION_BAR, action_bar->main_layout);
 	evas_object_show(action_bar->main_layout);
 }
 
@@ -590,7 +597,7 @@ void _callui_action_bar_hide(callui_action_bar_h action_bar)
 {
 	CALLUI_RETURN_IF_FAIL(action_bar);
 
-	elm_object_part_content_unset(_callui_vm_get_main_ly(action_bar->ad->view_manager), PART_SWALLOW_ACTION_BAR);
+	elm_object_part_content_unset(_callui_vm_get_main_ly(action_bar->ad->view_manager), CALLUI_PART_SWALLOW_ACTION_BAR);
 	evas_object_hide(action_bar->main_layout);
 }
 

@@ -34,41 +34,51 @@
 #include "callui-keypad.h"
 #include "callui-view-multi-call-conf.h"
 #include "callui-view-quickpanel.h"
-#include "callui-view-caller-info-defines.h"
 #include "callui-proximity-lock-manager.h"
 #include "callui-manager.h"
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
 
-#define	POPUP_LIST_W		300
-#define	POPUP_LIST_ITEM_H 	120
-#define APP_CONTROL_MIME_CONTACT "application/vnd.tizen.contact"
-#define CONTACT_ID_BUF_LEN 16
+#define	CALLUI_POPUP_LIST_W		300
+#define	CALLUI_POPUP_LIST_ITEM_H 	120
+
+#define CALLUI_CID_THUMBN_SIZE_DEFAULT	0
+#define CALLUI_CID_THUMBN_SIZE_TINY		98
+#define CALLUI_CID_THUMBN_SIZE_SMALL	138
+#define CALLUI_CID_THUMBN_SIZE_MEDIUM	168
+#define CALLUI_CID_THUMBN_SIZE_BIG		348
+
+#define CALLUI_PART_SWALLOW_END_BTN "swallow.end_btn"
 
 typedef struct {
 	int index;
 	char option_msg[512];
-} second_call_popup_data_t;
+} callui_sec_call_popup_data_t;
 
+static int _g_cid_size[CALLUI_CID_SIZE_COUNT] = {
+		CALLUI_CID_THUMBN_SIZE_DEFAULT,
+		CALLUI_CID_THUMBN_SIZE_TINY,
+		CALLUI_CID_THUMBN_SIZE_SMALL,
+		CALLUI_CID_THUMBN_SIZE_MEDIUM,
+		CALLUI_CID_THUMBN_SIZE_BIG
+};
+
+static Evas_Object *__callui_get_caller_info_layout(void *data);
+static void __callui_hold_btn_cb(void *data, Evas_Object *obj, void *event_info);
+static void __callui_unhold_btn_cb(void *data, Evas_Object *obj, void *event_info);
+static void __callui_move_more_option(callui_app_data_t *ad, Evas_Object *ctxpopup);
+static void __callui_more_option_dismissed_cb(void *data, Evas_Object *obj, void *event_info);
+static void __callui_more_option_delete_cb(void *data, Evas *e, Evas_Object *obj, void *event_info);
 static void __callui_unload_more_option(callui_app_data_t *ad);
-
-const char *group_thumbnail[] = {
-	GROUP_THUMBNAIL_98,
-	GROUP_THUMBNAIL_138,
-	"",
-};
-
-const char *group_default_thumbnail[] = {
-	GROUP_DEFAULT_THUMBNAIL_98,
-	GROUP_DEFAULT_THUMBNAIL_138,
-	GROUP_DEFAULT_CONFERENCE_THUMBNAIL_138,
-};
-
-const int thumbnail_size[] = {
-	98,
-	138,
-	138,
-};
+static void __callui_unload_second_call_popup(callui_app_data_t *ad);
+static char *__callui_gl_second_call_option_label_get(void *data, Evas_Object *obj, const char *part);
+static void __callui_gl_second_call_option_del_cb(void *data, Evas_Object *obj);
+static void __callui_gl_second_call_option_sel(void *data, Evas_Object *obj, void *event_info);
+static void __callui_second_call_cancel_btn_response_cb(void *data, Evas_Object *obj, void *event_info);
+static void __callui_unload_bt_popup(callui_app_data_t *ad);
+static void __callui_bt_popup_cancel_btn_cb(void *data, Evas_Object *obj, void *event_info);
+static void __callui_bt_popup_ok_btn_cb(void *data, Evas_Object *obj, void *event_info);
+static void __callui_create_new_msg_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 
 Evas_Object *_callui_load_edj(Evas_Object *parent, const char *file, const char *group)
 {
@@ -106,7 +116,7 @@ static Evas_Object *__callui_get_caller_info_layout(void *data)
 
 	layout = elm_object_part_content_get(_callui_vm_get_main_ly(ad->view_manager), "elm.swallow.content");
 	CALLUI_RETURN_VALUE_IF_FAIL(layout, NULL);
-	caller_info = elm_object_part_content_get(layout, "caller_info");
+	caller_info = elm_object_part_content_get(layout, "swallow.caller_info");
 
 	return caller_info;
 }
@@ -115,15 +125,15 @@ Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb c
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(parent != NULL, NULL);
 
-	Evas_Object *btn = elm_object_part_content_get(parent, PART_END_BTN);
+	Evas_Object *btn = elm_object_part_content_get(parent, CALLUI_PART_SWALLOW_END_BTN);
 	if (!btn) {
 		btn = elm_button_add(parent);
 		elm_object_style_set(btn, "call_icon_only");
 
 		Evas_Object *icon = elm_image_add(btn);
-		elm_image_file_set(icon, EDJ_NAME, "call_button_icon_01.png");
+		elm_image_file_set(icon, CALLUI_CALL_EDJ_PATH, "call_button_icon_01.png");
 		elm_object_part_content_set(btn, "elm.swallow.content", icon);
-		elm_object_part_content_set(parent, PART_END_BTN, btn);
+		elm_object_part_content_set(parent, CALLUI_PART_SWALLOW_END_BTN, btn);
 
 		if (cb_func) {
 			evas_object_smart_callback_add(btn, "clicked", cb_func, data);
@@ -134,37 +144,87 @@ Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb c
 	return btn;
 }
 
-/* Creates thumbnail */
-Evas_Object *_callui_create_thumbnail(Evas_Object *parent, const char *path, thumbnail_type type)
+Evas_Object *_callui_create_cid_thumbnail(Evas_Object *parent, callui_cid_type_e type, const char *path)
 {
-	return _callui_create_thumbnail_with_size(parent, path, type, false);
+	return _callui_create_cid_thumbnail_with_size(parent, type, CALLUI_CID_SIZE_DEFAULT, path);
 }
 
-/* Creates thumbnail with possibility to set size in code*/
-Evas_Object *_callui_create_thumbnail_with_size(Evas_Object *parent, const char *path, thumbnail_type type, bool set_size)
+Evas_Object *_callui_create_cid_thumbnail_with_size(Evas_Object *parent,
+		callui_cid_type_e type,
+		callui_cid_size_e size,
+		const char *path)
 {
-	if (path && *path && (strcmp(path, "default") != 0)) {
-		Evas_Object *layout = elm_layout_add(parent);
-		elm_layout_file_set(layout, EDJ_NAME, group_thumbnail[type]);
+	CALLUI_RETURN_NULL_IF_FAIL(parent);
+	CALLUI_RETURN_NULL_IF_FAIL(type >= CALLUI_CID_TYPE_SINGLE && type < CALLUI_CID_TYPE_COUNT);
+	CALLUI_RETURN_NULL_IF_FAIL(size >= CALLUI_CID_SIZE_DEFAULT && size < CALLUI_CID_SIZE_COUNT);
 
-		Evas_Object *image = elm_image_add(layout);
-		elm_image_file_set(image, path, NULL);
-		elm_image_aspect_fixed_set(image, EINA_TRUE);
-		elm_image_fill_outside_set(image, EINA_TRUE);
-		if (set_size) {
-		evas_object_size_hint_min_set(image, ELM_SCALE_SIZE(thumbnail_size[type]), ELM_SCALE_SIZE(thumbnail_size[type]));
-		}
-		elm_object_part_content_set(layout, PART_SWALLOW_IMAGE, image);
+	Evas_Object *layout = elm_layout_add(parent);
+	CALLUI_RETURN_NULL_IF_FAIL(layout);
+	elm_layout_file_set(layout, CALLUI_CALL_EDJ_PATH, "caller_id");
+	evas_object_show(layout);
 
-		return layout;
-	} else {
-		Evas_Object *image = elm_image_add(parent);
-		elm_image_file_set(image, EDJ_NAME, group_default_thumbnail[type]);
-		if (set_size) {
-			evas_object_size_hint_min_set(image, ELM_SCALE_SIZE(thumbnail_size[type]), ELM_SCALE_SIZE(thumbnail_size[type]));
+	Evas_Object *thumbnail = layout;
+	Evas_Object *resizable_obj = layout;
+
+	switch (type) {
+	case CALLUI_CID_TYPE_SINGLE:
+	{
+		if (!STRING_EMPTY(path) && (strcmp(path, "default") != 0)) {
+
+			Evas_Object *image = elm_image_add(layout);
+			if(!image) {
+				err("image is NULL");
+				DELETE_EVAS_OBJECT(layout);
+				return NULL;
+			}
+			Eina_Bool res = elm_image_file_set(image, path, NULL);
+			if (!res) {
+				err("elm_image_file_set() with path '%s' failed. Use default icon.", path);
+				elm_object_signal_emit(layout, "show_default_cid", "");
+				break;
+			}
+			resizable_obj = image;
+			elm_image_aspect_fixed_set(image, EINA_TRUE);
+			elm_image_fill_outside_set(image, EINA_TRUE);
+			elm_object_part_content_set(layout, "swallow.image", image);
+			elm_object_signal_emit(layout, "hide_default_cid", "");
+		} else {
+			elm_object_signal_emit(layout, "show_default_cid", "");
 		}
-		return image;
 	}
+	break;
+	case CALLUI_CID_TYPE_CONFERENCE:
+		elm_object_signal_emit(layout, "show_conference_cid", "");
+		break;
+	case CALLUI_CID_TYPE_EMERGENCY:
+		elm_object_signal_emit(layout, "show_emergency_cid", "");
+		break;
+	case CALLUI_CID_TYPE_MESSAGE:
+			elm_object_signal_emit(layout, "show_message_cid", "");
+			break;
+	default:
+		DELETE_EVAS_OBJECT(layout);
+		return NULL;
+	}
+
+	if (size != CALLUI_CID_SIZE_DEFAULT) {
+		if (resizable_obj == layout) {
+			thumbnail = elm_grid_add(parent);
+			if(!thumbnail) {
+				err("thumbnail is NULL");
+				DELETE_EVAS_OBJECT(layout);
+				return NULL;
+			}
+			elm_grid_pack(thumbnail, layout, 0, 0, 100, 100);
+			evas_object_show(thumbnail);
+			resizable_obj = thumbnail;
+		}
+		evas_object_size_hint_min_set(resizable_obj,
+				ELM_SCALE_SIZE(_g_cid_size[size]),
+				ELM_SCALE_SIZE(_g_cid_size[size]));
+	}
+
+	return thumbnail;
 }
 
 /* Caller info name or number*/
@@ -181,6 +241,13 @@ void _callui_show_caller_info_number(void *data, const char *number)
 	elm_object_part_text_set(layout, "phone_number", number);
 }
 
+/* Caller info message */
+void _callui_show_caller_info_message(void *data, const char *txt)
+{
+	Evas_Object *layout = __callui_get_caller_info_layout(data);
+	elm_object_part_text_set(layout, "message", txt);
+}
+
 /* Caller info status*/
 Evas_Object *_callui_show_caller_info_status(void *data, const char *status)
 {
@@ -191,17 +258,23 @@ Evas_Object *_callui_show_caller_info_status(void *data, const char *status)
 	return layout;
 }
 
-Evas_Object *_callui_show_caller_id(Evas_Object *contents, const char *path)
+Evas_Object *_callui_show_caller_id(Evas_Object *contents, const callui_call_data_t *call_data)
 {
-	dbg("..");
-	Evas_Object *layout = _callui_create_thumbnail(contents, path, THUMBNAIL_138);
+	CALLUI_RETURN_NULL_IF_FAIL(contents);
+	CALLUI_RETURN_NULL_IF_FAIL(call_data);
 
-	elm_object_part_content_set(contents, "contact_icon", layout);
+	callui_cid_type_e type = CALLUI_CID_TYPE_SINGLE;
+	if (call_data->is_emergency) {
+		type = CALLUI_CID_TYPE_EMERGENCY;
+	} else if (call_data->conf_member_count > 1) {
+		type = CALLUI_CID_TYPE_CONFERENCE;
+	}
 
-	/*Hide default caller-ID*/
-	elm_object_signal_emit(contents, "hide_default_cid", "");
+	Evas_Object *thumbnail = _callui_create_cid_thumbnail(contents, type, call_data->call_ct_info.caller_id_path);
+	CALLUI_RETURN_NULL_IF_FAIL(thumbnail);
+	elm_object_part_content_set(contents, "swallow.caller_id", thumbnail);
 
-	return layout;
+	return thumbnail;
 }
 
 static void __callui_hold_btn_cb(void *data, Evas_Object *obj, void *event_info)
@@ -349,7 +422,7 @@ static char *__callui_gl_second_call_option_label_get(void *data, Evas_Object *o
 	CALLUI_RETURN_VALUE_IF_FAIL(data, NULL);
 	if (strcmp(part, "elm.text") == 0) {
 		char *markup_txt = NULL;
-		second_call_popup_data_t *item_data = (second_call_popup_data_t *)data;
+		callui_sec_call_popup_data_t *item_data = (callui_sec_call_popup_data_t *)data;
 		if (strlen(item_data->option_msg) > 0) {
 			markup_txt = evas_textblock_text_utf8_to_markup(NULL, item_data->option_msg);
 		}
@@ -361,7 +434,7 @@ static char *__callui_gl_second_call_option_label_get(void *data, Evas_Object *o
 
 static void __callui_gl_second_call_option_del_cb(void *data, Evas_Object *obj EINA_UNUSED)
 {
-	second_call_popup_data_t *item_data = (second_call_popup_data_t *)data;
+	callui_sec_call_popup_data_t *item_data = (callui_sec_call_popup_data_t *)data;
 	free(item_data);
 }
 
@@ -371,13 +444,13 @@ static void __callui_gl_second_call_option_sel(void *data, Evas_Object *obj, voi
 	CALLUI_RETURN_IF_FAIL(event_info);
 
 	Elm_Object_Item *item = (Elm_Object_Item *) event_info;
-	second_call_popup_data_t *item_data = NULL;
+	callui_sec_call_popup_data_t *item_data = NULL;
 	callui_app_data_t *ad = (callui_app_data_t *)data;
 
 	__callui_unload_second_call_popup(ad);
 
 	if (item != NULL) {
-		item_data = (second_call_popup_data_t *) elm_object_item_data_get(item);
+		item_data = (callui_sec_call_popup_data_t *) elm_object_item_data_get(item);
 		CALLUI_RETURN_IF_FAIL(item_data);
 		dbg("index: %d", item_data->index);
 
@@ -438,7 +511,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 	const char *unhold_call_name = NULL;
 
 	const char *temp_str = NULL;
-	second_call_popup_data_t *item_data = NULL;
+	callui_sec_call_popup_data_t *item_data = NULL;
 	Elm_Genlist_Item_Class *itc = NULL;
 	Evas_Object *genlist = NULL;
 	CALLUI_RETURN_IF_FAIL(ad);
@@ -493,7 +566,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 	if ((unhold_call_data) && (unhold_call_data->conf_member_count == 1) && (hold_call_data == NULL)) {
 		dbg("1 active call");
 		/* First option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -505,7 +578,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
 
 		/* Second option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -520,7 +593,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 			&& (hold_call_data == NULL)) {
 		dbg("1 active conference call");
 		/* First option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -531,7 +604,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
 
 		/* Second option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -545,7 +618,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 			&& (hold_call_data->conf_member_count == 1)) {
 		dbg("1 active call + 1 held call");
 		/* First option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -557,7 +630,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
 
 		/* Second option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -569,7 +642,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
 
 		/* Third option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -583,7 +656,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 			&& (hold_call_data->conf_member_count == 1)) {
 		dbg("1 active conf call + 1 held call");
 		/* First option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -594,7 +667,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
 
 		/* Second option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -606,7 +679,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
 
 		/* Third option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -620,7 +693,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 			&& (hold_call_data->conf_member_count > 1)) {
 		dbg("1 active call + 1 held conf call");
 		/* First option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -632,7 +705,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
 
 		/* Second option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -643,7 +716,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 		elm_genlist_item_append(genlist, itc, (void *)item_data, NULL, ELM_GENLIST_ITEM_NONE, __callui_gl_second_call_option_sel, ad);
 
 		/* Third option */
-		item_data = (second_call_popup_data_t *) calloc(1, sizeof(second_call_popup_data_t));
+		item_data = (callui_sec_call_popup_data_t *) calloc(1, sizeof(callui_sec_call_popup_data_t));
 		if (item_data == NULL) {
 			elm_genlist_item_class_free(itc);
 			return;
@@ -669,7 +742,7 @@ void _callui_load_second_call_popup(callui_app_data_t *ad)
 	evas_object_show(genlist);
 	elm_genlist_item_class_free(itc);
 
-	evas_object_size_hint_min_set(box, ELM_SCALE_SIZE(POPUP_LIST_W), ELM_SCALE_SIZE(POPUP_LIST_ITEM_H * (item_data->index + 1)));
+	evas_object_size_hint_min_set(box, ELM_SCALE_SIZE(CALLUI_POPUP_LIST_W), ELM_SCALE_SIZE(CALLUI_POPUP_LIST_ITEM_H * (item_data->index + 1)));
 	evas_object_show(box);
 	elm_object_content_set(ad->second_call_popup, box);
 

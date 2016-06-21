@@ -52,6 +52,7 @@ pkg_check_modules (pkgs REQUIRED
 	capi-system-sensor
 	capi-ui-efl-util
 	libtzplatform-config
+	capi-base-utils-i18n
 )
 
 FOREACH(flag ${pkgs_CFLAGS})
@@ -70,8 +71,6 @@ ADD_CUSTOM_COMMAND(
 		${EDJE_DIR}/call.edc ${CMAKE_BINARY_DIR}/call.edj
 		DEPENDS ${EDJE_DIR}/call.edc
 			${INC_DIR}/callui-view-layout.h
-			${INC_DIR}/callui-view-caller-info-defines.h
-			${INC_DIR}/callui-view-elements-defines.h
 			${EDC_SRC_DIR}/callui-color-classes.edc
 			${EDC_SRC_DIR}/callui-parts.edc
 			${EDC_SRC_DIR}/call_edc/edc_image_macro.edc
@@ -113,5 +112,3 @@ INSTALL(FILES ${PROJECT_FILES_DIR}/${PKG_NAME}.xml DESTINATION ${CMAKE_SHARE_PAC
 # install manifest file & icon
 INSTALL(FILES ${PROJECT_FILES_DIR}/res/images/call_button_icon_01.png DESTINATION ${IMG_DIR})
 INSTALL(FILES ${PROJECT_FILES_DIR}/res/images/call_button_icon_03.png DESTINATION ${IMG_DIR})
-INSTALL(FILES ${PROJECT_FILES_DIR}/res/images/call_button_icon_04.png DESTINATION ${IMG_DIR})
-

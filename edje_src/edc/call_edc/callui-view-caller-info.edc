@@ -25,20 +25,32 @@
 #define CI_CONT_ICON_PAD_TOP			(CALL_STATUS_TXT_PAD_TOP + CALL_STATUS_TXT_HEIGHT + CI_STATUS_TEXT_PAD_CONT_ICON)
 
 #define CI_CONT_NAME_SIZE_MIN			0 86
-#define CI_CONT_NAME_PAD_TOP_1LINE		71
-#define CI_CONT_NAME_PAD_TOP_2LINE		42
-#define CI_CONT_NAME_PAD_BOTTOM_1LINE	96
 
-#define CI_PHONE_NUMB_SIZE_MIN			0 54
-#define CI_PHONE_NUMB_PAD_BOTTOM		63
-#define CI_PHONE_NUMB_PAD_TOP			8
+#define CI_PHONE_NUMB_SIZE_MIN_H		54
+#define CI_PHONE_MESSAGE_SIZE_MIN_H		54
 
 #define CI_MANAGE_CALLS_PAD_BOTTOM		98
 #define CI_MANAGE_CALLS_PAD_RIGHT		22
 #define CI_MANAGE_CALLS_BTN_SIZE		50 50
 
-#define CI_CONT_NAME_SIZE_MIN			0 86
-#define CI_PHONE_NUMB_SIZE_MIN			0 54
+#define CI_CONT_MESSAGED_BOTTOM_3L_H	37
+
+#define CI_CONT_NAME_PAD_TOP_1L_H		71
+#define CI_CONT_NAME_PAD_TOP_2L_H		42
+#define CI_CONT_NAME_PAD_TOP_3L_H		14
+
+#define CI_PHONE_NUMB_PAD_TOP_2LINE_H	8
+#define CI_PHONE_NUMB_PAD_TOP_3LINE_H	8
+
+#define CI_CONT_NUMB_PAD_BOTTOM_1L_H	0
+#define CI_CONT_NUMB_PAD_BOTTOM_2L_H	63
+#define CI_CONT_NUMB_PAD_BOTTOM_3L_H	(CI_CONT_MESSAGED_BOTTOM_3L_H+CI_PHONE_MESSAGE_SIZE_MIN_H)
+
+#define CI_CONT_NAME_PAD_BOTTOM_1L_H	96
+#define CI_CONT_NAME_PAD_BOTTOM_2L_H	(CI_CONT_NUMB_PAD_BOTTOM_2L_H+CI_PHONE_NUMB_SIZE_MIN_H+CI_PHONE_NUMB_PAD_TOP_2LINE_H)
+#define CI_CONT_NAME_PAD_BOTTOM_3L_H 	(CI_CONT_MESSAGED_BOTTOM_3L_H+CI_PHONE_NUMB_SIZE_MIN_H+CI_PHONE_MESSAGE_SIZE_MIN_H+CI_PHONE_NUMB_PAD_TOP_3LINE_H)
+
+#define CI_ADD_CONTACT_CLICK_AREA_H		(CALL_STATUS_TXT_PAD_TOP + CALL_STATUS_TXT_HEIGHT)
 
 styles {
 	style {
@@ -47,7 +59,11 @@ styles {
 	}
 	style {
 		name: "ci_contact_info_second_line";
-		base: "font=Tizen:style=Light text_class="ATO002" font_size=24 color=#FFFFFFFF color_class: "ATO002" align=center color=#FFFFFF ellipsis=1.0";
+		base: "font=Tizen:style=Light text_class="ATO003" font_size=40 color=#FFFFFFFF color_class: "ATO003" align=center color=#FFFFFF ellipsis=1.0";
+	}
+	style {
+		name: "ci_contact_info_third_line";
+		base: "font=Tizen:style=Light text_class="ATO003" font_size=40 color=#FFFFFFFF color_class: "ATO003" align=center color=#FFFFFF ellipsis=1.0";
 	}
 }
 
@@ -82,13 +98,64 @@ group{
 		CU_PART_PADDING_RIGHT_NAME("manage_calls_btn.padding.right", CI_MANAGE_CALLS_PAD_RIGHT)
 		CU_PART_PADDING_BOTTOM_NAME("manage_calls_btn.padding.bottom", CI_MANAGE_CALLS_PAD_BOTTOM)
 		CU_PART_PADDING_TOP_NAME("contact_icon.padding.top", CI_CONT_ICON_PAD_TOP)
-		CU_PART_PADDING_BOTTOM_TO("phone_number.padding.top", "phone_number", CI_PHONE_NUMB_PAD_TOP)
-		CU_PART_PADDING_BOTTOM_NAME("phone_number.padding.bottom", CI_PHONE_NUMB_PAD_BOTTOM)
-		CU_PART_PADDING_BOTTOM_NAME("contact_name.1line.padding.bottom", CI_CONT_NAME_PAD_BOTTOM_1LINE)
 
+		CU_PART_SPACER("contact_name.padding.bottom",
+			description { state: "default" 0.0;
+				min: 0 CI_CONT_NAME_PAD_BOTTOM_2L_H;
+				fixed: 0 1;
+				rel1.relative: 0.0 1.0;
+				align: 0.0 1.0;
+			}
+			description { state: "1line" 0.0;
+				inherit: "default" 0.0;
+				min: 0 CI_CONT_NAME_PAD_BOTTOM_1L_H;
+			}
+			description { state: "2line" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "3line" 0.0;
+				inherit: "default" 0.0;
+				min: 0 CI_CONT_NAME_PAD_BOTTOM_3L_H;
+			}
+		)
+		CU_PART_SPACER("phone_number.padding.bottom",
+			description { state: "default" 0.0;
+				min: 0 CI_CONT_NUMB_PAD_BOTTOM_2L_H;
+				fixed: 0 1;
+				rel1.relative: 0.0 1.0;
+				align: 0.0 1.0;
+			}
+			description { state: "1line" 0.0;
+				inherit: "default" 0.0;
+				min: 0 CI_CONT_NUMB_PAD_BOTTOM_1L_H;
+			}
+			description { state: "2line" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "3line" 0.0;
+				inherit: "default" 0.0;
+				min: 0 CI_CONT_NUMB_PAD_BOTTOM_3L_H;
+			}
+		)
+		CU_PART_SPACER("message.padding.bottom",
+			description { state: "default" 0.0; }
+			description { state: "1line" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "2line" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "3line" 0.0;
+				inherit: "default" 0.0;
+				min: 0 CI_CONT_MESSAGED_BOTTOM_3L_H;
+				fixed: 0 1;
+				rel1.relative: 0.0 1.0;
+				align: 0.0 1.0;
+			}
+		)
 		CU_PART_SPACER( "contact_name.padding.top",
 			description { state: "default" 0.0;
-				min: 0 CI_CONT_NAME_PAD_TOP_2LINE;
+				min: 0 CI_CONT_NAME_PAD_TOP_2L_H;
 				fixed: 0 1;
 				rel1 { relative: 0.0 0.0;	to_y: "contact_name"; }
 				rel2 { relative: 1.0 0.0;	to_y: "contact_name"; }
@@ -96,49 +163,42 @@ group{
 			}
 			description { state: "1line" 0.0;
 				inherit: "default" 0.0;
-				min: 0 CI_CONT_NAME_PAD_TOP_1LINE;
+				min: 0 CI_CONT_NAME_PAD_TOP_1L_H;
+			}
+			description { state: "2line" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "3line" 0.0;
+				inherit: "default" 0.0;
+				min: 0 CI_CONT_NAME_PAD_TOP_3L_H;
 			}
 		)
 		CU_PART_TEXTBLOCK( "contact_name",
 			description { state: "default" 0.0;
 				min: CI_CONT_NAME_SIZE_MIN;
 				fixed: 0 1;
-				rel1 { relative: 1.0 0.0;	to_x: "padding.left";	to_y: "phone_number.padding.top"; }
-				rel2 { relative: 0.0 0.0;	to_x: "padding.right";	to_y: "phone_number.padding.top"; }
-				align: 0.5 1.0;
-				text.style: "ci_contact_info_first_line";
-			}
-			description { state: "1line" 0.0;
-				min: CI_CONT_NAME_SIZE_MIN;
-				fixed: 0 1;
-				rel1 { relative: 1.0 0.0;	to_x: "padding.left";	to_y: "contact_name.1line.padding.bottom"; }
-				rel2 { relative: 0.0 0.0;	to_x: "padding.right";	to_y: "contact_name.1line.padding.bottom"; }
+				rel1 { relative: 1.0 0.0;	to_x: "padding.left";	to_y: "contact_name.padding.bottom"; }
+				rel2 { relative: 0.0 0.0;	to_x: "padding.right";	to_y: "contact_name.padding.bottom"; }
 				align: 0.5 1.0;
 				text.style: "ci_contact_info_first_line";
 			}
 			description { state: "manage_call_btn_enable" 0.0;
 				inherit: "default" 0.0;
-				rel1 { relative: 1.0 0.0;	to_x: "extend.padding.left";	to_y: "phone_number.padding.top"; }
-				rel2 { relative: 0.0 0.0;	to_x: "extend.padding.right";	to_y: "phone_number.padding.top"; }
+				rel1 { relative: 1.0 0.0;	to_x: "extend.padding.left";	to_y: "contact_name.padding.bottom"; }
+				rel2 { relative: 0.0 0.0;	to_x: "extend.padding.right";	to_y: "contact_name.padding.bottom"; }
+				align: 0.5 1.0;
 			}
-			description { state: "show_1line" 0.0;
-				inherit: "1line" 0.0;
-			}
-			description { state: "show_2line" 0.0;
+			description { state: "show" 0.0;
 				inherit: "default" 0.0;
 			}
-			description { state: "hide_1line" 0.0;
-				inherit: "show_1line" 0.0;
-				color: COLOR_WHITE_TRANSP;
-			}
-			description { state: "hide_2line" 0.0;
-				inherit: "show_2line" 0.0;
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
 				color: COLOR_WHITE_TRANSP;
 			}
 		)
 		CU_PART_TEXTBLOCK( "phone_number",
 			description { state: "default" 0.0;
-				min: CI_PHONE_NUMB_SIZE_MIN;
+				min: 0 CI_PHONE_NUMB_SIZE_MIN_H;
 				fixed: 0 1;
 				rel1 { relative: 1.0 0.0;	to_x: "padding.left";	to_y: "phone_number.padding.bottom"; }
 				rel2 { relative: 0.0 0.0;	to_x: "padding.right";	to_y: "phone_number.padding.bottom"; }
@@ -153,15 +213,30 @@ group{
 				rel1 { relative: 1.0 0.0;	to_x: "extend.padding.left";	to_y: "phone_number.padding.bottom"; }
 				rel2 { relative: 0.0 0.0;	to_x: "extend.padding.right";	to_y: "phone_number.padding.bottom"; }
 			}
-			description { state: "show_2line" 0.0;
+			description { state: "show" 0.0;
 				inherit: "default" 0.0;
 			}
-			description { state: "hide_2line" 0.0;
+			description { state: "hide" 0.0;
 				inherit: "default" 0.0;
 				color: COLOR_WHITE_TRANSP;
 			}
-			description { state: "show_1line" 0.0;
-				inherit: "hide_2line" 0.0;
+		)
+		CU_PART_TEXTBLOCK( "message",
+			description { state: "default" 0.0;
+				visible: 0;
+				min: 0 CI_PHONE_MESSAGE_SIZE_MIN_H;
+				fixed: 0 1;
+				rel1 { relative: 1.0 0.0;	to_x: "padding.left";	to_y: "message.padding.bottom"; }
+				rel2 { relative: 0.0 0.0;	to_x: "padding.right";	to_y: "message.padding.bottom"; }
+				align: 0.5 1.0;
+				text.style: "ci_contact_info_third_line";
+			}
+			description { state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
 			}
 		)
 		CU_PART_SPACER( "contact_icon_base",
@@ -180,56 +255,12 @@ group{
 				align: 0.0 0.0;
 			}
 		)
-		CU_PART_SWALLOW( "contact_icon",
+		CU_PART_SWALLOW( "swallow.caller_id",
 			description { state: "default" 0.0;
 				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
 				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
 				aspect: 1 1;
 				aspect_preference: VERTICAL;
-			}
-		)
-		CU_PART_IMAGE( "contact_icon_bg",
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
-				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
-				image.normal: IMG_SRC_DIR/"call_photo_id_bg.png";
-				aspect_preference: SOURCE;
-			}
-			description { state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-			description { state: "emergency" 0.0;
-				inherit: "default" 0.0;
-				color_class: "AO036";
-			}
-		)
-		CU_PART_IMAGE( "contact_icon_def",
-			description { state: "default" 0.0;
-				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
-				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
-				image.normal: IMG_SRC_DIR/"call_photo_id.png";
-				aspect_preference: SOURCE;
-				color_class: "AO003L2";
-			}
-			description { state: "emergency" 0.0;
-				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
-				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
-				image.normal: IMG_SRC_DIR/"call_photo_id_emergency.png";
-				aspect_preference: SOURCE;
-				//color: 255 255 255 255;
-			}
-			description { state: "conference" 0.0;
-				rel1 { relative: 0.0 0.0;	to: "contact_icon_base"; }
-				rel2 { relative: 1.0 1.0;	to: "contact_icon_base"; }
-				image.normal: IMG_SRC_DIR/"call_photo_id_conference.png";
-				aspect_preference: SOURCE;
-				color_class: "AO003L2";
-			}
-			description { state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
 			}
 		)
 		CU_PART_SWALLOW( "manage_calls_btn",
@@ -320,15 +351,17 @@ group{
 				inherit: "default" 0.0;
 			}
 		)
-		CU_PART_SWALLOW( "ec_add_contact_btn",
+		CU_PART_IMAGE( "ec_add_contact_img",
 			description { state: "default" 0.0;
+				visible: 0;
+				fixed: 1 1;
+				align: 1.0 0.0;
 				min: EC_ADD_CONT_BTN_SIZE;
 				max: EC_ADD_CONT_BTN_SIZE;
-				fixed: 1 1;
 				rel1 { relative: 0.0 1.0;	to_x: "ec_add_cont.padding.left";	to_y: "ec_add_cont.padding.top"; }
 				rel2 { relative: 0.0 1.0;	to_x: "ec_add_cont.padding.left"; }
-				align: 1.0 0.0;
-				visible: 0;
+				image.normal: IMG_SRC_DIR/"core_button_add.png";
+				color: COLOR_WHITE;
 			}
 			description { state: "show" 0.0;
 				inherit: "default" 0.0;
@@ -338,226 +371,273 @@ group{
 				inherit: "default" 0.0;
 			}
 		)
-		programs {
+
+		// ADD CONTACT CLICK AREA
+
+		CU_PART_PADDING_TOP_NAME("ec_add_contact.click_area.padding.top", CI_ADD_CONTACT_CLICK_AREA_H)
+		CU_PART_RECT( "ec_add_contact.click_area",
+			mouse_events: 1;
+			repeat_events: 1;
+			description { state: "default" 0.0;
+				visible: 0;
+				rel1 { relative: 0.0 1.0;	to: "ec_add_contact.click_area.padding.top"; }
+				rel2 { relative: 1.0 1.0;	to: "bg"; }
+				color: COLOR_BG_ALPHA;
+			}
+			description { state: "show" 0.0;
+				inherit: "default" 0.0;
+				visible: 1;
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
+			}
+		)
+	}
+	programs {
+		script {
+			public show_ec_add_cont_btn;
+			public cont_info_2line;
+		}
+		program { name: "show_contact_name";
+			action: STATE_SET "show" 0.0;
+			target: "contact_name";
+		}
+		program { name: "show_contact_number";
+			action: STATE_SET "show" 0.0;
+			target: "phone_number";
+		}
+		program { name: "hide_contact_number";
+			action: STATE_SET "hide" 0.0;
+			target: "phone_number";
+		}
+		program { name: "show_message";
+			action: STATE_SET "show" 0.0;
+			target: "message";
+		}
+		program { name: "hide_message";
+			action: STATE_SET "hide" 0.0;
+			target: "message";
+		}
+		program { name: "caller_name_1line";
+			signal: "1line";
+			source: "caller_name";
+			action: STATE_SET "1line" 0.0;
+			target: "contact_name.padding.bottom";
+			target: "phone_number.padding.bottom";
+			target: "message.padding.bottom";
+			target: "contact_name.padding.top";
+			after: "show_contact_name";
+			after: "hide_contact_number";
+			after: "hide_message";
+			after: "deinit_cont_info_two_line";
+		}
+		program { name: "caller_name_2line";
+			signal: "2line";
+			source: "caller_name";
+			action: STATE_SET "2line" 0.0;
+			target: "contact_name.padding.bottom";
+			target: "phone_number.padding.bottom";
+			target: "message.padding.bottom";
+			target: "contact_name.padding.top";
+			after: "show_contact_name";
+			after: "show_contact_number";
+			after: "hide_message";
+			after: "init_cont_info_two_line";
+		}
+		program { name: "caller_name_3line";
+			signal: "3line";
+			source: "caller_name";
+			action: STATE_SET "3line" 0.0;
+			target: "contact_name.padding.bottom";
+			target: "phone_number.padding.bottom";
+			target: "message.padding.bottom";
+			target: "contact_name.padding.top";
+			after: "show_contact_name";
+			after: "show_contact_number";
+			after: "show_message";
+		}
+		program { name: "show_arrow";
+			signal: "show_manage_calls_btn";
+			source: "";
+			action: STATE_SET "default" 0.0;
+			target: "manage_calls_btn";
+			after: "set_txt_bounds_on_arrow_show";
+		}
+		program { name: "hide_arrow";
+			signal: "hide_manage_calls_btn";
+			source: "";
+			action: STATE_SET "hide" 0.0;
+			target: "manage_calls_btn";
+			after: "set_txt_bounds_on_arrow_hide";
+
+		}
+		program { name: "set_txt_bounds_on_arrow_hide";
+			action: STATE_SET "default" 0.0;
+			target: "contact_name";
+			target: "phone_number";
+		}
+		program { name: "set_txt_bounds_on_arrow_show";
+			action: STATE_SET "manage_call_btn_enable" 0.0;
+			target: "contact_name";
+			target: "phone_number";
+		}
+
+		// END CALL ANIMATION
+
+		// CALLER INFO ANIMATION LOGIC
+
+		program { name: "anim_show_cont_info_1line";
+			action: STATE_SET "show" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
+			target: "contact_name";
+		}
+		program { name: "anim_show_cont_info_2line";
+			action: STATE_SET "show" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
+			target: "contact_name";
+			target: "phone_number";
+		}
+		program { name: "anim_hide_cont_info_1line";
+			action: STATE_SET "hide" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
+			target: "contact_name";
+			after: "anim_show_ec_contact_info";
+		}
+		program { name: "anim_hide_cont_info_2line";
+			action: STATE_SET "hide" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
+			target: "contact_name";
+			target: "phone_number";
+			after: "anim_show_ec_contact_info";
+		}
+
+		// END CALL CALLER INFO ANIMATION LOGIC
+
+		program { name: "anim_show_ec_contact_info";
+			action: STATE_SET "show" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_S_B;
+			target: "ec_contact_name";
+			target: "ec_phone_number";
+		}
+		program { name: "anim_hide_ec_contact_info";
+			action: STATE_SET "hide" 0.0;
+			transition: LINEAR EC_ANIM_DUR_CONT_INFO_S_B;
+			target: "ec_contact_name";
+			target: "ec_phone_number";
+			after: "select_show_cont_info_type";
+		}
+		program { name: "select_show_cont_info_type";
 			script {
-				public show_ec_add_cont_btn;
-				public cont_info_2line;
-			}
-			program { name: "show_emergency_icon";
-				signal: "set_emergency_mode";
-				source: "";
-				action: STATE_SET "emergency" 0.0;
-				target: "contact_icon_bg";
-				target: "contact_icon_def";
-			}
-			program { name: "show_conference_icon";
-				signal: "set_conference_mode";
-				source: "";
-				action: STATE_SET "conference" 0.0;
-				target: "contact_icon_def";
-				after: "caller_name_2line";
-			}
-			program { name: "hide_default_cid";
-				signal: "hide_default_cid";
-				source: "";
-				action: STATE_SET "hide" 0.0;
-				target: "contact_icon_bg";
-				target: "contact_icon_def";
-			}
-			program { name: "show_default_cid";
-				signal: "show_default_cid";
-				source: "";
-				action: STATE_SET "default" 0.0;
-				target: "contact_icon_bg";
-				target: "contact_icon_def";
-			}
-			program { name: "caller_name_1line";
-				signal: "1line";
-				source: "caller_name";
-				action: STATE_SET "1line" 0.0;
-				target: "contact_name";
-				target: "contact_name.padding.top";
-				after: "deinit_cont_info_two_line";
-			}
-			program { name: "caller_name_2line";
-				signal: "2line";
-				source: "caller_name";
-				action: STATE_SET "default" 0.0;
-				target: "contact_name";
-				target: "contact_name.padding.top";
-				after: "init_cont_info_two_line";
-			}
-			program { name: "show_arrow";
-				signal: "show_manage_calls_btn";
-				source: "";
-				action: STATE_SET "default" 0.0;
-				target: "manage_calls_btn";
-				after: "set_txt_bounds_on_arrow_show";
-			}
-			program { name: "hide_arrow";
-				signal: "hide_manage_calls_btn";
-				source: "";
-				action: STATE_SET "hide" 0.0;
-				target: "manage_calls_btn";
-				after: "set_txt_bounds_on_arrow_hide";
-
-			}
-			program { name: "set_txt_bounds_on_arrow_hide";
-				action: STATE_SET "default" 0.0;
-				target: "contact_name";
-				target: "phone_number";
-			}
-			program { name: "set_txt_bounds_on_arrow_show";
-				action: STATE_SET "manage_call_btn_enable" 0.0;
-				target: "contact_name";
-				target: "phone_number";
-			}
-
-			// END CALL ANIMATION
-
-			// CALLER INFO ANIMATION LOGIC
-
-			program { name: "anim_show_cont_info_1line";
-				action: STATE_SET "show_1line" 0.0;
-				transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
-				target: "contact_name";
-			}
-			program { name: "anim_show_cont_info_2line";
-				action: STATE_SET "show_2line" 0.0;
-				transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
-				target: "contact_name";
-				target: "phone_number";
-			}
-			program { name: "anim_hide_cont_info_1line";
-				action: STATE_SET "hide_1line" 0.0;
-				transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
-				target: "contact_name";
-				after: "anim_show_ec_contact_info";
-			}
-			program { name: "anim_hide_cont_info_2line";
-				action: STATE_SET "hide_2line" 0.0;
-				transition: LINEAR EC_ANIM_DUR_CONT_INFO_B_S;
-				target: "contact_name";
-				target: "phone_number";
-				after: "anim_show_ec_contact_info";
-			}
-
-			// END CALL CALLER INFO ANIMATION LOGIC
-
-			program { name: "anim_show_ec_contact_info";
-				action: STATE_SET "show" 0.0;
-				transition: LINEAR EC_ANIM_DUR_CONT_INFO_S_B;
-				target: "ec_contact_name";
-				target: "ec_phone_number";
-			}
-			program { name: "anim_hide_ec_contact_info";
-				action: STATE_SET "hide" 0.0;
-				transition: LINEAR EC_ANIM_DUR_CONT_INFO_S_B;
-				target: "ec_contact_name";
-				target: "ec_phone_number";
-				after: "select_show_cont_info_type";
-			}
-			program { name: "select_show_cont_info_type";
-				script {
-					if (get_int(cont_info_2line) == 1) {
-						run_program(PROGRAM:"anim_show_cont_info_2line");
-					} else {
-						run_program(PROGRAM:"anim_show_cont_info_1line");
-					}
+				if (get_int(cont_info_2line) == 1) {
+					run_program(PROGRAM:"anim_show_cont_info_2line");
+				} else {
+					run_program(PROGRAM:"anim_show_cont_info_1line");
 				}
 			}
-			program { name: "select_hide_cont_info_type";
-				script {
-					if (get_int(cont_info_2line) == 1) {
-						run_program(PROGRAM:"anim_hide_cont_info_2line");
-					} else {
-						run_program(PROGRAM:"anim_hide_cont_info_1line");
-					}
+		}
+		program { name: "select_hide_cont_info_type";
+			script {
+				if (get_int(cont_info_2line) == 1) {
+					run_program(PROGRAM:"anim_hide_cont_info_2line");
+				} else {
+					run_program(PROGRAM:"anim_hide_cont_info_1line");
 				}
 			}
+		}
 
-			// END CALL ADD CONTACT BUTTON
+		// END CALL ADD CONTACT BUTTON
 
-			program { name: "set_ec_add_cont_btn_enabled";
-				signal: "set_ec_add_cont_btn_enabled";
-				source: "caller_info";
+		program { name: "set_ec_add_cont_btn_enabled";
+			signal: "set_ec_add_cont_btn_enabled";
+			source: "caller_info";
 
-				action: STATE_SET "add_contact_btn_enabled" 0.0;
-				target: "ec_contact_info.padding.right";
-				after: "init_show_ec_add_cont_btn_state";
-			}
-			program { name: "show_ec_add_cont_btn";
-				action: STATE_SET "show" 0.0;
-				target: "ec_add_contact_btn";
-			}
-			program { name: "hide_add_contact_btn";
-				action: STATE_SET "hide" 0.0;
-				target: "ec_add_contact_btn";
-			}
-			program { name: "try_show_ec_add_cont_btn";
-				script {
-					if (get_int(show_ec_add_cont_btn) == 1) {
-						run_program(PROGRAM:"show_ec_add_cont_btn");
-					}
+			action: STATE_SET "add_contact_btn_enabled" 0.0;
+			target: "ec_contact_info.padding.right";
+			after: "init_show_ec_add_cont_btn_state";
+		}
+		program { name: "show_ec_add_cont_btn";
+			action: STATE_SET "show" 0.0;
+			target: "ec_add_contact_img";
+			after: "enable_add_contact_click_area";
+		}
+		program { name: "hide_add_contact_btn";
+			action: STATE_SET "hide" 0.0;
+			target: "ec_add_contact_img";
+			after: "dissable_add_contact_click_area";
+		}
+		program { name: "try_show_ec_add_cont_btn";
+			script {
+				if (get_int(show_ec_add_cont_btn) == 1) {
+					run_program(PROGRAM:"show_ec_add_cont_btn");
 				}
 			}
-			program { name: "try_hide_add_contact_btn";
-				script {
-					if (get_int(show_ec_add_cont_btn) == 1) {
-						run_program(PROGRAM:"hide_add_contact_btn");
-					}
+		}
+		program { name: "try_hide_add_contact_btn";
+			script {
+				if (get_int(show_ec_add_cont_btn) == 1) {
+					run_program(PROGRAM:"hide_add_contact_btn");
 				}
 			}
+		}
 
-			// MINIMIZE / MAXIMIZE START LOGIC
+		// MINIMIZE / MAXIMIZE START LOGIC
 
-			program { name: "minimize";
-				signal: "minimize";
-				source: "caller_info";
+		program { name: "minimize";
+			signal: "minimize";
+			source: "caller_info";
 
-				after: "try_hide_add_contact_btn";
-				after: "run_minimize_animation";
-				after: "select_hide_cont_info_type";
-			}
-			program { name: "maximize";
-				signal: "maximize";
-				source: "caller_info";
+			after: "try_hide_add_contact_btn";
+			after: "run_minimize_animation";
+			after: "select_hide_cont_info_type";
+		}
+		program { name: "maximize";
+			signal: "maximize";
+			source: "caller_info";
 
-				after: "try_hide_add_contact_btn";
-				after: "run_maximize_animation";
-				after: "anim_hide_ec_contact_info";
-			}
-			program { name: "run_minimize_animation";
-				action: STATE_SET "minimize" 0.0;
-				transition: LINEAR EC_ANIM_DUR;
-				target: "contact_icon_base";
-				after: "try_show_ec_add_cont_btn";
-				after: "minimize_anim_finished";
-			}
-			program { name: "run_maximize_animation";
-				action: STATE_SET "maximize" 0.0;
-				transition: LINEAR EC_ANIM_DUR;
-				target: "contact_icon_base";
-				after: "maximize_anim_finished";
-			}
-			program { name: "minimize_anim_finished";
-				action: SIGNAL_EMIT "minimize.anim.finished" "caller_info";
-			}
-			program { name: "maximize_anim_finished";
-				action: SIGNAL_EMIT "maximize.anim.finished" "caller_info";
-			}
-			program {
-				name: "init_show_ec_add_cont_btn_state";
-				script { set_int(show_ec_add_cont_btn, 1); }
-			}
-			program {
-				name: "init_cont_info_two_line";
-				script { set_int(cont_info_2line, 1); }
-			}
-			program {
-				name: "deinit_cont_info_two_line";
-				script { set_int(cont_info_2line, 0); }
-			}
+			after: "try_hide_add_contact_btn";
+			after: "run_maximize_animation";
+			after: "anim_hide_ec_contact_info";
+		}
+		program { name: "run_minimize_animation";
+			action: STATE_SET "minimize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "contact_icon_base";
+			after: "try_show_ec_add_cont_btn";
+			after: "minimize_anim_finished";
+		}
+		program { name: "run_maximize_animation";
+			action: STATE_SET "maximize" 0.0;
+			transition: LINEAR EC_ANIM_DUR;
+			target: "contact_icon_base";
+			after: "maximize_anim_finished";
+		}
+		program { name: "minimize_anim_finished";
+			action: SIGNAL_EMIT "minimize.anim.finished" "caller_info";
+		}
+		program { name: "maximize_anim_finished";
+			action: SIGNAL_EMIT "maximize.anim.finished" "caller_info";
+		}
+		program { name: "init_show_ec_add_cont_btn_state";
+			script { set_int(show_ec_add_cont_btn, 1); }
+		}
+		program { name: "init_cont_info_two_line";
+			script { set_int(cont_info_2line, 1); }
+		}
+		program { name: "deinit_cont_info_two_line";
+			script { set_int(cont_info_2line, 0); }
+		}
+		program { name: "enable_add_contact_click_area";
+			action: STATE_SET "show" 0.0;
+			target: "ec_add_contact.click_area";
+		}
+		program { name: "dissable_add_contact_click_area";
+			action: STATE_SET "hide" 0.0;
+			target: "ec_add_contact.click_area";
+		}
+		program { name: "contact_info_area_clicked";
+			signal: "mouse,clicked,1";
+			source: "ec_add_contact.click_area";
+			action: SIGNAL_EMIT "add_contact.clicked" "caller_info";
 		}
 	}
 }

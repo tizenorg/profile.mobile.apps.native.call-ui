@@ -15,12 +15,205 @@
  *
  */
 
-RESOURCE_IMAGE_WITH_MASK(GROUP_THUMBNAIL_138, IMG_SRC_DIR/"call_photo_id_bg.png", PART_SWALLOW_IMAGE)
-RESOURCE_IMAGE_WITH_MASK(GROUP_THUMBNAIL_98, IMG_SRC_DIR/"call_btn_circle_98.png", PART_SWALLOW_IMAGE)
+#define CALL_BTN_IC_SIZE	64
 
-RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE(GROUP_DEFAULT_THUMBNAIL_98, IMG_SRC_DIR/"call_photo_id_98.png", IMG_SRC_DIR/"call_photo_id_bg.png", "AO001", "AO002")
-RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE(GROUP_DEFAULT_THUMBNAIL_138, IMG_SRC_DIR/"call_photo_id.png", IMG_SRC_DIR/"call_photo_id_bg.png", "AO001", "AO002")
-RESOURCE_IMAGE_WITH_BG_AND_COLOR_CODE(GROUP_DEFAULT_CONFERENCE_THUMBNAIL_138, IMG_SRC_DIR/"call_photo_id_conference.png", IMG_SRC_DIR/"call_photo_id_bg.png", "AO001", "AO002")
+// Caller id layout
+group { name: "caller_id";
+	images {
+		set { name: "cid_bg";
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_photo_id_bg.png" COMP;
+				size: 175 175 721 721;
+			}
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_end_photo_id_bg.png" COMP;
+				size: 139 139 174 174;
+			}
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_multi_photo_id_bg.png" COMP;
+				size: 99 99 138 138;
+			}
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_active_photo_id_bg.png" COMP;
+				size: 0 0 98 98;
+			}
+		}
+		set { name: "cid_single";
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_photo_id.png" COMP;
+				size: 175 175 720 720;
+			}
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_end_photo_id_default.png" COMP;
+				size: 139 139 174 174;
+			}
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_multi_photo_id.png" COMP;
+				size: 99 99 138 138;
+			}
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_active_photo_id_default.png" COMP;
+				size: 0 0 98 98;
+			}
+		}
+		set { name: "cid_conference";
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_photo_id_conference.png" COMP;
+				size: 191 191 721 721;
+			}
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_multi_photo_id_conference.png" COMP;
+				size: 0 0 190 190;
+			}
+		}
+		set { name: "cid_emergency";
+			image {
+				image: CALLID_IMG_SRC_DIR/"call_photo_id_emergency.png" COMP;
+				size: 0 0 721 721;
+			}
+		}
+		set { name: "cid_message";
+			image {
+				image: CALLID_IMG_SRC_DIR/"messages.png" COMP;
+				size: 0 0 721 721;
+			}
+		}
+	}
+	parts {
+		CU_PART_IMAGE( "cid_clipper",
+			precise_is_inside: 1;
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; }
+				rel2 { relative: 1.0 1.0; }
+				image.normal: "cid_bg";
+				aspect: 1.0 1.0;
+				aspect_preference: SOURCE;
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		)
+		CU_PART_SWALLOW( "swallow.image",
+			clip_to: "cid_clipper";
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "cid_clipper"; }
+				rel2 { relative: 1.0 1.0; to: "cid_clipper"; }
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		)
+		CU_PART_IMAGE( "cid_bg",
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "cid_clipper"; }
+				rel2 { relative: 1.0 1.0; to: "cid_clipper"; }
+				image.normal: "cid_bg";
+				aspect: 1 1;
+				aspect_preference: SOURCE;
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+			description { state: "emergency" 0.0;
+				inherit: "default" 0.0;
+				color_class: "AO036";
+			}
+			description { state: "conference" 0.0;
+				inherit: "default" 0.0;
+			}
+			description { state: "message" 0.0;
+				inherit: "hide" 0.0;
+			}
+		)
+		CU_PART_IMAGE( "cid_def",
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to: "cid_bg"; }
+				rel2 { relative: 1.0 1.0; to: "cid_bg"; }
+				image.normal: "cid_single";
+				aspect_preference: SOURCE;
+				color_class: "AO003L2";
+			}
+			description { state: "emergency" 0.0;
+				inherit: "default" 0.0;
+				image.normal: "cid_emergency";
+				aspect_preference: SOURCE;
+				color_class: "AO002";
+			}
+			description { state: "conference" 0.0;
+				inherit: "default" 0.0;
+				image.normal: "cid_conference";
+				aspect_preference: SOURCE;
+				color_class: "AO003L2";
+			}
+			description { state: "message" 0.0;
+				inherit: "default" 0.0;
+				image.normal: "cid_message";
+				aspect_preference: SOURCE;
+				color_class: AO036;
+			}
+			description { state: "hide" 0.0;
+				inherit: "default" 0.0;
+				visible: 0;
+			}
+		)
+	}
+	programs {
+		program { name: "show_emergency_icon";
+			signal: "show_emergency_cid";
+			source: "";
+			action: STATE_SET "emergency" 0.0;
+			target: "cid_bg";
+			target: "cid_def";
+			after: "hide_cid_img";
+		}
+		program { name: "show_conference_icon";
+			signal: "show_conference_cid";
+			source: "";
+			action: STATE_SET "conference" 0.0;
+			target: "cid_bg";
+			target: "cid_def";
+			after: "hide_cid_img";
+		}
+		program { name: "show_message_icon";
+			signal: "show_message_cid";
+			source: "";
+			action: STATE_SET "message" 0.0;
+			target: "cid_bg";
+			target: "cid_def";
+			after: "hide_cid_img";
+		}
+		program { name: "show_default_cid";
+			signal: "show_default_cid";
+			source: "";
+			action: STATE_SET "default" 0.0;
+			target: "cid_bg";
+			target: "cid_def";
+			after: "hide_cid_img";
+		}
+		program { name: "hide_default_cid";
+			signal: "hide_default_cid";
+			source: "";
+			action: STATE_SET "hide" 0.0;
+			target: "cid_def";
+			target: "cid_bg";
+			after: "show_cid_img";
+		}
+		program { name: "hide_cid_img";
+			action: STATE_SET "hide" 0.0;
+			target: "swallow.image";
+			target: "cid_clipper";
+		}
+		program { name: "show_cid_img";
+			action: STATE_SET "default" 0.0;
+			target: "swallow.image";
+			target: "cid_clipper";
+		}
+	}
+}
 
-RESOURCE_IMAGE_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_SPLIT, IMG_SRC_DIR/"call_btn_ic_split.png", IMG_SRC_DIR/"call_btn_circle_98.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_split_bg", "btn_ic_split_bg_pressed")
-RESOURCE_IMAGE_WITH_BG_AND_TOUCH(GROUP_CALL_BTN_IC_END, IMG_SRC_DIR/"call_btn_ic_end.png", IMG_SRC_DIR/"call_btn_circle_98.png", CALL_BTN_IC_SIZE, CALL_BTN_IC_BG_SIZE, "btn_ic", "btn_ic_end_bg", "btn_ic_end_bg_pressed")
+// Layouts with touchable buttons for multicall list view
+RES_IMG_WITH_BG_AND_TOUCH("call_btn_ic_split", IMG_SRC_DIR/"call_btn_ic_split.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, MULTI_LIST_LIST_ICON_BG_SIZE, "btn_ic", "btn_ic_split_bg", "btn_ic_split_bg_pressed")
+RES_IMG_WITH_BG_AND_TOUCH("call_btn_ic_end", IMG_SRC_DIR/"call_btn_ic_end.png", IMG_SRC_DIR/"call_btn_circle_02.png", CALL_BTN_IC_SIZE, MULTI_LIST_LIST_ICON_BG_SIZE, "btn_ic", "btn_ic_end_bg", "btn_ic_end_bg_pressed")
