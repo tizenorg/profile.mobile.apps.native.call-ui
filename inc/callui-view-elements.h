@@ -19,18 +19,25 @@
 #define __CALLUI_VIEW_ELEMENTS_H_
 
 #include <Elementary.h>
-#include "callui.h"
-#include "callui-view-elements-defines.h"
 
-#define	CALLUI_END_TYPE_KEY		"END_TYPE"
-#define	CALLUI_END_TYPE_SINGLE_CALL_END	"SINGLE_CALL_END"
-#define	CALLUI_END_TYPE_CONF_CALL_END	"CONF_CALL_END"
+#include "callui.h"
 
 typedef enum {
-	THUMBNAIL_98,
-	THUMBNAIL_138,
-	CONFERENCE_THUMBNAIL_138
-} thumbnail_type;
+	CALLUI_CID_TYPE_SINGLE,
+	CALLUI_CID_TYPE_CONFERENCE,
+	CALLUI_CID_TYPE_EMERGENCY,
+	CALLUI_CID_TYPE_MESSAGE,
+	CALLUI_CID_TYPE_COUNT
+} callui_cid_type_e;
+
+typedef enum {
+	CALLUI_CID_SIZE_DEFAULT,
+	CALLUI_CID_SIZE_TINY,
+	CALLUI_CID_SIZE_SMALL,
+	CALLUI_CID_SIZE_MEDIUM,
+	CALLUI_CID_SIZE_BIG,
+	CALLUI_CID_SIZE_COUNT
+} callui_cid_size_e;
 
 /**
  * @brief Load edj from file
@@ -68,30 +75,32 @@ Evas_Object *_callui_edje_object_part_get(Evas_Object *parent, const char *part)
 Evas_Object *_callui_create_end_call_button(Evas_Object *parent, Evas_Smart_Cb cb_func, void *data);
 
 /**
- * @brief Create thumbnail
+ * @brief Create caller id thumbnail
  *
  * @param[in]    parent     Parent layout
- * @param[in]    path       Image path
- * @param[in]    type       Image type
+ * @param[in]    type       Thumbnail type
+ * @param[in]    type       Image path (used only for CALLUI_CID_TYPE_SINGLE if image path is available, in other case it does not taken into account)
  *
- * @return layout
+ * @return Created thumbnail or success or NULL otherwise
  *
  */
-
-Evas_Object *_callui_create_thumbnail(Evas_Object *parent, const char *path, thumbnail_type type);
+Evas_Object *_callui_create_cid_thumbnail(Evas_Object *parent, callui_cid_type_e type, const char *path);
 
 /**
- * @brief Create thumbnail with size
+ * @brief Create caller id thumbnail with predefined size
  *
  * @param[in]    parent     Parent layout
- * @param[in]    path       Image path
- * @param[in]    type       Image type
- * @param[in]    type       Image size
+ * @param[in]    type       Thumbnail type
+ * @param[in]    size       Predefined size type
+ * @param[in]    type       Image path (used only for CALLUI_CID_TYPE_SINGLE if image path is available, in other case it does not taken into account)
  *
- * @return layout
+ * @return Created thumbnail or success or NULL otherwise
  *
  */
-Evas_Object *_callui_create_thumbnail_with_size(Evas_Object *parent, const char *path, thumbnail_type type, bool set_size);
+Evas_Object *_callui_create_cid_thumbnail_with_size(Evas_Object *parent,
+		callui_cid_type_e type,
+		callui_cid_size_e size,
+		const char *path);
 
 /**
  * @brief Create info name
@@ -110,6 +119,15 @@ void _callui_show_caller_info_name(void *data, const char *name);
  *
  */
 void _callui_show_caller_info_number(void *data, const char *number);
+
+/**
+ * @brief Create info message
+ *
+ * @param[in]    data        App data
+ * @param[in]    txt         Text of message
+ *
+ */
+void _callui_show_caller_info_message(void *data, const char *txt);
 
 /**
  * @brief Show caller info status
@@ -131,7 +149,7 @@ Evas_Object *_callui_show_caller_info_status(void *data, const char *status);
  * @return layout
  *
  */
-Evas_Object *_callui_show_caller_id(Evas_Object *contents, const char *path);
+Evas_Object *_callui_show_caller_id(Evas_Object *contents, const callui_call_data_t *call_data);
 
 /**
  * @brief Create more popup

@@ -23,7 +23,6 @@
 #include "callui-view-elements.h"
 #include "callui-keypad.h"
 #include "callui-common.h"
-#include "callui-view-caller-info-defines.h"
 #include "callui-state-provider.h"
 
 struct _callui_view_dialing {
@@ -78,14 +77,14 @@ static callui_result_e __create_main_content(callui_view_dialing_h vd, Evas_Obje
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME, GRP_VIEW_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(parent, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_VIEW_MAIN_LY);
 
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
 
-	vd->caller_info = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_CALLER_INFO);
+	vd->caller_info = _callui_load_edj(vd->base_view.contents, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_CALLER_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(vd->base_view.contents, "caller_info", vd->caller_info);
+	elm_object_part_content_set(vd->base_view.contents, "swallow.caller_info", vd->caller_info);
 
 	_callui_action_bar_show(ad->action_bar);
 
@@ -146,21 +145,19 @@ static void __end_call_btn_click_cb(void *data, Evas_Object *obj, void *event_in
 static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
-	const callui_call_data_t *now_call_data = _callui_stp_get_call_data(ad->state_provider,
+	const callui_call_data_t *active = _callui_stp_get_call_data(ad->state_provider,
 			CALLUI_CALL_DATA_ACTIVE);
-	CALLUI_RETURN_VALUE_IF_FAIL(now_call_data, CALLUI_RESULT_FAIL);
+	CALLUI_RETURN_VALUE_IF_FAIL(active, CALLUI_RESULT_FAIL);
 
-	const char *file_path = now_call_data->call_ct_info.caller_id_path;
-	const char *call_name = now_call_data->call_ct_info.call_disp_name;
+	const char *call_name = active->call_ct_info.call_disp_name;
 	const char *disp_number = NULL;
 
-	if (strlen(now_call_data->call_disp_num) > 0) {
-		disp_number = now_call_data->call_disp_num;
+	if (strlen(active->call_disp_num) > 0) {
+		disp_number = active->call_disp_num;
 	} else {
-		disp_number = now_call_data->call_num;
+		disp_number = active->call_num;
 	}
-
-	if (now_call_data->is_emergency) {
+	if (active->is_emergency) {
 		call_name = "IDS_COM_BODY_EMERGENCY_NUMBER";
 		disp_number = "";
 	}
@@ -168,7 +165,7 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 	if (strlen(call_name) == 0) {
 		_callui_show_caller_info_name(ad, disp_number);
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
-	} else if (now_call_data->is_emergency) {
+	} else if (active->is_emergency) {
 		_callui_show_caller_info_name(ad, call_name);
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
 	} else {
@@ -177,17 +174,9 @@ static callui_result_e __update_displayed_data(callui_view_dialing_h vd)
 		elm_object_signal_emit(vd->caller_info, "2line", "caller_name");
 	}
 
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, active), CALLUI_RESULT_FAIL);
+
 	_callui_show_caller_info_status(ad, "IDS_CALL_POP_DIALLING");
-
-	if (now_call_data->is_emergency) {
-		elm_object_signal_emit(vd->caller_info, "set_emergency_mode", "");
-	} else {
-		if (strcmp(file_path, "default") != 0) {
-			_callui_show_caller_id(vd->caller_info, file_path);
-		}
-	}
-
-	elm_object_signal_emit(vd->base_view.contents, "SHOW_EFFECT", "ALLBTN");
 
 	evas_object_show(vd->base_view.contents);
 
@@ -199,8 +188,8 @@ static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility)
 	callui_view_dialing_h vd = (callui_view_dialing_h)data;
 
 	if (visibility) {
-		elm_object_signal_emit(vd->base_view.contents, "SHOW", "KEYPAD_BTN");
+		elm_object_signal_emit(vd->base_view.contents, "hide_caller_info", "view_main_ly");
 	} else {
-		elm_object_signal_emit(vd->base_view.contents, "HIDE", "KEYPAD_BTN");
+		elm_object_signal_emit(vd->base_view.contents, "show_caller_info", "view_main_ly");
 	}
 }

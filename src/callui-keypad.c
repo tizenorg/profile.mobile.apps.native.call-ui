@@ -24,11 +24,15 @@
 #include "callui-common.h"
 #include "callui-view-elements.h"
 #include "callui-view-layout.h"
-#include "callui-view-caller-info-defines.h"
 #include "callui-sound-manager.h"
 
-#define VC_KEYPAD_ENTRY_FONT "<font='Samsung Sans Num47:style=Light'>%s</>"
-#define VC_KEYAD_ENTRY_STYLE "DEFAULT='align=center color=#ffffffff font_size=76'"
+#define CALLUI_GROUP_KEYPAD						"keypad"
+#define CALLUI_PART_SWALLOW_TEXT_AREA			"swallow.textarea"
+#define CALLUI_PART_SWALLOW_KEYPAD				"swallow.keypad_region"
+#define CALLUI_PART_SWALLOW_KEYPAD_LAYOUT_AREA	"swallow.keypad_layout_area"
+
+#define CALLUI_KEYPAD_ENTRY_FONT	"<font='Samsung Sans Num47:style=Light'>%s</>"
+#define CALLUI_KEYAD_ENTRY_STYLE	"DEFAULT='align=center color=#ffffffff font_size=76'"
 
 #define VC_AUTO_SPACING_TIMEOUT_SEC 5.0
 
@@ -76,15 +80,15 @@ static int __callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appda
 {
 	keypad->ad = appdata;
 
-	keypad->main_layout = _callui_load_edj(_callui_vm_get_main_ly(appdata->view_manager), EDJ_NAME, "keypad_layout");
+	keypad->main_layout = _callui_load_edj(_callui_vm_get_main_ly(appdata->view_manager), CALLUI_CALL_EDJ_PATH, "keypad_layout");
 	CALLUI_RETURN_VALUE_IF_FAIL(keypad->main_layout, CALLUI_RESULT_ALLOCATION_FAIL);
 
 	elm_object_signal_callback_add(keypad->main_layout, "hide_completed", "*", __on_hide_completed, keypad);
 
-	keypad->btns_layout = _callui_load_edj(keypad->main_layout, EDJ_NAME, GRP_KEYPAD);
+	keypad->btns_layout = _callui_load_edj(keypad->main_layout, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_KEYPAD);
 	CALLUI_RETURN_VALUE_IF_FAIL(keypad->btns_layout, CALLUI_RESULT_ALLOCATION_FAIL);
 
-	elm_object_part_content_set(keypad->main_layout, PART_SWALLOW_KEYPAD, keypad->btns_layout);
+	elm_object_part_content_set(keypad->main_layout, CALLUI_PART_SWALLOW_KEYPAD, keypad->btns_layout);
 
 	int res = __create_gesture_layer(keypad);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
@@ -248,7 +252,7 @@ static void __on_hide_completed(void *data, Evas_Object *obj, const char *emissi
 	DELETE_ECORE_TIMER(keypad->anim_timer);
 
 	keypad->main_layout = elm_object_part_content_unset(main_ly,
-			PART_SWALLOW_KEYPAD_LAYOUT_AREA);
+			CALLUI_PART_SWALLOW_KEYPAD_LAYOUT_AREA);
 
 	evas_object_hide(keypad->main_layout);
 
@@ -322,7 +326,7 @@ static void __on_key_down_click_event(void *data, Evas_Object *obj, const char *
 	free(disp_str);
 
 	char tmp[NAME_MAX] = { 0 };
-	snprintf(tmp, NAME_MAX, VC_KEYPAD_ENTRY_FONT, entry_dest);
+	snprintf(tmp, NAME_MAX, CALLUI_KEYPAD_ENTRY_FONT, entry_dest);
 
 	elm_object_text_set(keypad->entry, tmp);
 
@@ -377,7 +381,7 @@ static Evas_Object *__create_single_line_scrolled_entry(Evas_Object *content)
 	evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(en, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
-	elm_entry_text_style_user_push(en, VC_KEYAD_ENTRY_STYLE);
+	elm_entry_text_style_user_push(en, CALLUI_KEYAD_ENTRY_STYLE);
 
 	evas_object_show(en);
 
@@ -397,7 +401,7 @@ static int __create_entry(callui_keypad_h keypad)
 
 	__clear_entry(keypad);
 
-	elm_object_part_content_set(keypad->main_layout, PART_SWALLOW_TEXTBLOCK_AREA, keypad->entry);
+	elm_object_part_content_set(keypad->main_layout, CALLUI_PART_SWALLOW_TEXT_AREA, keypad->entry);
 
 	return CALLUI_RESULT_OK;
 }
@@ -423,7 +427,7 @@ void _callui_keypad_show(callui_keypad_h keypad)
 
 	__clear_entry(keypad);
 
-	elm_object_part_content_set(main_ly, PART_SWALLOW_KEYPAD_LAYOUT_AREA, keypad->main_layout);
+	elm_object_part_content_set(main_ly, CALLUI_PART_SWALLOW_KEYPAD_LAYOUT_AREA, keypad->main_layout);
 	evas_object_show(keypad->main_layout);
 
 	elm_object_signal_emit(keypad->btns_layout, "SHOW", "KEYPADBTN");
@@ -431,7 +435,7 @@ void _callui_keypad_show(callui_keypad_h keypad)
 	elm_object_signal_emit(keypad->btns_layout, "init", "down_arrow");
 	elm_object_signal_emit(keypad->btns_layout, "start_animation", "down_arrow");
 
-	elm_object_signal_emit(keypad->main_layout, "SHOW", "KEYPAD_BTN");
+	elm_object_signal_emit(keypad->main_layout, "show", "keypad_btn");
 
 	keypad->is_keypad_show = EINA_TRUE;
 
@@ -458,9 +462,9 @@ static void __hide_keypad(callui_keypad_h keypad, Eina_Bool is_immediately)
 	keypad->is_keypad_show = EINA_FALSE;
 
 	if (is_immediately) {
-		elm_object_signal_emit(keypad->main_layout, "QUICK_HIDE", "KEYPAD_BTN");
+		elm_object_signal_emit(keypad->main_layout, "quick_hide", "keypad_btn");
 	} else {
-		elm_object_signal_emit(keypad->main_layout, "HIDE", "KEYPAD_BTN");
+		elm_object_signal_emit(keypad->main_layout, "hide", "keypad_btn");
 	}
 }
 

@@ -22,7 +22,10 @@
 #include "callui-common.h"
 #include "callui-state-provider.h"
 
-#define CALLUI_CIRCLE_LAYOUT_DATA "VIEW_DATA"
+#define CALLUI_GROUP_LOCK_ACCEPT	"lock_accept"
+#define CALLUI_GROUP_LOCK_REJECT	"lock_reject"
+
+#define CALLUI_CIRCLE_LAYOUT_DATA	"view_data"
 
 static void __callui_view_circle_mouse_down_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 static void __callui_view_circle_multi_down_cb(void *data, Evas *evas, Evas_Object *obj, void *event_info);
@@ -58,7 +61,7 @@ static void __callui_view_circle_handle_accept(callui_app_data_t *ad)
 {
 	dbg("..");
 
-	if (_callui_common_get_idle_lock_type() == LOCK_TYPE_SWIPE_LOCK) {
+	if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
 		_callui_common_unlock_swipe_lock();
 	}
 
@@ -375,7 +378,7 @@ callui_result_e _callui_view_circle_create_reject_layout(callui_app_data_t *ad, 
 		CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, CALLUI_RESULT_FAIL);
 	}
 
-	lock_reject = _callui_load_edj(parent, EDJ_NAME, GRP_LOCK_REJECT);
+	lock_reject = _callui_load_edj(parent, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_LOCK_REJECT);
 	CALLUI_RETURN_VALUE_IF_FAIL(lock_reject, CALLUI_RESULT_ALLOCATION_FAIL);
 	evas_object_resize(lock_reject, ad->root_w, ad->root_h);
 	evas_object_move(lock_reject, 0, 0);
@@ -433,7 +436,7 @@ callui_result_e _callui_view_circle_create_accept_layout(callui_app_data_t *ad, 
 		CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, CALLUI_RESULT_FAIL);
 	}
 
-	lock_accept = _callui_load_edj(parent, EDJ_NAME, GRP_LOCK_ACCEPT);
+	lock_accept = _callui_load_edj(parent, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_LOCK_ACCEPT);
 	CALLUI_RETURN_VALUE_IF_FAIL(lock_accept, CALLUI_RESULT_ALLOCATION_FAIL);
 	evas_object_resize(lock_accept, ad->root_w, ad->root_h);
 	evas_object_move(lock_accept, 0, 0);

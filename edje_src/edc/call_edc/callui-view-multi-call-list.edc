@@ -16,7 +16,7 @@
  */
 
 group {
-	name: "multicall-list";
+	name: "multicall_list";
 	parts {
 		part { name: "background";
 			type: RECT;

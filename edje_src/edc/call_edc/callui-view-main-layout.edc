@@ -28,7 +28,7 @@ group {
 		CU_PART_SWALLOW( "elm.swallow.content",
 			description { state: "default" 0.0; }
 		)
-		CU_PART_SWALLOW( "action_bar",
+		CU_PART_SWALLOW( "swallow.action_bar",
 			clip_to: "keypadarea.clipper";
 			description { state: "default" 0.0;
 				rel1{ relative: ACTION_BAR_LAYOUT_L ACTION_BAR_LAYOUT_T; }
@@ -62,7 +62,7 @@ group {
 				rel2 { relative: 1.0 1.0; to: "keypadarea.clipper.minimized"; }
 			}
 		)
-		CU_PART_SWALLOW( PART_SWALLOW_KEYPAD_LAYOUT_AREA,
+		CU_PART_SWALLOW( "swallow.keypad_layout_area",
 			clip_to: "keypadarea.clipper";
 			description {
 				state: "default" 0.0;
@@ -180,7 +180,7 @@ group {
 			}
 		)
 		CU_PART_PADDING_BOTTOM_NAME( "caller_info.padding.bottom", VML_CALLER_INFO_PAD_BOTTOM)
-		CU_PART_SWALLOW( "caller_info",
+		CU_PART_SWALLOW( "swallow.caller_info",
 			clip_to: "content.clipper";
 			description {
 				state: "default" 0.0;
@@ -243,8 +243,8 @@ group {
 		)
 		CU_PART_RECT( "end_btn.clipper",
 			description { state: "default" 0.0;
-				rel1 { relative: 0.0 0.0; to: "end_btn"; }
-				rel2 { relative: 1.0 1.0; to: "end_btn"; }
+				rel1 { relative: 0.0 0.0; to: "swallow.end_btn"; }
+				rel2 { relative: 1.0 1.0; to: "swallow.end_btn"; }
 				color: COLOR_WHITE;
 			}
 			description { state: "maximize" 0.0;
@@ -255,7 +255,7 @@ group {
 				color: COLOR_WHITE_TRANSP;
 			}
 		)
-		CU_PART_SWALLOW( "end_btn",
+		CU_PART_SWALLOW( "swallow.end_btn",
 			clip_to: "end_btn.clipper";
 			description { state: "default" 0.0;
 				rel1 { relative: 0.0 0.0; to: "end_btn.bg"; }
@@ -292,16 +292,16 @@ group {
 			public show_reply_btns;
 		}
 		program { name: "show_keypadbtn_no_effect";
-			signal: "SHOW";
-			source: "KEYPAD_BTN";
+			signal: "hide_caller_info";
+			source: "view_main_ly";
 			action: STATE_SET "hide" 0.0;
-			target: "caller_info";
+			target: "swallow.caller_info";
 		}
 		program { name: "hide_keypadbtn";
-			signal: "HIDE";
-			source: "KEYPAD_BTN";
+			signal: "show_caller_info";
+			source: "view_main_ly";
 			action: STATE_SET "default" 0.0;
-			target: "caller_info";
+			target: "swallow.caller_info";
 		}
 
 		// REPLY BUTTONS

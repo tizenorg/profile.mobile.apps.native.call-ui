@@ -70,13 +70,12 @@ static void __get_contact_info_from_contact_srv(callui_contact_data_t *ct_info)
 {
 	CALLUI_RETURN_IF_FAIL(ct_info);
 
-	contacts_error_e err = CONTACTS_ERROR_NONE;
 	contacts_record_h person_record = NULL;
-
 	int person_id = ct_info->person_id;
-	int res = contacts_db_get_record(_contacts_person._uri, person_id, &person_record);
+
+	contacts_error_e res = contacts_db_get_record(_contacts_person._uri, person_id, &person_record);
 	if (res != CONTACTS_ERROR_NONE) {
-		err("contacts_db_get_record error %d", err);
+		err("contacts_db_get_record error %d", res);
 	} else {
 		char *name = NULL;
 		char *img_path = NULL;
@@ -84,7 +83,7 @@ static void __get_contact_info_from_contact_srv(callui_contact_data_t *ct_info)
 		/* Get display name */
 		res = contacts_record_get_str(person_record, _contacts_person.display_name, &name);
 		if (res != CONTACTS_ERROR_NONE) {
-			err("contacts_record_get_str(display name) error %d", err);
+			err("contacts_record_get_str(display name) error %d", res);
 		} else {
 			g_strlcpy(ct_info->call_disp_name, name, CALLUI_DISPLAY_NAME_LENGTH_MAX);
 			free(name);
@@ -93,7 +92,7 @@ static void __get_contact_info_from_contact_srv(callui_contact_data_t *ct_info)
 		/* Get caller id path */
 		res = contacts_record_get_str(person_record, _contacts_person.image_thumbnail_path, &img_path);
 		if (res != CONTACTS_ERROR_NONE) {
-			err("contacts_record_get_str(caller id path) error %d", err);
+			err("contacts_record_get_str(caller id path) error %d", res);
 		} else {
 			g_strlcpy(ct_info->caller_id_path, img_path, CALLUI_IMAGE_PATH_LENGTH_MAX);
 			free(img_path);
@@ -237,8 +236,6 @@ static callui_result_e __call_data_init(callui_call_data_t *callui_call_data,
 
 	if (strlen(callui_call_data->call_ct_info.caller_id_path) <= 0) {
 		snprintf(callui_call_data->call_ct_info.caller_id_path,
-
-
 				CALLUI_IMAGE_PATH_LENGTH_MAX, "%s", CALLUI_DEFAULT_PERSON_ID_TXT);
 	}
 

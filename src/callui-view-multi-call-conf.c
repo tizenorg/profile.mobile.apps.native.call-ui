@@ -27,7 +27,7 @@
 #include "callui-keypad.h"
 #include "callui-state-provider.h"
 
-#define CALLUI_BUF_STATUS_SIZE 129
+#define CALLUI_GROUP_MANAGE_CALLS	"manage_calls"
 
 struct _callui_view_mc_conf {
 	call_view_data_base_t base_view;
@@ -69,7 +69,7 @@ static callui_result_e __create_main_content(callui_view_mc_conf_h vd, Evas_Obje
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	/* Main Layout */
-	vd->base_view.contents = _callui_load_edj(parent, EDJ_NAME, GRP_VIEW_MAIN_LY);
+	vd->base_view.contents = _callui_load_edj(parent, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_VIEW_MAIN_LY);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.contents, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(parent, "elm.swallow.content", vd->base_view.contents);
 
@@ -77,12 +77,12 @@ static callui_result_e __create_main_content(callui_view_mc_conf_h vd, Evas_Obje
 	eext_object_event_callback_add(vd->base_view.contents, EEXT_CALLBACK_MORE, __more_btn_click_cb, ad);
 
 	/* Caller info layout */
-	vd->caller_info = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_CALLER_INFO);
+	vd->caller_info = _callui_load_edj(vd->base_view.contents, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_CALLER_INFO);
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
-	elm_object_part_content_set(vd->base_view.contents, "caller_info", vd->caller_info);
+	elm_object_part_content_set(vd->base_view.contents, "swallow.caller_info", vd->caller_info);
 
 	/* Manage button Layout */
-	Evas_Object *manage_calls_ly = _callui_load_edj(vd->base_view.contents, EDJ_NAME, GRP_MANAGE_CALLS);
+	Evas_Object *manage_calls_ly = _callui_load_edj(vd->base_view.contents, CALLUI_CALL_EDJ_PATH, CALLUI_GROUP_MANAGE_CALLS);
 	CALLUI_RETURN_VALUE_IF_FAIL(manage_calls_ly, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->caller_info, "manage_calls_btn", manage_calls_ly);
 	edje_object_signal_callback_add(_EDJ(manage_calls_ly), "mouse,clicked,1", "btn", __manage_calls_btn_clicked_cb, vd);
@@ -116,7 +116,7 @@ static callui_result_e __callui_view_multi_call_conf_oncreate(call_view_data_bas
 
 static callui_result_e __update_nonetranslatable_elements(callui_view_mc_conf_h vd)
 {
-	char buf[CALLUI_BUF_MEMBER_SIZE] = { 0 };
+	char buf[CALLUI_BUFF_SIZE_HUG] = { 0 };
 	callui_app_data_t *ad = vd->base_view.ad;
 
 	const callui_call_data_t *call_data =
@@ -127,7 +127,7 @@ static callui_result_e __update_nonetranslatable_elements(callui_view_mc_conf_h 
 	CALLUI_RETURN_VALUE_IF_FAIL(call_data, CALLUI_RESULT_FAIL);
 
 	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
-	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->conf_member_count);
+	snprintf(buf, CALLUI_BUFF_SIZE_HUG, status, call_data->conf_member_count);
 	_callui_show_caller_info_number(ad, buf);
 
 	return CALLUI_RESULT_OK;
@@ -175,7 +175,7 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
 
-	char buf[CALLUI_BUF_MEMBER_SIZE] = { 0 };
+	char buf[CALLUI_BUFF_SIZE_HUG] = { 0 };
 
 	Eina_Bool is_held = EINA_FALSE;
 
@@ -206,14 +206,13 @@ static callui_result_e __update_displayed_data(callui_view_mc_conf_h vd)
 		CALLUI_RETURN_VALUE_IF_FAIL(vd->base_view.call_duration_timer, CALLUI_RESULT_ALLOCATION_FAIL);
 	}
 
-	elm_object_signal_emit(vd->caller_info, "set_conference_mode", "");
 	_callui_show_caller_info_name(ad, "IDS_CALL_BODY_CONFERENCE");
 
 	char *status = _("IDS_CALL_BODY_WITH_PD_PEOPLE_M_CONFERENCE_CALL_ABB");
-	snprintf(buf, CALLUI_BUF_MEMBER_SIZE, status, call_data->conf_member_count);
+	snprintf(buf, CALLUI_BUFF_SIZE_HUG, status, call_data->conf_member_count);
 	_callui_show_caller_info_number(ad, buf);
 
-	elm_object_signal_emit(vd->base_view.contents, "SHOW_NO_EFFECT", "ALLBTN");
+	CALLUI_RETURN_VALUE_IF_FAIL(_callui_show_caller_id(vd->caller_info, call_data), CALLUI_RESULT_FAIL);
 
 	evas_object_show(vd->base_view.contents);
 
@@ -278,8 +277,8 @@ static void __keypad_show_state_change_cd(void *data, Eina_Bool visibility)
 	callui_view_mc_conf_h vd = (callui_view_mc_conf_h)data;
 
 	if (visibility) {
-		elm_object_signal_emit(vd->base_view.contents, "SHOW", "KEYPAD_BTN");
+		elm_object_signal_emit(vd->base_view.contents, "hide_caller_info", "view_main_ly");
 	} else {
-		elm_object_signal_emit(vd->base_view.contents, "HIDE", "KEYPAD_BTN");
+		elm_object_signal_emit(vd->base_view.contents, "show_caller_info", "view_main_ly");
 	}
 }
