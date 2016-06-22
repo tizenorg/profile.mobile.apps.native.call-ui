@@ -14,59 +14,50 @@
  *  limitations under the License.
  *
  */
+ 
+#define CU_KEYPAD_ANIMATION_DURATION		0.8
+#define CU_KEYPAD_ANIMATION_DELAY			0.6 0.0
+#define CU_KEYPAD_DOWN_ARW_START_ANIM_MAX_H	3
 
 #define PART_KEYPAD_CUSTOM_ONE_ICON(txt, column, row, left_icon) \
-			part { \
-				name: txt; \
-				type: RECT; \
-				scale: 1; \
+			CU_PART_RECT( txt, \
 				mouse_events: 1; \
-				description { \
-					state: "default" 0.0; \
+				description { state: "default" 0.0; \
 					visible: 1; \
 					rel1 {relative: (column*(KEYPAD_EACH_BTN_W+KEYPAD_DIVIDER_SIZE)/MAIN_SCREEN_W) (row*(KEYPAD_EACH_BTN_H+KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns_rect";} \
 					rel2 {relative: (((column+1)*KEYPAD_EACH_BTN_W+column*KEYPAD_DIVIDER_SIZE)/MAIN_SCREEN_W) (((row+1)*KEYPAD_EACH_BTN_H+row*KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns_rect"; } \
 					fixed: 1 1; \
 					color_class: "AO005_C"; \
 				} \
-				description { \
-					state: "pressed" 0.0; \
+				description { state: "pressed" 0.0; \
 					inherit: "default" 0.0; \
 					visible: 1; \
 					color_class: "AO005P"; \
 				} \
-				description { \
-					state: "hide" 0.0; \
+				description { state: "hide" 0.0; \
 					inherit: "default" 0.0; \
 					visible: 0; \
 				} \
-			} \
-			part { \
-				name: txt"_left"; \
-				type: IMAGE; \
-				scale: 1; \
+			) \
+			CU_PART_IMAGE( txt"_left", \
 				mouse_events: 0; \
 				repeat_events: 1; \
-				description { \
-					state: "default" 0.0; \
+				description { state: "default" 0.0; \
 					aspect: 0.0 1.0; \
 					aspect_preference: SOURCE; \
 					rel1 { relative: (KEYPAD_BTN_OFFSET_X/KEYPAD_EACH_BTN_W) (KEYPAD_BTN_OFFSET_Y/KEYPAD_EACH_BTN_H); to: txt;} \
 					rel2 { relative: ((KEYPAD_BTN_OFFSET_X+KEYPAD_BTN_ICON_W)/KEYPAD_EACH_BTN_W) ((KEYPAD_BTN_OFFSET_Y+KEYPAD_BTN_NUMBER_H)/KEYPAD_EACH_BTN_H); to: txt;} \
-					align: 0.5 0.5; \
 					image.normal: left_icon;\
 					color_class: "AO003"; \
 					aspect_preference: SOURCE; \
 					visible: 1; \
 				} \
-				description { \
-					state: "hide" 0.0; \
+				description { state: "hide" 0.0; \
 					inherit: "default" 0.0; \
 					visible: 0; \
 				} \
-			} \
-			part { name: "over_"txt; \
-				type: RECT; \
+			) \
+			CU_PART_RECT( "over_"txt, \
 				mouse_events: 1; \
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
@@ -75,38 +66,29 @@
 					rel2 { relative: 1 1; to: txt; } \
 					color: COLOR_BG_ALPHA; \
 				} \
-			}
+			)
 
 #define PART_KEYPAD_CUSTOM_TWO_ICON(txt, column, row, left_icon, right_icon) \
-			part { \
-				name: txt; \
-				type: RECT; \
-				scale: 1; \
+			CU_PART_RECT( txt, \
 				mouse_events: 1; \
-				description { \
-					state: "default" 0.0; \
+				description { state: "default" 0.0; \
 					visible: 1; \
 					rel1 { relative: (column*(KEYPAD_EACH_BTN_W+KEYPAD_DIVIDER_SIZE)/MAIN_SCREEN_W) (row*(KEYPAD_EACH_BTN_H+KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns_rect";} \
 					rel2 { relative: (((column+1)*KEYPAD_EACH_BTN_W+column*KEYPAD_DIVIDER_SIZE)/MAIN_SCREEN_W) (((row+1)*KEYPAD_EACH_BTN_H+row*KEYPAD_DIVIDER_SIZE)/KEYPAD_H); to:"keypad_btns_rect"; } \
 					fixed: 1 1; \
 					color_class: "AO005_C"; \
 				} \
-				description { \
-					state: "pressed" 0.0; \
+				description { state: "pressed" 0.0; \
 					inherit: "default" 0.0; \
 					visible: 1; \
 					color_class: "AO005P"; \
 				} \
-				description { \
-					state: "hide" 0.0; \
+				description { state: "hide" 0.0; \
 					inherit: "default" 0.0; \
 					visible: 0; \
 				} \
-			} \
-			part { \
-				name: txt"_left"; \
-				type: IMAGE; \
-				scale: 1; \
+			) \
+			CU_PART_IMAGE( txt"_left", \
 				mouse_events: 0; \
 				repeat_events: 1; \
 				description { \
@@ -120,38 +102,30 @@
 					aspect_preference: SOURCE; \
 					visible: 1; \
 				} \
-				description { \
-					state: "hide" 0.0; \
+				description { state: "hide" 0.0; \
 					inherit: "default" 0.0; \
 					visible: 0; \
 				} \
-			} \
-			part { \
-				name: txt"_right"; \
-				type: IMAGE; \
-				scale: 1; \
+			) \
+			CU_PART_IMAGE( txt"_right", \
 				mouse_events: 0; \
 				repeat_events: 1; \
-				description { \
-					state: "default" 0.0; \
+				description { state: "default" 0.0; \
 					aspect: 1.0 1.0; \
 					aspect_preference: SOURCE; \
 					rel1 { relative: (KEYPAD_BTN_OFFSET_X/KEYPAD_EACH_BTN_W) ((KEYPAD_BTN_OFFSET_Y+KEYPAD_BTN_NUMBER_H)/KEYPAD_EACH_BTN_H); to: txt;} \
 					rel2 { relative: ((KEYPAD_BTN_OFFSET_X+KEYPAD_BTN_ICON_W)/KEYPAD_EACH_BTN_W) ((KEYPAD_BTN_OFFSET_Y+KEYPAD_BTN_NUMBER_H+KEYPAD_BTN_LETTERS_H)/KEYPAD_EACH_BTN_H); to: txt;} \
-					align: 0.5 0.5; \
 					image.normal: right_icon; \
 					color_class: "AO004_C"; \
 					aspect_preference: SOURCE; \
 					visible: 1; \
 				} \
-				description { \
-					state: "hide" 0.0; \
+				description { state: "hide" 0.0; \
 					inherit: "default" 0.0; \
 					visible: 0; \
 				} \
-			} \
-			part { name: "over_"txt; \
-				type: RECT; \
+			) \
+			CU_PART_RECT( "over_"txt, \
 				mouse_events: 1; \
 				repeat_events: 1; \
 				ignore_flags: ON_HOLD; \
@@ -160,11 +134,10 @@
 					rel2 { relative: 1 1; to: txt; } \
 					color: COLOR_BG_ALPHA; \
 				} \
-			}
+			)
 
 #define PROG_KEYPAD(txt) \
-	program { \
-		name: "down_"txt; \
+	program { name: "down_"txt; \
 		signal: "mouse,down,*"; \
 		source: "over_"txt; \
 		script { \
@@ -172,16 +145,14 @@
 			emit("pad_down", txt); \
 		} \
 	} \
-	program { \
-		name: "ani_"txt; \
+	program { name: "ani_"txt; \
 		signal: "ani"; \
 		source: "over_"txt; \
 		action: STATE_SET "default" 0.0; \
 		transition: SINUSOIDAL 0.1; \
 		target: txt; \
 	} \
-	program { \
-		name: "up_"txt; \
+	program { name: "up_"txt; \
 		signal: "mouse,up,1"; \
 		source: "over_"txt; \
 		script { \
@@ -190,8 +161,7 @@
 			emit("ani", "over_"txt); \
 		} \
 	} \
-	program { \
-		name: "clicked_"txt; \
+	program { name: "clicked_"txt; \
 		signal: "mouse,clicked,1"; \
 		source: "over_"txt; \
 		script { \
@@ -199,19 +169,16 @@
 		} \
 	}
 
-group{
-	name: "keypad_layout";
+group{ name: "keypad_layout";
 	parts {
-		part { name: "bg";
-			type: SPACER;
+		CU_PART_SPACER( "bg",
 			mouse_events:1;
 			repeat_events: 1;
 			description {
 				state: "default" 0.0;
 			}
-		}
-		part { name: "keypad.pad.bottom";
-			type: SPACER;
+		)
+		CU_PART_SPACER( "keypad.pad.bottom",
 			mouse_events: 1;
 			repeat_events: 1;
 			description {
@@ -221,62 +188,46 @@ group{
 				fixed: 0 1;
 				align: 0 1;
 			}
-		}
-		part { name: "swallow.textarea";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
+		)
+		CU_PART_SWALLOW( "swallow.textarea",
+			description { state: "default" 0.0;
 				visible: 0;
-				rel1.relative: 0.0 0.0;
-				rel2 {
-					relative: 1.0 0.0;
-					to: "keypad.pad.bottom";
-				}
+				rel1 { relative: 0.0 0.0; to: "bg"; }
+				rel2 { relative: 1.0 0.0; to: "keypad.pad.bottom"; }
 			}
-			description {
-				state: "show" 0.0;
+			description { state: "show" 0.0;
 				inherit: "default" 0.0;
 				visible: 1;
 			}
-			description {
-				state: "hide" 0.0;
+			description { state: "hide" 0.0;
 				inherit: "default" 0.0;
-				visible: 0;
 			}
-		}
-		part { name: "swallow.keypad_region";
-			type: SWALLOW;
-			scale: 1;
-			description {
-				state: "default" 0.0;
+		)
+		CU_PART_SWALLOW( "swallow.keypad_region", 
+			description { state: "default" 0.0;
 				visible: 0;
-				rel1.relative: 0.0 1.0;
-				rel2.relative: 1.0 2.0;
+				rel1 { relative: 0.0 1.0; to: "bg"; }
+				rel2 { relative: 1.0 2.0; to: "bg"; }
 			}
-			description {
-				state: "show" 0.0;
+			description { state: "show" 0.0;
 				inherit: "default" 0.0;
 				visible: 1;
-				rel1.relative: 0.0 0.0;
-				rel2.relative: 1.0 1.0;
+				rel1 { relative: 0.0 0.0; to: "bg"; }
+				rel2 { relative: 1.0 1.0; to: "bg"; }
 			}
-			description {
-				state: "hide" 0.0;
+			description { state: "hide" 0.0;
 				inherit: "default" 0.0;
-				visible: 0;
 			}
-		}
+		)
 	}
 	programs {
 		program { name: "show_keypadbtn_anim";
 			signal: "show";
-			source: "keypad_btn";
+			source: "keypad_layout";
 			after: "show_entry";
 			after: "show_keypadbtn";
 		}
-		program {
-			name: "show_entry";
+		program { name: "show_entry";
 			action: STATE_SET "show" 0.0;
 			target: "swallow.textarea";
 		}
@@ -287,33 +238,29 @@ group{
 		}
 		program { name: "hide_keypadbtn_anim";
 			signal: "hide";
-			source: "keypad_btn";
+			source: "keypad_layout";
 			after: "hide_keypadbtn_with_anim";
 		}
 		program { name: "hide_keypadbtn_no_anim";
 			signal: "quick_hide";
-			source: "keypad_btn";
+			source: "keypad_layout";
 			after: "hide_keypadbtn_without_anim";
 		}
-		program {
-			name: "hide_complete_notify";
+		program { name: "hide_complete_notify";
 			action: SIGNAL_EMIT "hide_completed" "*";
 		}
-		program {
-			name: "hide_entry";
+		program { name: "hide_entry";
 			action: STATE_SET "hide" 0.0;
 			target: "swallow.textarea";
 		}
-		program {
-			name: "hide_keypadbtn_with_anim";
+		program { name: "hide_keypadbtn_with_anim";
 			action: STATE_SET "default" 0.0;
 			transition: LINEAR 0.25;
 			target: "swallow.keypad_region";
 			after: "hide_entry";
 			after: "hide_complete_notify";
 		}
-		program {
-			name: "hide_keypadbtn_without_anim";
+		program { name: "hide_keypadbtn_without_anim";
 			action: STATE_SET "default" 0.0;
 			target: "swallow.keypad_region";
 			after: "hide_entry";
@@ -322,116 +269,67 @@ group{
 	}
 }
 
-group{
-	name: "keypad";
-		parts {
-			part { name: "background";
-			type: RECT;
-			description {
-				state: "default" 0.0;
-				color: COLOR_BG_ALPHA;
-			}
-		}
-
-		part {
-			name: "keypad_arrow_bg";
-			type: RECT;
-			description {
-				state: "default" 0.0;
-				visible: 1;
+group{ name: "keypad";
+	parts {
+		CU_PART_SPACER( "bg",
+			description { state: "default" 0.0; }
+		)
+		CU_PART_RECT( "keypad_arrow_bg",
+			description { state: "default" 0.0;
 				color_class: "keypad_btn_bg";
-				rel1 { relative: 0.0 KEYPAD_ARROW_BG_T; to: "background";}
-				rel2 { relative: 1.0 KEYPAD_ARROW_BG_B; to: "background";}
+				rel1 { relative: 0.0 KEYPAD_ARROW_BG_T; to: "bg";}
+				rel2 { relative: 1.0 KEYPAD_ARROW_BG_B; to: "bg";}
 			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-		}
-
-		part {
-			name: "sweep_area";
-			type: RECT;
+		)
+		CU_PART_RECT( "sweep_area",
 			mouse_events: 1;
 			description {
 				state: "default" 0.0;
 				color: COLOR_BG_ALPHA;
-				rel1 { relative: 0.0 KEYPAD_SWEEP_AREA_T; to: "background";}
-				rel2 { relative: 1.0 KEYPAD_SWEEP_AREA_B; to: "background";}
+				rel1 { relative: 0.0 KEYPAD_SWEEP_AREA_T; to: "bg";}
+				rel2 { relative: 1.0 KEYPAD_SWEEP_AREA_B; to: "bg";}
 			}
-		}
-
-		part {
-			name: "keypad_arrow_rect";
-			type: SPACER;
+		)
+		CU_PART_SPACER( "keypad_arrow_rect",
 			mouse_events:1;
 			repeat_events: 1;
 			description {
 				state: "default" 0.0;
-				rel1 { relative: KEYPAD_ARROW_L KEYPAD_ARROW_T; to: "keypad_arrow_bg";}
-				rel2 { relative: KEYPAD_ARROW_R KEYPAD_ARROW_B; to: "keypad_arrow_bg";}
+				rel1 { relative: KEYPAD_ARROW_L KEYPAD_ARROW_T;	to: "keypad_arrow_bg";}
+				rel2 { relative: KEYPAD_ARROW_R KEYPAD_ARROW_B;	to: "keypad_arrow_bg";}
 			}
-		}
-
-		part {
-			name: "keypad_down_arw";
-			type: IMAGE;
+		)
+		CU_PART_IMAGE( "keypad_down_arw",
 			mouse_events:1;
 			repeat_events: 1;
-			description {
-				state: "default" 0.0;
+			description { state: "default" 0.0;
 				rel1 {relative: 0.0 0.0; to: "keypad_arrow_rect";}
 				rel2 {relative: 1.0 1.0; to: "keypad_arrow_rect";}
 				align: 0.5 0.0;
-				image {
-					normal: IMG_SRC_DIR/"call_open_arrow_01.png";
-				}
-				max: -1 3;
+				image.normal: IMG_SRC_DIR/"call_open_arrow_01.png";
+				max: -1 CU_KEYPAD_DOWN_ARW_START_ANIM_MAX_H;
 				fixed: 0 1;
 				aspect_preference: HORIZONTAL;
 				visible: 1;
 			}
-			description {
-				state: "move" 0.0;
+			description { state: "move" 0.0;
 				rel1 { relative: 0.0 0.0; to: "keypad_arrow_rect";}
 				rel2 { relative: 1.0 1.0; to: "keypad_arrow_rect";}
-				image {
-					normal: IMG_SRC_DIR/"call_open_arrow_01.png";
-				}
+				image.normal: IMG_SRC_DIR/"call_open_arrow_01.png";
 				aspect_preference: SOURCE;
 				align: 0.5 1.0;
 			}
-		}
-
-		part {	name: "keypad_btns_rect";
-			type: RECT;
+		)
+		CU_PART_RECT( "keypad_btns_rect",
 			mouse_events: 0;
 			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 { relative: 0.0 KEYPAD_BTNS_LAYOUT_T; to: "background"; }
-				rel2 { relative: 1.0 KEYPAD_BTNS_LAYOUT_B; to: "background"; }
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 KEYPAD_BTNS_LAYOUT_T; to: "bg"; }
+				rel2 { relative: 1.0 KEYPAD_BTNS_LAYOUT_B; to: "bg"; }
 				color_class: "AO008";
 				visible: 1;
 			}
-			description {
-				state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
-			}
-			description {
-				state: "hide" 0.0;
-				inherit: "default" 0.0;
-				visible: 0;
-			}
-		}
-
+		)
 		PART_KEYPAD_CUSTOM_ONE_ICON("1", 0, 0, IMG_SRC_DIR/"keypad_number_01.png")
 		PART_KEYPAD_CUSTOM_TWO_ICON("2", 1, 0, IMG_SRC_DIR/"keypad_number_02.png", IMG_SRC_DIR/"keypad_english_01.png")
 		PART_KEYPAD_CUSTOM_TWO_ICON("3", 2, 0, IMG_SRC_DIR/"keypad_number_03.png", IMG_SRC_DIR/"keypad_english_02.png")
@@ -445,63 +343,50 @@ group{
 		PART_KEYPAD_CUSTOM_ONE_ICON("0", 1, 3, IMG_SRC_DIR/"keypad_number_00.png")
 		PART_KEYPAD_CUSTOM_ONE_ICON("sharp", 2, 3, IMG_SRC_DIR/"keypad_number_sharp.png")
 	}
-
-	programs{
+	programs {
 		script {
-			public animation_cnt;
+			public resize_down_arrow_cnt;
 		}
-
 		program { name: "show_keypadbtn";
-			signal: "SHOW";
-			source: "KEYPADBTN";
-			action: STATE_SET "show" 0.0;
-			target: "keypad_arrow_bg";
-			target: "keypad_btns_rect";
+			signal: "show";
+			source: "keypad";
+			after: "init_down_arrow_anim";
+			after: "start_down_arrow_anim";
 		}
-
-		program {
-			name: "init_animation";
-			signal: "init";
-			source: "down_arrow";
-			action: STATE_SET "default" 0.0;
-			target: "keypad_down_arw";
+		program { name: "init_down_arrow_anim";
 			script {
-				set_int(animation_cnt, 0);
+				set_int(resize_down_arrow_cnt, 0);
 			}
 		}
-
-		program {
-			name: "start_animation";
-			signal: "start_animation";
-			source: "down_arrow";
+		program { name: "start_down_arrow_anim";
 			action: STATE_SET "default" 0.0;
 			target: "keypad_down_arw";
-			after: "move_arrow";
+			after: "resize_down_arrow";
 		}
-
-		program {
-			name: "move_arrow";
+		program { name: "start_down_arrow_anim_w_delay";
+			in: CU_KEYPAD_ANIMATION_DELAY;
+			after: "start_down_arrow_anim";
+		}
+		program { name: "resize_down_arrow";
 			signal: "move";
 			source: "down_arrow";
 			action: STATE_SET "move" 0.0;
 			target: "keypad_down_arw";
-			transition: DECELERATE 0.6;
+			transition: DECELERATE CU_KEYPAD_ANIMATION_DURATION;
 			after: "repeat";
 		}
-
-		program {
-			name: "repeat";
+		program { name: "repeat";
 			script {
-				set_int(animation_cnt, get_int(animation_cnt)+1);
-				if (get_int(animation_cnt) >= 2) {
-					set_int(animation_cnt, 0);
+				set_int(resize_down_arrow_cnt, get_int(resize_down_arrow_cnt)+1);
+				if (get_int(resize_down_arrow_cnt) >= 2) {
+					set_int(resize_down_arrow_cnt, 0);
+					run_program(PROGRAM:"start_down_arrow_anim_w_delay");
 				}
 				else {
-					run_program(PROGRAM:"start_animation");
+					run_program(PROGRAM:"start_down_arrow_anim");
 				}
 			}
 		}
-
 		PROG_KEYPAD("1")
 		PROG_KEYPAD("2")
 		PROG_KEYPAD("3")

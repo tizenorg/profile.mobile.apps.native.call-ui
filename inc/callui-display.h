@@ -49,6 +49,6 @@ callui_result_e _callui_display_set_timeout(callui_display_h disp, callui_displa
 
 callui_result_e _callui_display_set_control_state(callui_display_h disp, callui_display_control_e state);
 
-callui_result_e _callui_display_get_control_state(callui_display_h disp, callui_display_control_e *state);
+bool _callui_display_is_turned_on(callui_display_h display);
 
 #endif /* __CALLUI_DISPLAY_H__ */
