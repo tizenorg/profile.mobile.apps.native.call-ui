@@ -32,9 +32,12 @@
 #define CALLUI_PART_SWALLOW_KEYPAD_LAYOUT_AREA	"swallow.keypad_layout_area"
 
 #define CALLUI_KEYPAD_ENTRY_FONT	"<font='Samsung Sans Num47:style=Light'>%s</>"
-#define CALLUI_KEYAD_ENTRY_STYLE	"DEFAULT='align=center color=#ffffffff font_size=76'"
+#define CALLUI_KEYPAD_ENTRY_STYLE	"DEFAULT='align=center color=#ffffffff font_size=76'"
 
-#define VC_AUTO_SPACING_TIMEOUT_SEC 5.0
+#define CALLUI_KEYPAD_AUTOSPACE_TIMEOUT_SEC	5.0
+
+#define CALLUI_KEYPAD_GEST_Y_COORD_MIN		100
+#define CALLUI_KEYPAD_GEST_MOMENTUM_MIN		500
 
 static int	__callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appdata);
 static void __callui_keypad_deinit(callui_keypad_h keypad);
@@ -49,19 +52,16 @@ static void __on_key_up_click_event(void *data, Evas_Object *obj, const char *em
 static Evas_Object *__create_single_line_scrolled_entry(Evas_Object *content);
 static int __create_entry(callui_keypad_h keypad);
 static void __clear_entry(callui_keypad_h keypad);
-static Eina_Bool __down_arrow_animation_timeout_cb(void *data);
 static void __hide_keypad(callui_keypad_h keypad, Eina_Bool is_immediately);
 static void __on_hide_completed(void *data, Evas_Object *obj, const char *emission, const char *source);
 
 struct _callui_keypad {
-
 	Evas_Object *main_layout;
-
 	Evas_Object *btns_layout;
 	Evas_Object *entry;
+	Evas_Object *gesture_layer;
 
 	Eina_Bool is_keypad_show;
-	Evas_Object *gesture_layer;
 	int gesture_start_y;
 	int gesture_momentum_y;
 
@@ -70,7 +70,6 @@ struct _callui_keypad {
 	show_state_change_cd cb_func;
 	void *cb_data;
 
-	Ecore_Timer *anim_timer;
 	Ecore_Timer *auto_spacing_timer;
 };
 
@@ -103,8 +102,6 @@ static int __callui_keypad_init(callui_keypad_h keypad, callui_app_data_t *appda
 
 static void __callui_keypad_deinit(callui_keypad_h keypad)
 {
-	DELETE_ECORE_TIMER(keypad->anim_timer);
-
 	DELETE_ECORE_TIMER(keypad->auto_spacing_timer);
 
 	if (keypad->main_layout) {
@@ -166,15 +163,6 @@ static Evas_Event_Flags __arrow_flick_gesture_event_cb(void *data, void *event_i
 	callui_keypad_h keypad_data = (callui_keypad_h)data;
 	Elm_Gesture_Line_Info *info = (Elm_Gesture_Line_Info *)event_info;
 
-	dbg("*********************************************");
-	dbg("info->angle = %lf", info->angle);
-	dbg("info->momentum.mx = %d, info->momentum.my = %d", info->momentum.mx, info->momentum.my);
-	dbg("info->momentum.n = %d", info->momentum.n);
-	dbg("info->momentum.tx = %d, info->momentum.ty = %d", info->momentum.tx, info->momentum.ty);
-	dbg("info->momentum.x1 = %d, info->momentum.x2 = %d", info->momentum.x1, info->momentum.x2);
-	dbg("info->momentum.y1 = %d, info->momentum.y2 = %d", info->momentum.y1, info->momentum.y2);
-	dbg("*********************************************");
-
 	keypad_data->gesture_momentum_y = info->momentum.my;
 
 	return EVAS_EVENT_FLAG_NONE;
@@ -199,7 +187,8 @@ static void __arrow_mouse_up_event_cb(void *data, Evas *evas, Evas_Object *obj, 
 	callui_keypad_h keypad_data = (callui_keypad_h)data;
 	Evas_Event_Mouse_Move *ev = event_info;
 
-	if (((ev->cur.canvas.y-keypad_data->gesture_start_y) > 100) && (keypad_data->gesture_momentum_y > 500)) {
+	if (((ev->cur.canvas.y-keypad_data->gesture_start_y) > CALLUI_KEYPAD_GEST_Y_COORD_MIN)
+			&& (keypad_data->gesture_momentum_y > CALLUI_KEYPAD_GEST_MOMENTUM_MIN)) {
 		__hide_keypad( keypad_data, EINA_FALSE);
 	}
 }
@@ -248,8 +237,6 @@ static void __on_hide_completed(void *data, Evas_Object *obj, const char *emissi
 	_callui_lock_manager_start(ad->lock_handle);
 
 	eext_object_event_callback_del(main_ly, EEXT_CALLBACK_BACK, __back_button_click_cb);
-
-	DELETE_ECORE_TIMER(keypad->anim_timer);
 
 	keypad->main_layout = elm_object_part_content_unset(main_ly,
 			CALLUI_PART_SWALLOW_KEYPAD_LAYOUT_AREA);
@@ -350,7 +337,7 @@ static void __on_key_up_click_event(void *data, Evas_Object *obj, const char *em
 	}
 
 	DELETE_ECORE_TIMER(keypad->auto_spacing_timer);
-	keypad->auto_spacing_timer = ecore_timer_add(VC_AUTO_SPACING_TIMEOUT_SEC, __auto_spacing_timer_cb, keypad);
+	keypad->auto_spacing_timer = ecore_timer_add(CALLUI_KEYPAD_AUTOSPACE_TIMEOUT_SEC, __auto_spacing_timer_cb, keypad);
 }
 
 static Evas_Object *__create_single_line_scrolled_entry(Evas_Object *content)
@@ -381,7 +368,7 @@ static Evas_Object *__create_single_line_scrolled_entry(Evas_Object *content)
 	evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(en, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
-	elm_entry_text_style_user_push(en, CALLUI_KEYAD_ENTRY_STYLE);
+	elm_entry_text_style_user_push(en, CALLUI_KEYPAD_ENTRY_STYLE);
 
 	evas_object_show(en);
 
@@ -406,19 +393,6 @@ static int __create_entry(callui_keypad_h keypad)
 	return CALLUI_RESULT_OK;
 }
 
-static Eina_Bool __down_arrow_animation_timeout_cb(void *data)
-{
-	CALLUI_RETURN_VALUE_IF_FAIL(data, ECORE_CALLBACK_CANCEL);
-
-	callui_keypad_h keypad_data = (callui_keypad_h)data;
-
-	if (keypad_data->btns_layout) {
-		elm_object_signal_emit(keypad_data->btns_layout, "start_animation", "down_arrow");
-	}
-
-	return ECORE_CALLBACK_RENEW;
-}
-
 void _callui_keypad_show(callui_keypad_h keypad)
 {
 	CALLUI_RETURN_IF_FAIL(keypad);
@@ -430,21 +404,15 @@ void _callui_keypad_show(callui_keypad_h keypad)
 	elm_object_part_content_set(main_ly, CALLUI_PART_SWALLOW_KEYPAD_LAYOUT_AREA, keypad->main_layout);
 	evas_object_show(keypad->main_layout);
 
-	elm_object_signal_emit(keypad->btns_layout, "SHOW", "KEYPADBTN");
+	elm_object_signal_emit(keypad->btns_layout, "show", "keypad");
 
-	elm_object_signal_emit(keypad->btns_layout, "init", "down_arrow");
-	elm_object_signal_emit(keypad->btns_layout, "start_animation", "down_arrow");
-
-	elm_object_signal_emit(keypad->main_layout, "show", "keypad_btn");
+	elm_object_signal_emit(keypad->main_layout, "show", "keypad_layout");
 
 	keypad->is_keypad_show = EINA_TRUE;
 
 	_callui_lock_manager_stop(ad->lock_handle);
 
 	eext_object_event_callback_add(main_ly, EEXT_CALLBACK_BACK, __back_button_click_cb, keypad);
-
-	ecore_timer_del(keypad->anim_timer);
-	keypad->anim_timer = ecore_timer_add(2.0, __down_arrow_animation_timeout_cb, keypad);
 
 	if (keypad->cb_func) {
 		keypad->cb_func(keypad->cb_data, keypad->is_keypad_show);
@@ -462,9 +430,9 @@ static void __hide_keypad(callui_keypad_h keypad, Eina_Bool is_immediately)
 	keypad->is_keypad_show = EINA_FALSE;
 
 	if (is_immediately) {
-		elm_object_signal_emit(keypad->main_layout, "quick_hide", "keypad_btn");
+		elm_object_signal_emit(keypad->main_layout, "quick_hide", "keypad_layout");
 	} else {
-		elm_object_signal_emit(keypad->main_layout, "hide", "keypad_btn");
+		elm_object_signal_emit(keypad->main_layout, "hide", "keypad_layout");
 	}
 }
 
