@@ -183,4 +183,14 @@ callui_result_e _callui_window_set_keygrab_mode(callui_window_h win_handler,
  */
 callui_result_e _callui_window_unset_keygrab_mode(callui_window_h win_handler, const char *key);
 
+/**
+ * @brief Sets visibility state of indicator
+ *
+ * @param[in]	win_handler	Window handler
+ * @param[in]	is_visible	Visibility state of indicator
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_window_set_indicator_visible(callui_window_h win_handler, bool is_visible);
+
 #endif /* __CALLUI_WINDOW_H__ */
