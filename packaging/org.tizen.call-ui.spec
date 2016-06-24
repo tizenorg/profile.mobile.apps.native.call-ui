@@ -1,6 +1,6 @@
 Name:       org.tizen.call-ui
 VCS:         profile/mobile/apps/native/call-ui#31324a44570db8a8b4c503b6f5a2e43c9910836f
-#RS_Ver:    20160622_2 
+#RS_Ver:    20160623_1 
 Summary:    Call UI Application
 Version:    1.0.0
 Release:    1
