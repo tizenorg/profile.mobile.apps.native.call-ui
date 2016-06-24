@@ -378,3 +378,20 @@ callui_result_e _callui_window_unset_keygrab_mode(callui_window_h win_handler, c
 	}
 	return CALLUI_RESULT_OK;
 }
+
+callui_result_e _callui_window_set_indicator_visible(callui_window_h win_handler, bool is_visible)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(win_handler, CALLUI_RESULT_INVALID_PARAM);
+
+	Elm_Win_Indicator_Mode indicator_mode = elm_win_indicator_mode_get(win_handler->win);
+
+	if (is_visible && indicator_mode == ELM_WIN_INDICATOR_HIDE) {
+		elm_win_indicator_mode_set(win_handler->win, ELM_WIN_INDICATOR_SHOW);
+	} else if (!is_visible && indicator_mode == ELM_WIN_INDICATOR_SHOW) {
+		elm_win_indicator_mode_set(win_handler->win, ELM_WIN_INDICATOR_HIDE);
+	} else {
+		dbg("Indicator already has state [%s]", is_visible ? "show": "hide");
+	}
+
+	return CALLUI_RESULT_OK;
+}
