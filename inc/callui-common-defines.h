@@ -39,6 +39,7 @@
 #define CALLUI_APP_CONTROL_OPERATION_DURING_CALL	"http://tizen.org/appcontrol/oparation/during_call"
 #define CALLUI_APP_CONTROL_OPERATION_END_CALL		"http://tizen.org/appcontrol/operation/end_call"
 #define CALLUI_APP_CONTROL_OPERATION_QP_RESUME		"http://tizen.org/appcontrol/operation/qp_resume"
+#define CALLUI_APP_CONTROL_OPERATION_LS_RESUME		"http://tizen.org/appcontrol/operation/lockscreen_resume"
 
 #define CALLUI_KEY_SELECT	"XF86Phone"
 #define CALLUI_KEY_POWER	"XF86PowerOff"

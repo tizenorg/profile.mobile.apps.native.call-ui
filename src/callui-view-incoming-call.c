@@ -128,7 +128,7 @@ static callui_result_e __callui_view_incoming_call_oncreate(call_view_data_base_
 
 	_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_FULLSCREEN);
 	_callui_window_set_rotation_locked(ad->window, true);
-	_callui_window_set_top_level_priority(ad->window, true);
+	_callui_window_set_above_lockscreen_mode(ad->window, true);
 
 //	evas_object_pointer_mode_set(ad->win, EVAS_OBJECT_POINTER_MODE_NOGRAB);
 
@@ -166,8 +166,6 @@ static callui_result_e __callui_view_incoming_call_ondestroy(call_view_data_base
 	DELETE_EVAS_OBJECT(ad->second_call_popup);
 
 	DELETE_EVAS_OBJECT(vd->base_view.contents);
-
-	_callui_window_set_top_level_priority(ad->window, false);
 
 	_callui_window_unset_keygrab_mode(ad->window, CALLUI_KEY_SELECT);
 

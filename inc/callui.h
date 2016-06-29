@@ -72,6 +72,9 @@ struct appdata {
 	app_event_handler_h app_event_handlers[CALLUI_APP_HANDLERS_COUNT];
 
 	msg_handle_t msg_handle;
+
+	double app_pause_time;
+	bool need_win_minimize;
 };
 
 callui_app_data_t *_callui_get_app_data();
