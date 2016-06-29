@@ -51,10 +51,8 @@ callui_idle_lock_type_t _callui_common_get_idle_lock_type(void);
 /**
  * @brief Unlock swipe lock
  *
- * @return error
- *
  */
-int _callui_common_unlock_swipe_lock(void);
+void _callui_common_unlock_swipe_lock(void);
 
 /**
  * @brief Launch bluetooth application
@@ -265,5 +263,6 @@ struct tm *_callui_common_get_current_time_diff_in_tm(long time);
  * @return Date string on success or NULL otherwise
  */
 char *_callui_common_get_date_string_representation(time_t last_update_time);
+
 
 #endif /*__CALLUI_COMMON_H_ */
