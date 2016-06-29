@@ -598,11 +598,7 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 		int is_powerkey_enabled = _callui_common_is_powerkey_mode_on();
 		dbg("[KEY]KEY_POWER pressed, is_powerkey_enabled(%d)", is_powerkey_enabled);
 
-		callui_display_control_e state = CALLUI_DISPLAY_OFF;
-		callui_result_e res = _callui_display_get_control_state(ad->display, &state);
-		CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, EINA_FALSE);
-
-		if (is_powerkey_enabled && state == CALLUI_DISPLAY_ON) {
+		if (is_powerkey_enabled && _callui_display_is_turned_on(ad->display)) {
 			if (view_type == CALLUI_VIEW_DIALLING) {
 				if (active) {
 					_callui_manager_end_call(ad->call_manager, active->call_id,

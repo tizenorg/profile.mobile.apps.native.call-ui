@@ -198,6 +198,7 @@ static callui_result_e __callui_view_incoming_call_noti_oncreate(call_view_data_
 	_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_ACTIVE_NOTI);
 	_callui_window_set_rotation_locked(ad->window, false);
 	_callui_window_set_top_level_priority(ad->window, true);
+	_callui_window_set_indicator_visible(ad->window, false);
 
 	if (_callui_window_set_keygrab_mode(ad->window, CALLUI_KEY_SELECT, CALLUI_WIN_KEYGRAB_TOPMOST) != CALLUI_RESULT_OK) {
 		dbg("KEY_SELECT key grab failed");
@@ -232,6 +233,7 @@ static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data
 	_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_FULLSCREEN);
 	_callui_window_set_rotation_locked(ad->window, true);
 	_callui_window_set_top_level_priority(ad->window, false);
+	_callui_window_set_indicator_visible(ad->window, true);
 
 	_callui_window_unset_keygrab_mode(ad->window, CALLUI_KEY_SELECT);
 

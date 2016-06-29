@@ -382,6 +382,8 @@ static void __minimize_anim_completed_cb(void *data, Evas_Object *obj, const cha
 		evas_object_freeze_events_set(vd->reply_btns_box, EINA_FALSE);
 	}
 
+	_callui_action_bar_hide(vd->base_view.ad->action_bar);
+
 	callui_result_e res = __create_ending_timer(vd);
 	CALLUI_RETURN_IF_FAIL(res == CALLUI_RESULT_OK);
 }
@@ -400,6 +402,8 @@ static void __maximize_anim_completed_cb(void *data, Evas_Object *obj, const cha
 static void __run_minimize_animation(callui_view_callend_h vd)
 {
 	callui_app_data_t *ad = vd->base_view.ad;
+
+	_callui_action_bar_show(ad->action_bar);
 
 	elm_object_signal_emit(vd->caller_info, "minimize", "caller_info");
 	elm_object_signal_emit(vd->base_view.contents, "minimize", "view_main_ly");

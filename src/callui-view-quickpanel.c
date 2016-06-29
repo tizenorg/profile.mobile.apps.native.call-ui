@@ -31,7 +31,6 @@
 
 #define CALLUI_GROUP_QUICKPANEL	"quickpanel"
 
-#define CALLUI_BUF_TIMER_TXT_LEN	26
 #define CALLUI_CALL_NUMBER_ONE		1
 
 typedef enum {
@@ -371,8 +370,8 @@ static void __set_split_call_duration_time(struct tm *time, Evas_Object *obj, co
 		snprintf(dur, CALLUI_BUFF_SIZE_TINY, "%02d:%02d", time->tm_min, time->tm_sec);
 	}
 
-	char buf[CALLUI_BUF_TIMER_TXT_LEN] = {0};
-	char buf_tmp[CALLUI_BUF_TIMER_TXT_LEN] = {0};
+	char buf[CALLUI_BUFF_SIZE_SML] = {0};
+	char buf_tmp[CALLUI_BUFF_SIZE_SML] = {0};
 	snprintf(buf_tmp, sizeof(buf_tmp), "%s / %s", dur, _("IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"));
 	snprintf(buf, sizeof(buf), buf_tmp, CALLUI_CALL_NUMBER_ONE);
 
