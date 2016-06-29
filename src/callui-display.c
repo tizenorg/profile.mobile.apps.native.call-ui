@@ -262,27 +262,20 @@ callui_result_e _callui_display_set_control_state(callui_display_h display, call
 	return CALLUI_RESULT_OK;
 }
 
-callui_result_e _callui_display_get_control_state(callui_display_h display, callui_display_control_e *state)
+bool _callui_display_is_turned_on(callui_display_h display)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(display, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(display, false);
 
 	display_state_e disp_state = DISPLAY_STATE_NORMAL;
 	int res = device_display_get_state(&disp_state);
-	if (res != DEVICE_ERROR_NONE) {
-		err("device_display_get_state() failed. res[%d]", res);
-		return CALLUI_RESULT_FAIL;
-	}
+	CALLUI_RETURN_VALUE_IF_FAIL(res == DEVICE_ERROR_NONE, false);
 
 	switch (disp_state) {
-	case DISPLAY_STATE_SCREEN_OFF:
-		*state = CALLUI_DISPLAY_OFF;
-		break;
 	case DISPLAY_STATE_NORMAL:
 	case DISPLAY_STATE_SCREEN_DIM:
+		return true;
+	case DISPLAY_STATE_SCREEN_OFF:
 	default:
-		*state = CALLUI_DISPLAY_ON;
-		break;
+		return false;
 	}
-
-	return CALLUI_RESULT_OK;
 }
