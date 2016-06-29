@@ -155,7 +155,6 @@ Evas_Object *_callui_create_cid_thumbnail_with_size(Evas_Object *parent,
 		const char *path)
 {
 	CALLUI_RETURN_NULL_IF_FAIL(parent);
-	CALLUI_RETURN_NULL_IF_FAIL(type >= CALLUI_CID_TYPE_SINGLE && type < CALLUI_CID_TYPE_COUNT);
 	CALLUI_RETURN_NULL_IF_FAIL(size >= CALLUI_CID_SIZE_DEFAULT && size < CALLUI_CID_SIZE_COUNT);
 
 	Evas_Object *layout = elm_layout_add(parent);
