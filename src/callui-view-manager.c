@@ -57,7 +57,7 @@ static callui_result_e __create_update_view(callui_vm_h vm, callui_view_type_e t
 static call_view_data_base_t *__allocate_view(callui_view_type_e view_type);
 static callui_result_e __change_view(callui_vm_h vm, callui_view_type_e type);
 static void __update_cur_view(callui_vm_h vm);
-static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_data_t *call_data);
+static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_data_t *call_data, callui_sim_slot_type_e sim_slot);
 static void __call_state_event_cb(void *user_data,
 		callui_call_event_type_e call_event_type,
 		unsigned int call_id,
@@ -102,7 +102,7 @@ static void _lock_manager_unlock_cb(void *data)
 	__change_view(ad->view_manager, CALLUI_VIEW_ENDCALL);
 }
 
-static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_data_t *call_data)
+static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_data_t *call_data, callui_sim_slot_type_e sim_slot)
 {
 	callui_app_data_t *ad = vm->ad;
 	callui_result_e res = CALLUI_RESULT_FAIL;
@@ -167,6 +167,7 @@ static callui_result_e __auto_change_view(callui_vm_h vm, callui_call_data_t *ca
 				CALLUI_RETURN_VALUE_IF_FAIL(ad->end_call_data, CALLUI_RESULT_ALLOCATION_FAIL);
 			}
 			memcpy(ad->end_call_data, call_data, sizeof(callui_call_data_t));
+			ad->end_call_sim_slot = sim_slot;
 
 			if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
 				_callui_lock_manager_set_callback_on_unlock(ad->lock_handle, _lock_manager_unlock_cb, ad);
@@ -205,7 +206,7 @@ static void __call_state_event_cb(void *user_data,
 		}
 		_callui_action_bar_set_disabled_state(ad->action_bar, false);
 	}
-	__auto_change_view(vm, event_info);
+	__auto_change_view(vm, event_info, sim_type);
 }
 
 static void __end_call_called_cb(void *user_data, unsigned int call_id, callui_call_release_type_e release_type)
@@ -420,7 +421,7 @@ callui_result_e _callui_vm_auto_change_view(callui_vm_h vm)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(vm, CALLUI_RESULT_INVALID_PARAM);
 
-	return __auto_change_view(vm, NULL);
+	return __auto_change_view(vm, NULL, CALLUI_SIM_SLOT_DEFAULT);
 }
 
 static void __update_cur_view(callui_vm_h vm)
