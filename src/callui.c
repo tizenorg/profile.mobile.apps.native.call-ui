@@ -85,7 +85,7 @@ static void __set_main_win_key_grab(callui_app_data_t *ad)
 	} else {
 		res = _callui_window_set_keygrab_mode(ad->window, CALLUI_KEY_POWER, CALLUI_WIN_KEYGRAB_SHARED);
 	}
-	if (!res) {
+	if (res != CALLUI_RESULT_OK) {
 		dbg("KEY_POWER key grab failed");
 	}
 }

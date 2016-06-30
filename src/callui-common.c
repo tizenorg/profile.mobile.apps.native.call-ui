@@ -602,7 +602,7 @@ callui_result_e _callui_common_get_last_msg_data(void *appdata, const char *tel_
 
 	char msg_txt[MAX_MSG_TEXT_LEN + 1] = { '\0' };
 	int msg_direct;
-	int msg_time;
+	int msg_time = 0;
 
 	int i = msg_conv_list.nCount - 1;
 	for (; i >= 0 ; --i) {

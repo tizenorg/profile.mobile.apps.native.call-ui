@@ -392,7 +392,7 @@ static void __maximize_anim_completed_cb(void *data, Evas_Object *obj, const cha
 {
 	callui_view_callend_h vd = data;
 
-	callui_result_e res = _callui_manager_dial_voice_call(vd->base_view.ad->call_manager, vd->call_number, CALLUI_SIM_SLOT_DEFAULT);
+	callui_result_e res = _callui_manager_dial_voice_call(vd->base_view.ad->call_manager, vd->call_number, vd->base_view.ad->end_call_sim_slot);
 	if (res != CALLUI_RESULT_OK) {
 		err("_callui_manager_dial_voice_call() failed. res[%d]", res);
 		_callui_common_exit_app();

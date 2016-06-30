@@ -67,6 +67,7 @@ struct appdata {
 	callui_sound_manager_h sound_manager;
 
 	callui_call_data_t *end_call_data;
+	callui_sim_slot_type_e end_call_sim_slot;
 
 	app_event_handler_h app_event_handlers[CALLUI_APP_HANDLERS_COUNT];
 
