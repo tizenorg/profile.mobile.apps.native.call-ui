@@ -41,7 +41,6 @@
 
 #define CALLUI_CSTM_I18N_UDATE_IGNORE	-2 /* Used temporarily since there is no substitute of UDATE_IGNORE in base-utils */
 #define CALLUI_TIME_STRING_BUFF_SIZE	512
-#define CALLUI_PAUSE_LOCK_TIMEOUT_LIMIT	0.35
 
 #define CALLUI_TIME_FORMAT_12		"hm"
 #define CALLUI_TIME_FORMAT_24		"Hm"
@@ -375,6 +374,8 @@ int _callui_common_is_powerkey_mode_on(void)
 
 static void __lock_state_changed_cb(system_settings_key_e key, void *user_data)
 {
+	debug_enter();
+
 	CALLUI_RETURN_IF_FAIL(user_data);
 
 	callui_app_data_t *ad = user_data;
@@ -390,12 +391,14 @@ static void __lock_state_changed_cb(system_settings_key_e key, void *user_data)
 		dbg("Device lock state [LOCKED]");
 		if (!ad->on_background) {
 			_callui_window_set_above_lockscreen_mode(ad->window, true);
+			callui_indicator_set_active(ad->indicator, false);
 		} else {
 			double time_diff = ecore_time_get() - ad->app_pause_time;
 			if (time_diff <= CALLUI_PAUSE_LOCK_TIMEOUT_LIMIT) {
 				dbg("App_pause -> lock_device time diff [%ld]", time_diff);
 				_callui_window_set_above_lockscreen_mode(ad->window, true);
 				ad->app_pause_time = 0.0;
+				ad->on_background = false;
 			}
 			if (_callui_lock_manager_is_started(ad->lock_handle)) {
 				_callui_lock_manager_stop(ad->lock_handle);
@@ -403,6 +406,8 @@ static void __lock_state_changed_cb(system_settings_key_e key, void *user_data)
 			}
 		}
 	}
+
+	debug_leave();
 }
 
 void _callui_common_set_lock_state_changed_cb(void *user_data)

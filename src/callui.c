@@ -38,6 +38,9 @@
 
 #define CALLUI_EARSET_KEY_LONG_PRESS_TIMEOUT	1.0
 
+int g_callui_sig_to_handle[] = {SIGILL, SIGABRT, SIGFPE, SIGSEGV};
+#define APP_SIG_COUNT ((int)(sizeof(g_callui_sig_to_handle) / sizeof(g_callui_sig_to_handle[0])))
+
 static bool __app_create(void *data);
 static void __app_terminate(void *data);
 static void __app_pause(void *data);
@@ -72,9 +75,10 @@ static void __set_main_power_key_grab(callui_app_data_t *ad);
 static void __powerkey_mode_changed_cb(keynode_t *node, void *user_data);
 static void __unset_main_win_key_grab(callui_app_data_t *ad);
 static void __set_text_classes_params();
-
 static void __process_power_key_up(callui_app_data_t *ad);
 static void __process_home_key_up(callui_app_data_t *ad);
+static void __init_signals_handling();
+static void __app_signal_handler(int signum, siginfo_t *info, void *context);
 
 static callui_app_data_t g_ad;
 
@@ -328,6 +332,21 @@ static void __dial_status_cb(void *user_data, callui_dial_status_e dial_status)
 	}
 }
 
+static void __init_signals_handling()
+{
+	struct sigaction act;
+	act.sa_sigaction = __app_signal_handler;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = SA_SIGINFO;
+	act.sa_flags |= SA_RESETHAND;
+	int i = 0;
+	for (i = 0; i < APP_SIG_COUNT; ++i) {
+		if (sigaction(g_callui_sig_to_handle[i], &act, NULL) < 0) {
+			err("sigaction() failed!");
+		}
+	}
+}
+
 static bool __app_init(callui_app_data_t *ad)
 {
 	__init_app_event_handlers(ad);
@@ -370,13 +389,22 @@ static bool __app_init(callui_app_data_t *ad)
 	ad->lock_handle = _callui_lock_manager_create();
 	CALLUI_RETURN_VALUE_IF_FAIL(ad->lock_handle, false);
 
+	ad->indicator = callui_indicator_create(ad);
+	if (!ad->indicator) {
+		err("Failed to create status bar module");
+	}
+
 	__set_main_win_key_grab(ad);
 
 	__add_ecore_event_key_handlers(ad);
 
 	__set_text_classes_params();
 
+	__init_signals_handling();
+
 	_callui_common_set_lock_state_changed_cb(ad);
+
+	elm_theme_extension_add(NULL, CALLUI_CALL_THEME_EDJ_PATH);
 
 	return true;
 }
@@ -478,6 +506,11 @@ static void __app_deinit(callui_app_data_t *ad)
 
 	__bt_deinit();
 
+	if (ad->indicator) {
+		callui_indicator_destroy(ad->indicator);
+		ad->indicator = NULL;
+	}
+
 	debug_leave();
 }
 
@@ -495,10 +528,17 @@ static void __app_pause(void *data)
 	debug_enter();
 
 	callui_app_data_t *ad = data;
+	bool is_set_active_indicator_needed = true;
 
 	if (_callui_lock_manager_is_started(ad->lock_handle)) {
-		_callui_lock_manager_stop(ad->lock_handle);
-		ad->start_lock_manager_on_resume = true;
+		if (_callui_lock_manager_is_lcd_off(ad->lock_handle)) {
+			dbg("LCD is OFF");
+			is_set_active_indicator_needed = false;
+		} else {
+			dbg("LCD is ON");
+			_callui_lock_manager_stop(ad->lock_handle);
+			ad->start_lock_manager_on_resume = true;
+		}
 	}
 
 	_callui_vm_pause(ad->view_manager);
@@ -508,7 +548,15 @@ static void __app_pause(void *data)
 		ad->on_background = true;
 		_callui_window_set_above_lockscreen_mode(ad->window, false);
 		ad->app_pause_time = ecore_time_get();
+
+		if (is_set_active_indicator_needed) {
+			callui_indicator_set_active(ad->indicator, true);
+		}
+	} else {
+		dbg("Device is locked");
 	}
+
+	debug_leave();
 }
 
 static void __app_resume(void *data)
@@ -525,6 +573,10 @@ static void __app_resume(void *data)
 	}
 
 	_callui_vm_resume(ad->view_manager);
+
+	callui_indicator_set_active(ad->indicator, false);
+
+	debug_leave();
 }
 
 static void __app_service(app_control_h app_control, void *data)
@@ -694,6 +746,8 @@ static void __process_home_key_up(callui_app_data_t *ad)
 				dbg("KEY_SELECT key ungrab failed");
 			}
 		}
+	} else if (view_type == CALLUI_VIEW_ENDCALL) {
+		_callui_common_exit_app();
 	} else {
 		if (ad->on_background) {
 			return;
@@ -738,6 +792,10 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 	} else if (!strcmp(ev->keyname, CALLUI_KEY_SELECT) || !strcmp(ev->keyname, CALLUI_KEY_HOME)) {
 		dbg("KEY_SELECT or KEY_HOME");
 		__process_home_key_up(ad);
+	} else if (!strcmp(ev->keyname, CALLUI_KEY_BACK)) {
+		if (_callui_vm_get_cur_view_type(ad->view_manager) == CALLUI_VIEW_ENDCALL) {
+			_callui_common_exit_app();
+		}
 	}
 
 	DELETE_ECORE_TIMER(ad->earset_key_longpress_timer);
@@ -784,6 +842,14 @@ static Eina_Bool __hard_key_down_cb(void *data, int type, void *event)
 	return EINA_FALSE;
 }
 
+static void __app_signal_handler(int signum, siginfo_t *info, void *context)
+{
+	err("Received [%d] signal", signum);
+
+	callui_indicator_force_deativate(g_ad.indicator);
+	raise(signum);
+}
+
 callui_app_data_t *_callui_get_app_data()
 {
 	return &g_ad;
@@ -792,7 +858,7 @@ callui_app_data_t *_callui_get_app_data()
 CALLUI_EXPORT_API int main(int argc, char *argv[])
 {
 	dbg("..");
-	ui_app_lifecycle_callback_s event_callback = {0,};
+	ui_app_lifecycle_callback_s event_callback = { 0 };
 
 	event_callback.create = __app_create;
 	event_callback.terminate = __app_terminate;

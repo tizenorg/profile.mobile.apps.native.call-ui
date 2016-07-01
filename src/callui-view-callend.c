@@ -98,7 +98,7 @@ static void __maximize_anim_completed_cb(void *data, Evas_Object *obj, const cha
 static void __run_minimize_animation(callui_view_callend_h vd);
 static void __run_maximize_animation(callui_view_callend_h vd);
 
-static void __launch_contact_app(const char *operation, const char *call_number);
+static void __launch_contact_app(const char *operation, const char *call_number, callui_app_data_t *ad);
 
 callui_view_callend_h _callui_view_callend_new()
 {
@@ -469,7 +469,16 @@ static char *__vcui_endcall_get_item_text(void *data, Evas_Object *obj, const ch
 	return NULL;
 }
 
-static void __launch_contact_app(const char *operation, const char *call_number)
+static void __app_launch_reply_cb (app_control_h request, app_control_h reply, app_control_result_e result, void *user_data)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+	callui_app_data_t *ad = user_data;
+	if (result == APP_CONTROL_RESULT_APP_STARTED) {
+		ad->on_background = true;
+	}
+}
+
+static void __launch_contact_app(const char *operation, const char *call_number, callui_app_data_t *ad)
 {
 	app_control_h app_control = NULL;
 	int ret;
@@ -481,9 +490,12 @@ static void __launch_contact_app(const char *operation, const char *call_number)
 		err("app_control_set_mime() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_add_extra_data(app_control, APP_CONTROL_DATA_PHONE, call_number)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_add_extra_data() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_enable_app_started_result_event(app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_enable_app_started_result_event() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, __app_launch_reply_cb, ad)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	}
+
 	if (app_control) {
 		app_control_destroy(app_control);
 	}
@@ -497,7 +509,7 @@ static void __create_contact_btn_click_cb(void *data, Evas_Object *obj, void *ev
 
 	_callui_common_exit_app();
 
-	__launch_contact_app(APP_CONTROL_OPERATION_ADD, vd->call_number);
+	__launch_contact_app(APP_CONTROL_OPERATION_ADD, vd->call_number, vd->base_view.ad);
 }
 
 static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
@@ -508,7 +520,7 @@ static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *ev
 
 	_callui_common_exit_app();
 
-	__launch_contact_app(APP_CONTROL_OPERATION_EDIT, vd->call_number);
+	__launch_contact_app(APP_CONTROL_OPERATION_EDIT, vd->call_number, vd->base_view.ad);
 }
 
 static void __popup_back_click_cb(void *data, Evas_Object *obj, void *event_info)
