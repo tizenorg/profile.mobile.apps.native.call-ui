@@ -261,9 +261,10 @@ static void __disappear_transit_del_cb(void *data, Elm_Transit *transit)
 	__reset_params_after_transit(data);
 
 	callui_view_incoming_call_noti_h vd = data;
+	vd->base_view.ad->on_background = true;
+
 	_callui_window_set_top_level_priority(vd->base_view.ad->window, false);
 	_callui_window_minimize(vd->base_view.ad->window);
-	vd->base_view.ad->on_background = true;
 }
 
 static Eina_Bool __appear_effect_activated_cb(void *data)
@@ -539,7 +540,7 @@ static void _rm_compose_item_clicked_cb(void *data, Evas_Object *obj, const char
 	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 	CALLUI_RETURN_IF_FAIL(incom);
 
-	_callui_common_launch_msg_composer(ad, incom->call_num);
+	_callui_common_launch_msg_composer(ad, incom->call_num, false);
 
 	callui_result_e res = _callui_manager_reject_call(ad->call_manager);
 	if (res != CALLUI_RESULT_OK) {

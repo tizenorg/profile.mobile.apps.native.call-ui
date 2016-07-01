@@ -65,11 +65,12 @@ void _callui_common_launch_setting_bluetooth(void *appdata);
 /**
  * @brief Launch Composer of Message application
  *
- * @param[in] appdata        App data
- * @param[in] number         Phone number
+ * @param[in] appdata            App data
+ * @param[in] number             Phone number
+ * @param[in] is_exit_app_needed Set if exit application is needed on Message app launch
  *
  */
-void _callui_common_launch_msg_composer(void *appdata, const char *number);
+void _callui_common_launch_msg_composer(void *appdata, const char *number, bool is_exit_app_needed);
 
 /**
  * @brief Launch Dialer of Phone application

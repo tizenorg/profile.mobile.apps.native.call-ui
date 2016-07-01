@@ -822,7 +822,7 @@ static void __callui_create_new_msg_btn_click_cb(void *data, Evas_Object *obj, v
 	const callui_call_data_t *incom = _callui_stp_get_call_data(ad->state_provider, CALLUI_CALL_DATA_INCOMING);
 	CALLUI_RETURN_IF_FAIL(incom);
 
-	_callui_common_launch_msg_composer(ad, incom->call_num);
+	_callui_common_launch_msg_composer(ad, incom->call_num, false);
 
 	callui_result_e res = _callui_manager_reject_call(ad->call_manager);
 	if (res != CALLUI_RESULT_OK) {
