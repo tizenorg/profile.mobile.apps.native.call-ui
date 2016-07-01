@@ -54,6 +54,8 @@
 #define CALLUI_BUFF_SIZE_SML	32
 #define CALLUI_BUFF_SIZE_TINY	16
 
+#define CALLUI_PAUSE_LOCK_TIMEOUT_LIMIT	0.3
+
 #undef SAFE_C_CAST
 #define SAFE_C_CAST(type, value) ((type)(ptrdiff_t)value)
 
