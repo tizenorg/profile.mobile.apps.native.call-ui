@@ -68,7 +68,8 @@
 
 typedef enum {
 	CALLUI_REJ_MSG_UPDATE_GL_HINT = 0x01,
-	CALLUI_REJ_MSG_UPDATE_AVAILABLE_SIZE = 0x02
+	CALLUI_REJ_MSG_UPDATE_AVAILABLE_SIZE = 0x02,
+	CALLUI_REJ_MSG_ANCHOR_MOVED = 0x04
 } _callui_rm_update_params_e;
 
 typedef enum {
@@ -330,6 +331,7 @@ static void __rm_reset_status_flags(callui_view_incoming_call_noti_h vd)
 {
 	vd->rm_actualize_state |= CALLUI_REJ_MSG_UPDATE_GL_HINT;
 	vd->rm_actualize_state |= CALLUI_REJ_MSG_UPDATE_AVAILABLE_SIZE;
+	vd->rm_actualize_state |= CALLUI_REJ_MSG_ANCHOR_MOVED;
 }
 
 static void __show_reject_msg_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
@@ -496,6 +498,8 @@ static Eina_Bool __rm_animation_cb(void *data, double pos)
 
 	evas_object_color_set(vd->base_view.contents, CALLUI_REJ_MSG_DIMMER_COLOR, vd->rm_dimmer_alpha);
 
+	dbg("rm_scroller_x[%d] rm_scroller_y[%d]" ,vd->rm_scroller_x, vd->rm_scroller_y);
+
 	evas_object_resize(vd->rm_scroller, vd->rm_scroller_anim_start_w, new_scroller_h);
 	evas_object_geometry_set(vd->rm_scroller_bg, vd->rm_scroller_x, vd->rm_scroller_y, vd->rm_scroller_anim_start_w, new_scroller_h);
 	evas_object_move(vd->rm_scroller_stroke, vd->rm_scroller_x, vd->rm_scroller_y + new_scroller_h);
@@ -509,6 +513,7 @@ static Eina_Bool __rm_animation_cb(void *data, double pos)
 
 static void __rm_scroller_anchor_move_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
 {
+	dbg("!!! __rm_scroller_anchor_move_cb !!!");
 	callui_view_incoming_call_noti_h vd = data;
 
 	Evas_Coord x = 0;
@@ -519,6 +524,9 @@ static void __rm_scroller_anchor_move_cb(void *data, Evas *e, Evas_Object *obj, 
 	vd->rm_scroller_x = x;
 	vd->rm_scroller_y = y;
 	evas_object_move(vd->rm_scroller, x, y);
+
+	vd->rm_actualize_state &= ~CALLUI_REJ_MSG_ANCHOR_MOVED;
+	__rm_try_actualize(vd);
 }
 
 static void _rm_compose_item_clicked_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
@@ -623,10 +631,39 @@ static int __rm_fill_box(callui_view_incoming_call_noti_h vd, Evas_Object *box)
 	return ++item_count;
 }
 
+static void __rm_scroller_bg_resize_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	Evas_Coord x, y, w, h;
+	x = y = w = h = 0;
+	evas_object_geometry_get(obj, &x, &y, &w, &h);
+
+	dbg("RM scroller BG [resize] - x[%d]y[%d] w[%d]h[%d]", x, y, w, h);
+}
+
+static void __rm_scroller_bg_move_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	Evas_Coord x, y, w, h;
+	x = y = w = h = 0;
+	evas_object_geometry_get(obj, &x, &y, &w, &h);
+
+	dbg("RM scroller BG [move] - x[%d]y[%d] w[%d]h[%d]", x, y, w, h);
+}
+
+static void __rm_strock_move_cb(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+	Evas_Coord x, y, w, h;
+	x = y = w = h = 0;
+	evas_object_geometry_get(obj, &x, &y, &w, &h);
+
+	dbg("RM strock [move] - x[%d]y[%d] w[%d]h[%d]", x, y, w, h);
+}
+
 static void __rm_create_content(callui_view_incoming_call_noti_h vd)
 {
 	/* Reject message list background gradient color layout */
 	vd->rm_scroller_bg = _callui_load_edj(vd->box, CALLUI_CALL_EDJ_PATH, "reject_msg_scroller_bg");
+	evas_object_event_callback_add(vd->rm_scroller_bg, EVAS_CALLBACK_RESIZE, __rm_scroller_bg_resize_cb, vd);
+	evas_object_event_callback_add(vd->rm_scroller_bg, EVAS_CALLBACK_MOVE, __rm_scroller_bg_move_cb, vd);
 	CALLUI_RETURN_IF_FAIL(vd->rm_scroller_bg);
 	evas_object_show(vd->rm_scroller_bg);
 
@@ -662,6 +699,7 @@ static void __rm_create_content(callui_view_incoming_call_noti_h vd)
 
 	/* Reject message scroller bottom stroke */
 	vd->rm_scroller_stroke = evas_object_rectangle_add(evas_object_evas_get(vd->rm_scroller));
+	evas_object_event_callback_add(vd->rm_scroller_stroke, EVAS_CALLBACK_MOVE, __rm_strock_move_cb, vd);
 	if (!vd->rm_scroller_stroke) {
 		return __rm_destroy_content(vd);
 	}
