@@ -91,20 +91,18 @@ group {
 		)
 		CU_PART_TEXTBLOCK( "callui.text.main",
 			description { state: "default" 0.0;
-				align: 0.5 0.5;
+				align: 0.0 0.5;
 				rel1 { relative: 1.0 0.0; to_x: "padding.left"; }
 				rel2 { relative: 0.0 1.0; to_x: "padding.right"; }
-				min: 0 AN_STATUS_TXT_H;
-				fixed: 0 1;
 				text.style:"reject_msg_txt";
+				text.min: 0 1;
 			}
 			description { state: "icon_enable" 0.0;
-				align: 0.5 0.5;
+				align: 0.0 0.5;
 				rel1 { relative: 1.0 0.0; to_x: "padding.left"; }
 				rel2 { relative: 0.0 1.0; to_x: "add_icon.pad.left"; }
-				min: 0 AN_STATUS_TXT_H;
-				fixed: 0 1;
-				text.style:"active_call_name";
+				text.style:"reject_msg_txt";
+				text.min: 0 1;
 			}
 		)
 		CU_PART_SPACER("add_icon.pad.right",
