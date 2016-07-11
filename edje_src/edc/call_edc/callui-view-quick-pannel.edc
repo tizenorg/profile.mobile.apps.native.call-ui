@@ -156,6 +156,7 @@ group {
 			type: SPACER;
 			scale: 1;
 			description {
+				state: "default" 0.0;
 				min: 0 QP_BTN_PAD_T;
 				fixed: 0 1;
 				rel2.relative: 1.0 0.0;
@@ -166,6 +167,7 @@ group {
 			type: SPACER;
 			scale: 1;
 			description {
+				state: "default" 0.0;
 				min: 0 QP_TEXT_AREA_PAD_T;
 				fixed: 0 1;
 				rel2.relative: 1.0 0.0;
@@ -176,6 +178,7 @@ group {
 			type: SPACER;
 			scale: 1;
 			description {
+				state: "default" 0.0;
 				fixed: 1 0;
 				min: QP_CONTACT_ICON_PAD_R 0;
 				max: QP_CONTACT_ICON_PAD_R -1;
@@ -439,6 +442,7 @@ group {
 			target: "swallow.resume_button";
 			target: "swallow.call_button";
 			target: "swallow.speaker_button";
+			target: "swallow.caller_id";
 			target: "txt_area";
 		}
 		program {
@@ -451,6 +455,7 @@ group {
 			target: "swallow.resume_button";
 			target: "swallow.call_button";
 			target: "swallow.speaker_button";
+			target: "swallow.caller_id";
 			target: "txt_area";
 		}
 		program {
