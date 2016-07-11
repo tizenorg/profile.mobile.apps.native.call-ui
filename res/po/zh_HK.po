@@ -10,14 +10,29 @@ msgstr "確定"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "建立聯絡人"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "訊息"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "緊急號碼"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "返回通話"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "訊息"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "抱歉，我正在開車。"
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "我現在不方便說話。怎麼了？"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "抱歉，我正在忙。稍後回電給您。"
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "抱歉，我正在忙。請發訊息給我。"
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "我正在會議中。"
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "發送失敗。"
@@ -38,19 +53,16 @@ msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
 msgstr "未接電話"
 
 msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
-msgstr "在耳機或藍牙耳機連接時無法開啟額外音量。"
+msgstr "在耳機或藍牙耳機連接時無法開啟 [額外音量]。"
 
 msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
-msgstr "在耳機連接時無法開啟額外音量。"
+msgstr "在耳機連接時無法開啟 [額外音量]。"
 
 msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
-msgstr "在藍牙耳機連接時無法開啟額外音量。"
+msgstr "在藍牙耳機連接時無法開啟 [額外音量]。"
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "正在撥號..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "未接電話"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "轉送"
@@ -65,7 +77,7 @@ msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
 msgstr "結束電話會議"
 
 msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
-msgstr "結束與 %s 的通話"
+msgstr "結束與%s的通話"
 
 msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
 msgstr "結束目前通話"
@@ -112,9 +124,6 @@ msgstr "聯絡人"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "撰寫訊息以發送"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "通話"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "藍牙"
 
@@ -131,7 +140,7 @@ msgid "IDS_CALL_BODY_UNKNOWN"
 msgstr "未知"
 
 msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
-msgstr "保留與 %s 的通話"
+msgstr "保留與%s的通話"
 
 msgid "IDS_CALL_BODY_ON_HOLD_ABB"
 msgstr "保留中"
@@ -152,10 +161,10 @@ msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
 msgstr "結束啟動中的通話(%d)"
 
 msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
-msgstr "正在透過 %s 撥打..."
+msgstr "正在透過%s撥打..."
 
 msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
-msgstr "已透過 %s 連接"
+msgstr "已透過%s連接"
 
 msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
 msgstr "已連接"
@@ -167,14 +176,23 @@ msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
 msgstr "%d 位已保留"
 
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
-msgstr "保留與 %s 的通話"
-
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "會議"
+msgstr "保留與%s的通話"
 
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "返回至通話螢幕"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "自動拒絕來電"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "未接電話"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "通話"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "會議"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "更新聯絡人"
 

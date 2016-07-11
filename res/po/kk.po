@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Байланыс кітапшасын құру"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Хабарлама"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Төтенше қызмет нөмірі"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Қайта қоңырау шалу"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Хабарлама"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Көлік жүргізудемін."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Қазір сөйл. алмаймын. Не болды?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Бос емеспін. Кейін қоң. шаламын."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Бос емеспін. Хабар жазыңыз."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Мен жиналыстамын."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Жіберілген  үзіліп кеті."
@@ -48,9 +63,6 @@ msgstr "Bluetooth гарнитурасы қосылғанда қосымша д�
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Терілуде..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Қабылданбаған қоңырау"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Трансфер"
@@ -112,9 +124,6 @@ msgstr "Контактілер"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Жіберу үшін хабар жазу"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Қоңырау"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d ұстал."
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "%s ұстап тұрыңыз"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Конференция"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Қоңырау экранына оралу"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Авто қабылданбаған қңру"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Қабылданбаған қоңырау"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Қоңырау"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Конференция"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Контакт. жаңар."
 

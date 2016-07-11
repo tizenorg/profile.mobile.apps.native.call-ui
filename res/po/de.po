@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Neuer Kontakt"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Nachricht"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Notrufnummer"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Zurück zu Anruf"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Nachricht"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Sorry, ich fahre gerade."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Kann nicht reden. Was ist los?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Beschäftigt. Rufe später zurück."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Bin beschäftigt. Bitte per SMS."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Ich bin in einer Besprechung."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Senden fehlgeschlagen"
@@ -48,9 +63,6 @@ msgstr "Zusätzliche Lautstärke kann nicht eingeschaltet werden, solange ein Bl
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Wählen ..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Anruf in Abwesenheit"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Übertragen"
@@ -112,9 +124,6 @@ msgstr "Kontakte"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Nachricht zum Senden verfassen"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Anruf"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d paus."
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Anruf von %s halten"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Konferenz"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Zurück zum Anrufbildschirm"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Autom. abgelehnter Anruf"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Anruf in Abwesenheit"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Anruf"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferenz"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Kontakt aktual."
 

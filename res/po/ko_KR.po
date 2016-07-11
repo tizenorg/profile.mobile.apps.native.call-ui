@@ -10,14 +10,29 @@ msgstr "확인"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "새 연락처 추가"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "메시지"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "긴급 전화번호"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "통화로 돌아가기"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "메시지"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "죄송합니다. 운전 중이에요."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "지금은 전화를 받을 수 없습니다. 무슨 일이에요?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "죄송합니다. 지금 전화를 받을 수 없습니다. 나중에 전화할게요."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "지금은 전화를 받을 수 없으니, 문자 메시지를 보내주세요."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "회의 중입니다."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "보내지 못하였습니다."
@@ -48,9 +63,6 @@ msgstr "블루투스 헤드셋이 연결된 경우 [추가 음량 높이기]를 
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "전화 연결 중..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "부재중 전화"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "상대방 전화 연결"
@@ -89,7 +101,7 @@ msgid "IDS_CALL_BUTTON_UPDATE_EXISTING"
 msgstr "기존 연락처에 추가"
 
 msgid "IDS_CALL_BUTTON_SPEAKER"
-msgstr "한뼘통화"
+msgstr "스피커"
 
 msgid "IDS_CALL_BUTTON_RESUME_ABB"
 msgstr "계속"
@@ -111,9 +123,6 @@ msgstr "연락처"
 
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "보낼 메시지 작성"
-
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "통화"
 
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "블루투스"
@@ -169,11 +178,21 @@ msgstr "%d명 대기"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "%s 님의 통화 대기"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "컨퍼런스 콜"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "통화 화면으로 돌아가기"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "자동 거절된 전화"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "부재중 전화"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "통화"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "컨퍼런스 콜"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "연락처 업데이트"
+

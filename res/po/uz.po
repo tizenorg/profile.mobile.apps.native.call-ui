@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Kontakt yaratish"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Xabar"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Favqulodda raqam"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Qo‘ng‘iroqqa qaytish"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Xabar"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Hozir transport boshqaryapman."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Gaplasholmayman. Nima gap?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Bandman. Keyin qo‘ng‘. qilaman."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Men bandman. Menga SMS yozing."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Men uchrashuvdaman."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Yuborib bo‘lmadi."
@@ -48,9 +63,6 @@ msgstr "Bluetooth quloqligi ulanganda ortiqcha ovozni yoqib bo‘lmaydi."
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Terilmoqda..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Qabul qilinmagan qo‘ng‘iroq"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Uzatish"
@@ -112,9 +124,6 @@ msgstr "Kontaktlar"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Yuborish uhcun xabar yaratish"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Qo‘ng‘ir."
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d kutish"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "%sni kutish rejimiga qo‘yish"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Konferensiya"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Qo‘ng‘iroq ekraniga qayt"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Qo‘n-ni avtomatik rad et"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Qabul qilinmagan qo‘ng‘iroq"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Qo‘ng‘ir."
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferensiya"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Kontakt yangilash"
 

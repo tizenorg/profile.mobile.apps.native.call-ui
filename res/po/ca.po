@@ -2,7 +2,7 @@ msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
 msgstr "Afegeix a Contactes"
 
 msgid "IDS_COM_SK_CANCEL"
-msgstr "Cancel"
+msgstr "Cancel·lar"
 
 msgid "IDS_COM_SK_OK"
 msgstr "Acceptar"
@@ -10,14 +10,29 @@ msgstr "Acceptar"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Crea contacte"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Missatge"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Número d'emergència"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Torna a la trucada"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Missatge"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Estic conduint."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "No puc parlar. Què passa?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Estic ocupat. Et truco més tard."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Estic ocupat. Envia un missatge."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Sóc a una reunió."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Error en enviar"
@@ -48,9 +63,6 @@ msgstr "El volum extra no es pot activar mentre els auriculars Bluetooth estan c
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Marcant..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Trucada perduda"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Transferir"
@@ -112,9 +124,6 @@ msgstr "Contactes"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Redactar missatge per enviar"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Trucar"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d en esp"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Posar %s en espera"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Conferència"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Tornar a pant de trucada"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Trucada rebutjada auto"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Trucada perduda"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Trucar"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Conferència"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Actualit contacte"
 

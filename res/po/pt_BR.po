@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Novo contato"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Mensagem"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Número de emergência"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Voltar à chamada"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Mensagem"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Desculpe, estou dirigindo agora."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Não posso falar agora. O que houve?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Estou ocupado. Ligo mais tarde."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Estou ocupado. Mande mensagem."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Estou em uma reunião."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Falha de envio."
@@ -48,9 +63,6 @@ msgstr "O Volume adicional não pode ser ativado durante a conexão do fone de o
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Discando..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Chamada Perdida"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Transferir"
@@ -112,9 +124,6 @@ msgstr "Contatos"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Escrever mensagem para enviar"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Chamar"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d espera"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Colocar %s em espera"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Conferência"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Retornar à tela de chamada"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Chamada recusada autom."
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Chamada Perdida"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Chamar"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Conferência"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Atualizar contato"
 

@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Opprett kontakt"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Melding"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Nødnummer"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Tilbake til anrop"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Melding"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Beklager, jeg kjører bil nå."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Kan ikke snakke nå. Hva skjer?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Beklager, opptatt. Ringer senere."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Beklager, opptatt. Send meg mld."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Jeg er i et møte."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Mislykket..."
@@ -48,9 +63,6 @@ msgstr "Ekstra volum kan ikke være slått på mens Bluetooth-hodesett er koblet
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Ringer opp..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Ubesvart anrop"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Overfør"
@@ -112,9 +124,6 @@ msgstr "Kontakter"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Skriv meldingen du vil sende"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Ring"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d på vent"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Sett %s på vent"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Konferanse"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Gå tilbake til samt.skj.b."
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Autoavvist anrop"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Ubesvart anrop"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Ring"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferanse"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Oppdater kontakt"
 

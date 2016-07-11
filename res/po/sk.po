@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Vytvoriť kontakt"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Správa"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Tiesňové číslo"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Späť na hovor"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Správa"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Teraz nemôžem, šoférujem."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Teraz nemôžem. Čo sa deje?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Nemám čas. Zavolám neskôr."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Teraz nemám čas. Pošlite správu."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Som na schôdzi."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Odosielanie sa nepodarilo."
@@ -48,9 +63,6 @@ msgstr "Extra hlasitosť nemožno zapnúť počas pripojenia slúchadla s mikrof
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Vytáčanie..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Zmeškaný hovor"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Presmerovať"
@@ -112,9 +124,6 @@ msgstr "Kontakty"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Napísať správu na odoslanie"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Hovor"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d podrž."
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Podržať hovor s účastníkom %s"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Konferencia"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Návrat na obrazovku hovoru"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Autom. odmietnutý hovor"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Zmeškaný hovor"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Hovor"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferencia"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Aktualiz. kontakt"
 

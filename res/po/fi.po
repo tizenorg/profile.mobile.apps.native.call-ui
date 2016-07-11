@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Luo yhteystieto"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Viesti"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Hätänumero"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Takaisin puheluun"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Viesti"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Olen valitettavasti ajamassa."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "En voi puhua nyt. Mikä hätänä?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Olen varattu. Soitan myöhemmin."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Olen varattu. Lähetä tekstiviesti."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Olen kokouksessa."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Lähetys epäonnistui."
@@ -48,9 +63,6 @@ msgstr "Lisävoimakkuutta ei voi ottaa käyttöön, kun Bluetooth-kuulokemikrofo
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Soitetaan..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Vastaamaton puhelu"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Siirrä"
@@ -112,9 +124,6 @@ msgstr "Yhteystiedot"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Luo lähetettävä viesti"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Puhelu"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d pidossa"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Aseta %s pitoon"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Neuvottelu"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Palaa puhelunäyttöön"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Autom. hylätty puhelu"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Vastaamaton puhelu"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Puhelu"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Neuvottelu"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Päivitä yht.tieto"
 

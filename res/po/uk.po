@@ -10,14 +10,29 @@ msgstr "ОК"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Створити контакт"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Повідом."
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Екстрений виклик"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Повернутися до виклику"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Повідомлення"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Наразі я за кермом."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Не мож.зараз говор. Що сталося?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Не можу відпов. Передз.пізніше."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Не можу відпов. Надішліть SMS."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "На нараді."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Збій надсилання."
@@ -48,9 +63,6 @@ msgstr "Додаткову гучність неможливо ввімкнут�
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Набір..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Пропущений виклик"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Перевести"
@@ -112,9 +124,6 @@ msgstr "Контакти"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Створ. повідом. для надсилання"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Виклик"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d на утр."
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Перев.абонента %s на утримання"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Конференція"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Повернутися на екр.виклику"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Автовідхилений виклик"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Пропущений виклик"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Виклик"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Конференція"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Оновити контакт"
 

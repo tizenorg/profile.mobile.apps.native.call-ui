@@ -10,17 +10,32 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Creare contact"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Mesaj"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
-msgstr "Număr de urgenţă"
+msgstr "Număr de urgență"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Înapoi la apel"
 
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Mesaj"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Scuze, sunt la volan."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Nu pot vorbi. Ce s-a întâmplat?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Scuze, sunt ocupat. Sun înapoi."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Scuze, sunt ocupat. Trim. SMS."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Sunt în ședință."
+
 msgid "IDS_MSGC_POP_SENDINGFAILED"
-msgstr "Trimitere eşuată"
+msgstr "Trimitere eșuată"
 
 msgid "IDS_VCALL_BUTTON2_REJECT_CALL_WITH_MESSAGE"
 msgstr "Respingere apel cu mesaj"
@@ -38,19 +53,16 @@ msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
 msgstr "Apel. pierd."
 
 msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
-msgstr "Volumul suplimentar nu poate fi activat când sunt conectate căştile sau casca Bluetooth."
+msgstr "Volumul suplimentar nu poate fi activat când sunt conectate căștile sau casca Bluetooth."
 
 msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
-msgstr "Volumul suplimentar nu poate fi activat când sunt conectate căştile."
+msgstr "Volumul suplimentar nu poate fi activat când sunt conectate căștile."
 
 msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
 msgstr "Volumul suplimentar nu poate fi activat când este conectată casca Bluetooth."
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Apelare nr...."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Apel pierdut"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Transfer"
@@ -62,22 +74,22 @@ msgid "IDS_CALL_OPT_RESUME_CALL"
 msgstr "Reluare apel"
 
 msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
-msgstr "Încheiere apel conferinţă"
+msgstr "Încheiere apel conferință"
 
 msgid "IDS_CALL_OPT_END_CALL_WITH_PS"
-msgstr "Încheiaţi apelul cu %s"
+msgstr "Încheiați apelul cu %s"
 
 msgid "IDS_CALL_OPT_END_ALL_CURRENT_CALLS"
-msgstr "Încheiaţi toate apelurile actuale"
+msgstr "Încheiați toate apelurile actuale"
 
 msgid "IDS_CALL_OPT_CONFERENCE_CALL"
-msgstr "Conferinţă prin telefon"
+msgstr "Conferință"
 
 msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
-msgstr "Atingeţi de două ori pictograma de deblocare pentru a debloca dispozitivul"
+msgstr "Atingeți de două ori pictograma de deblocare pentru a debloca dispozitivul"
 
 msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
-msgstr "Activaţi Bluetooth"
+msgstr "Activați Bluetooth"
 
 msgid "IDS_CALL_HEADER_ANSWER_CALL_ABB"
 msgstr "Preluare apel"
@@ -101,19 +113,16 @@ msgid "IDS_CALL_BUTTON_MUTE_ABB"
 msgstr "Mc. oprit"
 
 msgid "IDS_CALL_BUTTON_MANAGE"
-msgstr "Gestionare"
+msgstr "Gestion."
 
 msgid "IDS_CALL_BUTTON_HOLD"
-msgstr "În aşteptare"
+msgstr "În așteptare"
 
 msgid "IDS_CALL_BUTTON_CONTACTS"
 msgstr "Contacte"
 
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Compunere mesaj de trimis"
-
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Apel"
 
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
@@ -131,10 +140,10 @@ msgid "IDS_CALL_BODY_UNKNOWN"
 msgstr "Necunoscut"
 
 msgid "IDS_CALL_BODY_PUTTING_PS_ON_HOLD"
-msgstr "Se trece %s în aşteptare"
+msgstr "Se trece %s în așteptare"
 
 msgid "IDS_CALL_BODY_ON_HOLD_ABB"
-msgstr "În aşt."
+msgstr "În așt."
 
 msgid "IDS_CALL_BODY_NO_MESSAGES"
 msgstr "Nici un mesaj"
@@ -164,17 +173,26 @@ msgid "IDS_CALL_BODY_CALL_ENDE_M_STATUS_ABB"
 msgstr "Apel terminat"
 
 msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
-msgstr "%d în aşt."
+msgstr "%d în așt."
 
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
-msgstr "Puneţi în aşteptare numărul %s"
-
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Conferinţă"
+msgstr "Puneți în așteptare numărul %s"
 
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Înapoi la ecranul de apel"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Apel respins automat"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Apel pierdut"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Apel"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Conferință"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Actual. contact"
 

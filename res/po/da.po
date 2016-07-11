@@ -2,7 +2,7 @@ msgid "IDS_COM_OPT_ADD_TO_CONTACTS"
 msgstr "Føj til kontakter"
 
 msgid "IDS_COM_SK_CANCEL"
-msgstr "Annullér"
+msgstr "Annuller"
 
 msgid "IDS_COM_SK_OK"
 msgstr "OK"
@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Opret kontakt"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Besked"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Nødopkaldsnummer"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Tilbage til opkald"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Besked"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Beklager, jeg kører lige nu."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Er optaget nu. Hvad sker der?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Jeg er optaget. Ringer senere."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Jeg er optaget. Send en sms."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Jeg er til møde."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Afsendelse mislykkedes."
@@ -48,9 +63,6 @@ msgstr "Ekstra lydstyrke kan ikke aktiveres, mens Bluetooth-headset er tilslutte
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Ringer op..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Ubesvaret opkald"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Overfør"
@@ -112,9 +124,6 @@ msgstr "Kontakter"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Skriv den besked, du vil sende"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Opkald"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d på hold"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Sæt %s på hold"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Konference"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Tilbage til opkaldsskærm"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Autoafviste opkald"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Ubesvaret opkald"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Opkald"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konference"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Opdater kontakt"
 
