@@ -178,6 +178,7 @@ group { name: "reject_msg_item_compose";
 				min: AN_RM_ITEM_ADD_ICON_SIZE;
 				max: AN_RM_ITEM_ADD_ICON_SIZE;
 				image.normal: IMG_SRC_DIR/"core_button_add.png";
+				fixed: 1 1;
 			}
 		)
 		CU_PART_SPACER( "add_icon.pad.left",
@@ -497,6 +498,7 @@ group {
 				rel2 { relative: 1.0 1.0; to_x: "caller_id.pad.left"; to_y: "caller_id.pad.bottom"; }
 				min: AN_CALL_ICON_SIZE;
 				image.normal: IMG_SRC_DIR/"call_active_ic_call.png";
+				fixed: 1 1;
 			}
 		)
 
