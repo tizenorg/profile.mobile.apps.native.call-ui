@@ -1,5 +1,5 @@
 Name:       org.tizen.call-ui
-#VCS_FROM:   profile/mobile/apps/native/call-ui#3c7700572e76c825b1c356951c12517ca02cc6ff
+#VCS_FROM:   profile/mobile/apps/native/call-ui#29c426afd7530f3614c1b113d59d27067d41f853
 #RS_Ver:    20160711_2 
 Summary:    Call UI Application
 Version:    1.0.0
@@ -28,7 +28,7 @@ Requires(post):  /usr/bin/tpk-backend
 %endif
 
 %description
-profile/mobile/apps/native/call-ui#3c7700572e76c825b1c356951c12517ca02cc6ff
+profile/mobile/apps/native/call-ui#29c426afd7530f3614c1b113d59d27067d41f853
 This is a container package which have preload TPK files
 
 %prep
