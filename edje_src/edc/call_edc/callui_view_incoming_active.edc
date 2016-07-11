@@ -71,8 +71,7 @@ styles {
 	}
 }
 
-group {
-	name: "reject_msg_item";
+group { name: "reject_msg_item";
 	parts {
 		CU_PART_BASE_WH(AN_MAX_W, ACTIVE_NOTI_RM_ITEM_HEIGHT)
 		CU_SWALLOW_BG
@@ -97,7 +96,64 @@ group {
 				text.style:"reject_msg_txt";
 				text.min: 0 1;
 			}
-			description { state: "icon_enable" 0.0;
+		)
+		CU_PART_RECT( "ec.events",
+			mouse_events: 1;
+			repeat_events: 1;
+			description {
+				state: "default" 0.0;
+				color: COLOR_BG_ALPHA;
+			}
+		)
+	}
+	programs {
+		program { name: "mouse_down";
+			signal: "mouse,down,*";
+			source: "ec.events";
+			action: STATE_SET "press" 0.0;
+			target: "press_rect";
+		}
+		program { name: "mouse_up";
+			signal: "mouse,up,*";
+			source: "ec.events";
+			action: STATE_SET "default" 0.0;
+			target: "press_rect";
+		}
+		program { name: "mouse_move";
+			signal: "mouse,move,*";
+			source: "ec.events";
+			action: STATE_SET "default" 0.0;
+			target: "press_rect";
+		}
+		program { name: "clicked";
+			signal: "mouse,clicked,1";
+			source: "ec.events";
+			action: SIGNAL_EMIT "cu,action,clicked" "main_active_noti_call";
+		}
+	}
+}
+
+// TODO: temporary solution to overstep edje signal handling problem.
+
+group { name: "reject_msg_item_compose";
+	parts {
+		CU_PART_BASE_WH(AN_MAX_W, ACTIVE_NOTI_RM_ITEM_HEIGHT)
+		CU_SWALLOW_BG
+		CU_PART_PADDING_LEFT(AN_RM_ITEM_PAD_LEFT)
+		CU_PART_PADDING_RIGHT(AN_RM_ITEM_PAD_RIGHT)
+		CU_PART_RECT( "press_rect",
+			description { state: "default" 0.0;
+				rel1 { relative: 0.0 0.0; to_x: "base"; }
+				rel2 { relative: 1.0 1.0; to_x: "base"; }
+				color: COLOR_BG_ALPHA;
+			}
+			description { state: "press" 0.0;
+				inherit: "default" 0.0;
+				color: AO033P;
+			}
+		)
+		CU_PART_TEXTBLOCK( "callui.text.main",
+			description { state: "default" 0.0;
 				align: 0.0 0.5;
 				rel1 { relative: 1.0 0.0; to_x: "padding.left"; }
 				rel2 { relative: 0.0 1.0; to_x: "add_icon.pad.left"; }
@@ -115,7 +171,6 @@ group {
 		)
 		CU_PART_IMAGE( "add_icon",
 			description { state: "default" 0.0;
-				visible: 0;
 				align: 1.0 0.5;
 				aspect_preference: BOTH;
 				rel1 { relative: 0.0 0.0; to_x: "add_icon.pad.right"; }
@@ -123,10 +178,6 @@ group {
 				min: AN_RM_ITEM_ADD_ICON_SIZE;
 				max: AN_RM_ITEM_ADD_ICON_SIZE;
 				image.normal: IMG_SRC_DIR/"core_button_add.png";
-			}
-			description { state: "show" 0.0;
-				inherit: "default" 0.0;
-				visible: 1;
 			}
 		)
 		CU_PART_SPACER( "add_icon.pad.left",
@@ -170,17 +221,6 @@ group {
 			signal: "mouse,clicked,1";
 			source: "ec.events";
 			action: SIGNAL_EMIT "cu,action,clicked" "main_active_noti_call";
-		}
-		program { name: "change_text_pos_with_icon";
-			action: STATE_SET "icon_enable" 0.0;
-			target: "callui.text.main";
-		}
-		program { name: "show_add_icon";
-			signal: "show_add_icon";
-			source: "";
-			action: STATE_SET "show" 0.0;
-			target: "add_icon";
-			after: "change_text_pos_with_icon";
 		}
 	}
 }

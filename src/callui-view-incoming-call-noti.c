@@ -602,12 +602,11 @@ static callui_result_e __rm_create_message_items(callui_view_incoming_call_noti_
 
 static callui_result_e __rm_create_compose_item(callui_view_incoming_call_noti_h vd, Evas_Object *box)
 {
-	Evas_Object *item_ly = _callui_load_edj(vd->box, CALLUI_CALL_EDJ_PATH, "reject_msg_item");
+	Evas_Object *item_ly = _callui_load_edj(vd->box, CALLUI_CALL_EDJ_PATH, "reject_msg_item_compose");
 	CALLUI_RETURN_VALUE_IF_FAIL(item_ly, CALLUI_RESULT_FAIL);
 
 	evas_object_size_hint_weight_set(item_ly, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(item_ly, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_object_signal_emit(item_ly, "show_add_icon", "");
 	elm_layout_signal_callback_add(item_ly, "cu,action,clicked", "main_active_noti_call", _rm_compose_item_clicked_cb, vd->base_view.ad);
 
 	elm_object_translatable_part_text_set(item_ly, "callui.text.main", "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB");
