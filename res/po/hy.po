@@ -10,14 +10,29 @@ msgstr "Ընդունել"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Ստեղծել կոնտակտ"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Հաղորդագրություն"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Վթարային համար"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Ետ դառնալ կանչին"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Հաղորդագրություն"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Կներեք, հիմա մեքենա եմ վարում:"
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Հիմա չեմ կ. խոսել: Ի՞նչ է եղել:"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Ներեցեք, զբղվծ եմ: Հետո կզանգեմ:"
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Կներեք, զբղվծ եմ: Տեքստ ուղրկեք:"
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Ես հանդիպման եմ:"
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Ուղարկումը ձախողվեց:"
@@ -48,9 +63,6 @@ msgstr "Ձայնի լրացուցիչ ուժգնությունը չի կարող
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Համարհավաքում..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Բացթողած զանգ"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Փոխանցել"
@@ -112,9 +124,6 @@ msgstr "Կոնտակտներ"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Հղրդգրթյուն գրել ուղարկելու հր"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Կանչ"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d` սպասող"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Հետաձգել %sի կանչը"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Կոնֆերանս"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Վերադառնալ կանչի էկրան"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Ինքնաբերաբար մերժված զանգ"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Բացթողած զանգ"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Կանչ"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Կոնֆերանս"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Թարմացնել կոնտակտ"
 

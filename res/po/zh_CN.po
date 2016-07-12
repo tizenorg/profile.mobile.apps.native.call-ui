@@ -10,14 +10,29 @@ msgstr "确定"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "新建联系人"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "信息"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "紧急号码"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "返回通话"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "信息"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "抱歉，我正在开车。"
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "我现在不方便讲话。有什么事吗？"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "对不起，我正在忙。一会给你打电话。"
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "对不起，我正在忙。请留言。"
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "我正在开会。"
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "发送失败"
@@ -38,19 +53,16 @@ msgid "IDS_CALL_POP_MISSED_CALLS_ABB"
 msgstr "未接来电"
 
 msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_OR_BLUETOOTH_HEADSET_CONNECTED"
-msgstr "连接耳机或蓝牙耳机时无法开启更大音量。"
+msgstr "已连接耳机或蓝牙耳机时，无法打开【增强音量】。"
 
 msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_EARPHONES_CONNECTED"
-msgstr "连接耳机时无法开启更大音量。"
+msgstr "已连接耳机时，无法打开【增强音量】。"
 
 msgid "IDS_CALL_POP_EXTRA_VOLUME_CANNOT_BE_TURNED_ON_WHILE_BLUETOOTH_HEADSET_CONNECTED"
-msgstr "连接蓝牙耳机时无法开启更大音量。"
+msgstr "已连接蓝牙耳机时，无法打开【增强音量】。"
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "拨号中..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "未接来电"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "转换"
@@ -59,7 +71,7 @@ msgid "IDS_CALL_OPT_SIM_SERVICES"
 msgstr "SIM卡服务"
 
 msgid "IDS_CALL_OPT_RESUME_CALL"
-msgstr "恢复通话"
+msgstr "继续通话"
 
 msgid "IDS_CALL_OPT_END_CONFERENCE_CALL"
 msgstr "结束电话会议"
@@ -74,7 +86,7 @@ msgid "IDS_CALL_OPT_CONFERENCE_CALL"
 msgstr "电话会议"
 
 msgid "IDS_CALL_NPBODY_DOUBLE_TAP_THE_LOCK_ICON_TO_UNLOCK_YOUR_DEVICE"
-msgstr "双击锁定图标以解锁您的设备"
+msgstr "双击锁定图标可解锁设备"
 
 msgid "IDS_CALL_HEADER_TURN_ON_BLUETOOTH_ABB"
 msgstr "开启蓝牙"
@@ -111,9 +123,6 @@ msgstr "联系人"
 
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "编写信息以发送"
-
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "通话"
 
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "蓝牙"
@@ -152,10 +161,10 @@ msgid "IDS_CALL_BODY_END_ACTIVE_CALLS_HPD"
 msgstr "结束当前通话 (%d)"
 
 msgid "IDS_CALL_BODY_DIALLING_VIA_PS_ING_ABB2"
-msgstr "正在通过 %s 拨号..."
+msgstr "正在通过%s拨号..."
 
 msgid "IDS_CALL_BODY_CONNECTED_VIA_PS_M_STATUS_ABB2"
-msgstr "已通过 %s 连接"
+msgstr "已通过%s连接"
 
 msgid "IDS_CALL_BODY_CONNECTED_M_STATUS_ABB"
 msgstr "已连接"
@@ -167,14 +176,23 @@ msgid "IDS_CALL_BODY_PD_ON_HOLD_M_STATUS_ABB"
 msgstr "%d 个保持中"
 
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
-msgstr "保持 %s"
-
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "多方通话"
+msgstr "保持%s"
 
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "返回至通话屏幕"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "自动拒绝通话"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "未接来电"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "通话"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "多方通话"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "更新联系人"
 

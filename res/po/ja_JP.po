@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "連絡先を登録"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "メッセージ"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "緊急通報番号"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "通話に戻る"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "メッセージ"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "ただいま運転中です。"
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "電話に出られません。ご用件は？"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "今忙しいので、後でかけ直します。"
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "今忙しいので、SMSをください。"
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "申し訳ありません、会議中です。"
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "送信に失敗しました。"
@@ -48,9 +63,6 @@ msgstr "Bluetoothヘッドセットを接続しているときは、[最大音�
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "発信中..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "不在着信"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "転送"
@@ -112,9 +124,6 @@ msgstr "連絡先"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "送信するメッセージを作成"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "発信"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d件保留中"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "%sとの通話を保留"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "会議"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "通話画面に戻る"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "自動着信拒否"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "不在着信"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "発信"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "会議"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "連絡先を更新"
 

@@ -560,7 +560,7 @@ static void __add_contact_click_cb(void *data, Evas_Object *obj, const char *emi
 
 	elm_genlist_item_append(genlist, itc, _("IDS_COM_OPT_CREATE_CONTACT"),
 			NULL, ELM_GENLIST_ITEM_NONE, __create_contact_btn_click_cb, vd);
-	elm_genlist_item_append(genlist, itc, "Update contact",
+	elm_genlist_item_append(genlist, itc, _("IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"),
 			NULL, ELM_GENLIST_ITEM_NONE, __update_contact_btn_click_cb, vd);
 
 	elm_genlist_item_class_free(itc);

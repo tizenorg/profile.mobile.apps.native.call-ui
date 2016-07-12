@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Új névjegy"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Üzenet"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Segélyhívó szám"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Vissza a híváshoz"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Üzenet"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Elnézést, vezetek."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Most nem lehet. Mi a helyzet?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Sajnos nem érek rá. Majd hívom."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Most nem érek rá, küldjön SMS-t."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Tárgyaláson vagyok."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "A küldés sikertelen."
@@ -48,9 +63,6 @@ msgstr "Csatlakoztatott Bluetooth-headset mellett nem kapcsolható be a többlet
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Hívás..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Nem fogadott hívás"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Átad"
@@ -112,9 +124,6 @@ msgstr "Névjegyek"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Elküldendő üzenet írása"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Hívás"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d tartva"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "%s tartásba helyezése"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Konferencia"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Vissza a hívásképernyőhöz"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Aut. elutasított hívás"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Nem fogadott hívás"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Hívás"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferencia"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Névj. frissítése"
 

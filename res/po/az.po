@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Ad yaz"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Mesaj"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Təcili yardım nömrəsi"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Zəng etmək üçün geri qayıdın"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Mesaj"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "İndi sükan arxasındayam."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Danışa bilmirəm. Nə baş verib?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Üzr ist, məşğ. Sonra zng ed."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Məşğulam. Mənə sms yaz."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Mən görüşdəyəm."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Göndərmək mümkün olmadı."
@@ -48,9 +63,6 @@ msgstr "Bluetooth qulaqlığı qoşulan zaman çox yüksək səsi yandırmaq olm
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Yığılır..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Buraxılmış zəng"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Köçürülmə"
@@ -112,9 +124,6 @@ msgstr "Kontaktlar"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Göndərmək üçün mesaj yarat"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Zəng"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d gözləmə"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "%s-i gözlət"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Konfrans"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Zəng ekranına qayıt"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Avto-imtina edilmiş zəng"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Buraxılmış zəng"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Zəng"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konfrans"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Kontaktı yenilə"
 

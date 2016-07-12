@@ -125,7 +125,8 @@ static void __callui_proximity_lock_manager_cb(sensor_h sensor, sensor_event_s *
 	callui_app_data_t *ad = _callui_get_app_data();
 
 	if (value > 0) {
-		if (!_callui_display_is_turned_on(ad->display)) {
+		if (proximity_h->state == CALLUI_PLM_LCD_OFF) {
+			dbg("proximity state: LCD is off");
 			_callui_display_set_control_state(ad->display, CALLUI_DISPLAY_ON);
 			proximity_h->state = CALLUI_PLM_LCD_ON;
 			if (proximity_h->unlock_cb) {

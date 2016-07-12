@@ -10,14 +10,29 @@ msgstr "Í lagi"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Nýr tengiliður"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Skilaboð"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Neyðarnúmer"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Aftur í símtal"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Skilaboð"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Ég er undir stýri."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Kemst ekki í síma. E-ð títt?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Ég upptekin(n). Hringi seinna."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Upptekin(n). Sendu mér SMS."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Ég er á fundi."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Sending mistókst."
@@ -48,9 +63,6 @@ msgstr "Ekki er hægt að kveikja á auknum hljóðstyrk þegar Bluetooth-höfu�
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Verið er að hringja..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Ósvarað"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Flytja"
@@ -112,9 +124,6 @@ msgstr "Símaskrá"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Skrifa skilaboð til að senda"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Símtal"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d í bið"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Setja %s í bið"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Símafundur"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Fara aftur á símtalsskjá"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Sjálfkrafa hafnað símtal"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Ósvarað"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Símtal"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Símafundur"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Uppfæra tengilið"
 

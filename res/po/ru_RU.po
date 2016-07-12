@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Создать контакт"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Сообщение"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Экстренная служба"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Вернуться к вызову"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Сообщение"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Я за рулем."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Я не могу сейчас говорить."
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Извините, я перезвоню Вам позже."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Извините, я занят. Напишите мне."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Я на собрании."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Сбой при отправке."
@@ -48,9 +63,6 @@ msgstr "Невозможно использовать дополнительну
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Вызов..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Пропущенный вызов"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Перевести"
@@ -92,7 +104,7 @@ msgid "IDS_CALL_BUTTON_SPEAKER"
 msgstr "Динамик"
 
 msgid "IDS_CALL_BUTTON_RESUME_ABB"
-msgstr "Возобнов."
+msgstr "Возобн."
 
 msgid "IDS_CALL_BUTTON_REJECT"
 msgstr "Отказ"
@@ -111,9 +123,6 @@ msgstr "Контакты"
 
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Создать сообщение для отправки"
-
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Вызов"
 
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
@@ -169,12 +178,21 @@ msgstr "Удерж.: %d"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Поместить %s на удержание"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Конференция"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Возврат на экран вызова"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Автоотклоненный вызов"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Пропущенный вызов"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Вызов"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Конференция"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Обновить контакт"
 

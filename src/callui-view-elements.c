@@ -202,6 +202,9 @@ Evas_Object *_callui_create_cid_thumbnail_with_size(Evas_Object *parent,
 	case CALLUI_CID_TYPE_MESSAGE:
 		elm_object_signal_emit(layout, "show_message_cid", "");
 		break;
+	default:
+		DELETE_EVAS_OBJECT(layout);
+		return NULL;
 	}
 
 	if (size != CALLUI_CID_SIZE_DEFAULT) {

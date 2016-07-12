@@ -10,14 +10,29 @@ msgstr "ओके"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "संपर्क बनाएं"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "सन्देश"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "आपातकालीन नंबर"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "कॉल पर वापस"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "सन्देश"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "क्षमा करें, मैं अभी गाड़ी चला रहा हूँ।"
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "मैं अभी बात नहीं कर सकता। कैसे हो?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "क्षमा करें, मैं व्यस्त हूँ। बाद में कॉल करता हूँ।"
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "क्षमा करें, मैं व्यस्त हूँ। कृपया मुझे सन्देश भेजें।"
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "मैं एक मीटिंग में हूँ।"
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "भेजना विफल हुआ।"
@@ -48,9 +63,6 @@ msgstr "ब्‍लूटूथ हेडसेट कनेक्ट रहन
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "डायल हो रहा है..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "छूटी कॉल"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "स्थानांतरण"
@@ -101,7 +113,7 @@ msgid "IDS_CALL_BUTTON_MUTE_ABB"
 msgstr "मूक"
 
 msgid "IDS_CALL_BUTTON_MANAGE"
-msgstr "प्रबंधित करें"
+msgstr "प्रबंधन"
 
 msgid "IDS_CALL_BUTTON_HOLD"
 msgstr "होल्ड"
@@ -111,9 +123,6 @@ msgstr "सं‍पर्क"
 
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "भेजने के लिए सन्देश लिखें"
-
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "कॉल"
 
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "ब्लूटूथ"
@@ -169,12 +178,21 @@ msgstr "%d होल्ड पर"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "%s होल्ड पर रखें"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "कॉन्‍फ़्रेंस"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "कॉल स्क्रीन पर वापस जाएँ"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "स्वतः अस्वीकृत कॉल"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "छूटी कॉल"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "कॉल"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "कॉन्‍फ़्रेंस"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "संपर्क अपडेट करें"
 

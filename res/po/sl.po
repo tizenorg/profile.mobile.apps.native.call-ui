@@ -10,14 +10,29 @@ msgstr "V redu"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Ustvari stik"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Sporočilo"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Številka za klic v sili"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Nazaj na klic"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Sporočilo"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Trenutno vozim."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Zdaj ne morem. Kaj se dogaja?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Zaseden sem. Pokličem pozneje."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Zaseden sem. Pošlji sporočilo."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Sem na sestanku."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Pošiljanje ni uspelo."
@@ -48,9 +63,6 @@ msgstr "Funkcije Dodana glasnost ni mogoče vklopiti, če je priključena sluša
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Kličem..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Neodgovorjen klic"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Prenesi"
@@ -112,9 +124,6 @@ msgstr "Stiki"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Sest. sporočila za pošiljanje"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Klic"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d na čak."
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Dajte osebo %s na čakanje"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Konferenca"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Vrnitev na zaslon klica"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Samodejno zavrnjen klic"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Neodgovorjen klic"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Klic"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konferenca"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Posodobi stik"
 

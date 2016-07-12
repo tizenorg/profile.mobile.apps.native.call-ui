@@ -10,14 +10,29 @@ msgstr "OK"
 msgid "IDS_COM_OPT_CREATE_CONTACT"
 msgstr "Loo kontakt"
 
-msgid "IDS_COM_BODY_MESSAGE"
-msgstr "Sõnum"
-
 msgid "IDS_COM_BODY_EMERGENCY_NUMBER"
 msgstr "Hädaabinumber"
 
 msgid "IDS_COM_BODY_BACK_TO_CALL"
 msgstr "Tagasi kõne juurde"
+
+msgid "IDS_COM_BODY_MESSAGE"
+msgstr "Sõnum"
+
+msgid "IDS_CST_TMBODY_SORRY_IM_DRIVING_NOW"
+msgstr "Vabandust, sõidan praegu."
+
+msgid "IDS_CST_TMBODY_I_CANT_TALK_NOW_WHATS_UP_Q"
+msgstr "Ma ei saa rääkida. Mis toimub?"
+
+msgid "IDS_CST_MBODY_SORRY_IM_BUSY_CALL_YOU_LATER_ABB"
+msgstr "Olen hõivatud. Helistan hiljem."
+
+msgid "IDS_CST_BODY_SORRY_IM_BUSY_PLEASE_TEXT_ME_ABB"
+msgstr "Olen hõivatud. Saada sõnum."
+
+msgid "IDS_CST_BODY_IM_IN_A_MEETING"
+msgstr "Olen koosolekul."
 
 msgid "IDS_MSGC_POP_SENDINGFAILED"
 msgstr "Saatmine nurjus."
@@ -48,9 +63,6 @@ msgstr "Lisahelitugevust ei saa sisse lülitada sel ajal, kui Bluetooth-peakompl
 
 msgid "IDS_CALL_POP_DIALLING"
 msgstr "Ühenduse loomine..."
-
-msgid "IDS_CALL_POP_CALLMISSED"
-msgstr "Vastamata kõne"
 
 msgid "IDS_CALL_OPT_TRANSFER"
 msgstr "Edasta"
@@ -112,9 +124,6 @@ msgstr "Kontaktid"
 msgid "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB"
 msgstr "Koosta sõnum saatmiseks"
 
-msgid "IDS_CALL_BUTTON_CALL"
-msgstr "Helista"
-
 msgid "IDS_CALL_BUTTON_BLUETOOTH_ABB"
 msgstr "Bluetooth"
 
@@ -169,12 +178,21 @@ msgstr "%d ootel"
 msgid "IDS_CALL_OPT_PUT_PS_ON_HOLD_ABB"
 msgstr "Pane %s ootele"
 
-msgid "IDS_CALL_BODY_CONFERENCE"
-msgstr "Konverentskõne"
-
 msgid "IDS_CALL_BUTTON_RETURN_TO_CALL_SCREEN_ABB"
 msgstr "Naase kõneekraanile"
 
 msgid "IDS_CALL_MBODY_AUTO_REJECTED_CALL"
 msgstr "Autom. keeldutud kõne"
+
+msgid "IDS_CALL_POP_CALLMISSED"
+msgstr "Vastamata kõne"
+
+msgid "IDS_CALL_BUTTON_CALL"
+msgstr "Helista"
+
+msgid "IDS_CALL_BODY_CONFERENCE"
+msgstr "Konverentskõne"
+
+msgid "IDS_CALL_BUTTON_UPDATE_CONTACT_ABB"
+msgstr "Värsk. kontakti"
 
