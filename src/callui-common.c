@@ -41,7 +41,6 @@
 
 #define CALLUI_CSTM_I18N_UDATE_IGNORE	-2 /* Used temporarily since there is no substitute of UDATE_IGNORE in base-utils */
 #define CALLUI_TIME_STRING_BUFF_SIZE	512
-#define CALLUI_PAUSE_LOCK_TIMEOUT_LIMIT	0.35
 
 #define CALLUI_TIME_FORMAT_12		"hm"
 #define CALLUI_TIME_FORMAT_24		"Hm"
@@ -182,7 +181,10 @@ static void __update_params_according_lockstate(callui_app_data_t *ad)
 	if (type == CALLUI_LOCK_TYPE_SECURITY_LOCK) {
 		_callui_window_set_above_lockscreen_mode(ad->window, false);
 	}
-	_callui_common_unlock_swipe_lock();
+
+	if (type != CALLUI_LOCK_TYPE_UNLOCK) {
+		_callui_common_unlock_swipe_lock();
+	}
 }
 
 static void __app_launch_reply_cb(app_control_h request, app_control_h reply, app_control_result_e result, void *user_data)
@@ -281,7 +283,33 @@ void _callui_common_launch_contacts(void *appdata)
 	}
 }
 
-void _callui_common_launch_msg_composer(void *appdata, const char *number)
+static void __msg_composer_launch_reply_cb(callui_app_data_t *ad, app_control_result_e result)
+{
+	if (result == APP_CONTROL_RESULT_APP_STARTED) {
+		ad->on_background = true;
+		if (_callui_common_get_idle_lock_type() != CALLUI_LOCK_TYPE_UNLOCK) {
+			_callui_common_unlock_swipe_lock();
+		}
+	}
+}
+
+static void __msg_composer_launch_with_app_exit_reply_cb(app_control_h request, app_control_h reply, app_control_result_e result, void *user_data)
+{
+	debug_enter();
+
+	__msg_composer_launch_reply_cb(user_data, result);
+
+	_callui_common_exit_app();
+}
+
+static void __msg_composer_launch_without_app_exit_reply_cb(app_control_h request, app_control_h reply, app_control_result_e result, void *user_data)
+{
+	debug_enter();
+
+	__msg_composer_launch_reply_cb(user_data, result);
+}
+
+void _callui_common_launch_msg_composer(void *appdata, const char *number, bool is_exit_app_needed)
 {
 	CALLUI_RETURN_IF_FAIL(appdata);
 
@@ -289,6 +317,13 @@ void _callui_common_launch_msg_composer(void *appdata, const char *number)
 
 	char str[CALLUI_BUFF_SIZE_SML];
 	snprintf(str, sizeof(str), "%s%s", CALLUI_MESSAGE_SMS_URI, number);
+
+	app_control_reply_cb reply_func = NULL;
+	if (is_exit_app_needed) {
+		reply_func = __msg_composer_launch_with_app_exit_reply_cb;
+	} else {
+		reply_func = __msg_composer_launch_without_app_exit_reply_cb;
+	}
 
 	app_control_h app_control = NULL;
 	int ret;
@@ -298,11 +333,18 @@ void _callui_common_launch_msg_composer(void *appdata, const char *number)
 		err("app_control_set_operation() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_set_uri(app_control, str)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_set_uri() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_enable_app_started_result_event(app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_enable_app_started_result_event() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, reply_func, ad)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	} else {
 		__reset_visibility_properties(ad);
 	}
+
+	if (ret != APP_CONTROL_ERROR_NONE && is_exit_app_needed) {
+		_callui_common_exit_app();
+	}
+
 	if (app_control) {
 		app_control_destroy(app_control);
 	}
@@ -366,15 +408,17 @@ int _callui_common_is_powerkey_mode_on(void)
 
 	ret = vconf_get_bool(VCONFKEY_CISSAPPL_POWER_KEY_ENDS_CALL_BOOL, &powerkey_mode);
 	if (!ret) {
-		dbg("powerkey_mode = [%d] \n", powerkey_mode);
+		dbg("powerkey_mode = [%d]", powerkey_mode);
 	} else {
-		dbg("vconf_get_int failed..[%d]\n", ret);
+		dbg("vconf_get_int failed..[%d]", ret);
 	}
 	return powerkey_mode;
 }
 
 static void __lock_state_changed_cb(system_settings_key_e key, void *user_data)
 {
+	debug_enter();
+
 	CALLUI_RETURN_IF_FAIL(user_data);
 
 	callui_app_data_t *ad = user_data;
@@ -389,13 +433,16 @@ static void __lock_state_changed_cb(system_settings_key_e key, void *user_data)
 	} else {
 		dbg("Device lock state [LOCKED]");
 		if (!ad->on_background) {
+			dbg("App on background [NO]");
 			_callui_window_set_above_lockscreen_mode(ad->window, true);
 		} else {
+			dbg("App on background [YES]");
 			double time_diff = ecore_time_get() - ad->app_pause_time;
-			if (time_diff <= CALLUI_PAUSE_LOCK_TIMEOUT_LIMIT) {
-				dbg("App_pause -> lock_device time diff [%ld]", time_diff);
+			dbg("Pause and Lock time diff [%lf]", time_diff);
+			if (time_diff <= CALLUI_PAUSE_LOCK_TIMEOUT_LIMIT_SEC) {
 				_callui_window_set_above_lockscreen_mode(ad->window, true);
 				ad->app_pause_time = 0.0;
+				ad->on_background = false;
 			}
 			if (_callui_lock_manager_is_started(ad->lock_handle)) {
 				_callui_lock_manager_stop(ad->lock_handle);
@@ -403,6 +450,8 @@ static void __lock_state_changed_cb(system_settings_key_e key, void *user_data)
 			}
 		}
 	}
+
+	debug_leave();
 }
 
 void _callui_common_set_lock_state_changed_cb(void *user_data)

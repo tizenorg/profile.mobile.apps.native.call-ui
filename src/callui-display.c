@@ -270,12 +270,5 @@ bool _callui_display_is_turned_on(callui_display_h display)
 	int res = device_display_get_state(&disp_state);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == DEVICE_ERROR_NONE, false);
 
-	switch (disp_state) {
-	case DISPLAY_STATE_NORMAL:
-	case DISPLAY_STATE_SCREEN_DIM:
-		return true;
-	case DISPLAY_STATE_SCREEN_OFF:
-	default:
-		return false;
-	}
+	return (disp_state == DISPLAY_STATE_NORMAL || disp_state == DISPLAY_STATE_SCREEN_DIM);
 }

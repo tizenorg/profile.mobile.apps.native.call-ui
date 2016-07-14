@@ -67,7 +67,7 @@ static callui_result_e __update_displayed_data(callui_view_callend_h vd);
 static void __call_back_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *source);
 static void __msg_btn_click_cb(void *data, Evas_Object *obj, const char *emission, const char *source);
 
-static char *__vcui_endcall_get_item_text(void *data, Evas_Object *obj, const char *part);
+static char *__endcall_gl_item_text_cb(void *data, Evas_Object *obj, const char *part);
 
 static void __create_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
 static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info);
@@ -98,7 +98,7 @@ static void __maximize_anim_completed_cb(void *data, Evas_Object *obj, const cha
 static void __run_minimize_animation(callui_view_callend_h vd);
 static void __run_maximize_animation(callui_view_callend_h vd);
 
-static void __launch_contact_app(const char *operation, const char *call_number);
+static void __launch_contact_app(const char *operation, const char *call_number, callui_app_data_t *ad);
 
 callui_view_callend_h _callui_view_callend_new()
 {
@@ -460,7 +460,7 @@ static void __call_back_btn_click_cb(void *data, Evas_Object *obj, const char *e
 	__run_maximize_animation(data);
 }
 
-static char *__vcui_endcall_get_item_text(void *data, Evas_Object *obj, const char *part)
+static char *__endcall_gl_item_text_cb(void *data, Evas_Object *obj, const char *part)
 {
 	CALLUI_RETURN_VALUE_IF_FAIL(data, NULL);
 	if (!strcmp(part, "elm.text")) {
@@ -469,7 +469,23 @@ static char *__vcui_endcall_get_item_text(void *data, Evas_Object *obj, const ch
 	return NULL;
 }
 
-static void __launch_contact_app(const char *operation, const char *call_number)
+static void __contact_app_launch_reply_cb(app_control_h request, app_control_h reply, app_control_result_e result, void *user_data)
+{
+	CALLUI_RETURN_IF_FAIL(user_data);
+	callui_app_data_t *ad = user_data;
+
+	if (result == APP_CONTROL_RESULT_APP_STARTED) {
+		ad->on_background = true;
+
+		if (_callui_common_get_idle_lock_type() != CALLUI_LOCK_TYPE_UNLOCK) {
+			_callui_common_unlock_swipe_lock();
+		}
+	}
+
+	_callui_common_exit_app();
+}
+
+static void __launch_contact_app(const char *operation, const char *call_number, callui_app_data_t *ad)
 {
 	app_control_h app_control = NULL;
 	int ret;
@@ -481,9 +497,16 @@ static void __launch_contact_app(const char *operation, const char *call_number)
 		err("app_control_set_mime() is failed. ret[%d]", ret);
 	} else if ((ret = app_control_add_extra_data(app_control, APP_CONTROL_DATA_PHONE, call_number)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_add_extra_data() is failed. ret[%d]", ret);
-	} else if ((ret = app_control_send_launch_request(app_control, NULL, NULL)) != APP_CONTROL_ERROR_NONE) {
+	} else if ((ret = app_control_enable_app_started_result_event(app_control)) != APP_CONTROL_ERROR_NONE) {
+		err("app_control_enable_app_started_result_event() is failed. ret[%d]", ret);
+	} else if ((ret = app_control_send_launch_request(app_control, __contact_app_launch_reply_cb, ad)) != APP_CONTROL_ERROR_NONE) {
 		err("app_control_send_launch_request() is failed. ret[%d]", ret);
 	}
+
+	if(ret != APP_CONTROL_ERROR_NONE) {
+		_callui_common_exit_app();
+	}
+
 	if (app_control) {
 		app_control_destroy(app_control);
 	}
@@ -495,9 +518,7 @@ static void __create_contact_btn_click_cb(void *data, Evas_Object *obj, void *ev
 
 	callui_view_callend_h vd = data;
 
-	_callui_common_exit_app();
-
-	__launch_contact_app(APP_CONTROL_OPERATION_ADD, vd->call_number);
+	__launch_contact_app(APP_CONTROL_OPERATION_ADD, vd->call_number, vd->base_view.ad);
 }
 
 static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *event_info)
@@ -506,9 +527,7 @@ static void __update_contact_btn_click_cb(void *data, Evas_Object *obj, void *ev
 
 	callui_view_callend_h vd = data;
 
-	_callui_common_exit_app();
-
-	__launch_contact_app(APP_CONTROL_OPERATION_EDIT, vd->call_number);
+	__launch_contact_app(APP_CONTROL_OPERATION_EDIT, vd->call_number, vd->base_view.ad);
 }
 
 static void __popup_back_click_cb(void *data, Evas_Object *obj, void *event_info)
@@ -556,7 +575,7 @@ static void __add_contact_click_cb(void *data, Evas_Object *obj, const char *emi
 	Elm_Genlist_Item_Class *itc = elm_genlist_item_class_new();
 	CALLUI_RETURN_IF_FAIL(itc);
 	itc->item_style = "type1";
-	itc->func.text_get = __vcui_endcall_get_item_text;
+	itc->func.text_get = __endcall_gl_item_text_cb;
 
 	elm_genlist_item_append(genlist, itc, _("IDS_COM_OPT_CREATE_CONTACT"),
 			NULL, ELM_GENLIST_ITEM_NONE, __create_contact_btn_click_cb, vd);
@@ -579,9 +598,7 @@ static void __msg_btn_click_cb(void *data, Evas_Object *obj, const char *emissio
 
 	edje_object_signal_callback_del_full(_EDJ(obj), "clicked", "edje", __msg_btn_click_cb, vd);
 
-	_callui_common_launch_msg_composer(ad, vd->call_number);
-
-	_callui_common_exit_app();
+	_callui_common_launch_msg_composer(ad, vd->call_number, true);
 }
 
 static Eina_Bool __ending_timer_expired_cb(void *data)
