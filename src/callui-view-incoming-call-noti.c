@@ -230,6 +230,7 @@ static callui_result_e __callui_view_incoming_call_noti_ondestroy(call_view_data
 	DELETE_ECORE_IDLE_ENTERER(vd->transit_effect_idler);
 	DELETE_ELM_TRANSIT_HARD(vd->transit);
 	DELETE_EVAS_OBJECT(vd->box);
+	DELETE_EVAS_OBJECT(vd->rm_scroller_stroke);
 
 	_callui_window_set_size_type(ad->window, CALLUI_WIN_SIZE_FULLSCREEN);
 	_callui_window_set_rotation_locked(ad->window, true);
