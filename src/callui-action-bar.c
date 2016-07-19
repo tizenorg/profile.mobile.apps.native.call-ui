@@ -27,6 +27,7 @@
 #include "callui-common.h"
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
+#include "callui-dpm.h"
 
 #define CALLUI_GROUP_BUTTON_LAYOUT			"action_bar"
 
@@ -310,7 +311,8 @@ static callui_result_e __update_bluetooth_btn(callui_action_bar_h action_bar)
 	Evas_Object *btn = action_bar->buttons[CALLUI_ACTION_BTN_BT];
 	CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_FAIL);
 
-	if (!action_bar->is_available[CALLUI_ACTION_BTN_BT]) {
+	if (!action_bar->is_available[CALLUI_ACTION_BTN_BT]
+				|| _callui_dpm_is_need_enforce_change_password(action_bar->ad->dpm)) {
 		__disable_action_button(btn, CALLUI_ACTION_BTN_BT);
 		return CALLUI_RESULT_OK;
 	}
@@ -331,7 +333,8 @@ static callui_result_e __update_add_call_btn(callui_action_bar_h action_bar)
 	Evas_Object *btn = action_bar->buttons[CALLUI_ACTION_BTN_ADD_CALL];
 	CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_FAIL);
 
-	if (!action_bar->is_available[CALLUI_ACTION_BTN_ADD_CALL]) {
+	if (!action_bar->is_available[CALLUI_ACTION_BTN_ADD_CALL]
+				|| _callui_dpm_is_need_enforce_change_password(action_bar->ad->dpm)) {
 		__disable_action_button(btn, CALLUI_ACTION_BTN_ADD_CALL);
 		return CALLUI_RESULT_OK;
 	}
@@ -368,7 +371,8 @@ static callui_result_e __update_contacts_btn(callui_action_bar_h action_bar)
 	Evas_Object *btn = action_bar->buttons[CALLUI_ACTION_BTN_CONTACT];
 	CALLUI_RETURN_VALUE_IF_FAIL(btn, CALLUI_RESULT_FAIL);
 
-	if (!action_bar->is_available[CALLUI_ACTION_BTN_CONTACT]) {
+	if (!action_bar->is_available[CALLUI_ACTION_BTN_CONTACT]
+				|| _callui_dpm_is_need_enforce_change_password(action_bar->ad->dpm)) {
 		__disable_action_button(btn, CALLUI_ACTION_BTN_CONTACT);
 		return CALLUI_RESULT_OK;
 	}

@@ -203,4 +203,15 @@ callui_result_e _callui_window_set_indicator_visible(callui_window_h win_handler
  */
 callui_result_e _callui_window_set_above_lockscreen_mode(callui_window_h win_handler, bool is_above_lockscreen);
 
+/**
+ * @brief Sets the quick panel for application window disable/enable state
+ * @ remark by default quick panel is enable
+ *
+ * @param[in]	win_handler			Window handler
+ * @param[in]	is_disable			Quick panel disable state to set
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_window_set_quickpanel_disable(callui_window_h win_handler, bool is_disable);
+
 #endif /* __CALLUI_WINDOW_H__ */

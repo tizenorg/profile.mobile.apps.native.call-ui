@@ -402,6 +402,10 @@ static callui_result_e __change_view(callui_vm_h vm, callui_view_type_e type)
 		_callui_window_activate(vm->ad->window);
 	}
 
+	if (_callui_dpm_is_need_enforce_change_password(vm->ad->dpm)) {
+		_callui_window_set_top_level_priority(vm->ad->window, true);
+	}
+
 	return res;
 }
 

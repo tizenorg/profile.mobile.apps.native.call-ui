@@ -61,7 +61,8 @@ static void __callui_view_circle_handle_accept(callui_app_data_t *ad)
 {
 	dbg("..");
 
-	if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
+	if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_SWIPE_LOCK
+			&& !_callui_dpm_is_need_enforce_change_password(ad->dpm)) {
 		_callui_common_unlock_swipe_lock();
 	}
 

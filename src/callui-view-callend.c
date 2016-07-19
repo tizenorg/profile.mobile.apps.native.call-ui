@@ -25,6 +25,7 @@
 #include "callui-common.h"
 #include "callui-manager.h"
 #include "callui-state-provider.h"
+#include "callui-dpm.h"
 
 #define CALLUI_GROUP_CALL_BACK_BTN		"call_back"
 #define CALLUI_GROUP_MSG_BTN			"message_button"
@@ -196,7 +197,9 @@ static callui_result_e __create_main_content(callui_view_callend_h vd, Evas_Obje
 	CALLUI_RETURN_VALUE_IF_FAIL(vd->caller_info, CALLUI_RESULT_ALLOCATION_FAIL);
 	elm_object_part_content_set(vd->base_view.contents, "swallow.caller_info", vd->caller_info);
 
-	elm_object_signal_callback_add(vd->caller_info, "add_contact.clicked", "caller_info", __add_contact_click_cb, vd);
+	if (!_callui_dpm_is_need_enforce_change_password(ad->dpm)) {
+		elm_object_signal_callback_add(vd->caller_info, "add_contact.clicked", "caller_info", __add_contact_click_cb, vd);
+	}
 
 	_callui_action_bar_show(ad->action_bar);
 	_callui_action_bar_set_disabled_state(ad->action_bar, true);
@@ -241,7 +244,12 @@ static callui_result_e __create_single_contact_info(callui_view_callend_h vd, co
 	const char *call_name = call_data->call_ct_info.call_disp_name;
 
 	if (STRING_EMPTY(call_name)) {
-		elm_object_signal_emit(vd->caller_info, "set_ec_add_cont_btn_enabled", "caller_info");
+
+		if (!_callui_dpm_is_need_enforce_change_password(vd->base_view.ad->dpm)) {
+			elm_object_signal_emit(vd->caller_info, "set_ec_add_cont_btn_enabled", "caller_info");
+			/* minimized contact info */
+			elm_object_translatable_part_text_set(vd->caller_info, "ec_phone_number", "IDS_COM_OPT_ADD_TO_CONTACTS");
+		}
 
 		/* maximized contact info */
 		elm_object_signal_emit(vd->caller_info, "1line", "caller_name");
@@ -249,7 +257,6 @@ static callui_result_e __create_single_contact_info(callui_view_callend_h vd, co
 
 		/* minimized contact info */
 		elm_object_part_text_set(vd->caller_info, "ec_contact_name", vd->call_number);
-		elm_object_translatable_part_text_set(vd->caller_info, "ec_phone_number", "IDS_COM_OPT_ADD_TO_CONTACTS");
 
 	} else {
 		/* maximized contact info */
@@ -325,10 +332,12 @@ static callui_result_e __set_single_call_info(callui_view_callend_h vd, const ca
 	callui_result_e res = __create_single_contact_info(vd, call_data);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
-	res = __create_reply_btns_panel(vd);
-	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
+	if (!_callui_dpm_is_need_enforce_change_password(vd->base_view.ad->dpm)) {
+		res = __create_reply_btns_panel(vd);
+		CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
-	elm_object_signal_emit(vd->base_view.contents, "show_reply_btns", "view_main_ly");
+		elm_object_signal_emit(vd->base_view.contents, "show_reply_btns", "view_main_ly");
+	}
 
 	return res;
 }

@@ -31,6 +31,7 @@
 #include "callui-action-bar.h"
 #include "callui-display.h"
 #include "callui-window.h"
+#include "callui-dpm.h"
 
 #define CALLUI_APP_HANDLERS_COUNT 1
 
@@ -75,6 +76,8 @@ struct appdata {
 
 	double app_pause_time;	/* used to detect start time of application goes to pause as device locked with delay */
 	bool need_win_minimize;	/* used to check if it is needed to minimize application window on device unlock */
+
+	callui_dpm_h dpm;
 };
 
 callui_app_data_t *_callui_get_app_data();

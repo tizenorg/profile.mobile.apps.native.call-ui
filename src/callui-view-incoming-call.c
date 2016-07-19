@@ -707,7 +707,8 @@ static callui_result_e __update_displayed_data(callui_view_incoming_call_h vd)
 		_callui_show_caller_info_name(ad, "IDS_CALL_BODY_UNKNOWN");
 	} else if (STRING_EMPTY(call_name)) {
 		callui_msg_data_t msg_data;
-		if(_callui_common_get_last_msg_data(ad, incom->call_num, &msg_data) == CALLUI_RESULT_OK) {
+		if(!_callui_dpm_is_need_enforce_change_password(ad->dpm)
+				&& _callui_common_get_last_msg_data(ad, incom->call_num, &msg_data) == CALLUI_RESULT_OK) {
 			elm_object_signal_emit(vd->caller_info, "3line", "caller_name");
 			_callui_show_caller_info_name(ad, call_number);
 			char *date = _callui_common_get_date_string_representation(msg_data.date);

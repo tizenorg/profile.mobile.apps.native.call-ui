@@ -16,6 +16,8 @@
  */
 
 #include <efl_util.h>
+#include <tzsh/tzsh.h>
+#include <tzsh/tzsh_quickpanel.h>
 
 #include "callui-window.h"
 #include "callui.h"
@@ -38,6 +40,9 @@ struct __callui_window {
 	int win_h;
 	bool rotation_locked;
 	callui_win_size_type_e size_type;
+
+	tzsh_h tzsh;
+	tzsh_quickpanel_h tzsh_qp;
 };
 
 typedef struct __callui_window __callui_window_t;
@@ -51,6 +56,21 @@ static void __eo_win_update_size(callui_window_h win_handler, callui_win_size_ty
 static callui_result_e __eo_win_set_rotation_locked(callui_window_h win_handler, bool is_locked);
 static void __eo_win_move_and_resize(callui_window_h win_handler, bool force_resize);
 static Elm_Win_Keygrab_Mode __convert_app_keygrab_mode(callui_win_keygrab_mode_e mode);
+static callui_result_e __create_tzsh_qp(callui_window_h win_handler);
+
+static callui_result_e __create_tzsh_qp(callui_window_h win_handler)
+{
+	win_handler->tzsh = tzsh_create(TZSH_TOOLKIT_TYPE_EFL);
+	CALLUI_RETURN_VALUE_IF_FAIL(win_handler->tzsh, CALLUI_RESULT_FAIL);
+
+	tzsh_window tz_win = elm_win_window_id_get(win_handler->win);
+	CALLUI_RETURN_VALUE_IF_FAIL(tz_win, CALLUI_RESULT_FAIL);
+
+	win_handler->tzsh_qp = tzsh_quickpanel_create(win_handler->tzsh, tz_win);
+	CALLUI_RETURN_VALUE_IF_FAIL(win_handler->tzsh_qp, CALLUI_RESULT_FAIL);
+
+	return CALLUI_RESULT_OK;
+}
 
 static Evas_Object *__create_eo_conformant(Evas_Object *win)
 {
@@ -146,6 +166,9 @@ callui_result_e __callui_window_init(callui_window_h win_handler, callui_app_dat
 	win_handler->conformant = __create_eo_conformant(win_handler->win);
 	CALLUI_RETURN_VALUE_IF_FAIL(win_handler->conformant, CALLUI_RESULT_FAIL);
 
+	callui_result_e res = __create_tzsh_qp(win_handler);
+	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, CALLUI_RESULT_FAIL);
+
 	__eo_win_update_size(win_handler, CALLUI_WIN_SIZE_ACTIVE_NOTI);
 
 	return __eo_win_set_rotation_locked(win_handler, true);
@@ -156,6 +179,13 @@ void __callui_window_deinit(callui_window_h win_handler)
 	win_handler->conformant = NULL;
 	evas_object_smart_callback_del_full(win_handler->win, "wm,rotation,changed", __eo_win_rotation_changed_cb, win_handler);
 	DELETE_EVAS_OBJECT(win_handler->win);
+
+	if (win_handler->tzsh) {
+		if (win_handler->tzsh_qp) {
+			tzsh_quickpanel_destroy(win_handler->tzsh_qp);
+		}
+		tzsh_destroy(win_handler->tzsh);
+	}
 }
 
 callui_window_h _callui_window_create(callui_app_data_t *appdata)
@@ -414,6 +444,22 @@ callui_result_e _callui_window_set_above_lockscreen_mode(callui_window_h win_han
 		    CALLUI_RETURN_VALUE_IF_FAIL(elm_win_aux_hint_val_set(win_handler->win, id, "0"), CALLUI_RESULT_FAIL);
 		}
 	}
+
+	return CALLUI_RESULT_OK;
+}
+
+callui_result_e _callui_window_set_quickpanel_disable(callui_window_h win_handler, bool is_disable)
+{
+	CALLUI_RETURN_VALUE_IF_FAIL(win_handler, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(win_handler->tzsh_qp, CALLUI_RESULT_INVALID_PARAM);
+
+	int res = TZSH_ERROR_NONE;
+	if (is_disable) {
+		res = tzsh_quickpanel_scrollable_unset(win_handler->tzsh_qp);
+	} else {
+		res = tzsh_quickpanel_scrollable_set(win_handler->tzsh_qp);
+	}
+	CALLUI_RETURN_VALUE_IF_FAIL(res == TZSH_ERROR_NONE, CALLUI_RESULT_FAIL);
 
 	return CALLUI_RESULT_OK;
 }

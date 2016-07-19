@@ -38,6 +38,7 @@
 #include "callui-manager.h"
 #include "callui-sound-manager.h"
 #include "callui-state-provider.h"
+#include "callui-dpm.h"
 
 #define	CALLUI_POPUP_LIST_W		300
 #define	CALLUI_POPUP_LIST_ITEM_H 	120
@@ -832,10 +833,15 @@ static void __callui_create_new_msg_btn_click_cb(void *data, Evas_Object *obj, v
 
 int _callui_create_reject_msg_button(void *app_data, Evas_Object *parent, const char *part)
 {
+	callui_app_data_t *ad = app_data;
+
 	Evas_Object *msg_button = elm_button_add(parent);
 	CALLUI_RETURN_VALUE_IF_FAIL(msg_button, CALLUI_RESULT_ALLOCATION_FAIL);
 
 	elm_object_style_set(msg_button, "default");
+	if (_callui_dpm_is_need_enforce_change_password(ad->dpm)) {
+		elm_object_disabled_set(msg_button, EINA_TRUE);
+	}
 	elm_object_translatable_text_set(msg_button,  "IDS_CALL_BUTTON_COMPOSE_MESSAGE_TO_SEND_ABB");
 	evas_object_smart_callback_add(msg_button, "clicked", __callui_create_new_msg_btn_click_cb, app_data);
 	elm_object_part_content_set(parent, part, msg_button);

@@ -156,10 +156,9 @@ static void __process_incoming_call(callui_app_data_t *ad)
 	callui_view_type_e type = CALLUI_VIEW_INCOMING_CALL;
 	callui_view_type_e cur_type = _callui_vm_get_cur_view_type(ad->view_manager);
 	if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_UNLOCK &&
-			active == NULL &&
-			held == NULL &&
-			incom != NULL &&
-			(cur_type == CALLUI_VIEW_UNDEFINED || cur_type == CALLUI_VIEW_ENDCALL)) {
+			active == NULL && held == NULL && incom != NULL &&
+			(cur_type == CALLUI_VIEW_UNDEFINED || cur_type == CALLUI_VIEW_ENDCALL)
+			&& !_callui_dpm_is_need_enforce_change_password(ad->dpm)) {
 		type = CALLUI_VIEW_INCOMING_CALL_NOTI;
 	}
 	_callui_vm_change_view(ad->view_manager, type);
@@ -339,6 +338,13 @@ static bool __app_init(callui_app_data_t *ad)
 	ad->window = _callui_window_create(ad);
 	CALLUI_RETURN_VALUE_IF_FAIL(ad->window, false);
 
+	ad->dpm = _callui_dpm_create();
+	CALLUI_RETURN_VALUE_IF_FAIL(ad->dpm, false);
+
+	if(_callui_dpm_is_need_enforce_change_password(ad->dpm)) {
+		_callui_window_set_quickpanel_disable(ad->window, true);
+	}
+
 	ad->call_manager = _callui_manager_create();
 	CALLUI_RETURN_VALUE_IF_FAIL(ad->call_manager, false);
 
@@ -465,6 +471,11 @@ static void __app_deinit(callui_app_data_t *ad)
 		ad->call_manager = NULL;
 		ad->state_provider = NULL;
 		ad->sound_manager = NULL;
+	}
+
+	if (ad->dpm) {
+		_callui_dpm_destroy(ad->dpm);
+		ad->dpm = NULL;
 	}
 
 	if (ad->window) {
@@ -646,7 +657,8 @@ static void __process_power_key_up(callui_app_data_t *ad)
 			callui_view_type_e type = CALLUI_VIEW_INCOMING_CALL;
 			callui_view_type_e cur_type = _callui_vm_get_cur_view_type(ad->view_manager);
 			if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_UNLOCK &&
-					(cur_type == CALLUI_VIEW_UNDEFINED || cur_type == CALLUI_VIEW_ENDCALL)) {
+					(cur_type == CALLUI_VIEW_UNDEFINED || cur_type == CALLUI_VIEW_ENDCALL)
+					&& !_callui_dpm_is_need_enforce_change_password(ad->dpm)) {
 				type = CALLUI_VIEW_INCOMING_CALL_NOTI;
 			}
 			_callui_vm_change_view(ad->view_manager, type);
@@ -681,7 +693,8 @@ static void __process_home_key_up(callui_app_data_t *ad)
 				dbg("No Call Or Held call - Accept");
 				_callui_manager_answer_call(ad->call_manager, CALLUI_CALL_ANSWER_NORMAL);
 
-				if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
+				if (_callui_common_get_idle_lock_type() == CALLUI_LOCK_TYPE_SWIPE_LOCK
+						&& !_callui_dpm_is_need_enforce_change_password(ad->dpm)) {
 					_callui_common_unlock_swipe_lock();
 				}
 			} else if (ad->second_call_popup == NULL) {
@@ -691,7 +704,7 @@ static void __process_home_key_up(callui_app_data_t *ad)
 		} else {
 			if (_callui_window_set_keygrab_mode(ad->window,
 					CALLUI_KEY_SELECT, CALLUI_WIN_KEYGRAB_TOPMOST) != CALLUI_RESULT_OK) {
-				dbg("KEY_SELECT key ungrab failed");
+				dbg("KEY_SELECT key grab failed");
 			}
 		}
 	} else {
@@ -699,16 +712,18 @@ static void __process_home_key_up(callui_app_data_t *ad)
 			return;
 		}
 
-		callui_idle_lock_type_t lock_type = _callui_common_get_idle_lock_type();
-		if (lock_type == CALLUI_LOCK_TYPE_SECURITY_LOCK) {
-			_callui_common_unlock_swipe_lock();
-			_callui_window_set_above_lockscreen_mode(ad->window, false);
-			_callui_window_minimize(ad->window);
-		} else if (lock_type == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
-			ad->need_win_minimize = true;
-			_callui_common_unlock_swipe_lock();
-		} else {
-			_callui_window_minimize(ad->window);
+		if (!_callui_dpm_is_need_enforce_change_password(ad->dpm)) {
+			callui_idle_lock_type_t lock_type = _callui_common_get_idle_lock_type();
+			if (lock_type == CALLUI_LOCK_TYPE_SECURITY_LOCK) {
+				_callui_common_unlock_swipe_lock();
+				_callui_window_set_above_lockscreen_mode(ad->window, false);
+				_callui_window_minimize(ad->window);
+			} else if (lock_type == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
+				ad->need_win_minimize = true;
+				_callui_common_unlock_swipe_lock();
+			} else {
+				_callui_window_minimize(ad->window);
+			}
 		}
 	}
 
