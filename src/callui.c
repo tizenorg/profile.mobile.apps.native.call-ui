@@ -36,8 +36,6 @@
 #define CALLUI_KEY_VOLUMEUP		"XF86AudioRaiseVolume"
 #define CALLUI_KEY_VOLUMEDOWN	"XF86AudioLowerVolume"
 
-#define CALLUI_EARSET_KEY_LONG_PRESS_TIMEOUT	1.0
-
 static bool __app_create(void *data);
 static void __app_terminate(void *data);
 static void __app_pause(void *data);
@@ -721,10 +719,9 @@ static void __process_home_key_up(callui_app_data_t *ad)
 			} else if (lock_type == CALLUI_LOCK_TYPE_SWIPE_LOCK) {
 				ad->need_win_minimize = true;
 				_callui_common_unlock_swipe_lock();
-			} else {
-				_callui_window_minimize(ad->window);
 			}
 		}
+
 	}
 
 	debug_leave();
@@ -755,47 +752,13 @@ static Eina_Bool __hard_key_up_cb(void *data, int type, void *event)
 		__process_home_key_up(ad);
 	}
 
-	DELETE_ECORE_TIMER(ad->earset_key_longpress_timer);
-
 	return EINA_FALSE;
-}
-
-static Eina_Bool __earset_key_longpress_timer_cb(void *data)
-{
-	dbg("..");
-
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-
-	ad->earset_key_longpress_timer = NULL;
-
-	return ECORE_CALLBACK_CANCEL;
 }
 
 static Eina_Bool __hard_key_down_cb(void *data, int type, void *event)
 {
-	dbg("..");
+	debug_enter();
 
-	callui_app_data_t *ad = (callui_app_data_t *)data;
-	Ecore_Event_Key *ev = event;
-
-	if (ev == NULL) {
-		err("ERROR!!! Event is NULL!!!");
-		return EINA_FALSE;
-	}
-
-	if (_callui_vm_get_cur_view_type(ad->view_manager) == CALLUI_VIEW_UNDEFINED) {
-		dbg("ad->view_top is UNDEFINED");
-		return EINA_FALSE;
-	}
-
-	if (!strcmp(ev->keyname, CALLUI_KEY_MEDIA)) {
-		DELETE_ECORE_TIMER(ad->earset_key_longpress_timer);
-		ad->earset_key_longpress_timer = ecore_timer_add(CALLUI_EARSET_KEY_LONG_PRESS_TIMEOUT,
-				__earset_key_longpress_timer_cb, ad);
-	} else if (!strcmp(ev->keyname, CALLUI_KEY_SELECT)) {
-		/*todo*/
-	}
-	dbg("End..");
 	return EINA_FALSE;
 }
 
