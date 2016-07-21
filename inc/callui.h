@@ -58,7 +58,6 @@ struct appdata {
 
 	Ecore_Event_Handler *downkey_handler;
 	Ecore_Event_Handler *upkey_handler;
-	Ecore_Timer *earset_key_longpress_timer;
 
 	callui_keypad_h keypad;
 	callui_action_bar_h action_bar;
