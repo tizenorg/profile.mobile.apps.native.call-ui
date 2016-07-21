@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ typedef struct _callui_keypad *callui_keypad_h;
 typedef void (*show_state_change_cd)(void *data, Eina_Bool visibility);
 
 typedef struct appdata callui_app_data_t;
+
 /**
  * @brief Create keypad layout
  *
@@ -39,7 +40,7 @@ callui_keypad_h _callui_keypad_create(callui_app_data_t *appdata);
 /**
  * @brief Delete keypad layout
  *
- * @param[in]	keypad		Keypad handler
+ * @param[in]	keypad		Keypad handle
  *
  */
 void _callui_keypad_destroy(callui_keypad_h keypad);
@@ -47,7 +48,7 @@ void _callui_keypad_destroy(callui_keypad_h keypad);
 /**
  * @brief Clear input keypad value
  *
- * @param[in]	keypad		Keypad handler
+ * @param[in]	keypad		Keypad handle
  *
  */
 void _callui_keypad_clear_input(callui_keypad_h keypad);
@@ -55,7 +56,7 @@ void _callui_keypad_clear_input(callui_keypad_h keypad);
 /**
  * @brief Get show keypad status
  *
- * @param[in]	keypad		Keypad handler
+ * @param[in]	keypad		Keypad handle
  *
  * @return show status
  *
@@ -65,7 +66,7 @@ Eina_Bool _callui_keypad_get_show_status(callui_keypad_h keypad);
 /**
  * @brief Show keypad
  *
- * @param[in]	keypad		Keypad handler
+ * @param[in]	keypad		Keypad handle
  *
  */
 void _callui_keypad_show(callui_keypad_h keypad);
@@ -73,7 +74,7 @@ void _callui_keypad_show(callui_keypad_h keypad);
 /**
  * @brief Hide keypad
  *
- * @param[in]	keypad		Keypad handler
+ * @param[in]	keypad		Keypad handle
  *
  */
 void _callui_keypad_hide(callui_keypad_h keypad);
@@ -81,7 +82,7 @@ void _callui_keypad_hide(callui_keypad_h keypad);
 /**
  * @brief Hide keypad without close animation
  *
- * @param[in]	keypad		Keypad handler
+ * @param[in]	keypad		Keypad handle
  *
  */
 void _callui_keypad_hide_immediately(callui_keypad_h keypad);
@@ -89,7 +90,7 @@ void _callui_keypad_hide_immediately(callui_keypad_h keypad);
 /**
  * @brief Add keypad show status change callback
  *
- * @param[in]	keypad		Keypad handler
+ * @param[in]	keypad		Keypad handle
  * @param[in]	cb_func		Callback function
  * @param[in]	cb_data		Callback data
  */

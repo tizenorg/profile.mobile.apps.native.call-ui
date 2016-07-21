@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
 #define CALLUI_DEFAULT_PERSON_ID_TXT "default"
 
 struct __callui_state_provider {
-	cm_client_h cm_handler;
+	cm_client_h cm_h;
 
 	callui_call_data_t *st_data_list[CALLUI_CALL_DATA_COUNT];
 
@@ -41,22 +41,22 @@ struct __callui_state_provider {
 };
 typedef struct __callui_state_provider _callui_state_provider_t;
 
-static callui_result_e __callui_stp_init(callui_state_provider_h stp, cm_client_h cm_client);
-static void __callui_stp_deinit(callui_state_provider_h stp);
+static callui_result_e __callui_stp_init(callui_state_provider_h stp_h, cm_client_h cm_client);
+static void __callui_stp_deinit(callui_state_provider_h stp_h);
 
 static void __get_contact_info_from_contact_srv(callui_contact_data_t *ct_info);
 static callui_result_e __convert_cm_call_event_type(cm_call_event_e cm_call_event, callui_call_event_type_e *call_event_type);
 static callui_sim_slot_type_e __convert_cm_sim_type(cm_multi_sim_slot_type_e cm_sim_type);
-static void __free_call_event_data(callui_state_provider_h stp);
+static void __free_call_event_data(callui_state_provider_h stp_h);
 static callui_call_data_t *__call_data_create(callui_call_data_type_e call_type,
 		cm_call_data_t* cm_call_data);
 static callui_result_e __call_data_init(callui_call_data_t *callui_call_data,
 		callui_call_data_type_e call_type,
 		cm_call_data_t* cm_call_data);
-static callui_result_e __update_stp_call_data(callui_state_provider_h stp,
+static callui_result_e __update_stp_h_call_data(callui_state_provider_h stp_h,
 		callui_call_data_type_e call_type,
 		cm_call_data_t* cm_call_data);
-static callui_result_e __update_stp_all_call_data(callui_state_provider_h stp,
+static callui_result_e __update_stp_h_all_call_data(callui_state_provider_h stp_h,
 		cm_call_data_t *cm_incom,
 		cm_call_data_t *cm_active,
 		cm_call_data_t *cm_held);
@@ -166,11 +166,11 @@ static callui_sim_slot_type_e __convert_cm_sim_type(cm_multi_sim_slot_type_e cm_
 	}
 }
 
-static void __free_call_event_data(callui_state_provider_h stp)
+static void __free_call_event_data(callui_state_provider_h stp_h)
 {
 	int i = 0;
 	for (; i < CALLUI_CALL_DATA_COUNT; i++) {
-		FREE(stp->st_data_list[i]);
+		FREE(stp_h->st_data_list[i]);
 	}
 }
 
@@ -242,38 +242,38 @@ static callui_result_e __call_data_init(callui_call_data_t *callui_call_data,
 	return CALLUI_RESULT_OK;
 }
 
-static callui_result_e __update_stp_call_data(callui_state_provider_h stp,
+static callui_result_e __update_stp_h_call_data(callui_state_provider_h stp_h,
 		callui_call_data_type_e call_type,
 		cm_call_data_t* cm_call_data)
 {
 	if (!cm_call_data) {
-		FREE(stp->st_data_list[call_type]);
+		FREE(stp_h->st_data_list[call_type]);
 		return CALLUI_RESULT_OK;
 	}
 	callui_call_data_t *tmp_call_data = __call_data_create(call_type, cm_call_data);
 	CALLUI_RETURN_VALUE_IF_FAIL(tmp_call_data, CALLUI_RESULT_FAIL);
 
-	free(stp->st_data_list[call_type]);
-	stp->st_data_list[call_type] = tmp_call_data;
+	free(stp_h->st_data_list[call_type]);
+	stp_h->st_data_list[call_type] = tmp_call_data;
 
 	return CALLUI_RESULT_OK;
 }
 
-static callui_result_e __update_stp_all_call_data(callui_state_provider_h stp,
+static callui_result_e __update_stp_h_all_call_data(callui_state_provider_h stp_h,
 		cm_call_data_t *cm_incom,
 		cm_call_data_t *cm_active,
 		cm_call_data_t *cm_held)
 {
 	dbg("Update incoming call data");
-	int res = __update_stp_call_data(stp, CALLUI_CALL_DATA_INCOMING, cm_incom);
+	int res = __update_stp_h_call_data(stp_h, CALLUI_CALL_DATA_INCOMING, cm_incom);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	dbg("Update active call data");
-	res = __update_stp_call_data(stp, CALLUI_CALL_DATA_ACTIVE, cm_active);
+	res = __update_stp_h_call_data(stp_h, CALLUI_CALL_DATA_ACTIVE, cm_active);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	dbg("Update held call data");
-	res = __update_stp_call_data(stp, CALLUI_CALL_DATA_HELD, cm_held);
+	res = __update_stp_h_call_data(stp_h, CALLUI_CALL_DATA_HELD, cm_held);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	return res;
@@ -289,7 +289,7 @@ static void __call_event_cb(cm_call_event_e call_event, cm_call_event_data_t *ca
 
 	dbg("Call event changed on [%d]", event_type);
 
-	callui_state_provider_h stp = (callui_state_provider_h)user_data;
+	callui_state_provider_h stp_h = (callui_state_provider_h)user_data;
 
 	unsigned int call_id = 0;
 	int res = cm_call_event_data_get_call_id(call_state_data, &call_id);
@@ -316,25 +316,25 @@ static void __call_event_cb(cm_call_event_e call_event, cm_call_event_data_t *ca
 	switch (event_type) {
 	case CALLUI_CALL_EVENT_END:
 	{
-		callui_call_data_t *incom = stp->st_data_list[CALLUI_CALL_DATA_INCOMING];
-		callui_call_data_t *active = stp->st_data_list[CALLUI_CALL_DATA_ACTIVE];
-		callui_call_data_t *held = stp->st_data_list[CALLUI_CALL_DATA_HELD];
+		callui_call_data_t *incom = stp_h->st_data_list[CALLUI_CALL_DATA_INCOMING];
+		callui_call_data_t *active = stp_h->st_data_list[CALLUI_CALL_DATA_ACTIVE];
+		callui_call_data_t *held = stp_h->st_data_list[CALLUI_CALL_DATA_HELD];
 
 		if (incom && call_id == incom->call_id) {
 			end_call_data = incom;
-			stp->st_data_list[CALLUI_CALL_DATA_INCOMING] = NULL;
+			stp_h->st_data_list[CALLUI_CALL_DATA_INCOMING] = NULL;
 		} else if (active && call_id == active->call_id) {
 			end_call_data = active;
-			stp->st_data_list[CALLUI_CALL_DATA_ACTIVE] = NULL;
+			stp_h->st_data_list[CALLUI_CALL_DATA_ACTIVE] = NULL;
 		} else if (held && call_id == held->call_id) {
 			end_call_data = held;
-			stp->st_data_list[CALLUI_CALL_DATA_HELD] = NULL;
+			stp_h->st_data_list[CALLUI_CALL_DATA_HELD] = NULL;
 		} else if (active && active->conf_member_count > 1) {
 			end_call_data = active;
-			stp->st_data_list[CALLUI_CALL_DATA_ACTIVE] = NULL;
+			stp_h->st_data_list[CALLUI_CALL_DATA_ACTIVE] = NULL;
 		} else if (held && held->conf_member_count > 1) {
 			end_call_data = held;
-			stp->st_data_list[CALLUI_CALL_DATA_HELD] = NULL;
+			stp_h->st_data_list[CALLUI_CALL_DATA_HELD] = NULL;
 		}
 	}
 	case CALLUI_CALL_EVENT_ACTIVE:
@@ -345,26 +345,26 @@ static void __call_event_cb(cm_call_event_e call_event, cm_call_event_data_t *ca
 	case CALLUI_CALL_EVENT_SWAPPED:
 	case CALLUI_CALL_EVENT_JOIN:
 	case CALLUI_CALL_EVENT_SPLIT:
-		res = __update_stp_all_call_data(stp, cm_incom, cm_active, cm_held);
+		res = __update_stp_h_all_call_data(stp_h, cm_incom, cm_active, cm_held);
 		break;
 	default:
 		return;
 	}
 
 	if (res == CALLUI_RESULT_OK) {
-		_callui_listeners_coll_call_listeners(&stp->call_state_lc, event_type, call_id, sim_slot_type, end_call_data);
+		_callui_listeners_coll_call_listeners(&stp_h->call_state_lc, event_type, call_id, sim_slot_type, end_call_data);
 	}
 
 	free(end_call_data);
 }
 
-static callui_result_e __callui_stp_init(callui_state_provider_h stp, cm_client_h cm_client)
+static callui_result_e __callui_stp_init(callui_state_provider_h stp_h, cm_client_h cm_client)
 {
-	stp->cm_handler = cm_client;
+	stp_h->cm_h = cm_client;
 
-	int res = _callui_listeners_coll_init(&stp->call_state_lc);
+	int res = _callui_listeners_coll_init(&stp_h->call_state_lc);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
-	res = _callui_listeners_coll_init(&stp->last_call_end_lc);
+	res = _callui_listeners_coll_init(&stp_h->last_call_end_lc);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CALLUI_RESULT_OK, res);
 
 	res = contacts_connect();
@@ -374,63 +374,63 @@ static callui_result_e __callui_stp_init(callui_state_provider_h stp, cm_client_
 	cm_call_data_t *cm_active = NULL;
 	cm_call_data_t *cm_held = NULL;
 
-	res = cm_get_all_calldata(stp->cm_handler, &cm_incom, &cm_active, &cm_held);
+	res = cm_get_all_calldata(stp_h->cm_h, &cm_incom, &cm_active, &cm_held);
 	CALLUI_RETURN_VALUE_IF_FAIL(res == CM_ERROR_NONE, _callui_utils_convert_cm_res(res));
 
-	__update_stp_all_call_data(stp, cm_incom, cm_active, cm_held);
+	__update_stp_h_all_call_data(stp_h, cm_incom, cm_active, cm_held);
 
 	cm_call_data_free(cm_incom);
 	cm_call_data_free(cm_active);
 	cm_call_data_free(cm_held);
 
-	return _callui_utils_convert_cm_res(cm_set_call_event_cb(stp->cm_handler, __call_event_cb, stp));
+	return _callui_utils_convert_cm_res(cm_set_call_event_cb(stp_h->cm_h, __call_event_cb, stp_h));
 }
 
-static void __callui_stp_deinit(callui_state_provider_h stp)
+static void __callui_stp_deinit(callui_state_provider_h stp_h)
 {
-	cm_unset_call_event_cb(stp->cm_handler);
+	cm_unset_call_event_cb(stp_h->cm_h);
 
 	contacts_disconnect();
 
-	_callui_listeners_coll_deinit(&stp->call_state_lc);
-	_callui_listeners_coll_deinit(&stp->last_call_end_lc);
+	_callui_listeners_coll_deinit(&stp_h->call_state_lc);
+	_callui_listeners_coll_deinit(&stp_h->last_call_end_lc);
 
-	__free_call_event_data(stp);
+	__free_call_event_data(stp_h);
 }
 
 callui_state_provider_h _callui_stp_create(cm_client_h cm_client)
 {
 	CALLUI_RETURN_NULL_IF_FAIL(cm_client);
 
-	callui_state_provider_h stp = calloc(1, sizeof(_callui_state_provider_t));
-	CALLUI_RETURN_NULL_IF_FAIL(stp);
+	callui_state_provider_h stp_h = calloc(1, sizeof(_callui_state_provider_t));
+	CALLUI_RETURN_NULL_IF_FAIL(stp_h);
 
-	callui_result_e res = __callui_stp_init(stp, cm_client);
+	callui_result_e res = __callui_stp_init(stp_h, cm_client);
 	if (res != CALLUI_RESULT_OK) {
-		__callui_stp_deinit(stp);
-		FREE(stp);
+		__callui_stp_deinit(stp_h);
+		FREE(stp_h);
 	}
 
-	return stp;
+	return stp_h;
 }
 
-void _callui_stp_destroy(callui_state_provider_h stp)
+void _callui_stp_destroy(callui_state_provider_h stp_h)
 {
-	CALLUI_RETURN_IF_FAIL(stp);
+	CALLUI_RETURN_IF_FAIL(stp_h);
 
-	__callui_stp_deinit(stp);
+	__callui_stp_deinit(stp_h);
 
-	free(stp);
+	free(stp_h);
 }
 
-const callui_call_data_t *_callui_stp_get_call_data(callui_state_provider_h stp,
+const callui_call_data_t *_callui_stp_get_call_data(callui_state_provider_h stp_h,
 		callui_call_data_type_e call_data_type)
 {
-	CALLUI_RETURN_NULL_IF_FAIL(stp);
+	CALLUI_RETURN_NULL_IF_FAIL(stp_h);
 	CALLUI_RETURN_NULL_IF_FAIL((call_data_type >= CALLUI_CALL_DATA_ACTIVE &&
 			call_data_type < CALLUI_CALL_DATA_COUNT));
 
-	return stp->st_data_list[call_data_type];
+	return stp_h->st_data_list[call_data_type];
 }
 
 static void __call_state_event_handler_func(_callui_listener_t *listener, va_list args)
@@ -444,25 +444,25 @@ static void __call_state_event_handler_func(_callui_listener_t *listener, va_lis
 			call_event_type, id, sim_slot, event_info);
 }
 
-callui_result_e _callui_stp_add_call_state_event_cb(callui_state_provider_h stp,
+callui_result_e _callui_stp_add_call_state_event_cb(callui_state_provider_h stp_h,
 		callui_call_state_event_cb cb_func,
 		void *cb_data)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(stp, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(stp_h, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(cb_func, CALLUI_RESULT_INVALID_PARAM);
 
-	return _callui_listeners_coll_add_listener(&stp->call_state_lc,
+	return _callui_listeners_coll_add_listener(&stp_h->call_state_lc,
 			__call_state_event_handler_func, cb_func, cb_data);
 }
 
-callui_result_e _callui_stp_remove_call_state_event_cb(callui_state_provider_h stp,
+callui_result_e _callui_stp_remove_call_state_event_cb(callui_state_provider_h stp_h,
 		callui_call_state_event_cb cb_func,
 		void *cb_data)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(stp, CALLUI_RESULT_INVALID_PARAM);
+	CALLUI_RETURN_VALUE_IF_FAIL(stp_h, CALLUI_RESULT_INVALID_PARAM);
 	CALLUI_RETURN_VALUE_IF_FAIL(cb_func, CALLUI_RESULT_INVALID_PARAM);
 
-	return _callui_listeners_coll_remove_listener(&stp->call_state_lc, (void *)cb_func, cb_data);
+	return _callui_listeners_coll_remove_listener(&stp_h->call_state_lc, (void *)cb_func, cb_data);
 }
 
 static void __list_free_cb(gpointer data)
@@ -516,16 +516,16 @@ static callui_result_e __conf_call_data_init(callui_conf_call_data_t *conf_call_
 	return CALLUI_RESULT_OK;
 }
 
-Eina_List *_callui_stp_get_conference_call_list(callui_state_provider_h stp)
+Eina_List *_callui_stp_get_conference_call_list(callui_state_provider_h stp_h)
 {
-	CALLUI_RETURN_NULL_IF_FAIL(stp);
+	CALLUI_RETURN_NULL_IF_FAIL(stp_h);
 
 	// XXX: must be initialized with NULL. If not an there is no conference calls
 	// cm_get_conference_call_list return CM_ERROR_NONE and pointer will be not changed.
 	GSList *call_list = NULL;
 	Eina_List *res_list = NULL;
 
-	int res = cm_get_conference_call_list(stp->cm_handler, &call_list);
+	int res = cm_get_conference_call_list(stp_h->cm_h, &call_list);
 	CALLUI_RETURN_NULL_IF_FAIL(res == CM_ERROR_NONE);
 
 	if (call_list) {
@@ -562,22 +562,22 @@ Eina_List *_callui_stp_get_conference_call_list(callui_state_provider_h stp)
 	return res_list;
 }
 
-struct tm*_callui_stp_get_call_duration(callui_state_provider_h stp,
+struct tm*_callui_stp_get_call_duration(callui_state_provider_h stp_h,
 		callui_call_data_type_e call_data_type)
 {
-	CALLUI_RETURN_NULL_IF_FAIL(stp);
+	CALLUI_RETURN_NULL_IF_FAIL(stp_h);
 	CALLUI_RETURN_NULL_IF_FAIL((call_data_type >= CALLUI_CALL_DATA_ACTIVE &&
 			call_data_type < CALLUI_CALL_DATA_COUNT));
-	CALLUI_RETURN_NULL_IF_FAIL(stp->st_data_list[call_data_type]);
+	CALLUI_RETURN_NULL_IF_FAIL(stp_h->st_data_list[call_data_type]);
 
-	return _callui_common_get_current_time_diff_in_tm(stp->st_data_list[call_data_type]->start_time);
+	return _callui_common_get_current_time_diff_in_tm(stp_h->st_data_list[call_data_type]->start_time);
 }
 
-bool _callui_stp_is_any_calls_available(callui_state_provider_h stp)
+bool _callui_stp_is_any_calls_available(callui_state_provider_h stp_h)
 {
-	CALLUI_RETURN_VALUE_IF_FAIL(stp, false);
+	CALLUI_RETURN_VALUE_IF_FAIL(stp_h, false);
 
-	return (stp->st_data_list[CALLUI_CALL_DATA_INCOMING] ||
-			stp->st_data_list[CALLUI_CALL_DATA_ACTIVE] ||
-			stp->st_data_list[CALLUI_CALL_DATA_HELD]);
+	return (stp_h->st_data_list[CALLUI_CALL_DATA_INCOMING] ||
+			stp_h->st_data_list[CALLUI_CALL_DATA_ACTIVE] ||
+			stp_h->st_data_list[CALLUI_CALL_DATA_HELD]);
 }

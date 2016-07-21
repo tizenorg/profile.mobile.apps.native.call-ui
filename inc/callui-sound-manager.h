@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,30 +36,119 @@ typedef struct __callui_sound_manager *callui_sound_manager_h;
 typedef void (*audio_state_changed_cb)(void *user_data, callui_audio_state_type_e state);
 typedef void (*mute_state_changed_cb)(void *user_data, bool is_enable);
 
-callui_result_e _callui_sdm_set_speaker_state(callui_sound_manager_h sdm, bool is_enable);
+/**
+ * @brief Sets speaker state
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ * @param[in]	is_enable	Enable state
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_sdm_set_speaker_state(callui_sound_manager_h sdm_h, bool is_enable);
 
-callui_result_e _callui_sdm_set_bluetooth_state(callui_sound_manager_h sdm, bool is_enable);
+/**
+ * @brief Sets bluetooth state
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ * @param[in]	is_enable	Enable state
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_sdm_set_bluetooth_state(callui_sound_manager_h sdm_h, bool is_enable);
 
-callui_audio_state_type_e _callui_sdm_get_audio_state(callui_sound_manager_h sdm);
+/**
+ * @brief Gets audio state
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ *
+ * @return Current audio state
+ */
+callui_audio_state_type_e _callui_sdm_get_audio_state(callui_sound_manager_h sdm_h);
 
-callui_result_e _callui_sdm_start_dtmf(callui_sound_manager_h sdm, unsigned char dtmf_digit);
+/**
+* @brief Starts continuous DTMF by sending a single digit during the call
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ * @param[in]	dtmf_digit	The DTMF digit to be sent
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_sdm_start_dtmf(callui_sound_manager_h sdm_h, unsigned char dtmf_digit);
 
-callui_result_e _callui_sdm_stop_dtmf(callui_sound_manager_h sdm);
+/**
+* @brief Stops continuous DTMF during the call
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_sdm_stop_dtmf(callui_sound_manager_h sdm_h);
 
-callui_result_e _callui_sdm_set_mute_state(callui_sound_manager_h sdm, bool is_enable);
+/**
+* @brief Sets the mute state
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ * @param[in]	is_enable	Enable state
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_sdm_set_mute_state(callui_sound_manager_h sdm_h, bool is_enable);
 
-bool _callui_sdm_get_mute_state(callui_sound_manager_h sdm);
+/**
+* @brief Gets the mute state
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ *
+ * @return true if enable and false otherwise
+ */
+bool _callui_sdm_get_mute_state(callui_sound_manager_h sdm_h);
 
-callui_result_e _callui_sdm_add_audio_state_changed_cb(callui_sound_manager_h sdm,
+/**
+* @brief Adds audio state change callback
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	user_data	User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_sdm_add_audio_state_changed_cb(callui_sound_manager_h sdm_h,
 		audio_state_changed_cb cb_func, void *user_data);
 
-callui_result_e _callui_sdm_remove_audio_state_changed_cb(callui_sound_manager_h sdm,
+/**
+* @brief Removes audio state change callback
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	user_data	User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_sdm_remove_audio_state_changed_cb(callui_sound_manager_h sdm_h,
 		audio_state_changed_cb cb_func, void *user_data);
 
-callui_result_e _callui_sdm_add_mute_state_changed_cb(callui_sound_manager_h sdm,
+/**
+* @brief Adds mute state change callback
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	user_data	User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_sdm_add_mute_state_changed_cb(callui_sound_manager_h sdm_h,
 		mute_state_changed_cb cb_func, void *user_data);
 
-callui_result_e _callui_sdm_remove_mute_state_changed_cb(callui_sound_manager_h sdm,
+/**
+* @brief Removes mute state change callback
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	user_data	User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_sdm_remove_mute_state_changed_cb(callui_sound_manager_h sdm_h,
 		mute_state_changed_cb cb_func, void *user_data);
 
 #endif /* __CALLUI_CALL_SOUND_MANAGER_H__ */

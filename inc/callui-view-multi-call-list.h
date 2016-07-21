@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ typedef struct _callui_view_mc_list *callui_view_mc_list_h;
 /**
  * @brief Creates Multicall list view instance
  *
- * @return View data handler
+ * @return View data handle
  *
  */
 callui_view_mc_list_h _callui_view_multi_call_list_new();

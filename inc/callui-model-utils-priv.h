@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,6 +22,13 @@
 
 #include "callui-common-types.h"
 
+/**
+ * @brief Converts platform callmanager result types into application once
+ *
+ * @param[in]	cm_res	Platform  call manager result type
+ *
+ * @return Call UI application result type
+ */
 callui_result_e _callui_utils_convert_cm_res(cm_error_e cm_res);
 
 #endif /* __CALLUI_MODEL_UTILS_PRIV_H__ */

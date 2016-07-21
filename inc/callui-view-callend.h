@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ typedef struct _callui_view_callend *callui_view_callend_h;
 /**
  * @brief Creates Call End view instance
  *
- * @return View data handler
+ * @return View data handle
  */
 callui_view_callend_h _callui_view_callend_new();
 

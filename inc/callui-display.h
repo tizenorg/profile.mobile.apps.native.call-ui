@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,14 +41,49 @@ typedef struct __callui_display *callui_display_h;
 
 typedef struct appdata callui_app_data_t;
 
+/**
+ * @brief Creates display instance
+ *
+ * @param[in]	appdata		Application data
+ *
+ * @return Display instance handle
+ */
 callui_display_h _callui_display_create(callui_app_data_t *appdata);
 
+/**
+ * @brief Destroys display instance
+ *
+ * @param[in]	disp		Display instance handle
+ */
 void _callui_display_destroy(callui_display_h disp);
 
+/**
+ * @brief Sets display timeout
+ *
+ * @param[in]	disp			Display instance handle
+ * @param[in]	timeout_type	Type of display timeout to set
+ *
+ * @return CALLUI_RESULT_OK on success or another result type otherwise
+ */
 callui_result_e _callui_display_set_timeout(callui_display_h disp, callui_display_timeout_e timeout_type);
 
+/**
+ * @brief Sets display control state
+ *
+ * @param[in]	disp		Display instance handle
+ * @param[in]	state		Display control state to set
+ *
+ * @return CALLUI_RESULT_OK on success or another result type otherwise
+ */
 callui_result_e _callui_display_set_control_state(callui_display_h disp, callui_display_control_e state);
 
+/**
+ * @brief Gets display turned on state
+ *
+ * @param[in]	disp		Display instance handle
+ *
+ * @return true if display is turned on or false otherwise
+ */
 bool _callui_display_is_turned_on(callui_display_h display);
 
 #endif /* __CALLUI_DISPLAY_H__ */

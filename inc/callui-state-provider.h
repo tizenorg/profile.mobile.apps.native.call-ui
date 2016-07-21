@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -87,21 +87,69 @@ typedef void (*callui_call_state_event_cb)(void *user_data,
 		callui_sim_slot_type_e sim_type,
 		void *event_info);
 
-const callui_call_data_t *_callui_stp_get_call_data(callui_state_provider_h stp,
+/**
+ * @brief Gets call data
+ *
+ * @param[in]	stp_h			State provider handle
+ * @param[in]	call_data_type	Call data type
+ *
+ * @return Call data on success or NULL otherwise
+ */
+const callui_call_data_t *_callui_stp_get_call_data(callui_state_provider_h stp_h,
 		callui_call_data_type_e call_data_type);
 
-Eina_List *_callui_stp_get_conference_call_list(callui_state_provider_h stp);
+/**
+ * @brief Gets conference call members list
+ *
+ * @param[in]	stp_h		State provider handle
+ *
+ * @return Conference call members list on success or NULL otherwise
+ */
+Eina_List *_callui_stp_get_conference_call_list(callui_state_provider_h stp_h);
 
-struct tm *_callui_stp_get_call_duration(callui_state_provider_h stp,
+/**
+ * @brief Gets call duration time
+ *
+ * @param[in]	stp_h			State provider handle
+ * @param[in]	call_data_type	Call data type
+ *
+ * @return Call duration time structure on success or NULL otherwise
+ */
+struct tm *_callui_stp_get_call_duration(callui_state_provider_h stp_h,
 		callui_call_data_type_e call_data_type);
 
-bool _callui_stp_is_any_calls_available(callui_state_provider_h stp);
+/**
+ * @brief Gets status if any calls are available
+ *
+ * @param[in]	stp_h		State provider handle
+ *
+ * @return true if there are any calls and false otherwise
+ */
+bool _callui_stp_is_any_calls_available(callui_state_provider_h stp_h);
 
-callui_result_e _callui_stp_add_call_state_event_cb(callui_state_provider_h stp,
+/**
+ * @brief Adds call state change event listener
+ *
+ * @param[in]	stp_h		State provider handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	cb_data		User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_stp_add_call_state_event_cb(callui_state_provider_h stp_h,
 		callui_call_state_event_cb cb_func,
 		void *cb_data);
 
-callui_result_e _callui_stp_remove_call_state_event_cb(callui_state_provider_h stp,
+/**
+ * @brief Removes call state change event listener
+ *
+ * @param[in]	stp_h		State provider handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	cb_data		User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_stp_remove_call_state_event_cb(callui_state_provider_h stp_h,
 		callui_call_state_event_cb cb_func,
 		void *cb_data);
 

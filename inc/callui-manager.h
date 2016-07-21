@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ typedef enum {
 	CALLUI_SIM_SLOT_DEFAULT,
 } callui_sim_slot_type_e;
 
-/* Call manager handler type define */
+/* Call manager handle type define */
 typedef struct __callui_manager *callui_manager_h;
 
 /* Forward declaration */
@@ -65,47 +65,184 @@ typedef void (*callui_end_call_called_cb)(void *user_data,
 		callui_call_release_type_e release_type);
 typedef void (*callui_dial_status_cb)(void *user_data, callui_dial_status_e dial_status);
 
-
+/**
+ * @brief Creates call manager instance
+ *
+ * @return Call manager handle
+ */
 callui_manager_h _callui_manager_create();
 
-void _callui_manager_destroy(callui_manager_h cm_handler);
+/**
+ * @brief Destroys call manager instance
+ *
+ * @param[in]	cm_h		Call manager handle
+ */
+void _callui_manager_destroy(callui_manager_h cm_h);
 
-callui_result_e _callui_manager_dial_voice_call(callui_manager_h cm_handler,
+/**
+ * @brief Dials voice call
+ *
+ * @param[in]	cm_h		Call manager handle
+ * @param[in]	number		Phone number to dial
+ * @param[in]	sim_slot	Sim slot type to make dial
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_dial_voice_call(callui_manager_h cm_h,
 		const char *number, callui_sim_slot_type_e sim_slot);
 
-callui_result_e _callui_manager_end_call(callui_manager_h cm_handler,
+/**
+ * @brief Ends voice call
+ *
+ * @param[in]	cm_h			Call manager handle
+ * @param[in]	call_id			A unique id that refers to the call
+ * @param[in]	release_type	The end call type
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_end_call(callui_manager_h cm_h,
 		unsigned int call_id, callui_call_release_type_e release_type);
 
-callui_result_e _callui_manager_swap_call(callui_manager_h cm_handler);
+/**
+ * @brief Swaps voice calls.
+ *
+ * @details If there are active and hold calls this function swap them
+ *
+ * @param[in]	cm_h		Call manager handle
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_swap_call(callui_manager_h cm_h);
 
-callui_result_e _callui_manager_hold_call(callui_manager_h cm_handler);
+/**
+ * @brief Holds active voice calls.
+ *
+ * @param[in]	cm_h		Call manager handle
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_hold_call(callui_manager_h cm_h);
 
-callui_result_e _callui_manager_unhold_call(callui_manager_h cm_handler);
+/**
+ * @brief Unholds active voice calls if it was in hold state.
+ *
+ * @param[in]	cm_h		Call manager handle
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_unhold_call(callui_manager_h cm_h);
 
-callui_result_e _callui_manager_join_call(callui_manager_h cm_handler);
+/**
+ * @brief Joins active and hold calls into one conversation.
+ *
+ * @param[in]	cm_h		Call manager handle
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_join_call(callui_manager_h cm_h);
 
-callui_result_e _callui_manager_reject_call(callui_manager_h cm_handler);
+/**
+ * @brief Rejects incoming call
+ *
+ * @param[in]	cm_h		Call manager handle
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_reject_call(callui_manager_h cm_h);
 
-callui_result_e _callui_manager_stop_alert(callui_manager_h cm_handler);
+/**
+ * @brief Stops ringing alert of incoming call
+ *
+ * @param[in]	cm_h		Call manager handle
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_stop_alert(callui_manager_h cm_h);
 
-callui_result_e _callui_manager_split_call(callui_manager_h cm_handler, unsigned int call_id);
+/**
+ * @brief Splits call by its id from conversation
+ *
+ * @param[in]	cm_h		Call manager handle
+ * @param[in]	call_id		A unique id that refers to the call
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_split_call(callui_manager_h cm_h, unsigned int call_id);
 
-callui_result_e _callui_manager_answer_call(callui_manager_h cm_handler, callui_call_answer_type_e ans_type);
+/**
+ * @brief Answer on incoming call
+ *
+ * @param[in]	cm_h		Call manager handle
+ * @param[in]	ans_type	Type of answer on call
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_answer_call(callui_manager_h cm_h, callui_call_answer_type_e ans_type);
 
-callui_sound_manager_h _callui_manager_get_sound_manager(callui_manager_h cm_handler);
+/**
+ * @brief Gets sound manager instance
+ *
+ * @param[in]	cm_h		Call manager handle
+ *
+ * @return Sound manager instance handle
+ */
+callui_sound_manager_h _callui_manager_get_sound_manager(callui_manager_h cm_h);
 
-callui_state_provider_h _callui_manager_get_state_provider(callui_manager_h cm_handler);
+/**
+ * @brief Gets state provider instance
+ *
+ * @param[in]	cm_h		Call manager handle
+ *
+ * @return State provider instance handle
+ */
+callui_state_provider_h _callui_manager_get_state_provider(callui_manager_h cm_h);
 
-callui_result_e _callui_manager_add_end_call_called_cb(callui_manager_h cm_handler,
+/**
+ * @brief Adds listener for end call called event
+ *
+ * @param[in]	cm_h		Call manager handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	cb_func		User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_add_end_call_called_cb(callui_manager_h cm_h,
 		callui_end_call_called_cb cb_func, void *cb_data);
 
-callui_result_e _callui_manager_remove_end_call_called_cb(callui_manager_h cm_handler,
+/**
+ * @brief Removes listener for end call called event
+ *
+ * @param[in]	cm_h		Call manager handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	cb_func		User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_remove_end_call_called_cb(callui_manager_h cm_h,
 		callui_end_call_called_cb cb_func, void *cb_data);
 
-callui_result_e _callui_manager_add_dial_status_cb(callui_manager_h cm_handler,
+/**
+ * @brief Adds listener for dial status change event
+ *
+ * @param[in]	cm_h		Call manager handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	cb_func		User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_add_dial_status_cb(callui_manager_h cm_h,
 		callui_dial_status_cb cb_func, void *cb_data);
 
-callui_result_e _callui_manager_remove_dial_status_cb(callui_manager_h cm_handler,
+/**
+ * @brief Removes listener for dial status change event
+ *
+ * @param[in]	cm_h		Call manager handle
+ * @param[in]	cb_func		User callback function
+ * @param[in]	cb_func		User callback data
+ *
+ * @return CALLUI_RESULT_OK on success or another result otherwise
+ */
+callui_result_e _callui_manager_remove_dial_status_cb(callui_manager_h cm_h,
 		callui_dial_status_cb cb_func, void *cb_data);
 
 #endif /* __CALLUI_CALL_MANAGER_H__ */

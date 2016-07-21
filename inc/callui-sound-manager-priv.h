@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,8 +22,20 @@
 
 typedef struct __callui_sound_manager *callui_sound_manager_h;
 
+/**
+ * @brief Creates sound manager instance
+ *
+ * @param[in]	cm_client	Platform call manager client handle
+ *
+ * @return Sound manager handle on success or NULL otherwise
+ */
 callui_sound_manager_h _callui_sdm_create(cm_client_h cm_client);
 
-void _callui_sdm_destroy(callui_sound_manager_h sm_handler);
+/**
+ * @brief Destroys sound manager instance
+ *
+ * @param[in]	sdm_h		Sound manager handle
+ */
+void _callui_sdm_destroy(callui_sound_manager_h sdm_h);
 
 #endif /* __CALLUI_CALL_SOUND_MANAGER_PRIV_H__ */

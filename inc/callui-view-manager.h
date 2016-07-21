@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -68,21 +68,21 @@ typedef struct _callui_vm *callui_vm_h;
  *
  * @param[in]	ad		application data
  *
- * @return view manager handler
+ * @return view manager handle
  */
 callui_vm_h _callui_vm_create(callui_app_data_t *ad);
 
 /**
  * @brief Destroy view manager
  *
- * @param[in]	vm		View manager handler
+ * @param[in]	vm		View manager handle
  */
 void _callui_vm_destroy(callui_vm_h vm);
 
 /**
  * @brief Returns application main layout
  *
- * @param[in]	vm		View manager handler
+ * @param[in]	vm		View manager handle
  *
  * @return application main layout or NULL on fail
  */
@@ -91,7 +91,7 @@ Evas_Object *_callui_vm_get_main_ly(callui_vm_h vm);
 /**
  * @brief Change view
  *
- * @param[in]	vm		View manager handler
+ * @param[in]	vm		View manager handle
  * @param[in]	type	View type
  *
  * @return result CALLUI_RESULT_OK on success
@@ -101,7 +101,7 @@ callui_result_e _callui_vm_change_view(callui_vm_h vm, callui_view_type_e type);
 /**
  * @brief Auto change view
  *
- * @param[in]	vm		View manager handler
+ * @param[in]	vm		View manager handle
  *
  * @return result CALLUI_RESULT_OK on success
  */
@@ -110,7 +110,7 @@ callui_result_e _callui_vm_auto_change_view(callui_vm_h vm);
 /**
  * @brief Get top view type
  *
- * @param[in]	vm		View manager handler
+ * @param[in]	vm		View manager handle
  *
  * @return view type
  */
@@ -119,7 +119,7 @@ callui_view_type_e _callui_vm_get_cur_view_type(callui_vm_h vm);
 /**
  * @brief Pause view manager
  *
- * @param[in]	vm		View manager handler
+ * @param[in]	vm		View manager handle
  *
  * @return result CALLUI_RESULT_OK on success
  */
@@ -128,7 +128,7 @@ callui_result_e _callui_vm_pause(callui_vm_h vm);
 /**
  * @brief Resume from pause view manager
  *
- * @param[in]	vm		View manager handler
+ * @param[in]	vm		View manager handle
  *
  * @return result CALLUI_RESULT_OK on success
  */
@@ -137,7 +137,7 @@ callui_result_e _callui_vm_resume(callui_vm_h vm);
 /**
  * @brief Notify view manager that it is needed to update language
  *
- * @param[in]	vm		View manager handler
+ * @param[in]	vm		View manager handle
  *
  * @return result CALLUI_RESULT_OK on success
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2015 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2009-2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,14 +27,14 @@ typedef struct _callui_view_incoming_call *callui_view_incoming_call_h;
 /**
  * @brief Creates Incoming call view instance
  *
- * @return View data handler
+ * @return View data handle
  */
 callui_view_incoming_call_h _callui_view_incoming_call_new();
 
 /**
  * @brief Sets accept layout to Incoming call view
  *
- * @param[in]	vd		View data handler
+ * @param[in]	vd		View data handle
  * @param[in]	layout	Accept layout
  *
  * @return CALLUI_RESULT_OK on success or error code otherwise
@@ -44,7 +44,7 @@ callui_result_e _callui_view_incoming_call_set_accept_layout(callui_view_incomin
 /**
  * @brief Gets accept layout from Incoming call view
  *
- * @param[in]	vd		View data handler
+ * @param[in]	vd		View data handle
  *
  * @return Accept layout
  */
@@ -53,7 +53,7 @@ Evas_Object *_callui_view_incoming_call_get_accept_layout(callui_view_incoming_c
 /**
  * @brief Sets reject layout to Incoming call view
  *
- * @param[in]	vd		View data handler
+ * @param[in]	vd		View data handle
  * @param[in]	layout	Reject layout
  *
  * @return CALLUI_RESULT_OK on success or error code otherwise
@@ -63,7 +63,7 @@ callui_result_e _callui_view_incoming_call_set_reject_layout(callui_view_incomin
 /**
  * @brief Gets reject layout from Incoming call view
  *
- * @param[in]	vd		View data handler
+ * @param[in]	vd		View data handle
  *
  * @return Reject layout
  */
