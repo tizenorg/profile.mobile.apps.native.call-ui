@@ -17,29 +17,28 @@
 
 #define QP_BG_PAD_R	32
 #define QP_BG_PAD_L	32
-#define QP_BG_PAD_B	42
+#define QP_BG_PAD_B	40
 
-#define QP_CONTACT_ICON_PAD_T	34
+#define QP_CONTACT_ICON_PAD_T	38
 #define QP_CONTACT_ICON_PAD_R	32
 #define QP_CONTACT_ICON_SIZE	96 96
 
-#define QP_BTN_PAD_T	40
-#define QP_BTN_GAP		40
+#define QP_BTN_PAD_T	41
+#define QP_BTN_GAP		32
 #define QP_BTN_SIZE		90 90
 
-#define QP_TEXT_AREA_PAD_T	30
+#define QP_TEXT_AREA_PAD_T	33
 #define QP_TEXT_AREA_PAD_R	10
 
-#define QP_CALL_NAME_TXT_H	55
-#define QP_TIMER_TXT_H		43
+#define QP_CALL_NAME_TXT_H		53
+#define QP_CALL_NAME_TXT_PAD_B	3
+#define QP_TIMER_TXT_H			43
 
 styles {
-	style {
-		name: "style_caller_name";
+	style { name: "style_caller_name";
 		base: "font=Tizen:style=Regular font_size=40 color=#FFFFFF color_class="ATO005QP" align=left ellipsis=1.0 text_class=ATO005QP";
 	}
-	style {
-		name: "style_call_time";
+	style { name: "style_call_time";
 		base: "font=Tizen:style=Regular font_size=30 color=#FFFFFF color_class="ATO006QP" align=left ellipsis=1.0 text_class=ATO006QP";
 	}
 }
@@ -48,40 +47,27 @@ styles {
 		part { name: part_name; \
 			type: SWALLOW; \
 			scale: 1; \
-			description { \
-				state: "default" 0.0; \
-				visible: 0; \
-				rel1 { \
-					relative: 0.0 1.0;  \
-					to_x: _from_right_part_name; \
-					to_y: "pad.btn.top"; \
-				} \
-				rel2 { \
-					relative: 0.0 1.0;  \
-					to_x: _from_right_part_name; \
-					to_y: "pad.btn.top"; \
-				} \
-				min: QP_BTN_SIZE; \
-				fixed: 1 1; \
+			description { state: "default" 0.0; \
 				align: 1.0 0.0; \
+				fixed: 1 1; \
+				visible: 0; \
+				rel1 { relative: 0.0 1.0; to_x: _from_right_part_name; to_y: "pad.btn.top"; } \
+				rel2 { relative: 0.0 1.0; to_x: _from_right_part_name; to_y: "pad.btn.top"; } \
+				min: QP_BTN_SIZE; \
 			} \
-			description { \
-				state: "incoming" 0.0; \
+			description { state: "incoming" 0.0; \
 				inherit: "default" 0.0; \
 				visible: inco; \
 			} \
-			description { \
-				state: "during" 0.0; \
+			description { state: "during" 0.0; \
 				inherit: "default" 0.0; \
 				visible: duri; \
 			} \
-			description { \
-				state: "outgoing" 0.0; \
+			description { state: "outgoing" 0.0; \
 				inherit: "default" 0.0; \
 				visible: out; \
 			} \
-			description { \
-				state: "resume" 0.0; \
+			description { state: "resume" 0.0; \
 				inherit: "default" 0.0; \
 				visible: resume; \
 			} \
@@ -99,14 +85,12 @@ styles {
 			} \
 		} \
 
-group {
-	name: "quickpanel";
+group { name: "quickpanel";
 	parts {
 		part { name: "bg";
 			type: RECT;
 			scale: 1;
-			description {
-				state: "default" 0.0;
+			description { state: "default" 0.0;
 				min: 0 QP_WIN_H;
 				color: 255 255 255 255;
 			}
@@ -114,128 +98,92 @@ group {
 		part { name: "pad.left";
 			type: SPACER;
 			scale: 1;
-			description {
-				min: QP_BG_PAD_L 0;
+			description { state: "default" 0.0;
+				align: 0.0 0.0;
 				fixed: 1 0;
 				rel2.relative: 0.0 1.0;
-				align: 0.0 0.0;
+				min: QP_BG_PAD_L 0;
 			}
 		}
 		part { name: "pad.right";
 			type: SPACER;
 			scale: 1;
-			description {
-				min: QP_BG_PAD_R 0;
+			description { state: "default" 0.0;
+				align: 1.0 0.0;
 				fixed: 1 0;
 				rel1.relative: 1.0 0.0;
-				align: 1.0 0.0;
+				min: QP_BG_PAD_R 0;
 			}
 		}
 		part { name: "pad.bottom";
 			type: SPACER;
 			scale: 1;
-			description {
-				state: "default" 0.0;
-				min: 0 QP_BG_PAD_B;
+			description { state: "default" 0.0;
 				fixed: 0 1;
 				rel1.relative: 0.0 1.0;
+				min: 0 QP_BG_PAD_B;
 			}
 		}
 		part { name: "pad.contact.image.top";
 			type: SPACER;
 			scale: 1;
 			description {
-				min: 0 QP_CONTACT_ICON_PAD_T;
+				align: 0.0 0.0;
 				fixed: 0 1;
 				rel2.relative: 1.0 0.0;
-				align: 0.0 0.0;
+				min: 0 QP_CONTACT_ICON_PAD_T;
 			}
 		}
 		part { name: "pad.btn.top";
 			type: SPACER;
 			scale: 1;
-			description {
-				state: "default" 0.0;
-				min: 0 QP_BTN_PAD_T;
+			description { state: "default" 0.0;
+				align: 0.0 0.0;
 				fixed: 0 1;
 				rel2.relative: 1.0 0.0;
-				align: 0.0 0.0;
+				min: 0 QP_BTN_PAD_T;
 			}
 		}
 		part { name: "pad.txt.area.top";
 			type: SPACER;
 			scale: 1;
-			description {
-				state: "default" 0.0;
-				min: 0 QP_TEXT_AREA_PAD_T;
+			description { state: "default" 0.0;
+				align: 0.0 0.0;
 				fixed: 0 1;
 				rel2.relative: 1.0 0.0;
-				align: 0.0 0.0;
+				min: 0 QP_TEXT_AREA_PAD_T;
 			}
 		}
 		part { name: "pad.contact.image.right";
 			type: SPACER;
 			scale: 1;
-			description {
-				state: "default" 0.0;
+			description { state: "default" 0.0;
+				align: 0.0 0.5;
 				fixed: 1 0;
-				min: QP_CONTACT_ICON_PAD_R 0;
-				max: QP_CONTACT_ICON_PAD_R -1;
 				rel1 { relative: 1 0; to_x: "swallow.caller_id"; }
 				rel2 { relative: 1 1; to_x: "swallow.caller_id"; }
-				align: 0 0.5;
+				min: QP_CONTACT_ICON_PAD_R 0;
 			}
 		}
 		part { name: "txt_area";
 			type: SPACER;
 			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 {
-					relative: 1.0 1.0;
-					to_x: "pad.contact.image.right";
-					to_y: "pad.txt.area.top";
-				}
-				rel2 {
-					relative: 0.0 0.0;
-					to_x: "pad.txt.area.right";
-					to_y: "pad.bottom";
-				}
+			description { state: "default" 0.0;
+				rel1 { relative: 1.0 1.0; to_x: "pad.contact.image.right"; to_y: "pad.txt.area.top"; }
+				rel2 { relative: 0.0 0.0; to_x: "pad.txt.area.right"; to_y: "pad.bottom"; }
 			}
-			description {
-				state: "incoming" 0.0;
+			description { state: "incoming" 0.0;
 				inherit: "default" 0.0;
 			}
-			description {
-				state: "during" 0.0;
+			description { state: "during" 0.0;
 				inherit: "default" 0.0;
-				rel1 {
-					relative: 1.0 1.0;
-					to_x: "pad.left";
-					to_y: "pad.txt.area.top";
-				}
-				rel2 {
-					relative: 0.0 0.0;
-					to_x: "pad.txt.area.right";
-					to_y: "pad.bottom";
-				}
+				rel1 { relative: 1.0 1.0; to_x: "pad.left"; to_y: "pad.txt.area.top"; }
+				rel2 { relative: 0.0 0.0; to_x: "pad.txt.area.right"; to_y: "pad.bottom"; }
 			}
-			description {
-				state: "resume" 0.0;
-				inherit: "default" 0.0;
-				rel1 {
-					relative: 1.0 1.0;
-					to_x: "pad.left";
-					to_y: "pad.txt.area.top";
-				}
-				rel2 {
-					relative: 0.0 0.0;
-					to_x: "pad.txt.area.right";
-					to_y: "pad.bottom";
-				}
+			description { state: "resume" 0.0;
+				inherit: "during" 0.0;
 			}
-			description {
-				state: "outgoing" 0.0;
+			description { state: "outgoing" 0.0;
 				inherit: "default" 0.0;
 			}
 		}
@@ -243,94 +191,58 @@ group {
 			type: SPACER;
 			scale: 1;
 			description { state: "default" 0.0;
+				align: 1.0 0.5;
 				fixed: 1 0;
+				rel1 { relative: 0.0 0.0; to_x: "swallow.speaker_button"; }
+				rel2 { relative: 0.0 1.0; to_x: "swallow.speaker_button"; }
 				min: QP_TEXT_AREA_PAD_R 0;
-				rel1 { relative: 0 0; to_x: "swallow.speaker_button"; }
-				rel2 { relative: 0 1; to_x: "swallow.speaker_button"; }
-				align: 1 0.5;
 			}
 		}
 		part { name: "swallow.speaker_button";
 			type: SWALLOW;
 			scale: 1;
-			description {
-				state: "default" 0.0;
-				visible: 0;
-				rel1 {
-					relative: 0.0 1.0;
-					to_x: "pad.swallow.end_button.left";
-					to_y: "pad.btn.top";
-				}
-				rel2 {
-					relative: 0.0 1.0;
-					to_x: "pad.swallow.end_button.left";
-					to_y: "pad.btn.top";
-				}
-				min: QP_BTN_SIZE;
-				fixed: 1 1;
+			description { state: "default" 0.0;
 				align: 1.0 0.0;
+				fixed: 1 1;
+				visible: 0;
+				rel1 { relative: 0.0 1.0; to_x: "pad.swallow.end_button.left"; to_y: "pad.btn.top"; }
+				rel2 { relative: 0.0 1.0; to_x: "pad.swallow.end_button.left"; to_y: "pad.btn.top"; }
+				min: QP_BTN_SIZE;
 			}
-			description {
-				state: "incoming" 0.0;
+			description { state: "incoming" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
 			}
-			description {
-				state: "during" 0.0;
-				rel1 {
-					relative: 0.0 1.0;
-					to_x: "pad.swallow.mute_button.left";
-					to_y: "pad.btn.top";
-				}
-				rel2 {
-					relative: 0.0 1.0;
-					to_x: "pad.swallow.mute_button.left";
-					to_y: "pad.btn.top";
-				}
-				min: QP_BTN_SIZE;
-				fixed: 1 1;
+			description { state: "during" 0.0;
 				align: 1.0 0.0;
+				fixed: 1 1;
 				visible: 1;
+				rel1 { relative: 0.0 1.0; to_x: "pad.swallow.mute_button.left"; to_y: "pad.btn.top"; }
+				rel2 { relative: 0.0 1.0; to_x: "pad.swallow.mute_button.left"; to_y: "pad.btn.top"; }
+				min: QP_BTN_SIZE;
 			}
-			description {
-				state: "outgoing" 0.0;
+			description { state: "outgoing" 0.0;
 				inherit: "default" 0.0;
 				visible: 1;
 			}
-			description {
-				state: "resume" 0.0;
-				rel1 {
-					relative: 0.0 1.0;
-					to_x: "pad.swallow.resume_button.left";
-					to_y: "pad.btn.top";
-				}
-				rel2 {
-					relative: 0.0 1.0;
-					to_x: "pad.swallow.resume_button.left";
-					to_y: "pad.btn.top";
-				}
-				min: QP_BTN_SIZE;
-				fixed: 1 1;
+			description { state: "resume" 0.0;
 				align: 1.0 0.0;
+				fixed: 1 1;
 				visible: 1;
+				rel1 { relative: 0.0 1.0; to_x: "pad.swallow.resume_button.left"; to_y: "pad.btn.top"; }
+				rel2 { relative: 0.0 1.0; to_x: "pad.swallow.resume_button.left"; to_y: "pad.btn.top"; }
+				min: QP_BTN_SIZE;
 			}
 		}
 		part { name: "contact_name";
 			type: TEXTBLOCK;
 			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 {
-					relative: 0.0 0.0;
-					to: "txt_area";
-				}
-				rel2 {
-					relative: 1.0 0.0;
-					to: "txt_area";
-				}
-				min: 0 QP_CALL_NAME_TXT_H;
-				fixed: 0 1;
+			description { state: "default" 0.0;
 				align: 0.0 0.0;
+				fixed: 0 1;
+				rel1 { relative: 0.0 0.0; to: "txt_area"; }
+				rel2 { relative: 1.0 0.0; to: "txt_area"; }
+				min: 0 QP_CALL_NAME_TXT_H;
 				text {
 					ellipsis: 0.0;
 					fit: 0 1;
@@ -341,22 +253,26 @@ group {
 				color_class: "ATO005QP";
 			}
 		}
+		part { name: "pad.contact_name.bottom";
+			type: SPACER;
+			scale: 1;
+			description { state: "default" 0.0;
+				align: 0.5 0.0;
+				fixed: 0 1;
+				rel1 { relative: 0.0 1.0; to: "contact_name"; }
+				rel2 { relative: 1.0 1.0; to: "contact_name"; }
+				min: 0 QP_CALL_NAME_TXT_PAD_B;
+			}
+		}
 		part { name: "txt_timer";
 			type: TEXTBLOCK;
 			scale: 1;
-			description {
-				state: "default" 0.0;
-				rel1 {
-					relative: 0.0 1.0;
-					to: "contact_name";
-				}
-				rel2 {
-					relative: 1.0 1.0;
-					to: "contact_name";
-				}
-				min: 0 QP_TIMER_TXT_H;
-				fixed: 0 1;
+			description { state: "default" 0.0;
 				align: 0.0 0.0;
+				fixed: 0 1;
+				rel1 { relative: 0.0 1.0; to: "pad.contact_name.bottom"; }
+				rel2 { relative: 1.0 1.0; to: "pad.contact_name.bottom"; }
+				min: 0 QP_TIMER_TXT_H;
 				text {
 					align: 0.0 0.5;
 					ellipsis: 1.0;
@@ -369,57 +285,45 @@ group {
 		part { name: "swallow.caller_id";
 			type: SWALLOW;
 			scale: 1;
-			description {
-				state: "default" 0.0;
+			description { state: "default" 0.0;
+				align: 0.0 0.0;
+				fixed: 1 1;
 				min: QP_CONTACT_ICON_SIZE;
 				max: QP_CONTACT_ICON_SIZE;
-				fixed: 1 1;
-				align: 0.0 0.0;
-				rel1 {
-					relative: 1.0 1.0;
-					to_x: "pad.left";
-					to_y: "pad.contact.image.top";
-				}
+				rel1 { relative: 1.0 1.0; to_x: "pad.left"; to_y: "pad.contact.image.top"; }
 			}
-			description {
-				state: "incoming" 0.0;
+			description { state: "incoming" 0.0;
 				inherit: "default" 0.0;
 				visible: 1;
 			}
-			description {
-				state: "during" 0.0;
+			description { state: "during" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
 			}
-			description {
-				state: "outgoing" 0.0;
+			description { state: "outgoing" 0.0;
 				inherit: "default" 0.0;
 				visible: 1;
 			}
-			description {
-				state: "resume" 0.0;
+			description { state: "resume" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
 			}
-			description {
-				state: "show" 0.0;
+			description { state: "show" 0.0;
 				inherit: "default" 0.0;
 				visible: 1;
 			}
-			description {
-				state: "hide" 0.0;
+			description { state: "hide" 0.0;
 				inherit: "default" 0.0;
 				visible: 0;
 			}
 		}
-		QP_SWALLOW_BTN_WITH_PAD_L("swallow.end_button", "pad.right", 1, 1, 1, 1);
-		QP_SWALLOW_BTN_WITH_PAD_L("swallow.mute_button", "pad.swallow.end_button.left", 0, 1, 0, 0);
-		QP_SWALLOW_BTN_WITH_PAD_L("swallow.resume_button", "pad.swallow.end_button.left", 0, 0, 0, 1);
-		QP_SWALLOW_BTN_WITH_PAD_L("swallow.call_button", "pad.swallow.end_button.left", 1, 0, 0, 0);
+		QP_SWALLOW_BTN_WITH_PAD_L("swallow.end_button", "pad.right", 1, 1, 1, 1)
+		QP_SWALLOW_BTN_WITH_PAD_L("swallow.mute_button", "pad.swallow.end_button.left", 0, 1, 0, 0)
+		QP_SWALLOW_BTN_WITH_PAD_L("swallow.resume_button", "pad.swallow.end_button.left", 0, 0, 0, 1)
+		QP_SWALLOW_BTN_WITH_PAD_L("swallow.call_button", "pad.swallow.end_button.left", 1, 0, 0, 0)
 	}
 	programs{
-		program {
-			name: "resume_call";
+		program { name: "resume_call";
 			signal: "resume_call";
 			source: "*";
 			action: STATE_SET "resume" 0.0;
@@ -431,8 +335,7 @@ group {
 			target: "swallow.caller_id";
 			target: "txt_area";
 		}
-		program {
-			name: "outgoing_call";
+		program { name: "outgoing_call";
 			signal: "outgoing_call";
 			source: "*";
 			action: STATE_SET "outgoing" 0.0;
@@ -444,8 +347,7 @@ group {
 			target: "swallow.caller_id";
 			target: "txt_area";
 		}
-		program {
-			name: "incoming_call";
+		program { name: "incoming_call";
 			signal: "incoming_call";
 			source: "*";
 			action: STATE_SET "incoming" 0.0;
@@ -457,8 +359,7 @@ group {
 			target: "swallow.caller_id";
 			target: "txt_area";
 		}
-		program {
-			name: "during_call";
+		program { name: "during_call";
 			signal: "during_call";
 			source: "*";
 			action: STATE_SET "during" 0.0;
